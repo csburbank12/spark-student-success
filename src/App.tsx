@@ -9,12 +9,16 @@ import Login from "./pages/Login";
 import StudentDashboard from "./pages/StudentDashboard";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import ParentDashboard from "./pages/ParentDashboard";
 import StudentManagement from "./pages/StudentManagement";
 import CheckIn from "./pages/CheckIn";
 import MentalHealthToolkit from "./pages/MentalHealthToolkit";
 import FutureMe from "./pages/FutureMe";
 import NotFound from "./pages/NotFound";
 import { AppShell } from "./components/layout/AppShell";
+import ChildActivity from "./pages/parent/ChildActivity";
+import ChildWellness from "./pages/parent/ChildWellness";
+import ParentMessages from "./pages/parent/ParentMessages";
 
 // Create query client outside of component
 const queryClient = new QueryClient();
@@ -49,6 +53,8 @@ const DashboardRouter = () => {
       return <TeacherDashboard />;
     case "admin":
       return <AdminDashboard />;
+    case "parent":
+      return <ParentDashboard />;
     default:
       return <Navigate to="/login" replace />;
   }
@@ -171,6 +177,32 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <div className="p-6">Analytics Dashboard (Coming Soon)</div>
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Parent routes */}
+              <Route 
+                path="/child-activity" 
+                element={
+                  <ProtectedRoute>
+                    <ChildActivity />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/child-wellness" 
+                element={
+                  <ProtectedRoute>
+                    <ChildWellness />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/messages" 
+                element={
+                  <ProtectedRoute>
+                    <ParentMessages />
                   </ProtectedRoute>
                 } 
               />

@@ -10,7 +10,11 @@ import {
   Settings, 
   MessageSquare,
   BookCheck,
-  Heart
+  Heart,
+  Activity,
+  User,
+  School,
+  FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -94,7 +98,7 @@ export const Sidebar = () => {
         {/* Admin Navigation */}
         {role === 'admin' && (
           <>
-            <NavItem to="/schools" icon={Layout}>
+            <NavItem to="/schools" icon={School}>
               Schools
             </NavItem>
             <NavItem to="/users" icon={Users}>
@@ -102,6 +106,21 @@ export const Sidebar = () => {
             </NavItem>
             <NavItem to="/analytics" icon={BarChart}>
               Analytics
+            </NavItem>
+          </>
+        )}
+
+        {/* Parent Navigation */}
+        {role === 'parent' && (
+          <>
+            <NavItem to="/child-activity" icon={Activity}>
+              Child Activity
+            </NavItem>
+            <NavItem to="/child-wellness" icon={Heart}>
+              Wellness Tracker
+            </NavItem>
+            <NavItem to="/messages" icon={MessageSquare}>
+              Messages
             </NavItem>
           </>
         )}

@@ -31,6 +31,7 @@ export const Navbar = () => {
           {user?.role === 'student' && 'My Dashboard'}
           {user?.role === 'teacher' && 'Teacher Dashboard'}
           {user?.role === 'admin' && 'Admin Console'}
+          {user?.role === 'parent' && 'Parent Portal'}
         </h1>
       </div>
       <div className="flex flex-1 items-center gap-4 md:justify-end">
@@ -98,6 +99,9 @@ export const Navbar = () => {
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch('admin')}>
               Switch to Admin View
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch('parent')}>
+              Switch to Parent View
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" onClick={() => logout()}>
