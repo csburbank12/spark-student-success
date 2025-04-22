@@ -1,5 +1,16 @@
+
 import { createRoot } from 'react-dom/client'
+import React from 'react'; // Make sure React is imported
 import App from './App.tsx'
 import './index.css'
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Use the non-null assertion operator to tell TypeScript that this element exists
+const rootElement = document.getElementById("root")!;
+
+// Use createRoot API correctly
+const root = createRoot(rootElement);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);

@@ -8,4 +8,5 @@ export interface User {
   name?: string;
   role: UserRole;
   avatarUrl?: string;
+  schoolId?: string; // Add schoolId as an optional property
 }

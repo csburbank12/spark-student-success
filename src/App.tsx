@@ -16,6 +16,7 @@ import FutureMe from "./pages/FutureMe";
 import NotFound from "./pages/NotFound";
 import { AppShell } from "./components/layout/AppShell";
 
+// Create query client outside of component
 const queryClient = new QueryClient();
 
 // Protected route component
@@ -53,142 +54,145 @@ const DashboardRouter = () => {
   }
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+// Make sure App is explicitly a React functional component
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            
-            {/* Protected routes */}
-            <Route 
-              path="/" 
-              element={<Navigate to="/dashboard" replace />} 
-            />
-            
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <DashboardRouter />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Student routes */}
-            <Route 
-              path="/check-in" 
-              element={
-                <ProtectedRoute>
-                  <CheckIn />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/mental-health-toolkit" 
-              element={
-                <ProtectedRoute>
-                  <MentalHealthToolkit />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/future-me" 
-              element={
-                <ProtectedRoute>
-                  <FutureMe />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/activities" 
-              element={
-                <ProtectedRoute>
-                  <div className="p-6">Activities Page (Coming Soon)</div>
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/progress" 
-              element={
-                <ProtectedRoute>
-                  <div className="p-6">Progress Page (Coming Soon)</div>
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Teacher routes */}
-            <Route 
-              path="/students" 
-              element={
-                <ProtectedRoute>
-                  <StudentManagement />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/planner" 
-              element={
-                <ProtectedRoute>
-                  <div className="p-6">Lesson Planner (Coming Soon)</div>
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/collaboration" 
-              element={
-                <ProtectedRoute>
-                  <div className="p-6">Collaboration Space (Coming Soon)</div>
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Admin routes */}
-            <Route 
-              path="/schools" 
-              element={
-                <ProtectedRoute>
-                  <div className="p-6">School Management (Coming Soon)</div>
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/users" 
-              element={
-                <ProtectedRoute>
-                  <div className="p-6">User Management (Coming Soon)</div>
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/analytics" 
-              element={
-                <ProtectedRoute>
-                  <div className="p-6">Analytics Dashboard (Coming Soon)</div>
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Common routes */}
-            <Route 
-              path="/settings" 
-              element={
-                <ProtectedRoute>
-                  <div className="p-6">Settings Page (Coming Soon)</div>
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              
+              {/* Protected routes */}
+              <Route 
+                path="/" 
+                element={<Navigate to="/dashboard" replace />} 
+              />
+              
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <DashboardRouter />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Student routes */}
+              <Route 
+                path="/check-in" 
+                element={
+                  <ProtectedRoute>
+                    <CheckIn />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mental-health-toolkit" 
+                element={
+                  <ProtectedRoute>
+                    <MentalHealthToolkit />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/future-me" 
+                element={
+                  <ProtectedRoute>
+                    <FutureMe />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/activities" 
+                element={
+                  <ProtectedRoute>
+                    <div className="p-6">Activities Page (Coming Soon)</div>
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/progress" 
+                element={
+                  <ProtectedRoute>
+                    <div className="p-6">Progress Page (Coming Soon)</div>
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Teacher routes */}
+              <Route 
+                path="/students" 
+                element={
+                  <ProtectedRoute>
+                    <StudentManagement />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/planner" 
+                element={
+                  <ProtectedRoute>
+                    <div className="p-6">Lesson Planner (Coming Soon)</div>
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/collaboration" 
+                element={
+                  <ProtectedRoute>
+                    <div className="p-6">Collaboration Space (Coming Soon)</div>
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Admin routes */}
+              <Route 
+                path="/schools" 
+                element={
+                  <ProtectedRoute>
+                    <div className="p-6">School Management (Coming Soon)</div>
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/users" 
+                element={
+                  <ProtectedRoute>
+                    <div className="p-6">User Management (Coming Soon)</div>
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/analytics" 
+                element={
+                  <ProtectedRoute>
+                    <div className="p-6">Analytics Dashboard (Coming Soon)</div>
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Common routes */}
+              <Route 
+                path="/settings" 
+                element={
+                  <ProtectedRoute>
+                    <div className="p-6">Settings Page (Coming Soon)</div>
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
       </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+};
 
 export default App;
