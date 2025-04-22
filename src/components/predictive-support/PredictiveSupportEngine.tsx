@@ -1,3 +1,4 @@
+
 import React from "react";
 import usePredictiveSupportState from "./usePredictiveSupportState";
 import PredictiveSupportHeader from "./PredictiveSupportHeader";
@@ -80,5 +81,4 @@ const PredictiveSupportEngine: React.FC = () => {
   );
 };
 
-export type { Student, Intervention };
 export default PredictiveSupportEngine;
