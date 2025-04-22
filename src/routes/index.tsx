@@ -12,6 +12,8 @@ import ChildWellness from "@/pages/parent/ChildWellness";
 import ParentMessages from "@/pages/parent/ParentMessages";
 import PredictiveSupport from "@/pages/PredictiveSupport";
 import { ProtectedRoute, DashboardRouter } from "./ProtectedRoute";
+import WellLensDashboard from "@/pages/WellLensDashboard";
+import StudentsAtRisk from "@/pages/students/StudentsAtRisk";
 
 // Import any required TS types
 import type { User } from "@/types";
@@ -89,6 +91,15 @@ export const routes: RouteConfig[] = [
     ),
   },
   {
+    path: "/students/at-risk",
+    element: (
+      <ProtectedRoute>
+        <StudentsAtRisk />
+      </ProtectedRoute>
+    ),
+    requiredRole: ["teacher", "admin"],
+  },
+  {
     path: "/planner",
     element: (
       <ProtectedRoute>
@@ -159,6 +170,15 @@ export const routes: RouteConfig[] = [
         <div className="p-6">Settings Page (Coming Soon)</div>
       </ProtectedRoute>
     ),
+  },
+  {
+    path: "/wellens",
+    element: (
+      <ProtectedRoute>
+        <WellLensDashboard />
+      </ProtectedRoute>
+    ),
+    requiredRole: ["teacher", "admin"],
   },
   {
     path: "/predictive-support",
