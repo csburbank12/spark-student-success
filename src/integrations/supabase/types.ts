@@ -211,6 +211,36 @@ export type Database = {
         }
         Relationships: []
       }
+      mood_check_ins: {
+        Row: {
+          activities: string | null
+          created_at: string | null
+          energy_level: number
+          id: string
+          mood_type: Database["public"]["Enums"]["mood_type"]
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          activities?: string | null
+          created_at?: string | null
+          energy_level: number
+          id?: string
+          mood_type: Database["public"]["Enums"]["mood_type"]
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          activities?: string | null
+          created_at?: string | null
+          energy_level?: number
+          id?: string
+          mood_type?: Database["public"]["Enums"]["mood_type"]
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       mood_entries: {
         Row: {
           activities: string | null
@@ -750,6 +780,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_mood_check_ins: {
+        Args: { user_uuid: string; days_back?: number }
+        Returns: {
+          id: string
+          date: string
+          mood_type: string
+          energy_level: number
+          notes: string
+        }[]
+      }
+      get_user_mood_stats: {
+        Args: { user_uuid: string; days_back?: number }
+        Returns: {
+          most_common_mood: string
+          average_energy: number
+          check_in_count: number
+        }[]
+      }
+      get_user_mood_trends: {
+        Args: { user_uuid: string; days_back?: number }
+        Returns: {
+          date: string
+          mood_type: string
+          energy_level: number
+        }[]
+      }
       has_role: {
         Args: {
           user_id: string
@@ -768,6 +824,7 @@ export type Database = {
     }
     Enums: {
       app_role: "student" | "staff" | "admin" | "parent"
+      mood_type: "happy" | "good" | "okay" | "sad" | "stressed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -884,6 +941,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["student", "staff", "admin", "parent"],
+      mood_type: ["happy", "good", "okay", "sad", "stressed"],
     },
   },
 } as const

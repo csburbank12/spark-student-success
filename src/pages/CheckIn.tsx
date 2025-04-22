@@ -1,6 +1,6 @@
-
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMoodCheckIns, useMoodTrends } from "@/hooks/useMoodCheckIns";
 import { MoodTracker } from "@/components/student/MoodTracker";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,60 +9,19 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "rec
 
 const CheckIn = () => {
   const { user } = useAuth();
-  
-  // Mock data for previous check-ins
-  const previousCheckIns = [
-    {
-      date: "May 22",
-      mood: "happy",
-      energyLevel: 8,
-      notes: "Had a great day today! Aced my math test.",
-    },
-    {
-      date: "May 21",
-      mood: "good",
-      energyLevel: 7,
-      notes: "Normal day. Study group was helpful.",
-    },
-    {
-      date: "May 20",
-      mood: "okay",
-      energyLevel: 5,
-      notes: "Felt a bit tired in the morning, but got better.",
-    },
-    {
-      date: "May 19",
-      mood: "stressed",
-      energyLevel: 3,
-      notes: "Worried about upcoming exams. Having trouble sleeping.",
-    },
-    {
-      date: "May 18",
-      mood: "sad",
-      energyLevel: 4,
-      notes: "Had an argument with a friend. Feeling down.",
-    },
-  ];
-  
-  const weeklyMood = [
-    { name: "Mon", value: 2 },
-    { name: "Tue", value: 3 },
-    { name: "Wed", value: 2 },
-    { name: "Thu", value: 4 },
-    { name: "Fri", value: 5 },
-    { name: "Sat", value: 4 },
-    { name: "Sun", value: 3 },
-  ];
-  
-  const weeklyEnergy = [
-    { name: "Mon", value: 4 },
-    { name: "Tue", value: 5 },
-    { name: "Wed", value: 3 },
-    { name: "Thu", value: 7 },
-    { name: "Fri", value: 8 },
-    { name: "Sat", value: 6 },
-    { name: "Sun", value: 5 },
-  ];
+
+  const { data: checkIns = [], isLoading: isCheckInsLoading } = useMoodCheckIns(user?.id, 14);
+  const { data: moodTrends = [], isLoading: isMoodLoading } = useMoodTrends(user?.id, 7);
+
+  const weeklyMood = moodTrends.map((d: any) => ({
+    name: d.date?.slice(5),
+    value: ["happy", "good", "okay", "sad", "stressed"].indexOf(d.mood_type) + 1 || 3,
+  }));
+
+  const weeklyEnergy = moodTrends.map((d: any) => ({
+    name: d.date?.slice(5),
+    value: d.energy_level,
+  }));
 
   const getMoodEmoji = (mood: string) => {
     switch (mood) {
@@ -189,36 +148,48 @@ const CheckIn = () => {
           <CardTitle className="text-xl">Previous Check-Ins</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {previousCheckIns.map((checkIn, index) => (
-              <div 
-                key={index}
-                className="flex flex-col md:flex-row md:items-center gap-4 pb-4 border-b last:border-0 last:pb-0"
-              >
-                <div className="md:w-24">
-                  <div className="text-sm font-medium">{checkIn.date}</div>
+          {isCheckInsLoading ? (
+            <div className="py-8 text-center">Loading...</div>
+          ) : (
+            <div className="space-y-4">
+              {checkIns.length === 0 ? (
+                <div className="text-muted-foreground py-8 text-center">
+                  No check-ins yet. Complete your first mood check-in above!
                 </div>
-                <div className="flex items-center gap-2 md:w-32">
-                  <span className="text-2xl">{getMoodEmoji(checkIn.mood)}</span>
-                  <span className="capitalize text-sm">{checkIn.mood}</span>
-                </div>
-                <div className="md:w-32">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 bg-primary/20 rounded-full w-24">
-                      <div 
-                        className="h-2 bg-primary rounded-full" 
-                        style={{ width: `${checkIn.energyLevel * 10}%` }}
-                      ></div>
+              ) : (
+                checkIns.map((checkIn: any, index: number) => (
+                  <div 
+                    key={checkIn.id || index}
+                    className="flex flex-col md:flex-row md:items-center gap-4 pb-4 border-b last:border-0 last:pb-0"
+                  >
+                    <div className="md:w-24">
+                      <div className="text-sm font-medium">
+                        {new Date(checkIn.date).toLocaleDateString()}
+                      </div>
                     </div>
-                    <span className="text-sm">{checkIn.energyLevel}/10</span>
+                    <div className="flex items-center gap-2 md:w-32">
+                      <span className="text-2xl">{getMoodEmoji(checkIn.mood_type)}</span>
+                      <span className="capitalize text-sm">{checkIn.mood_type}</span>
+                    </div>
+                    <div className="md:w-32">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 bg-primary/20 rounded-full w-24">
+                          <div 
+                            className="h-2 bg-primary rounded-full" 
+                            style={{ width: `${checkIn.energy_level * 10}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-sm">{checkIn.energy_level}/10</span>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground">{checkIn.notes}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">{checkIn.notes}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+                ))
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

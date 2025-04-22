@@ -1,6 +1,6 @@
-
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMoodTrends } from "@/hooks/useMoodCheckIns";
 import { StatCard } from "@/components/ui/stat-card";
 import { AchievementCard } from "@/components/student/AchievementCard";
 import { MoodTracker } from "@/components/student/MoodTracker";
@@ -11,18 +11,23 @@ import { CheckCircle, ListChecks, Award, Users, Heart } from "lucide-react";
 
 const StudentDashboard = () => {
   const { user } = useAuth();
-  
-  // Mock data
-  const moodData = [
-    { name: "Mon", value: 3 },
-    { name: "Tue", value: 4 },
-    { name: "Wed", value: 2 },
-    { name: "Thu", value: 5 },
-    { name: "Fri", value: 4 },
-    { name: "Sat", value: 3 },
-    { name: "Sun", value: 4 },
-  ];
-  
+  const { data: moodTrends = [] } = useMoodTrends(user?.id, 7);
+
+  const moodData = moodTrends.length
+    ? moodTrends.map((d: any) => ({
+        name: d.date?.slice(5),
+        value: ["happy", "good", "okay", "sad", "stressed"].indexOf(d.mood_type) + 1 || 3,
+      }))
+    : [
+        { name: "Mon", value: 3 },
+        { name: "Tue", value: 4 },
+        { name: "Wed", value: 2 },
+        { name: "Thu", value: 5 },
+        { name: "Fri", value: 4 },
+        { name: "Sat", value: 3 },
+        { name: "Sun", value: 4 },
+      ];
+
   const achievements = [
     {
       id: "1",
