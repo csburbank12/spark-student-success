@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import ChildSelector from "./parent-dashboard-enhanced/ChildSelector";
@@ -10,6 +9,7 @@ import AcademicsTab from "./parent-dashboard-enhanced/AcademicsTab";
 import ResourcesTab from "./parent-dashboard-enhanced/ResourcesTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 const ParentDashboardEnhanced = () => {
   const { user } = useAuth();

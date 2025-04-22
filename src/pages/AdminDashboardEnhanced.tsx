@@ -1,4 +1,6 @@
+
 import React, { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import SchoolSelectorHeader from "./admin-dashboard-enhanced/SchoolSelectorHeader";
 import AdminStatsCardsRow from "./admin-dashboard-enhanced/AdminStatsCardsRow";
 import RiskDistributionOverview from "./admin-dashboard-enhanced/RiskDistributionOverview";
