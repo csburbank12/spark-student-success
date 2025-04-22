@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -57,7 +58,13 @@ const DashboardRouter = () => {
   }
 };
 
-const routes = [
+interface RouteConfig {
+  path: string;
+  element: React.ReactNode;
+  requiredRole?: UserRole[];
+}
+
+const routes: RouteConfig[] = [
   {
     path: "/login",
     element: <Login />,
@@ -196,7 +203,11 @@ const routes = [
   },
   {
     path: "/predictive-support",
-    element: <PredictiveSupport />,
+    element: (
+      <ProtectedRoute>
+        <PredictiveSupport />
+      </ProtectedRoute>
+    ),
     requiredRole: ["teacher", "admin"],
   },
   {
@@ -219,7 +230,6 @@ const App = () => {
                   key={route.path}
                   path={route.path}
                   element={route.element}
-                  requiredRole={route.requiredRole}
                 />
               ))}
             </Routes>

@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Sheet,
@@ -23,6 +24,8 @@ import {
   Users,
   LayoutDashboard,
   BrainCircuit,
+  Activity,
+  Heart,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useLocation } from "react-router-dom";
@@ -114,7 +117,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ className }) => {
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
 
   const filteredNavigation = navigation.filter((item) =>
@@ -181,7 +184,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
         <Button
           variant="outline"
           className="w-full mt-4"
-          onClick={() => signOut()}
+          onClick={() => logout()}
         >
           Sign Out
         </Button>

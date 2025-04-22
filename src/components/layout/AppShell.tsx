@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Sidebar } from './Sidebar';
+import Sidebar from './Sidebar';
 import { Navbar } from './Navbar';
 import { Loader } from '@/components/ui/loader';
 
