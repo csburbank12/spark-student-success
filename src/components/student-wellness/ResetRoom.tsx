@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Clock, CloudSun, Heart, Moon, Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
+import BoxBreathing from "./reset-room/BoxBreathing";
+import GroundingExercise from "./reset-room/GroundingExercise";
+import BodyScan from "./reset-room/BodyScan";
+import PositiveAffirmations from "./reset-room/PositiveAffirmations";
 
 const ResetRoom: React.FC = () => {
   const [activeTab, setActiveTab] = useState("breathing");
@@ -42,10 +45,8 @@ const ResetRoom: React.FC = () => {
     });
   };
 
-  // Effect to handle the countdown timer
   React.useEffect(() => {
     let timerId: number | undefined;
-    
     if (timerRunning && timeRemaining > 0) {
       timerId = window.setInterval(() => {
         setTimeRemaining(prev => {
@@ -64,13 +65,11 @@ const ResetRoom: React.FC = () => {
       setTimeRemaining(300);
       setProgress(100);
     }
-
     return () => {
       if (timerId) clearInterval(timerId);
     };
   }, [timerRunning, timeRemaining, toast]);
 
-  // Format the time as mm:ss
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -133,117 +132,17 @@ const ResetRoom: React.FC = () => {
                 <span className="text-xs">Positivity</span>
               </TabsTrigger>
             </TabsList>
-
             <TabsContent value="breathing">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Box Breathing</h3>
-                <div className="flex justify-center">
-                  <div className="w-48 h-48 border-4 border-primary/30 rounded-xl relative p-4 flex items-center justify-center">
-                    <div className="text-center space-y-2">
-                      <p className="text-sm">Inhale for 4</p>
-                      <p className="text-sm">Hold for 4</p>
-                      <p className="text-sm">Exhale for 4</p>
-                      <p className="text-sm">Hold for 4</p>
-                      <p className="text-xs text-muted-foreground mt-4">Follow the rhythm</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <p>Box breathing helps reduce stress and improve focus. Breathe in through your nose, hold, breathe out through your mouth, hold, and repeat.</p>
-                </div>
-              </div>
+              <BoxBreathing />
             </TabsContent>
-            
             <TabsContent value="grounding">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">5-4-3-2-1 Grounding Exercise</h3>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  <Card className="bg-blue-50 dark:bg-blue-900/20">
-                    <CardContent className="p-4">
-                      <p className="font-semibold text-center">5</p>
-                      <p className="text-sm text-center">things you can see</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-green-50 dark:bg-green-900/20">
-                    <CardContent className="p-4">
-                      <p className="font-semibold text-center">4</p>
-                      <p className="text-sm text-center">things you can touch</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-yellow-50 dark:bg-yellow-900/20">
-                    <CardContent className="p-4">
-                      <p className="font-semibold text-center">3</p>
-                      <p className="text-sm text-center">things you can hear</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-purple-50 dark:bg-purple-900/20">
-                    <CardContent className="p-4">
-                      <p className="font-semibold text-center">2</p>
-                      <p className="text-sm text-center">things you can smell</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-pink-50 dark:bg-pink-900/20">
-                    <CardContent className="p-4">
-                      <p className="font-semibold text-center">1</p>
-                      <p className="text-sm text-center">thing you can taste</p>
-                    </CardContent>
-                  </Card>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <p>This exercise helps you reconnect with your surroundings and the present moment.</p>
-                </div>
-              </div>
+              <GroundingExercise />
             </TabsContent>
-            
             <TabsContent value="mindfulness">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Body Scan</h3>
-                <div className="p-4 bg-muted/30 rounded-lg">
-                  <ol className="space-y-2 text-sm">
-                    <li>1. Sit or lie down in a comfortable position</li>
-                    <li>2. Close your eyes and take a few deep breaths</li>
-                    <li>3. Focus your attention on your feet, noticing any sensations</li>
-                    <li>4. Slowly move your attention up through your legs, torso, arms, and head</li>
-                    <li>5. Notice any areas of tension or discomfort</li>
-                    <li>6. Breathe into those areas and imagine them relaxing</li>
-                    <li>7. Continue until you've scanned your whole body</li>
-                  </ol>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <p>A body scan helps you become aware of physical sensations and release tension you may be holding.</p>
-                </div>
-              </div>
+              <BodyScan />
             </TabsContent>
-            
             <TabsContent value="positivity">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Positive Affirmations</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
-                    <CardContent className="p-4 text-center">
-                      <p className="italic">"I am capable of handling whatever comes my way today."</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gradient-to-r from-green-50 to-yellow-50 dark:from-green-900/20 dark:to-yellow-900/20">
-                    <CardContent className="p-4 text-center">
-                      <p className="italic">"I believe in my abilities and am doing my best."</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gradient-to-r from-pink-50 to-red-50 dark:from-pink-900/20 dark:to-red-900/20">
-                    <CardContent className="p-4 text-center">
-                      <p className="italic">"I am allowed to take breaks when I need them."</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20">
-                    <CardContent className="p-4 text-center">
-                      <p className="italic">"My feelings are valid, and I can express them in healthy ways."</p>
-                    </CardContent>
-                  </Card>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <p>Choose an affirmation that resonates with you and repeat it to yourself. Take a deep breath between each repetition.</p>
-                </div>
-              </div>
+              <PositiveAffirmations />
             </TabsContent>
           </Tabs>
         </CardContent>
