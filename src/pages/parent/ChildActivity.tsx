@@ -268,7 +268,7 @@ const ChildActivity = () => {
                       <Badge variant={
                         assignment.status === "Not Started" ? "outline" : 
                         assignment.status === "In Progress" ? "secondary" : 
-                        "success"
+                        "warning"
                       }>
                         {assignment.status}
                       </Badge>
