@@ -15,6 +15,8 @@ import { ProtectedRoute, DashboardRouter } from "./ProtectedRoute";
 import WellLensDashboard from "@/pages/WellLensDashboard";
 import StudentsAtRisk from "@/pages/students/StudentsAtRisk";
 import UserProfile from "@/pages/profile/UserProfile";
+import SelfRegulationToolboxPage from "@/pages/SelfRegulationToolbox";
+import ResetRoomPage from "@/pages/ResetRoom";
 
 // Import any required TS types
 import type { User } from "@/types";
@@ -195,6 +197,22 @@ export const routes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <UserProfile />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/self-regulation-toolbox",
+    element: (
+      <ProtectedRoute>
+        <SelfRegulationToolboxPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/reset-room",
+    element: (
+      <ProtectedRoute>
+        <ResetRoomPage />
       </ProtectedRoute>
     ),
   },
