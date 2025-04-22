@@ -1,12 +1,12 @@
-
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 import { StudentInterventionView } from "@/components/teacher/StudentInterventionView";
 import { TeacherStatCardsRow } from "@/components/teacher/TeacherStatCardsRow";
-import { StudentsSection } from "@/components/teacher/StudentsSection";
+import { TeacherStudentsSection } from "@/components/teacher/TeacherStudentsSection";
 import { TeacherDashboardTabs } from "@/components/teacher/TeacherDashboardTabs";
+import { TeacherDashboardHeader } from "@/components/teacher/TeacherDashboardHeader";
 
 const students = [
   {
@@ -64,7 +64,6 @@ const TeacherDashboardEnhanced = () => {
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [selectedStudentName, setSelectedStudentName] = useState<string>("");
 
-  // Filter students based on search query
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -78,27 +77,22 @@ const TeacherDashboardEnhanced = () => {
     setSelectedStudent(null);
   };
 
+  const handleScheduleCheckIn = () => {
+    // Placeholder for schedule check-in logic
+  };
+
   return (
     <div className="space-y-6">
       {!selectedStudent ? (
         <>
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-heading font-bold">Teacher Dashboard</h2>
-            <Button>
-              <Calendar className="h-4 w-4 mr-2" />
-              Schedule Check-in
-            </Button>
-          </div>
-
+          <TeacherDashboardHeader onScheduleCheckIn={handleScheduleCheckIn} />
           <TeacherStatCardsRow />
-
-          <StudentsSection
+          <TeacherStudentsSection
             students={students}
             filteredStudents={filteredStudents}
             onSearch={(e) => setSearchQuery(e.target.value)}
             onStudentClick={handleStudentClick}
           />
-
           <TeacherDashboardTabs
             students={students}
             onStudentClick={handleStudentClick}
