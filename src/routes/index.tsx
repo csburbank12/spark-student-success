@@ -17,6 +17,7 @@ import StudentsAtRisk from "@/pages/students/StudentsAtRisk";
 import UserProfile from "@/pages/profile/UserProfile";
 import SelfRegulationToolboxPage from "@/pages/SelfRegulationToolbox";
 import ResetRoomPage from "@/pages/ResetRoom";
+import DigitalJournal from "@/pages/DigitalJournal";
 
 // Import any required TS types
 import type { User } from "@/types";
@@ -213,6 +214,14 @@ export const routes: RouteConfig[] = [
     element: (
       <ProtectedRoute>
         <ResetRoomPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/digital-journal",
+    element: (
+      <ProtectedRoute>
+        <DigitalJournal />
       </ProtectedRoute>
     ),
   },
