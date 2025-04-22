@@ -11,6 +11,8 @@ import TeacherDashboard from "./pages/TeacherDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import StudentManagement from "./pages/StudentManagement";
 import CheckIn from "./pages/CheckIn";
+import MentalHealthToolkit from "./pages/MentalHealthToolkit";
+import FutureMe from "./pages/FutureMe";
 import NotFound from "./pages/NotFound";
 import { AppShell } from "./components/layout/AppShell";
 
@@ -82,6 +84,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <CheckIn />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/mental-health-toolkit" 
+              element={
+                <ProtectedRoute>
+                  <MentalHealthToolkit />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/future-me" 
+              element={
+                <ProtectedRoute>
+                  <FutureMe />
                 </ProtectedRoute>
               } 
             />

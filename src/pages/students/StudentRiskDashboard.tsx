@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 interface Student {
   id: string;
@@ -56,7 +57,7 @@ const StudentRiskDashboard: React.FC<StudentRiskDashboardProps> = ({ students })
                   <span className="text-sm font-medium">High Risk</span>
                   <Badge variant="destructive">{highRiskCount}</Badge>
                 </div>
-                <Progress value={(highRiskCount / students.length) * 100} className="h-2 bg-red-100" indicatorClassName="bg-red-500" />
+                <Progress value={(highRiskCount / students.length) * 100} className="h-2 bg-red-100" />
               </div>
               
               <div className="space-y-2">
@@ -64,7 +65,7 @@ const StudentRiskDashboard: React.FC<StudentRiskDashboardProps> = ({ students })
                   <span className="text-sm font-medium">Medium Risk</span>
                   <Badge variant="warning">{mediumRiskCount}</Badge>
                 </div>
-                <Progress value={(mediumRiskCount / students.length) * 100} className="h-2 bg-amber-100" indicatorClassName="bg-amber-500" />
+                <Progress value={(mediumRiskCount / students.length) * 100} className="h-2 bg-amber-100" />
               </div>
               
               <div className="space-y-2">
@@ -72,7 +73,7 @@ const StudentRiskDashboard: React.FC<StudentRiskDashboardProps> = ({ students })
                   <span className="text-sm font-medium">Low Risk</span>
                   <Badge variant="outline">{lowRiskCount}</Badge>
                 </div>
-                <Progress value={(lowRiskCount / students.length) * 100} className="h-2 bg-gray-100" indicatorClassName="bg-gray-500" />
+                <Progress value={(lowRiskCount / students.length) * 100} className="h-2 bg-gray-100" />
               </div>
             </div>
           </CardContent>
