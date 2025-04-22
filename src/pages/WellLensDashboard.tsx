@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Search, Filter, BarChart3, Download, Calendar, Users, BookOpen } from "lucide-react";
 import StudentRiskDashboard from "./students/StudentRiskDashboard";
 import { Link } from "react-router-dom";
+import RiskTrendsChart from "./students/RiskTrendsChart";
 
 const WellLensDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("overview");
   
   // Mock student data that would come from your database
   const students = Array(25).fill(null).map((_, idx) => ({
@@ -82,7 +84,12 @@ const WellLensDashboard = () => {
         />
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs 
+        defaultValue="overview" 
+        className="w-full"
+        value={activeTab}
+        onValueChange={setActiveTab}
+      >
         <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
           <TabsTrigger value="overview">Risk Overview</TabsTrigger>
           <TabsTrigger value="trends">Trend Analysis</TabsTrigger>
@@ -96,12 +103,10 @@ const WellLensDashboard = () => {
         <TabsContent value="trends" className="space-y-4 mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>Mood & Engagement Trends</CardTitle>
+              <CardTitle>Mood & Risk Trends</CardTitle>
             </CardHeader>
-            <CardContent className="h-96 flex items-center justify-center">
-              <p className="text-muted-foreground">
-                Trend visualizations coming soon
-              </p>
+            <CardContent className="h-96">
+              <RiskTrendsChart />
             </CardContent>
           </Card>
         </TabsContent>

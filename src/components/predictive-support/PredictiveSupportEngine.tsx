@@ -9,6 +9,7 @@ import StudentDetailView from "./dashboard/StudentDetailView";
 import InterventionImpactAnalysis from "./dashboard/InterventionImpactAnalysis";
 import DataSourcesPanel from "./dashboard/DataSourcesPanel";
 import PredictionConfidenceCard from "./dashboard/PredictionConfidenceCard";
+import EarlyWarningIndicators from "./EarlyWarningIndicators";
 
 export interface Student {
   id: string;
@@ -46,7 +47,8 @@ const PredictiveSupportEngine: React.FC = () => {
     handleStudentSelect,
     handleBackToList,
     viewMode,
-    dataSources
+    dataSources,
+    earlyWarningIndicators
   } = usePredictiveSupportState();
 
   return (
@@ -65,12 +67,13 @@ const PredictiveSupportEngine: React.FC = () => {
             setSelectedFilter={setSelectedFilter}
           />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-6">
               <StudentListView
                 students={students}
                 filteredStudents={filteredStudents}
                 onStudentSelect={handleStudentSelect}
               />
+              <EarlyWarningIndicators indicators={earlyWarningIndicators} />
             </div>
             <div className="space-y-6">
               <PredictionConfidenceCard />

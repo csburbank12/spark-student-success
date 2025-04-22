@@ -104,6 +104,40 @@ const dataSources = [
   { name: "Counselor Notes", lastSync: "Yesterday, 4:15 PM", status: "active", count: 128 },
 ];
 
+// Early warning indicators data
+const earlyWarningIndicators = [
+  {
+    id: "ewi1",
+    type: "Attendance Pattern Change",
+    description: "Multiple students showing unusual absences on Mondays and Fridays",
+    urgency: "medium",
+    detectedDate: "Apr 18, 2025",
+    confidence: 78,
+    affectedStudents: 14,
+    trend: "increasing"
+  },
+  {
+    id: "ewi2",
+    type: "Mood Score Decline",
+    description: "8th grade students showing significant decrease in average mood scores",
+    urgency: "high",
+    detectedDate: "Apr 20, 2025",
+    confidence: 92,
+    affectedStudents: 22,
+    trend: "increasing"
+  },
+  {
+    id: "ewi3",
+    type: "Academic Performance",
+    description: "Sudden drop in math assessment results for 7th grade",
+    urgency: "medium",
+    detectedDate: "Apr 15, 2025",
+    confidence: 85,
+    affectedStudents: 18,
+    trend: "stable"
+  }
+];
+
 export default function usePredictiveSupportState() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
@@ -149,6 +183,7 @@ export default function usePredictiveSupportState() {
     setViewMode,
     handleStudentSelect,
     handleBackToList,
-    dataSources
+    dataSources,
+    earlyWarningIndicators
   };
 }
