@@ -17,9 +17,9 @@ import DashboardLayout from "@/routes/DashboardManager";
 import { Outlet } from "react-router-dom";
 
 // Wrapper component that applies the DashboardLayout
-const WithDashboardLayout = ({ element }: { element: React.ReactNode }) => (
-  <DashboardLayout>{element}</DashboardLayout>
-);
+const WithDashboardLayout = ({ element }: { element: React.ReactNode }) => {
+  return <DashboardLayout>{element}</DashboardLayout>;
+};
 
 const teacherAdminRoutes = [
   // Admin Dashboard
