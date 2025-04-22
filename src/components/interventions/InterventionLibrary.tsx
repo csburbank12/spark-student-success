@@ -3,9 +3,10 @@ import React from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookOpen, FileText, Video, Presentation, ExternalLink } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { BookOpen } from "lucide-react";
 import { toast } from "sonner";
+import InterventionCard from "./InterventionCard";
+import { getChallengeColor } from "./intervention-utils";
 
 export type ChallengeArea = "emotional" | "academic" | "social" | "behavioral" | "attendance";
 
@@ -128,38 +129,6 @@ const interventions: Intervention[] = [
   }
 ];
 
-const getResourceIcon = (type: string) => {
-  switch (type) {
-    case "pdf":
-      return <FileText className="h-4 w-4" />;
-    case "video":
-      return <Video className="h-4 w-4" />;
-    case "slides":
-      return <Presentation className="h-4 w-4" />;
-    case "link":
-      return <ExternalLink className="h-4 w-4" />;
-    default:
-      return <FileText className="h-4 w-4" />;
-  }
-};
-
-const getChallengeColor = (area: ChallengeArea) => {
-  switch (area) {
-    case "emotional":
-      return "bg-purple-100 text-purple-800";
-    case "academic":
-      return "bg-blue-100 text-blue-800";
-    case "social":
-      return "bg-green-100 text-green-800";
-    case "behavioral":
-      return "bg-red-100 text-red-800";
-    case "attendance":
-      return "bg-amber-100 text-amber-800";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
-};
-
 const InterventionLibrary: React.FC<InterventionLibraryProps> = ({
   studentId,
   studentName,
@@ -170,7 +139,6 @@ const InterventionLibrary: React.FC<InterventionLibraryProps> = ({
     : interventions;
 
   const handleApplyIntervention = (intervention: Intervention) => {
-    // In a real app, this would save to the database
     toast.success(`Intervention "${intervention.title}" applied to ${studentName || "student"}`);
   };
     
@@ -196,60 +164,15 @@ const InterventionLibrary: React.FC<InterventionLibraryProps> = ({
           <p className="text-center py-8 text-muted-foreground">No interventions found.</p>
         ) : (
           filteredInterventions.map(intervention => (
-            <div key={intervention.id} className="p-4 border rounded-lg space-y-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-medium">{intervention.title}</h3>
-                    <Badge className={getChallengeColor(intervention.targetArea)}>
-                      {intervention.targetArea.charAt(0).toUpperCase() + intervention.targetArea.slice(1)}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">{intervention.description}</p>
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm">Recommended Strategy:</h4>
-                <p className="text-sm">{intervention.strategy}</p>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm">Research-Based Rationale:</h4>
-                <p className="text-sm text-muted-foreground">{intervention.rationale}</p>
-              </div>
-              
-              {intervention.resources && intervention.resources.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="font-medium text-sm">Resources:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {intervention.resources.map((resource, idx) => (
-                      <Button key={idx} variant="outline" size="sm" className="h-8">
-                        {getResourceIcon(resource.type)}
-                        <span className="ml-2">{resource.title}</span>
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {studentName && (
-                <div className="flex justify-end mt-2">
-                  <Button 
-                    size="sm" 
-                    onClick={() => handleApplyIntervention(intervention)}
-                  >
-                    Apply Intervention
-                  </Button>
-                </div>
-              )}
-            </div>
+            <InterventionCard
+              key={intervention.id}
+              intervention={intervention}
+              studentName={studentName}
+              onApply={handleApplyIntervention}
+            />
           ))
         )}
       </CardContent>
-      
       <CardFooter className="flex justify-between pt-3">
         <Button variant="outline" size="sm">
           Custom Intervention
