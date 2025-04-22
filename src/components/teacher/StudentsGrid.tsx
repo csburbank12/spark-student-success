@@ -10,7 +10,7 @@ interface StudentsGridProps {
 
 export const StudentsGrid: React.FC<StudentsGridProps> = ({ students, onStudentClick }) => (
   <>
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
       {students.map((student) => (
         <StudentCard
           key={student.id}
@@ -19,7 +19,7 @@ export const StudentsGrid: React.FC<StudentsGridProps> = ({ students, onStudentC
         />
       ))}
     </div>
-    <div className="flex justify-center">
+    <div className="flex justify-center mt-4">
       <Button variant="outline">View All Students</Button>
     </div>
   </>

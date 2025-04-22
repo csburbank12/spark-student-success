@@ -21,3 +21,4 @@ export const StudentSearchSection: React.FC<StudentSearchSectionProps> = ({ onCh
     </div>
   </div>
 );
+
