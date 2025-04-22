@@ -5,11 +5,11 @@ import generalRoutes from "./generalRoutes";
 import studentRoutes from "./studentRoutes";
 import teacherAdminRoutes from "./teacherAdminRoutes";
 import parentRoutes from "./parentRoutes";
+import { RouteObject } from "react-router-dom";
 
 // RouteConfig ensures compatibility for main App.tsx
-export interface RouteConfig {
+export interface RouteConfig extends RouteObject {
   path: string;
-  element: React.ReactNode;
   requiredRole?: string[];
 }
 

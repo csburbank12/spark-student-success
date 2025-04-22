@@ -1,4 +1,3 @@
-
 import React from "react";
 import CheckIn from "@/pages/CheckIn";
 import MentalHealthToolkit from "@/pages/MentalHealthToolkit";
@@ -6,9 +5,9 @@ import FutureMe from "@/pages/FutureMe";
 import DigitalJournal from "@/pages/DigitalJournal";
 import SelfRegulationToolboxPage from "@/pages/SelfRegulationToolbox";
 import ResetRoomPage from "@/pages/ResetRoom";
+import TrustedAdultSelection from "@/pages/TrustedAdultSelection";
 import { ProtectedRoute } from "./ProtectedRoute";
 
-// Student-specific routes
 const studentRoutes = [
   {
     path: "/check-in",
@@ -57,6 +56,11 @@ const studentRoutes = [
         <ResetRoomPage />
       </ProtectedRoute>
     ),
+  },
+  {
+    path: "/trusted-adults",
+    element: <TrustedAdultSelection />,
+    requiredRole: ["student"],
   },
 ];
 
