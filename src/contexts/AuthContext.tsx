@@ -34,6 +34,14 @@ const sampleUsers: Record<UserRole, User> = {
     role: 'admin',
     avatarUrl: '/admin-avatar.png',
   },
+  parent: {
+    id: 'p1',
+    name: 'Sarah Johnson',
+    email: 'sarah@family.com',
+    role: 'parent',
+    avatarUrl: '/parent-avatar.png',
+    schoolId: 'school1',
+  },
 };
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -65,6 +73,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       role = 'teacher';
     } else if (email.includes('admin') || email.includes('principal') || email.includes('wilson')) {
       role = 'admin';
+    } else if (email.includes('parent') || email.includes('family')) {
+      role = 'parent';
     }
     
     // Simulate API delay
