@@ -1,6 +1,6 @@
 
 import { useState, useMemo } from "react";
-import { Student, Intervention } from "./PredictiveSupportEngine";
+import { Student, Intervention, EarlyWarningIndicator } from "./PredictiveSupportEngine";
 
 // Demo/mock data extracted for isolation and re-use
 const students: Student[] = [
@@ -105,7 +105,7 @@ const dataSources = [
 ];
 
 // Early warning indicators data
-const earlyWarningIndicators = [
+const earlyWarningIndicators: EarlyWarningIndicator[] = [
   {
     id: "ewi1",
     type: "Attendance Pattern Change",
