@@ -1,76 +1,177 @@
 
 import React from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-const RiskTrendsChart = () => {
-  // Mock data for risk trends over time
-  const trendData = [
-    { month: "Jan", highRisk: 12, mediumRisk: 18, lowRisk: 45, avgMoodScore: 7.2 },
-    { month: "Feb", highRisk: 14, mediumRisk: 22, lowRisk: 39, avgMoodScore: 6.8 },
-    { month: "Mar", highRisk: 19, mediumRisk: 25, lowRisk: 31, avgMoodScore: 6.2 },
-    { month: "Apr", highRisk: 22, mediumRisk: 21, lowRisk: 32, avgMoodScore: 5.9 },
-    { month: "May", highRisk: 16, mediumRisk: 19, lowRisk: 40, avgMoodScore: 6.5 },
-    { month: "Jun", highRisk: 15, mediumRisk: 17, lowRisk: 43, avgMoodScore: 6.7 },
-    { month: "Jul", highRisk: 13, mediumRisk: 15, lowRisk: 47, avgMoodScore: 7.0 },
-    { month: "Aug", highRisk: 11, mediumRisk: 16, lowRisk: 48, avgMoodScore: 7.3 },
-    { month: "Sep", highRisk: 18, mediumRisk: 20, lowRisk: 37, avgMoodScore: 6.4 },
-    { month: "Oct", highRisk: 20, mediumRisk: 23, lowRisk: 32, avgMoodScore: 6.0 },
-    { month: "Nov", highRisk: 17, mediumRisk: 20, lowRisk: 38, avgMoodScore: 6.3 },
-    { month: "Dec", highRisk: 15, mediumRisk: 18, lowRisk: 42, avgMoodScore: 6.9 },
+interface RiskTrendsChartProps {
+  weeklyData?: any[];
+  monthlyData?: any[];
+  yearlyData?: any[];
+}
+
+const RiskTrendsChart: React.FC<RiskTrendsChartProps> = ({
+  weeklyData = [],
+  monthlyData = [],
+  yearlyData = [],
+}) => {
+  // Default mock data if none provided
+  const defaultWeeklyData = weeklyData.length > 0 ? weeklyData : [
+    { name: "Mon", high: 3, medium: 5, low: 12 },
+    { name: "Tue", high: 4, medium: 6, low: 10 },
+    { name: "Wed", high: 5, medium: 4, low: 11 },
+    { name: "Thu", high: 3, medium: 7, low: 10 },
+    { name: "Fri", high: 4, medium: 5, low: 11 },
   ];
 
-  // Distribution data for current risk levels
-  const riskDistributionData = [
-    { name: "High Risk", value: 38, color: "#ef4444" },
-    { name: "Medium Risk", value: 62, color: "#f59e0b" },
-    { name: "Low Risk", value: 147, color: "#10b981" },
+  const defaultMonthlyData = monthlyData.length > 0 ? monthlyData : [
+    { name: "Week 1", high: 12, medium: 22, low: 45 },
+    { name: "Week 2", high: 15, medium: 25, low: 40 },
+    { name: "Week 3", high: 14, medium: 20, low: 46 },
+    { name: "Week 4", high: 13, medium: 24, low: 43 },
+  ];
+
+  const defaultYearlyData = yearlyData.length > 0 ? yearlyData : [
+    { name: "Jan", high: 40, medium: 94, low: 158 },
+    { name: "Feb", high: 45, medium: 85, low: 162 },
+    { name: "Mar", high: 42, medium: 92, low: 158 },
+    { name: "Apr", high: 50, medium: 88, low: 154 },
+    { name: "May", high: 38, medium: 96, low: 158 },
+    { name: "Jun", high: 42, medium: 90, low: 160 },
+    { name: "Jul", high: 35, medium: 88, low: 169 },
+    { name: "Aug", high: 40, medium: 85, low: 167 },
+    { name: "Sep", high: 45, medium: 89, low: 158 },
+    { name: "Oct", high: 48, medium: 90, low: 154 },
+    { name: "Nov", high: 52, medium: 85, low: 155 },
+    { name: "Dec", high: 44, medium: 92, low: 156 },
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h3 className="text-lg font-medium mb-4">Year-to-Date Risk Trends</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={trendData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="highRisk" stroke="#ef4444" name="High Risk" />
-            <Line type="monotone" dataKey="mediumRisk" stroke="#f59e0b" name="Medium Risk" />
-            <Line type="monotone" dataKey="lowRisk" stroke="#10b981" name="Low Risk" />
-            <Line 
-              type="monotone" 
-              dataKey="avgMoodScore" 
-              stroke="#8b5cf6" 
-              name="Avg Mood Score" 
-              yAxisId={1} 
-              stroke="#8b5cf6" 
-              strokeDasharray="5 5"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div>
-        <h3 className="text-lg font-medium mb-4">Current Risk Distribution</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={riskDistributionData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="name" type="category" />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#8884d8" name="Number of Students">
-              {riskDistributionData.map((entry, index) => (
-                <rect key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Risk Level Trends</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="weekly">
+          <TabsList className="mb-4">
+            <TabsTrigger value="weekly">Weekly</TabsTrigger>
+            <TabsTrigger value="monthly">Monthly</TabsTrigger>
+            <TabsTrigger value="yearly">Yearly</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="weekly">
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={defaultWeeklyData}
+                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area 
+                    type="monotone" 
+                    dataKey="high" 
+                    stackId="1" 
+                    stroke="#ef4444" 
+                    fill="#ef4444" 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="medium" 
+                    stackId="1" 
+                    stroke="#f97316" 
+                    fill="#f97316" 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="low" 
+                    stackId="1" 
+                    stroke="#22c55e" 
+                    fill="#22c55e" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="monthly">
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={defaultMonthlyData}
+                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area 
+                    type="monotone" 
+                    dataKey="high" 
+                    stackId="1" 
+                    stroke="#ef4444" 
+                    fill="#ef4444" 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="medium" 
+                    stackId="1" 
+                    stroke="#f97316" 
+                    fill="#f97316" 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="low" 
+                    stackId="1" 
+                    stroke="#22c55e" 
+                    fill="#22c55e" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="yearly">
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={defaultYearlyData}
+                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area 
+                    type="monotone" 
+                    dataKey="high" 
+                    stackId="1" 
+                    stroke="#ef4444" 
+                    fill="#ef4444" 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="medium" 
+                    stackId="1" 
+                    stroke="#f97316" 
+                    fill="#f97316" 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="low" 
+                    stackId="1" 
+                    stroke="#22c55e" 
+                    fill="#22c55e" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };
 

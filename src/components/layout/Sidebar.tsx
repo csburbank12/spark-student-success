@@ -129,6 +129,12 @@ const navigation = [
     icon: <BrainCircuit className="h-5 w-5" />,
     roles: ["teacher", "admin"],
   },
+  {
+    title: "Predictive Support",
+    href: "/predictive-support",
+    icon: <BrainCircuit className="h-5 w-5" />,
+    roles: ["teacher", "admin"],
+  },
 ];
 
 interface SidebarProps {

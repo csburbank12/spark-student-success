@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bell, Search, Menu } from 'lucide-react';
+import { Bell, Search, Menu, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types';
+import { Link } from 'react-router-dom';
 
 export const Navbar = () => {
   const { user, logout, setRole } = useAuth();
@@ -90,6 +91,13 @@ export const Navbar = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" asChild>
+              <Link to="/profile">
+                <User className="h-4 w-4 mr-2" />
+                <span>View Profile</span>
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch('student')}>
               Switch to Student View

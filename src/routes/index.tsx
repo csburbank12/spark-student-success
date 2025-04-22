@@ -14,6 +14,7 @@ import PredictiveSupport from "@/pages/PredictiveSupport";
 import { ProtectedRoute, DashboardRouter } from "./ProtectedRoute";
 import WellLensDashboard from "@/pages/WellLensDashboard";
 import StudentsAtRisk from "@/pages/students/StudentsAtRisk";
+import UserProfile from "@/pages/profile/UserProfile";
 
 // Import any required TS types
 import type { User } from "@/types";
@@ -188,6 +189,14 @@ export const routes: RouteConfig[] = [
       </ProtectedRoute>
     ),
     requiredRole: ["teacher", "admin"],
+  },
+  {
+    path: "/profile",
+    element: (
+      <ProtectedRoute>
+        <UserProfile />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "*",
