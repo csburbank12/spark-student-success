@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import StudentDashboard from "./pages/StudentDashboard";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import StudentManagement from "./pages/StudentManagement";
 import CheckIn from "./pages/CheckIn";
 import NotFound from "./pages/NotFound";
 import { AppShell } from "./components/layout/AppShell";
@@ -106,7 +107,7 @@ const App = () => (
               path="/students" 
               element={
                 <ProtectedRoute>
-                  <div className="p-6">Student Management (Coming Soon)</div>
+                  <StudentManagement />
                 </ProtectedRoute>
               } 
             />
