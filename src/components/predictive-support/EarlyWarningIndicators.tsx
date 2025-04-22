@@ -4,17 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, TrendingUp, Clock } from "lucide-react";
-
-interface EarlyWarningIndicator {
-  id: string;
-  type: string;
-  description: string;
-  urgency: "high" | "medium" | "low";
-  detectedDate: string;
-  confidence: number;
-  affectedStudents: number;
-  trend: "increasing" | "stable" | "decreasing";
-}
+import { EarlyWarningIndicator } from "./PredictiveSupportEngine";
 
 interface EarlyWarningIndicatorsProps {
   indicators: EarlyWarningIndicator[];

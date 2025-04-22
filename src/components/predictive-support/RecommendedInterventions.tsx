@@ -98,11 +98,19 @@ const RecommendedInterventions: React.FC<RecommendedInterventionsProps> = ({
             </div>
           ))}
           
-          <div className="pt-2 text-center">
-            <Button variant="outline">
-              View More Recommendations
-            </Button>
-          </div>
+          {recommendations.length === 0 && (
+            <div className="p-8 text-center text-muted-foreground">
+              No recommendations available at this time
+            </div>
+          )}
+          
+          {recommendations.length > 0 && (
+            <div className="pt-2 text-center">
+              <Button variant="outline">
+                View More Recommendations
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
