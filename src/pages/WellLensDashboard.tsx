@@ -4,8 +4,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, BarChart3 } from "lucide-react";
+import { Search, Filter, BarChart3, Download, Calendar, Users, BookOpen } from "lucide-react";
 import StudentRiskDashboard from "./students/StudentRiskDashboard";
+import { Link } from "react-router-dom";
 
 const WellLensDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,11 +30,39 @@ const WellLensDashboard = () => {
             <Filter className="h-4 w-4 mr-2" />
             Filters
           </Button>
-          <Button>
+          <Button variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Export Report
+          </Button>
+          <Button as={Link} to="/predictive-support">
             <BarChart3 className="h-4 w-4 mr-2" />
-            View Reports
+            Advanced Dashboard
           </Button>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-4 flex flex-col items-center justify-center">
+            <Users className="h-8 w-8 text-primary mb-2" />
+            <div className="text-2xl font-bold">247</div>
+            <p className="text-sm text-muted-foreground">Total Students</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex flex-col items-center justify-center">
+            <BookOpen className="h-8 w-8 text-amber-500 mb-2" />
+            <div className="text-2xl font-bold">38</div>
+            <p className="text-sm text-muted-foreground">At-Risk Students</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex flex-col items-center justify-center">
+            <Calendar className="h-8 w-8 text-green-500 mb-2" />
+            <div className="text-2xl font-bold">42</div>
+            <p className="text-sm text-muted-foreground">Active Interventions</p>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="relative">

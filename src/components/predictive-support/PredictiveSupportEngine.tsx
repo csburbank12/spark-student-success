@@ -7,6 +7,8 @@ import DashboardRiskSummary from "./dashboard/DashboardRiskSummary";
 import StudentListView from "./dashboard/StudentListView";
 import StudentDetailView from "./dashboard/StudentDetailView";
 import InterventionImpactAnalysis from "./dashboard/InterventionImpactAnalysis";
+import DataSourcesPanel from "./dashboard/DataSourcesPanel";
+import PredictionConfidenceCard from "./dashboard/PredictionConfidenceCard";
 
 export interface Student {
   id: string;
@@ -43,7 +45,8 @@ const PredictiveSupportEngine: React.FC = () => {
     selectedStudent,
     handleStudentSelect,
     handleBackToList,
-    viewMode
+    viewMode,
+    dataSources
   } = usePredictiveSupportState();
 
   return (
@@ -61,11 +64,19 @@ const PredictiveSupportEngine: React.FC = () => {
             selectedFilter={selectedFilter}
             setSelectedFilter={setSelectedFilter}
           />
-          <StudentListView
-            students={students}
-            filteredStudents={filteredStudents}
-            onStudentSelect={handleStudentSelect}
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <StudentListView
+                students={students}
+                filteredStudents={filteredStudents}
+                onStudentSelect={handleStudentSelect}
+              />
+            </div>
+            <div className="space-y-6">
+              <PredictionConfidenceCard />
+              <DataSourcesPanel dataSources={dataSources} />
+            </div>
+          </div>
           <InterventionImpactAnalysis
             interventionImpactData={interventionImpactData}
           />

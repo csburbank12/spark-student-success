@@ -95,6 +95,15 @@ const interventionImpactData = [
   { name: "Peer Support", success: 75, partial: 15, none: 10 },
 ];
 
+// Data sources for the WellLens engine
+const dataSources = [
+  { name: "Attendance Records", lastSync: "Today, 6:00 AM", status: "active", count: 1245 },
+  { name: "Academic Performance", lastSync: "Today, 7:15 AM", status: "active", count: 876 },
+  { name: "Behavior Reports", lastSync: "Yesterday, 3:30 PM", status: "active", count: 342 },
+  { name: "Mood Check-ins", lastSync: "Today, 8:45 AM", status: "active", count: 563 },
+  { name: "Counselor Notes", lastSync: "Yesterday, 4:15 PM", status: "active", count: 128 },
+];
+
 export default function usePredictiveSupportState() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
@@ -139,6 +148,7 @@ export default function usePredictiveSupportState() {
     viewMode,
     setViewMode,
     handleStudentSelect,
-    handleBackToList
+    handleBackToList,
+    dataSources
   };
 }
