@@ -22,14 +22,14 @@ export const getChallengeColor = (targetArea: string) => {
 export const getResourceIcon = (type: string) => {
   switch (type) {
     case "pdf":
-      return <FileText className="h-4 w-4" />;
+      return React.createElement(FileText, { className: "h-4 w-4" });
     case "video":
-      return <Video className="h-4 w-4" />;
+      return React.createElement(Video, { className: "h-4 w-4" });
     case "slides":
-      return <Presentation className="h-4 w-4" />;
+      return React.createElement(Presentation, { className: "h-4 w-4" });
     case "link":
-      return <LinkIcon className="h-4 w-4" />;
+      return React.createElement(LinkIcon, { className: "h-4 w-4" });
     default:
-      return <FileText className="h-4 w-4" />;
+      return React.createElement(FileText, { className: "h-4 w-4" });
   }
 };
