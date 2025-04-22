@@ -1,86 +1,88 @@
 
-import React from "react";
+import { lazy } from "react";
 import StudentManagement from "@/pages/StudentManagement";
-import StudentsAtRisk from "@/pages/students/StudentsAtRisk";
 import WellLensDashboard from "@/pages/WellLensDashboard";
 import PredictiveSupport from "@/pages/PredictiveSupport";
-import { ProtectedRoute } from "./ProtectedRoute";
+import BehaviorPrediction from "@/pages/BehaviorPrediction";  // Add this import
+import ResetRoom from "@/pages/ResetRoom";
+import DigitalJournal from "@/pages/DigitalJournal";
+import SelfRegulationToolboxPage from "@/pages/SelfRegulationToolbox";
+import AdminDashboard from "@/pages/AdminDashboard";
+import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
+import TeacherDashboard from "@/pages/TeacherDashboard";
+import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
+import CheckIn from "@/pages/CheckIn";
+import UserProfile from "@/pages/profile/UserProfile";
+import DashboardLayout from "@/routes/DashboardManager";
 
 const teacherAdminRoutes = [
+  // Admin Dashboard
   {
-    path: "/students",
-    element: (
-      <ProtectedRoute>
-        <StudentManagement />
-      </ProtectedRoute>
-    ),
+    path: "/admin",
+    element: <DashboardLayout><AdminDashboard /></DashboardLayout>,
+    requiredRole: ["admin"],
   },
   {
-    path: "/students/at-risk",
-    element: (
-      <ProtectedRoute>
-        <StudentsAtRisk />
-      </ProtectedRoute>
-    ),
+    path: "/admin-enhanced",
+    element: <DashboardLayout><AdminDashboardEnhanced /></DashboardLayout>,
+    requiredRole: ["admin"],
+  },
+  // Teacher Dashboard
+  {
+    path: "/teacher",
+    element: <DashboardLayout><TeacherDashboard /></DashboardLayout>,
+    requiredRole: ["teacher"],
+  },
+  {
+    path: "/teacher-enhanced",
+    element: <DashboardLayout><TeacherDashboardEnhanced /></DashboardLayout>,
+    requiredRole: ["teacher"],
+  },
+  // Shared Teacher & Admin Routes
+  {
+    path: "/student-management",
+    element: <DashboardLayout><StudentManagement /></DashboardLayout>,
     requiredRole: ["teacher", "admin"],
   },
   {
-    path: "/wellens",
-    element: (
-      <ProtectedRoute>
-        <WellLensDashboard />
-      </ProtectedRoute>
-    ),
+    path: "/check-in",
+    element: <DashboardLayout><CheckIn /></DashboardLayout>,
+    requiredRole: ["teacher", "admin"],
+  },
+  {
+    path: "/well-lens",
+    element: <DashboardLayout><WellLensDashboard /></DashboardLayout>,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/predictive-support",
-    element: (
-      <ProtectedRoute>
-        <PredictiveSupport />
-      </ProtectedRoute>
-    ),
+    element: <DashboardLayout><PredictiveSupport /></DashboardLayout>,
     requiredRole: ["teacher", "admin"],
   },
   {
-    path: "/planner",
-    element: (
-      <ProtectedRoute>
-        <div className="p-6">Lesson Planner (Coming Soon)</div>
-      </ProtectedRoute>
-    ),
+    path: "/behavior-prediction",  // Add this route
+    element: <DashboardLayout><BehaviorPrediction /></DashboardLayout>,
+    requiredRole: ["teacher", "admin"],
   },
   {
-    path: "/collaboration",
-    element: (
-      <ProtectedRoute>
-        <div className="p-6">Collaboration Space (Coming Soon)</div>
-      </ProtectedRoute>
-    ),
+    path: "/journal",
+    element: <DashboardLayout><DigitalJournal /></DashboardLayout>,
+    requiredRole: ["teacher", "admin", "student"],
   },
   {
-    path: "/schools",
-    element: (
-      <ProtectedRoute>
-        <div className="p-6">School Management (Coming Soon)</div>
-      </ProtectedRoute>
-    ),
+    path: "/reset-room",
+    element: <DashboardLayout><ResetRoom /></DashboardLayout>, 
+    requiredRole: ["teacher", "admin", "student"],
   },
   {
-    path: "/users",
-    element: (
-      <ProtectedRoute>
-        <div className="p-6">User Management (Coming Soon)</div>
-      </ProtectedRoute>
-    ),
+    path: "/self-regulation-toolbox",
+    element: <DashboardLayout><SelfRegulationToolboxPage /></DashboardLayout>,
+    requiredRole: ["teacher", "admin", "student"],
   },
   {
-    path: "/analytics",
-    element: (
-      <ProtectedRoute>
-        <div className="p-6">Analytics Dashboard (Coming Soon)</div>
-      </ProtectedRoute>
-    ),
+    path: "/profile",
+    element: <DashboardLayout><UserProfile /></DashboardLayout>,
+    requiredRole: ["admin", "teacher", "student", "parent"],
   },
 ];
 
