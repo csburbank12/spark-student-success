@@ -26,17 +26,23 @@ const WellLensDashboard = () => {
           WellLens™ Predictive Support
         </h2>
         <div className="flex items-center gap-2">
-          <Button variant="outline">
-            <Filter className="h-4 w-4 mr-2" />
-            Filters
+          <Button variant="outline" asChild>
+            <Link to="/filters" className="flex items-center">
+              <Filter className="h-4 w-4 mr-2" />
+              Filters
+            </Link>
           </Button>
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export Report
+          <Button variant="outline" asChild>
+            <Link to="/export" className="flex items-center">
+              <Download className="h-4 w-4 mr-2" />
+              Export Report
+            </Link>
           </Button>
-          <Button as={Link} to="/predictive-support">
-            <BarChart3 className="h-4 w-4 mr-2" />
-            Advanced Dashboard
+          <Button asChild>
+            <Link to="/predictive-support" className="flex items-center">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Advanced Dashboard
+            </Link>
           </Button>
         </div>
       </div>
