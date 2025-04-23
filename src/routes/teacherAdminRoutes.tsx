@@ -18,11 +18,11 @@ import { RouteObject } from "react-router-dom";
 
 // Updated WithDashboardLayout component with explicit props
 interface WithDashboardLayoutProps {
-  element: React.ReactElement;
+  children: React.ReactElement;
 }
 
-const WithDashboardLayout: React.FC<WithDashboardLayoutProps> = ({ element }) => {
-  return <DashboardLayout>{element}</DashboardLayout>;
+const WithDashboardLayout: React.FC<WithDashboardLayoutProps> = ({ children }) => {
+  return <DashboardLayout>{children}</DashboardLayout>;
 };
 
 // Extend RouteObject with extra props directly:
@@ -36,23 +36,23 @@ const teacherAdminRoutes: ExtendedRouteObject[] = [
   // Admin Dashboard
   {
     path: "/admin",
-    element: <WithDashboardLayout element={<AdminDashboard />} />,
+    element: <WithDashboardLayout><AdminDashboard /></WithDashboardLayout>,
     requiredRole: ["admin"],
   },
   {
     path: "/admin-enhanced",
-    element: <WithDashboardLayout element={<AdminDashboardEnhanced />} />,
+    element: <WithDashboardLayout><AdminDashboardEnhanced /></WithDashboardLayout>,
     requiredRole: ["admin"],
   },
   // Teacher Dashboard
   {
     path: "/teacher",
-    element: <WithDashboardLayout element={<TeacherDashboard />} />,
+    element: <WithDashboardLayout><TeacherDashboard /></WithDashboardLayout>,
     requiredRole: ["teacher"],
   },
   {
     path: "/teacher-enhanced",
-    element: <WithDashboardLayout element={<TeacherDashboardEnhanced />} />,
+    element: <WithDashboardLayout><TeacherDashboardEnhanced /></WithDashboardLayout>,
     requiredRole: ["teacher"],
   },
   // Shared Teacher & Admin Routes
