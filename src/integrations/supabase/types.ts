@@ -775,48 +775,46 @@ export type Database = {
           status?: string
           student_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "sel_assignments_lesson_id_fkey"
-            columns: ["lesson_id"]
-            isOneToOne: false
-            referencedRelation: "sel_lessons"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       sel_lessons: {
         Row: {
-          content: string
-          created_at: string
+          activity_type: string | null
+          age_range: string | null
+          competency_area: string | null
+          content_url: string | null
+          created_at: string | null
+          created_by: string | null
           description: string | null
-          difficulty: string | null
-          duration: number
+          estimated_duration: number | null
           id: string
-          media_url: string | null
-          pathway: string
+          recommended_moods: string[] | null
           title: string
         }
         Insert: {
-          content: string
-          created_at?: string
+          activity_type?: string | null
+          age_range?: string | null
+          competency_area?: string | null
+          content_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
           description?: string | null
-          difficulty?: string | null
-          duration: number
+          estimated_duration?: number | null
           id?: string
-          media_url?: string | null
-          pathway: string
+          recommended_moods?: string[] | null
           title: string
         }
         Update: {
-          content?: string
-          created_at?: string
+          activity_type?: string | null
+          age_range?: string | null
+          competency_area?: string | null
+          content_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
           description?: string | null
-          difficulty?: string | null
-          duration?: number
+          estimated_duration?: number | null
           id?: string
-          media_url?: string | null
-          pathway?: string
+          recommended_moods?: string[] | null
           title?: string
         }
         Relationships: []
@@ -846,15 +844,7 @@ export type Database = {
           progress?: number
           student_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "sel_progress_lesson_id_fkey"
-            columns: ["lesson_id"]
-            isOneToOne: false
-            referencedRelation: "sel_lessons"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       staff_members: {
         Row: {

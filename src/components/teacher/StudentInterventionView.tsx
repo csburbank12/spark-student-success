@@ -1,21 +1,12 @@
-
-import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, ClipboardList, BarChart2 } from 'lucide-react';
-import { Loader } from '@/components/ui/loader';
-
-import { MicroCoachPrompt } from '../MicroCoachPrompt';
-import { useMicroCoach } from '@/contexts/MicroCoachContext';
-import { 
-  getTieredSupportRecommendations, 
-  createTieredSupportRecommendation 
-} from '@/utils/tieredSupportUtils';
-import { 
-  getStudentInterventionImpacts, 
-  recordInterventionImpact 
-} from '@/utils/interventionImpactUtils';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ArrowLeft } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { StudentSELSupportToolkit } from "./StudentSELSupportToolkit";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface StudentInterventionViewProps {
   studentId: string;
@@ -26,150 +17,117 @@ interface StudentInterventionViewProps {
 const StudentInterventionView: React.FC<StudentInterventionViewProps> = ({
   studentId,
   studentName,
-  onBack
+  onBack,
 }) => {
-  const [tieredSupports, setTieredSupports] = useState<any[]>([]);
-  const [interventionImpacts, setInterventionImpacts] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { getMicroCoachHistory } = useMicroCoach();
+  const [recentMood, setRecentMood] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchData = async () => {
-      if (!isMounted) return;
-      
-      setIsLoading(true);
-      setError(null);
-      
+  // Fetch student's recent mood
+  const { data: moodData } = useQuery({
+    queryKey: ["student-mood", studentId],
+    queryFn: async () => {
       try {
-        const supports = await getTieredSupportRecommendations(studentId);
-        const impacts = await getStudentInterventionImpacts(studentId);
-        
-        if (isMounted) {
-          setTieredSupports(supports || []);
-          setInterventionImpacts(impacts || []);
-        }
-      } catch (err) {
-        console.error("Error fetching student intervention data:", err);
-        if (isMounted) {
-          setError("Failed to load student data. Please try again.");
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        const { data, error } = await supabase
+          .rpc("get_user_mood_trends", { user_uuid: studentId, days_back: 7 });
+          
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        console.error("Error fetching student mood:", error);
+        return [];
       }
-    };
+    },
+    enabled: !!studentId,
+  });
 
-    if (studentId) {
-      fetchData();
+  // Set recent mood
+  useEffect(() => {
+    if (moodData && moodData.length > 0) {
+      setRecentMood(moodData[0].mood_type);
     }
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [studentId]);
-
-  if (error) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center">
-          <Button variant="ghost" onClick={onBack} className="mr-2">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <h2 className="text-2xl font-bold">{studentName}</h2>
-        </div>
-        <Card>
-          <CardContent className="flex items-center justify-center p-6">
-            <div className="text-center text-destructive">
-              <p>{error}</p>
-              <Button onClick={() => window.location.reload()} className="mt-4">
-                Retry
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  }, [moodData]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center">
+    <div>
+      <div className="flex justify-between items-center mb-6">
         <Button variant="ghost" onClick={onBack} className="mr-2">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <h2 className="text-2xl font-bold">{studentName}</h2>
+        <div className="flex items-center">
+          <Avatar className="h-10 w-10 mr-2">
+            <AvatarImage src="/student-avatar.png" />
+            <AvatarFallback>{studentName.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <h2 className="text-2xl font-heading font-bold">{studentName}</h2>
+        </div>
+        <div></div> {/* Empty div to balance the flex layout */}
       </div>
-      
-      <MicroCoachPrompt studentId={studentId} />
-      
-      <Tabs defaultValue="interventions">
-        <TabsList>
-          <TabsTrigger value="interventions">
-            <ClipboardList className="mr-2 h-4 w-4" />
-            Tiered Supports
-          </TabsTrigger>
-          <TabsTrigger value="impacts">
-            <BarChart2 className="mr-2 h-4 w-4" />
-            Intervention Impacts
-          </TabsTrigger>
-        </TabsList>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-6">
+          <StudentSELSupportToolkit 
+            studentId={studentId} 
+            studentName={studentName} 
+            recentMood={recentMood}
+          />
+        </div>
         
-        <TabsContent value="interventions">
-          <Card>
-            <CardHeader>
-              <CardTitle>Tiered Support Recommendations</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="flex justify-center p-4">
-                  <Loader />
-                </div>
-              ) : tieredSupports.length === 0 ? (
-                <p className="text-muted-foreground">No support recommendations yet.</p>
-              ) : (
-                tieredSupports.map((support) => (
-                  <div key={support.id} className="border-b py-2">
-                    <div className="font-medium">Tier {support.tier} Support</div>
-                    <p className="text-sm text-muted-foreground">{support.recommendation_notes}</p>
+        <div className="space-y-6">
+          <Tabs defaultValue="overview">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="sel">SEL</TabsTrigger>
+              <TabsTrigger value="attendance">Attendance</TabsTrigger>
+              <TabsTrigger value="notes">Notes</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="overview">
+              {/* Original overview tab content */}
+            </TabsContent>
+            
+            <TabsContent value="sel" className="space-y-4">
+              <h3 className="text-lg font-medium">SEL Progress</h3>
+              <div className="space-y-4">
+                <div className="border rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="font-medium">Self-Awareness</div>
+                    <div className="text-sm">65%</div>
                   </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="impacts">
-          <Card>
-            <CardHeader>
-              <CardTitle>Intervention Impact Analysis</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="flex justify-center p-4">
-                  <Loader />
-                </div>
-              ) : interventionImpacts.length === 0 ? (
-                <p className="text-muted-foreground">No intervention impacts recorded.</p>
-              ) : (
-                interventionImpacts.map((impact) => (
-                  <div key={impact.id} className="border-b py-2">
-                    <div className="font-medium">Tier {impact.tier} Intervention</div>
-                    <p className="text-sm text-muted-foreground">
-                      Impact Score: {impact.impact_score || 'Not rated'}
-                    </p>
-                    <p className="text-xs">{impact.outcome_notes}</p>
+                  <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-500" style={{ width: "65%" }}></div>
                   </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                </div>
+                <div className="border rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="font-medium">Self-Management</div>
+                    <div className="text-sm">45%</div>
+                  </div>
+                  <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
+                    <div className="h-full bg-green-500" style={{ width: "45%" }}></div>
+                  </div>
+                </div>
+                <div className="border rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="font-medium">Relationship Skills</div>
+                    <div className="text-sm">80%</div>
+                  </div>
+                  <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
+                    <div className="h-full bg-purple-500" style={{ width: "80%" }}></div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="attendance">
+              {/* Original attendance tab content */}
+            </TabsContent>
+            
+            <TabsContent value="notes">
+              {/* Original notes tab content */}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 };

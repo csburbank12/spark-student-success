@@ -10,6 +10,7 @@ import TrustedAdultSelection from "@/pages/TrustedAdultSelection";
 import LoopBot from "@/pages/LoopBot";
 import CulturePulseSurvey from "@/pages/CulturePulseSurvey";
 import PersonalizedSELPathways from "@/pages/PersonalizedSELPathways";
+import SELLessonDetail from "@/pages/SELLessonDetail";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
 
@@ -91,6 +92,15 @@ const studentRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
         <PersonalizedSELPathways />
+      </ProtectedRoute>
+    ),
+  },
+  // Add the new SEL lesson detail route
+  {
+    path: "/sel-lessons/:id",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student, UserRole.teacher, UserRole.staff]}>
+        <SELLessonDetail />
       </ProtectedRoute>
     ),
   },

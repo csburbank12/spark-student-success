@@ -6,6 +6,7 @@ import SuggestionList from "./student-dashboard/SuggestionList";
 import AchievementGrid from "./student-dashboard/AchievementGrid";
 import MoodComparisonChart from "./student-dashboard/MoodComparisonChart";
 import PeerUpliftNotes from "./student-dashboard/PeerUpliftNotes";
+import { SELRecommendedSection } from "@/components/student/SELRecommendedSection";
 
 const StudentDashboardEnhanced = () => {
   return (
@@ -15,6 +16,10 @@ const StudentDashboardEnhanced = () => {
         <MoodChart />
         <MoodComparisonChart />
       </div>
+      
+      {/* Added SEL Recommendations Section */}
+      <SELRecommendedSection />
+      
       <SuggestionList />
       <AchievementGrid />
       <PeerUpliftNotes />
