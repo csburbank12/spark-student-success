@@ -6,7 +6,6 @@ import { ProtectedRoute, DashboardRouter } from "./ProtectedRoute";
 import UserProfile from "@/pages/profile/UserProfile";
 import NotFound from "@/pages/NotFound";
 import LoopBot from "@/pages/LoopBot";
-import { UserRole } from "@/types/roles";
 
 // Any general (universal or shared) routes
 const generalRoutes = [
@@ -27,33 +26,52 @@ const generalRoutes = [
     ),
   },
   {
-    path: "/activities",
-    element: (
-      <ProtectedRoute requiredRole={[]}>
-        <div className="p-6">Activities Page (Coming Soon)</div>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/progress",
-    element: (
-      <ProtectedRoute requiredRole={[]}>
-        <div className="p-6">Progress Page (Coming Soon)</div>
-      </ProtectedRoute>
-    ),
-  },
-  {
     path: "/settings",
     element: (
-      <ProtectedRoute requiredRole={[]}>
-        <div className="p-6">Settings Page (Coming Soon)</div>
+      <ProtectedRoute>
+        <div className="p-6">
+          <h2 className="text-2xl font-bold mb-6">Settings</h2>
+          <div className="grid gap-6">
+            <div className="bg-card p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium mb-4">Application Settings</h3>
+              <p className="text-muted-foreground">Manage your application preferences and settings here.</p>
+            </div>
+          </div>
+        </div>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/help",
+    element: (
+      <ProtectedRoute>
+        <div className="p-6">
+          <h2 className="text-2xl font-bold mb-6">Help & Support</h2>
+          <div className="grid gap-6">
+            <div className="bg-card p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium mb-4">Getting Started</h3>
+              <p className="text-muted-foreground mb-4">New to Beacon? Learn how to use the platform effectively.</p>
+              <a href="#" className="text-primary hover:underline">View Guide</a>
+            </div>
+            <div className="bg-card p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium mb-4">Contact Support</h3>
+              <p className="text-muted-foreground mb-4">Need help? Our support team is ready to assist you.</p>
+              <a href="#" className="text-primary hover:underline">Contact Us</a>
+            </div>
+            <div className="bg-card p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium mb-4">FAQs</h3>
+              <p className="text-muted-foreground mb-4">Find answers to commonly asked questions.</p>
+              <a href="#" className="text-primary hover:underline">View FAQs</a>
+            </div>
+          </div>
+        </div>
       </ProtectedRoute>
     ),
   },
   {
     path: "/profile",
     element: (
-      <ProtectedRoute requiredRole={[]}>
+      <ProtectedRoute>
         <UserProfile />
       </ProtectedRoute>
     ),
@@ -61,7 +79,7 @@ const generalRoutes = [
   {
     path: "/loopbot",
     element: (
-      <ProtectedRoute requiredRole={[]}>
+      <ProtectedRoute>
         <LoopBot />
       </ProtectedRoute>
     ),

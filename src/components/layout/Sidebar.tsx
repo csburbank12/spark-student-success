@@ -5,37 +5,16 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarFooter,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import SidebarNavLinks from "./SidebarNavLinks";
 import SidebarFooterActions from "./SidebarFooterActions";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  teacherAdminRoutes,
-  studentRoutes,
-  adminRoutes,
-  parentRoutes,
-} from "./sidebarRoutes";
+import { getRoutesByRole } from "./sidebarRoutes";
 
 const Sidebar = () => {
   const { user } = useAuth();
-
-  const isTeacherOrAdmin =
-    user?.role === "teacher" || user?.role === "administrator";
-  const isStudent = user?.role === "student";
-  const isAdmin = user?.role === "admin";
-  const isParent = user?.role === "parent";
-
-  let routes = [];
-  if (isTeacherOrAdmin) {
-    routes = teacherAdminRoutes;
-  } else if (isStudent) {
-    routes = studentRoutes;
-  } else if (isAdmin) {
-    routes = adminRoutes;
-  } else if (isParent) {
-    routes = parentRoutes;
-  }
+  
+  const routes = getRoutesByRole(user?.role || "");
 
   return (
     <SidebarContainer>

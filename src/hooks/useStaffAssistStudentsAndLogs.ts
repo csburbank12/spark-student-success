@@ -1,8 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { User } from "@/types";
-import { UserRole } from "@/types/roles";
+import { BehaviorLog, Student } from "@/components/staff-assist/types";
 
 // Simple hook to fetch staff assist data
 export function useStaffAssistStudentsAndLogs(
@@ -14,12 +13,13 @@ export function useStaffAssistStudentsAndLogs(
     queryKey: ["staff-assist-students"],
     queryFn: async () => {
       // In a real app, these would be fetched from Supabase
-      return [
+      const students: Student[] = [
         { id: "s1", name: "Alex Johnson" },
         { id: "s2", name: "Emma Smith" },
         { id: "s3", name: "Noah Miller" },
         { id: "s4", name: "Olivia Davis" },
       ];
+      return students;
     },
     enabled: !!isStaffOrAdmin,
   });
@@ -28,17 +28,7 @@ export function useStaffAssistStudentsAndLogs(
   const logsQuery = useQuery({
     queryKey: ["staff-assist-behavior-logs"],
     queryFn: async () => {
-      // Using a simple type annotation here to prevent deep instantiation
-      const logs: Array<{
-        id: string;
-        studentId: string;
-        studentName: string;
-        date: string;
-        behavior: string;
-        intervention: string;
-        staff: string;
-        effectiveness: number | null;
-      }> = [
+      const logs: BehaviorLog[] = [
         {
           id: "log1",
           studentId: "s1",
@@ -48,6 +38,13 @@ export function useStaffAssistStudentsAndLogs(
           intervention: "Brief check-in, moved seating position",
           staff: user?.name || "Staff Member",
           effectiveness: 4,
+          staff_id: user?.id,
+          student_id: "s1",
+          situation_type: "classroom",
+          intervention_used: "seating-change",
+          effectiveness_rating: 4,
+          notes: "Student responded well to the intervention",
+          timestamp: "2023-04-15T09:30:00",
         },
         {
           id: "log2",
@@ -58,6 +55,13 @@ export function useStaffAssistStudentsAndLogs(
           intervention: "Mediated discussion, reflective questions",
           staff: user?.name || "Staff Member",
           effectiveness: 3,
+          staff_id: user?.id,
+          student_id: "s2",
+          situation_type: "social",
+          intervention_used: "mediation",
+          effectiveness_rating: 3,
+          notes: "Partial resolution achieved",
+          timestamp: "2023-04-14T13:15:00",
         },
         {
           id: "log3",
@@ -68,6 +72,13 @@ export function useStaffAssistStudentsAndLogs(
           intervention: "Breathing exercise, extra preparation time",
           staff: user?.name || "Staff Member",
           effectiveness: 5,
+          staff_id: user?.id,
+          student_id: "s3",
+          situation_type: "academic",
+          intervention_used: "anxiety-reduction",
+          effectiveness_rating: 5,
+          notes: "Student was able to complete the test successfully",
+          timestamp: "2023-04-13T10:45:00",
         },
       ];
       

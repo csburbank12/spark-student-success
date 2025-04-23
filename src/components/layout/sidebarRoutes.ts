@@ -16,7 +16,28 @@ import {
   Settings,
   MessageSquare,
   BookOpen,
+  HelpCircle,
+  Home,
 } from "lucide-react";
+
+// Universal routes that appear for all user types
+export const universalRoutes = [
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: Home,
+  },
+  {
+    name: "Help & Support",
+    href: "/help",
+    icon: HelpCircle, 
+  },
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: Settings,
+  },
+];
 
 export const teacherAdminRoutes = [
   {
@@ -169,3 +190,19 @@ export const parentRoutes = [
     icon: BookOpen,
   },
 ];
+
+export const getRoutesByRole = (role: string) => {
+  switch (role) {
+    case "teacher":
+    case "administrator":
+      return teacherAdminRoutes;
+    case "student":
+      return studentRoutes;
+    case "admin":
+      return adminRoutes;
+    case "parent":
+      return parentRoutes;
+    default:
+      return [];
+  }
+};

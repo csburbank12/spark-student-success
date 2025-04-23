@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bell, Search, Menu } from 'lucide-react';
+import { Bell, Search, Menu, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -15,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
 import { Link } from 'react-router-dom';
 import { useSidebar } from '@/components/ui/sidebar';
+import NavBreadcrumbs from './NavBreadcrumbs';
 
 export const Navbar = () => {
   const { user, logout, setRole } = useAuth();
@@ -37,7 +38,15 @@ export const Navbar = () => {
           {user?.role === 'parent' && 'Parent Portal'}
         </h1>
       </div>
-      <div className="flex flex-1 items-center gap-4 md:justify-end">
+      <div className="flex items-center gap-4 ml-auto md:hidden">
+        <Button variant="ghost" size="icon">
+          <HelpCircle className="h-5 w-5" />
+        </Button>
+      </div>
+      <div className="hidden flex-1 items-center gap-4 md:flex">
+        <NavBreadcrumbs />
+      </div>
+      <div className="flex flex-1 items-center gap-4 justify-end">
         <form className="hidden md:block relative w-64">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -46,6 +55,9 @@ export const Navbar = () => {
             className="w-full rounded-lg bg-background pl-8 md:w-64"
           />
         </form>
+        <Button variant="ghost" size="icon" className="hidden md:flex">
+          <HelpCircle className="h-5 w-5" />
+        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" className="relative">
@@ -97,7 +109,14 @@ export const Navbar = () => {
             <DropdownMenuItem className="cursor-pointer" asChild>
               <Link to="/profile">View Profile</Link>
             </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" asChild>
+              <Link to="/settings">Settings</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" asChild>
+              <Link to="/help">Help & Support</Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DropdownMenuLabel>Switch View</DropdownMenuLabel>
             <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch(UserRole.student)}>
               Switch to Student View
             </DropdownMenuItem>

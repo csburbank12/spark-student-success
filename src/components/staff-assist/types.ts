@@ -1,19 +1,33 @@
 
-export interface StudentProfile {
+// Make sure this file matches the existing types being used elsewhere
+export interface Student {
   id: string;
-  first_name?: string;
-  last_name?: string;
-  grade_level?: string;
-  [key: string]: any;
+  name: string;
 }
 
 export interface BehaviorLog {
   id: string;
-  staff_id: string;
-  student_id: string | null;
-  situation_type: string;
-  intervention_used: string;
-  notes: string;
-  effectiveness_rating: number | null;
-  created_at: string;
+  studentId: string;
+  studentName: string;
+  date: string;
+  behavior: string;
+  intervention: string;
+  staff: string;
+  effectiveness: number | null;
+  // These weren't being used in the actual data but are required by the type
+  staff_id?: string;
+  student_id?: string;
+  situation_type?: string;
+  intervention_used?: string;
+  effectiveness_rating?: number;
+  notes?: string;
+  timestamp?: string;
+}
+
+export type InterventionEffectiveness = 1 | 2 | 3 | 4 | 5;
+
+export interface InterventionFormData {
+  studentId: string;
+  behavior: string;
+  intervention: string;
 }
