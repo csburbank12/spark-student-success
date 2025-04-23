@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -31,7 +30,7 @@ const StaffAssistMode: React.FC = () => {
       if (error) throw error;
       return data as StudentProfile[] || [];
     },
-    enabled: !!user?.id && !!isStaffOrAdmin,
+    enabled: !!user?.id && isStaffOrAdmin,
   });
 
   // Fetch all behavior logs by staff user
@@ -47,7 +46,7 @@ const StaffAssistMode: React.FC = () => {
       if (error) throw error;
       return data as BehaviorLog[] || [];
     },
-    enabled: !!user?.id && !!isStaffOrAdmin,
+    enabled: !!user?.id && isStaffOrAdmin,
   });
 
   // Logging new intervention

@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { UserRole } from "@/types";
+import { UserRole } from '@/types/roles';
 import StudentProfile from "./StudentProfile";
 import TeacherProfile from "./TeacherProfile";
 import AdminProfile from "./AdminProfile";

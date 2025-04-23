@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
-import { UserRole } from '@/types';
+import { UserRole } from '@/types/roles';
 import { Link } from 'react-router-dom';
 
 export const Navbar = () => {

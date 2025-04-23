@@ -44,3 +44,6 @@ export interface SELProgress {
   completed_at?: string;
   sel_lessons: SELLesson;
 }
+
+// Export the UserRole enum from roles.ts
+export { UserRole } from "./roles";
