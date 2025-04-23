@@ -9,6 +9,7 @@ import UserManagement from "@/pages/admin/UserManagement";
 import SchoolManagement from "@/pages/admin/SchoolManagement";
 import SchoolOnboarding from "@/pages/admin/SchoolOnboarding";
 import DataAnalytics from "@/pages/admin/DataAnalytics";
+import LoopBotLogs from "@/pages/admin/LoopBotLogs";
 
 // Admin-specific routes
 const adminRoutes = [
@@ -65,6 +66,14 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <DataAnalytics />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/loopbot-logs",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <LoopBotLogs />
       </ProtectedRoute>
     ),
   },

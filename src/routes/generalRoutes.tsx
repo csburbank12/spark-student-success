@@ -3,6 +3,7 @@ import React, { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import UserProfile from "@/pages/profile/UserProfile";
+import LoopBot from "@/pages/LoopBot";
 
 // Lazy load components for better performance
 const Index = lazy(() => import("@/pages/Index"));
@@ -46,6 +47,14 @@ export const generalRoutes: RouteObject[] = [
     element: (
       <ProtectedRoute>
         <Help />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/loopbot",
+    element: (
+      <ProtectedRoute>
+        <LoopBot />
       </ProtectedRoute>
     ),
   },

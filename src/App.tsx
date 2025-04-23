@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { MicroCoachProvider } from "./contexts/MicroCoachContext";
+import { LoopBotProvider } from "./contexts/LoopBotContext";
 // Reuse route configs from refactored routes file
 import { routes } from "./routes";
 
@@ -16,21 +17,23 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <MicroCoachProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                {routes.map((route) => (
-                  <Route 
-                    key={route.path} 
-                    path={route.path} 
-                    element={route.element} 
-                  />
-                ))}
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
+          <LoopBotProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  {routes.map((route) => (
+                    <Route 
+                      key={route.path} 
+                      path={route.path} 
+                      element={route.element} 
+                    />
+                  ))}
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </LoopBotProvider>
         </MicroCoachProvider>
       </AuthProvider>
     </QueryClientProvider>

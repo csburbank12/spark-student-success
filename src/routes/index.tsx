@@ -1,7 +1,7 @@
 
 import type { User } from "@/types";
 import { AppShell } from "@/components/layout/AppShell";
-import generalRoutes from "./generalRoutes";
+import { generalRoutes } from "./generalRoutes";
 import studentRoutes from "./studentRoutes";
 import { teacherAdminRoutes } from "./teacherAdminRoutes";
 import parentRoutes from "./parentRoutes";
