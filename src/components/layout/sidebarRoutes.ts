@@ -19,6 +19,7 @@ import {
   HelpCircle,
   Home,
 } from "lucide-react";
+import { UserRole } from "@/types/roles";
 
 // Universal routes that appear for all user types
 export const universalRoutes = [
@@ -193,14 +194,14 @@ export const parentRoutes = [
 
 export const getRoutesByRole = (role: string) => {
   switch (role) {
-    case "teacher":
-    case "administrator":
+    case UserRole.teacher:
+    case UserRole.staff:
       return teacherAdminRoutes;
-    case "student":
+    case UserRole.student:
       return studentRoutes;
-    case "admin":
+    case UserRole.admin:
       return adminRoutes;
-    case "parent":
+    case UserRole.parent:
       return parentRoutes;
     default:
       return [];

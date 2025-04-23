@@ -1,7 +1,10 @@
-import { lazy } from "react";
-import { RouteObject } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 
+import React, { lazy } from "react";
+import { RouteObject } from "react-router-dom";
+import { ProtectedRoute } from "./ProtectedRoute";
+import { UserRole } from "@/types/roles";
+
+// Lazy load components for better performance
 const TeacherDashboard = lazy(() => import("@/pages/TeacherDashboard"));
 const TeacherDashboardEnhanced = lazy(() => import("@/pages/TeacherDashboardEnhanced"));
 const StaffAssistMode = lazy(() => import("@/pages/StaffAssistMode"));
@@ -13,47 +16,85 @@ const CheckIn = lazy(() => import("@/pages/CheckIn"));
 const TeacherProfile = lazy(() => import("@/pages/profile/TeacherProfile"));
 const EmotionAwareScheduling = lazy(() => import("@/pages/EmotionAwareScheduling"));
 
-const dummyTeacherUser = { id: "dummy", role: "teacher" } as any; // For demo only, adjust as needed.
-
 export const teacherAdminRoutes: RouteObject[] = [
   {
     path: "/teacher-dashboard",
-    element: <TeacherDashboard />,
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+        <TeacherDashboard />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/teacher-dashboard-enhanced",
-    element: <TeacherDashboardEnhanced />,
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+        <TeacherDashboardEnhanced />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/staff-assist",
-    element: <StaffAssistMode />,
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+        <StaffAssistMode />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/sel-pathways",
-    element: <SELPathwayManagement />,
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+        <SELPathwayManagement />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/students",
-    element: <StudentManagement />,
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+        <StudentManagement />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/predictive-support",
-    element: <PredictiveSupport />,
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+        <PredictiveSupport />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/behavior-prediction",
-    element: <BehaviorPrediction />,
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+        <BehaviorPrediction />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/check-in",
-    element: <CheckIn />,
+    element: (
+      <ProtectedRoute>
+        <CheckIn />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/profile/teacher",
-    element: <TeacherProfile user={dummyTeacherUser} />,
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+        <TeacherProfile />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/emotion-aware-scheduling",
-    element: <EmotionAwareScheduling />,
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+        <EmotionAwareScheduling />
+      </ProtectedRoute>
+    ),
   },
 ];

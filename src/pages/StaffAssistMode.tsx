@@ -17,7 +17,9 @@ const StaffAssistMode: React.FC = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const isStaffOrAdmin =
-    user?.role === UserRole.staff.toString() || user?.role === UserRole.admin.toString();
+    user?.role === UserRole.staff || 
+    user?.role === UserRole.teacher || 
+    user?.role === UserRole.admin;
 
   // Queries for students and logs
   const {

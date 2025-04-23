@@ -10,11 +10,14 @@ import SidebarNavLinks from "./SidebarNavLinks";
 import SidebarFooterActions from "./SidebarFooterActions";
 import { useAuth } from "@/contexts/AuthContext";
 import { getRoutesByRole } from "./sidebarRoutes";
+import { UserRole } from "@/types/roles";
 
 const Sidebar = () => {
   const { user } = useAuth();
   
-  const routes = getRoutesByRole(user?.role || "");
+  // Get routes based on user role, ensuring we use the UserRole enum
+  const userRole = user?.role as UserRole || "";
+  const routes = getRoutesByRole(userRole);
 
   return (
     <SidebarContainer>
