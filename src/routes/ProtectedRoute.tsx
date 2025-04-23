@@ -26,8 +26,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Check if user's role is in the required roles
-  // Convert string role to UserRole enum
-  const userRole = user.role as unknown as UserRole;
+  const userRole = user.role as UserRole;
   const hasRequiredRole = userRole && requiredRole.includes(userRole);
 
   // If user doesn't have the required role, redirect to login or dashboard
@@ -38,20 +37,19 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   return <>{children}</>;
 };
 
-// Create and export the DashboardRouter component that was referenced but missing
+// Create and export the DashboardRouter component
 export const DashboardRouter: React.FC = () => {
   const { user } = useAuth();
   
   // Simple dashboard router based on user role
   if (!user) return <Navigate to="/login" replace />;
   
-  // Convert string role to UserRole enum for the switch
-  const userRole = user.role as unknown as UserRole;
+  // Convert string role to UserRole for the switch
+  const userRole = user.role as UserRole;
   
   switch (userRole) {
     case UserRole.student:
       return <Navigate to="/check-in" replace />;
-    case UserRole.staff:
     case UserRole.teacher:
       return <Navigate to="/teacher-dashboard" replace />;
     case UserRole.admin:

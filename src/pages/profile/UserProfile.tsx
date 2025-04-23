@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
@@ -32,24 +31,37 @@ const UserProfile = () => {
       </div>
     );
   }
+  
+  if (!user) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <h3 className="text-lg font-medium mb-2">Not logged in</h3>
+          <p className="text-muted-foreground mb-4">
+            You need to be logged in to view your profile.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Here we would typically update the user profile
-    // For now, let's just show a success toast
     toast.success("Profile updated successfully!");
     setIsEditing(false);
   };
 
-  const getRoleColor = (role: UserRole) => {
-    switch (role) {
-      case "student":
+  const getRoleColor = (role: string) => {
+    const userRole = role as UserRole;
+    switch (userRole) {
+      case UserRole.student:
         return "bg-blue-100 text-blue-800";
-      case "teacher":
+      case UserRole.teacher:
         return "bg-green-100 text-green-800";
-      case "admin":
+      case UserRole.admin:
         return "bg-purple-100 text-purple-800";
-      case "parent":
+      case UserRole.parent:
         return "bg-amber-100 text-amber-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -57,17 +69,18 @@ const UserProfile = () => {
   };
 
   const getProfileComponent = () => {
-    switch (user?.role) {
-      case "student":
+    const userRole = user?.role as UserRole;
+    switch (userRole) {
+      case UserRole.student:
         return <StudentProfile user={user} />;
-      case "teacher":
+      case UserRole.teacher:
         return <TeacherProfile user={user} />;
-      case "admin":
+      case UserRole.admin:
         return <AdminProfile user={user} />;
-      case "parent":
+      case UserRole.parent:
         return <ParentProfile user={user} />;
       default:
-        return <div>Unknown role</div>;
+        return <div>Unknown role: {user?.role}</div>;
     }
   };
 
@@ -94,7 +107,7 @@ const UserProfile = () => {
                 <h3 className="text-xl font-medium">{user?.name}</h3>
                 <p className="text-muted-foreground">{user?.email}</p>
                 <div className="mt-2">
-                  <Badge className={`${getRoleColor(user?.role as UserRole)} capitalize`}>
+                  <Badge className={`${getRoleColor(user?.role)} capitalize`}>
                     {user?.role}
                   </Badge>
                 </div>
