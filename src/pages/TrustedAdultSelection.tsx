@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import TrustedAdultSelector from "@/components/student-relationships/TrustedAdultSelector";
 import { Loader } from "@/components/ui/loader";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const TrustedAdultSelection: React.FC = () => {
   const { user } = useAuth();
