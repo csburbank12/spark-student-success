@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -133,7 +132,9 @@ class LoopBotService {
       .eq('setting_key', 'nightly_scans')
       .single();
 
-    if (settings?.setting_value.enabled) {
+    const settingsValue = settings?.setting_value as { enabled: boolean } | null;
+    
+    if (settingsValue?.enabled) {
       console.log("LoopBot: Scheduled daily runs initialized");
       
       // Calculate time until midnight
