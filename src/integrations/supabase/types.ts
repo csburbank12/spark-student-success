@@ -71,6 +71,93 @@ export type Database = {
         }
         Relationships: []
       }
+      culture_pulse_surveys: {
+        Row: {
+          belonging_score: number | null
+          grade_level: string | null
+          id: string
+          mood_score: number | null
+          open_feedback: string | null
+          safety_perception: number | null
+          school_id: string | null
+          staff_role: string | null
+          submitted_at: string
+          survey_type: Database["public"]["Enums"]["pulse_survey_type"]
+          user_id: string
+        }
+        Insert: {
+          belonging_score?: number | null
+          grade_level?: string | null
+          id?: string
+          mood_score?: number | null
+          open_feedback?: string | null
+          safety_perception?: number | null
+          school_id?: string | null
+          staff_role?: string | null
+          submitted_at?: string
+          survey_type: Database["public"]["Enums"]["pulse_survey_type"]
+          user_id: string
+        }
+        Update: {
+          belonging_score?: number | null
+          grade_level?: string | null
+          id?: string
+          mood_score?: number | null
+          open_feedback?: string | null
+          safety_perception?: number | null
+          school_id?: string | null
+          staff_role?: string | null
+          submitted_at?: string
+          survey_type?: Database["public"]["Enums"]["pulse_survey_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      culture_pulse_trends: {
+        Row: {
+          avg_belonging: number | null
+          avg_mood: number | null
+          avg_safety: number | null
+          created_at: string | null
+          grade_level: string | null
+          id: string
+          school_id: string | null
+          staff_role: string | null
+          survey_type: Database["public"]["Enums"]["pulse_survey_type"]
+          total_responses: number | null
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          avg_belonging?: number | null
+          avg_mood?: number | null
+          avg_safety?: number | null
+          created_at?: string | null
+          grade_level?: string | null
+          id?: string
+          school_id?: string | null
+          staff_role?: string | null
+          survey_type: Database["public"]["Enums"]["pulse_survey_type"]
+          total_responses?: number | null
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          avg_belonging?: number | null
+          avg_mood?: number | null
+          avg_safety?: number | null
+          created_at?: string | null
+          grade_level?: string | null
+          id?: string
+          school_id?: string | null
+          staff_role?: string | null
+          survey_type?: Database["public"]["Enums"]["pulse_survey_type"]
+          total_responses?: number | null
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
       interventions: {
         Row: {
           created_at: string | null
@@ -957,6 +1044,7 @@ export type Database = {
     Enums: {
       app_role: "student" | "staff" | "admin" | "parent"
       mood_type: "happy" | "good" | "okay" | "sad" | "stressed"
+      pulse_survey_type: "student" | "staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1074,6 +1162,7 @@ export const Constants = {
     Enums: {
       app_role: ["student", "staff", "admin", "parent"],
       mood_type: ["happy", "good", "okay", "sad", "stressed"],
+      pulse_survey_type: ["student", "staff"],
     },
   },
 } as const

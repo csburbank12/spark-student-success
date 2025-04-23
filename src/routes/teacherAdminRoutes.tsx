@@ -1,4 +1,3 @@
-
 import React from "react";
 import StudentManagement from "@/pages/StudentManagement";
 import WellLensDashboard from "@/pages/WellLensDashboard";
@@ -13,21 +12,20 @@ import TeacherDashboard from "@/pages/TeacherDashboard";
 import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
 import CheckIn from "@/pages/CheckIn";
 import UserProfile from "@/pages/profile/UserProfile";
+import CulturePulseSurvey from "@/pages/CulturePulseSurvey";
+import AdminPulseTrends from "@/pages/AdminPulseTrends";
 import { DashboardLayout } from "@/routes/DashboardManager";
 import TrustedAdultDashboard from "@/pages/TrustedAdultDashboard";
 import { RouteObject } from "react-router-dom";
 
-// Define a correct interface for the WithDashboardLayout component
 interface WithDashboardLayoutProps {
   children: React.ReactNode;
 }
 
-// Fix the WithDashboardLayout component implementation
 const WithDashboardLayout: React.FC<WithDashboardLayoutProps> = ({ children }) => {
   return <DashboardLayout>{children}</DashboardLayout>;
 };
 
-// Extend RouteObject with extra props directly:
 type ExtendedRouteObject = RouteObject & {
   path: string;
   element: React.ReactNode;
@@ -35,7 +33,6 @@ type ExtendedRouteObject = RouteObject & {
 };
 
 const teacherAdminRoutes: ExtendedRouteObject[] = [
-  // Admin Dashboard
   {
     path: "/admin",
     element: <WithDashboardLayout><AdminDashboard /></WithDashboardLayout>,
@@ -46,7 +43,6 @@ const teacherAdminRoutes: ExtendedRouteObject[] = [
     element: <WithDashboardLayout><AdminDashboardEnhanced /></WithDashboardLayout>,
     requiredRole: ["admin"],
   },
-  // Teacher Dashboard
   {
     path: "/teacher",
     element: <WithDashboardLayout><TeacherDashboard /></WithDashboardLayout>,
@@ -57,7 +53,6 @@ const teacherAdminRoutes: ExtendedRouteObject[] = [
     element: <WithDashboardLayout><TeacherDashboardEnhanced /></WithDashboardLayout>,
     requiredRole: ["teacher"],
   },
-  // Shared Teacher & Admin Routes
   {
     path: "/student-management",
     element: <WithDashboardLayout><StudentManagement /></WithDashboardLayout>,
@@ -107,6 +102,24 @@ const teacherAdminRoutes: ExtendedRouteObject[] = [
     path: "/profile",
     element: <WithDashboardLayout><UserProfile /></WithDashboardLayout>,
     requiredRole: ["admin", "teacher", "student", "parent"],
+  },
+  {
+    path: "/pulse-tracker",
+    element: (
+      <WithDashboardLayout>
+        <CulturePulseSurvey />
+      </WithDashboardLayout>
+    ),
+    requiredRole: ["teacher", "student", "staff"],
+  },
+  {
+    path: "/admin-pulse-trends",
+    element: (
+      <WithDashboardLayout>
+        <AdminPulseTrends />
+      </WithDashboardLayout>
+    ),
+    requiredRole: ["admin"],
   },
 ];
 

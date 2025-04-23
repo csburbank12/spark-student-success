@@ -1,4 +1,3 @@
-
 import React from "react";
 import CheckIn from "@/pages/CheckIn";
 import MentalHealthToolkit from "@/pages/MentalHealthToolkit";
@@ -8,6 +7,7 @@ import SelfRegulationToolboxPage from "@/pages/SelfRegulationToolbox";
 import ResetRoomPage from "@/pages/ResetRoom";
 import TrustedAdultSelection from "@/pages/TrustedAdultSelection";
 import LoopBot from "@/pages/LoopBot";
+import CulturePulseSurvey from "@/pages/CulturePulseSurvey";
 import { ProtectedRoute } from "./ProtectedRoute";
 
 const studentRoutes = [
@@ -71,6 +71,11 @@ const studentRoutes = [
         <LoopBot />
       </ProtectedRoute>
     ),
+    requiredRole: ["student"],
+  },
+  {
+    path: "/pulse-tracker",
+    element: <CulturePulseSurvey />,
     requiredRole: ["student"],
   },
 ];
