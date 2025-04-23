@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -30,15 +29,15 @@ const TrustedAdultDashboard: React.FC = () => {
 
       try {
         setIsLoading(true);
-        
-        // Get students who have selected this staff member as trusted adult
+
+        // Join via trusted_adults to students and profiles
         const { data, error } = await supabase
           .from('trusted_adults')
           .select(`
             id,
             created_at,
             student_id,
-            students!inner (
+            students (
               id,
               grade_level,
               user_id,
@@ -53,20 +52,18 @@ const TrustedAdultDashboard: React.FC = () => {
 
         if (error) throw error;
 
-        // Format the data for display
-        const formattedStudents = data.map((item: any) => ({
+        const formattedStudents = (data || []).map((item: any) => ({
           id: item.students?.user_id || item.student_id,
-          name: `${item.students?.profiles?.first_name || ''} ${item.students?.profiles?.last_name || ''}`,
+          name: `${item.students?.profiles?.first_name || ''} ${item.students?.profiles?.last_name || ''}`.trim(),
           grade: item.students?.grade_level || 'Unknown',
           relationshipId: item.id,
-          selectedDate: new Date(item.created_at).toLocaleDateString(),
+          selectedDate: item.created_at ? new Date(item.created_at).toLocaleDateString() : "",
           avatarUrl: item.students?.profiles?.avatar_url
         }));
 
         setStudents(formattedStudents);
       } catch (error) {
         console.error('Error fetching trusted student relationships:', error);
-        // Use mock data as fallback
         setStudents([
           { 
             id: "s1", 
@@ -158,8 +155,11 @@ const TrustedAdultDashboard: React.FC = () => {
                   className="flex items-start p-4 border rounded-lg hover:bg-accent/5 transition-colors"
                 >
                   <Avatar className="h-10 w-10 mr-4">
-                    <AvatarImage src={student.avatarUrl} />
-                    <AvatarFallback>{student.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                    {student.avatarUrl ? (
+                      <AvatarImage src={student.avatarUrl} />
+                    ) : (
+                      <AvatarFallback>{student.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                    )}
                   </Avatar>
                   <div className="flex-1">
                     <div className="font-medium">{student.name}</div>

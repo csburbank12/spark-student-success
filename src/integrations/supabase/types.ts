@@ -713,6 +713,42 @@ export type Database = {
         }
         Relationships: []
       }
+      trusted_adults: {
+        Row: {
+          created_at: string
+          id: string
+          staff_id: string
+          student_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          staff_id: string
+          student_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          staff_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trusted_adults_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trusted_adults_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null

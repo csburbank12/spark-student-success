@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,15 +40,14 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
     removeTrustedAdult 
   } = useTrustedAdults(studentId);
 
-  // Transform trusted adults into staff members format for UI
   const selectedStaff = trustedAdults.map(adult => ({
     id: adult.staff_id,
     name: adult.staff_name,
     role: adult.staff_role,
-    trustedAdultId: adult.id // Keep track of the relationship ID for removal
+    trustedAdultId: adult.id,
+    avatarUrl: adult.avatarUrl
   }));
 
-  // Fetch staff members from database
   useEffect(() => {
     const fetchStaffMembers = async () => {
       try {
@@ -68,9 +66,9 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
 
         if (error) throw error;
 
-        const formattedStaff = data.map((staff: any) => ({
+        const formattedStaff = (data || []).map((staff: any) => ({
           id: staff.id,
-          name: `${staff.profiles?.first_name || ''} ${staff.profiles?.last_name || ''}`,
+          name: `${staff.profiles?.first_name || ''} ${staff.profiles?.last_name || ''}`.trim(),
           role: staff.position || 'Staff Member',
           department: staff.department,
           avatarUrl: staff.profiles?.avatar_url
@@ -84,8 +82,6 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
           description: "Could not load staff members. Using demo data instead.",
           variant: "destructive"
         });
-        
-        // Use mock data as fallback
         setStaffMembers([
           { id: "s1", name: "Dr. Emma Wilson", role: "School Counselor", avatarUrl: "" },
           { id: "s2", name: "Mr. James Rodriguez", role: "Math Teacher", department: "Mathematics", avatarUrl: "" },
@@ -100,7 +96,6 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
     fetchStaffMembers();
   }, [toast]);
 
-  // Filter staff based on search query
   const filteredStaff = staffMembers.filter(staff =>
     staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     staff.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -122,7 +117,7 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
     }
 
     await addTrustedAdult(staffMember.id);
-    
+
     if (onSelectionsChange) {
       onSelectionsChange([...selectedStaff, staffMember]);
     }
@@ -130,11 +125,9 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
 
   const handleRemoveStaff = async (staff: any) => {
     const trustedAdultToRemove = trustedAdults.find(adult => adult.staff_id === staff.id);
-    
     if (trustedAdultToRemove) {
       await removeTrustedAdult(trustedAdultToRemove.id);
     }
-    
     if (onSelectionsChange) {
       onSelectionsChange(selectedStaff.filter(s => s.id !== staff.id));
     }
@@ -159,8 +152,6 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-
-          {/* Selected staff section */}
           {selectedStaff.length > 0 && (
             <div className="space-y-2">
               <h4 className="text-sm font-medium">Your trusted adults:</h4>
@@ -172,8 +163,11 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
                     className="flex items-center gap-1 pl-1 pr-2 py-1"
                   >
                     <Avatar className="h-6 w-6">
-                      <AvatarImage src={staff.avatarUrl} />
-                      <AvatarFallback>{staff.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                      {staff.avatarUrl ? (
+                        <AvatarImage src={staff.avatarUrl} />
+                      ) : (
+                        <AvatarFallback>{staff.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                      )}
                     </Avatar>
                     <span>{staff.name}</span>
                     <Button 
@@ -195,7 +189,6 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
               Loading staff members...
             </div>
           ) : (
-            /* Staff list */
             <div className="space-y-2">
               <h4 className="text-sm font-medium">Available staff:</h4>
               <div className="grid gap-2">
@@ -209,8 +202,11 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
                     >
                       <div className="flex items-center gap-3">
                         <Avatar>
-                          <AvatarImage src={staff.avatarUrl} />
-                          <AvatarFallback>{staff.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                          {staff.avatarUrl ? (
+                            <AvatarImage src={staff.avatarUrl} />
+                          ) : (
+                            <AvatarFallback>{staff.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                          )}
                         </Avatar>
                         <div>
                           <h4 className="text-sm font-medium">{staff.name}</h4>
@@ -225,7 +221,6 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
                       </Button>
                     </div>
                   ))}
-                
                 {filteredStaff.length === 0 && (
                   <p className="text-center py-4 text-muted-foreground">No staff members found</p>
                 )}
