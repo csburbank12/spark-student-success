@@ -14,10 +14,10 @@ export function useStaffAssistStudentsAndLogs(
     queryFn: async () => {
       // In a real app, these would be fetched from Supabase
       const students: Student[] = [
-        { id: "s1", name: "Alex Johnson" },
-        { id: "s2", name: "Emma Smith" },
-        { id: "s3", name: "Noah Miller" },
-        { id: "s4", name: "Olivia Davis" },
+        { id: "s1", name: "Alex Johnson", first_name: "Alex", last_name: "Johnson" },
+        { id: "s2", name: "Emma Smith", first_name: "Emma", last_name: "Smith" },
+        { id: "s3", name: "Noah Miller", first_name: "Noah", last_name: "Miller" },
+        { id: "s4", name: "Olivia Davis", first_name: "Olivia", last_name: "Davis" },
       ];
       return students;
     },
@@ -45,6 +45,7 @@ export function useStaffAssistStudentsAndLogs(
           effectiveness_rating: 4,
           notes: "Student responded well to the intervention",
           timestamp: "2023-04-15T09:30:00",
+          created_at: "2023-04-15T09:30:00",
         },
         {
           id: "log2",
@@ -62,6 +63,7 @@ export function useStaffAssistStudentsAndLogs(
           effectiveness_rating: 3,
           notes: "Partial resolution achieved",
           timestamp: "2023-04-14T13:15:00",
+          created_at: "2023-04-14T13:15:00",
         },
         {
           id: "log3",
@@ -79,6 +81,7 @@ export function useStaffAssistStudentsAndLogs(
           effectiveness_rating: 5,
           notes: "Student was able to complete the test successfully",
           timestamp: "2023-04-13T10:45:00",
+          created_at: "2023-04-13T10:45:00",
         },
       ];
       
