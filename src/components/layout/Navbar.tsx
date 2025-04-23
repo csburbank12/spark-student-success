@@ -99,16 +99,16 @@ export const Navbar = () => {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch('student')}>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch(UserRole.student)}>
               Switch to Student View
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch('teacher')}>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch(UserRole.teacher)}>
               Switch to Teacher View
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch('admin')}>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch(UserRole.admin)}>
               Switch to Admin View
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch('parent')}>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch(UserRole.parent)}>
               Switch to Parent View
             </DropdownMenuItem>
             <DropdownMenuSeparator />
