@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,7 +37,6 @@ const PeerUpliftNotes: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch all users for recipient list (show self as "Myself")
   useEffect(() => {
     async function fetchUsers() {
       setLoading(true);
@@ -70,7 +68,6 @@ const PeerUpliftNotes: React.FC = () => {
     fetchUsers();
   }, [user?.id, user?.role, toast]);
 
-  // Fetch kindness notes: sent or received
   async function fetchNotes() {
     setLoading(true);
     const { data, error } = await supabase
@@ -84,7 +81,6 @@ const PeerUpliftNotes: React.FC = () => {
       setLoading(false);
       return;
     }
-    // Attach cached sender/recipient names
     setNotes(
       (data || []).map((n: any) => ({
         ...n,
@@ -104,7 +100,6 @@ const PeerUpliftNotes: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, users]);
 
-  // Compose and send a new note to Supabase
   const handleSend = async () => {
     if (!recipient || !message.trim()) {
       toast({ title: "Please fill in recipient and message." });
@@ -115,7 +110,6 @@ const PeerUpliftNotes: React.FC = () => {
       return;
     }
     setSubmitting(true);
-    // Compose note data
     const newNote = {
       sender_id: anonymous ? null : user?.id,
       recipient_id: recipient,
@@ -147,8 +141,7 @@ const PeerUpliftNotes: React.FC = () => {
       setAnonymous(false);
       toast({
         title: "Uplift sent!",
-        description: "Your kindness note has been sent.",
-        icon: <Heart className="text-pink-600 inline mr-1" size={18} />,
+        description: "Your kindness note has been sent."
       });
     }
     setSubmitting(false);
