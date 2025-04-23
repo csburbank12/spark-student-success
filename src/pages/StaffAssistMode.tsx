@@ -22,8 +22,8 @@ const StaffAssistMode: React.FC = () => {
   // Fetch all students for staff
   const { data: students = [], isLoading: isLoadingStudents } = useQuery({
     queryKey: ["staff-students"],
-    queryFn: async () => {
-      if (!user?.id || !isStaffOrAdmin) return [] as StudentProfile[];
+    queryFn: async (): Promise<StudentProfile[]> => {
+      if (!user?.id || !isStaffOrAdmin) return [];
       
       const { data, error } = await supabase
         .from("profiles")
@@ -32,6 +32,7 @@ const StaffAssistMode: React.FC = () => {
         
       if (error) throw error;
       
+      // Convert the data to StudentProfile[] and handle null case
       return (data || []) as StudentProfile[];
     },
     enabled: !!user?.id && isStaffOrAdmin,
@@ -40,8 +41,8 @@ const StaffAssistMode: React.FC = () => {
   // Fetch all behavior logs by staff user
   const { data: behaviorLogs = [], refetch: refetchLogs, isLoading: isLoadingLogs } = useQuery({
     queryKey: ["behavior-logs", user?.id],
-    queryFn: async () => {
-      if (!user?.id || !isStaffOrAdmin) return [] as BehaviorLog[];
+    queryFn: async (): Promise<BehaviorLog[]> => {
+      if (!user?.id || !isStaffOrAdmin) return [];
       
       const { data, error } = await supabase
         .from("behavior_logs")
@@ -51,6 +52,7 @@ const StaffAssistMode: React.FC = () => {
         
       if (error) throw error;
       
+      // Convert the data to BehaviorLog[] and handle null case
       return (data || []) as BehaviorLog[];
     },
     enabled: !!user?.id && isStaffOrAdmin,
