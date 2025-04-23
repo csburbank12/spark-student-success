@@ -5,10 +5,14 @@ import { Loader } from "@/components/ui/loader";
 import BehaviorPredictionDashboard from "@/components/predictive-support/dashboard/BehaviorPredictionDashboard";
 import PredictionConfidenceCard from "@/components/predictive-support/dashboard/PredictionConfidenceCard";
 import { ErrorBoundary } from "react-error-boundary";
+import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 
 const BehaviorPrediction: React.FC = () => {
+  const { reset } = useQueryErrorResetBoundary();
+
   return (
     <ErrorBoundary
+      onReset={reset}
       fallbackRender={({ error, resetErrorBoundary }) => (
         <Card className="border-red-300">
           <CardContent className="p-6">

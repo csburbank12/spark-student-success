@@ -3,8 +3,8 @@ import React, { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader } from "@/components/ui/loader";
 import { ErrorBoundary } from "react-error-boundary";
-import { EmotionSchedulingErrorFallback } from "@/components/emotion-scheduling/EmotionSchedulingErrorFallback";
-import { EmotionSchedulingUI } from "@/components/emotion-scheduling/EmotionSchedulingUI";
+import EmotionSchedulingErrorFallback from "@/components/emotion-scheduling/EmotionSchedulingErrorFallback";
+import EmotionSchedulingUI from "@/components/emotion-scheduling/EmotionSchedulingUI";
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 
 const EmotionAwareScheduling: React.FC = () => {
