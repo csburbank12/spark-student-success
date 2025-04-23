@@ -15,14 +15,14 @@ import CheckIn from "@/pages/CheckIn";
 import UserProfile from "@/pages/profile/UserProfile";
 import DashboardLayout from "@/routes/DashboardManager";
 import TrustedAdultDashboard from "@/pages/TrustedAdultDashboard";
-import { Outlet, RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router-dom";
 
-// Wrapper component that applies the DashboardLayout
+// Fix for the WithDashboardLayout component
 const WithDashboardLayout = ({ element }: { element: React.ReactNode }) => {
   return <DashboardLayout>{element}</DashboardLayout>;
 };
 
-interface ExtendedRouteObject {
+interface ExtendedRouteObject extends RouteObject {
   path: string;
   element: React.ReactNode;
   requiredRole?: string[];
