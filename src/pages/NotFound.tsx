@@ -1,17 +1,16 @@
 
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { GraduationCap } from "lucide-react";
+import { useErrorLogging } from "@/hooks/useErrorLogging";
 
 const NotFound = () => {
   const location = useLocation();
+  const { log404Error } = useErrorLogging();
 
   useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
+    log404Error(location.pathname);
   }, [location.pathname]);
 
   return (
@@ -19,14 +18,18 @@ const NotFound = () => {
       <div className="text-center space-y-6 max-w-md">
         <GraduationCap className="h-24 w-24 text-primary mx-auto mb-6" />
         <h1 className="text-6xl font-heading font-bold">404</h1>
-        <h2 className="text-2xl font-heading">Page not found</h2>
+        <h2 className="text-2xl font-heading">Oops! That page doesn't exist</h2>
         <p className="text-muted-foreground mb-6">
-          Sorry, we couldn't find the page you're looking for. The link might be
-          incorrect or the page may have been moved.
+          But you're still on the right track. Let's get you back where you belong.
         </p>
-        <Button asChild size="lg">
-          <a href="/">Return to Dashboard</a>
-        </Button>
+        <div className="space-y-4">
+          <Button asChild size="lg" className="w-full">
+            <Link to="/dashboard">Return to Dashboard</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg" className="w-full">
+            <Link to="/">Go to Homepage</Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

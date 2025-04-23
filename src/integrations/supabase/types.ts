@@ -672,6 +672,33 @@ export type Database = {
           },
         ]
       }
+      page_not_found_logs: {
+        Row: {
+          attempted_path: string
+          id: string
+          referrer_path: string | null
+          timestamp: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          attempted_path: string
+          id?: string
+          referrer_path?: string | null
+          timestamp?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          attempted_path?: string
+          id?: string
+          referrer_path?: string | null
+          timestamp?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       parent_meeting_requests: {
         Row: {
           created_at: string
@@ -1513,6 +1540,10 @@ export type Database = {
           p_config: Json
         }
         Returns: string
+      }
+      reset_demo_environment: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       schedule_integration_sync: {
         Args: {

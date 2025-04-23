@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatCard } from "@/components/ui/stat-card";
 import { Users, School, Activity, Bell } from "lucide-react";
+import { useDemoReset } from "@/hooks/useDemoReset";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const { resetDemoEnvironment } = useDemoReset();
 
   return (
     <div className="space-y-6">
@@ -16,6 +17,13 @@ const AdminDashboard = () => {
         <h2 className="text-3xl font-heading font-bold">
           Welcome, {user?.name?.split(" ")[0]}!
         </h2>
+        <Button 
+          variant="outline" 
+          onClick={resetDemoEnvironment}
+          className="bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100"
+        >
+          Reset Demo Environment
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
