@@ -42,11 +42,13 @@ export function useAddMoodCheckIn() {
       mood,
       energyLevel,
       notes,
+      expressionType
     }: {
       userId: string,
-      mood: MoodType,
+      mood: string,
       energyLevel: number,
       notes?: string,
+      expressionType?: string
     }) => {
       const { error } = await supabase.from("mood_check_ins").insert([
         {

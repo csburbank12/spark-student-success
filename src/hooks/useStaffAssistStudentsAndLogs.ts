@@ -1,7 +1,23 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { StudentProfile, BehaviorLog } from "@/components/staff-assist/types";
+
+export interface StudentProfile {
+  id: string;
+  first_name: string;
+  last_name: string;
+}
+
+export interface BehaviorLog {
+  id: string;
+  staff_id: string;
+  student_id: string;
+  situation_type: string;
+  intervention_used: string;
+  notes: string;
+  effectiveness_rating: number | null;
+  created_at: string;
+}
 
 /**
  * Fetches students data for staff assistance
