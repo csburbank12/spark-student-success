@@ -6,6 +6,7 @@ import { ProtectedRoute, DashboardRouter } from "./ProtectedRoute";
 import UserProfile from "@/pages/profile/UserProfile";
 import NotFound from "@/pages/NotFound";
 import LoopBot from "@/pages/LoopBot";
+import { UserRole } from "@/types/roles";
 
 // Any general (universal or shared) routes
 const generalRoutes = [
@@ -28,7 +29,7 @@ const generalRoutes = [
   {
     path: "/activities",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={[]}>
         <div className="p-6">Activities Page (Coming Soon)</div>
       </ProtectedRoute>
     ),
@@ -36,7 +37,7 @@ const generalRoutes = [
   {
     path: "/progress",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={[]}>
         <div className="p-6">Progress Page (Coming Soon)</div>
       </ProtectedRoute>
     ),
@@ -44,7 +45,7 @@ const generalRoutes = [
   {
     path: "/settings",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={[]}>
         <div className="p-6">Settings Page (Coming Soon)</div>
       </ProtectedRoute>
     ),
@@ -52,7 +53,7 @@ const generalRoutes = [
   {
     path: "/profile",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={[]}>
         <UserProfile />
       </ProtectedRoute>
     ),
@@ -60,7 +61,7 @@ const generalRoutes = [
   {
     path: "/loopbot",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={[]}>
         <LoopBot />
       </ProtectedRoute>
     ),
