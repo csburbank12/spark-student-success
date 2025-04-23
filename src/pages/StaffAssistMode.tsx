@@ -173,7 +173,7 @@ const StaffAssistMode: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("assist");
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   
-  const isStaffOrAdmin = user?.role === 'staff' || user?.role === 'admin';
+  const isStaffOrAdmin = user?.role === ('staff' as UserRole) || user?.role === ('admin' as UserRole);
   
   const { data: students } = useQuery({
     queryKey: ["staff-students"],

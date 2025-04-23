@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -37,7 +36,7 @@ const SELPathwayManagement: React.FC = () => {
   const [selectedLesson, setSelectedLesson] = useState<SelLesson | null>(null);
 
   // Check if user role is staff or admin
-  const isStaffOrAdmin = user?.role === 'staff' || user?.role === 'admin';
+  const isStaffOrAdmin = user?.role === ('staff' as UserRole) || user?.role === ('admin' as UserRole);
 
   // Fetch all students (for staff to manage)
   const { data: students, isLoading: loadingStudents } = useQuery({

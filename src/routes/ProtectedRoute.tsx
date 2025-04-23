@@ -43,7 +43,7 @@ export const DashboardRouter: React.FC = () => {
   // Simple dashboard router based on user role
   if (!user) return <Navigate to="/login" replace />;
   
-  switch (user.role) {
+  switch (user.role as UserRole) {
     case 'student':
       return <Navigate to="/check-in" replace />;
     case 'staff':
