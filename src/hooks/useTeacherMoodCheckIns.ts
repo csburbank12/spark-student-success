@@ -21,34 +21,40 @@ function isArrayGuard<T>(data: any): data is T[] {
 export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
   const [checkIns, setCheckIns] = useState<TeacherMoodCheckIn[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
   const fetchTeacherMoodCheckIns = async () => {
     try {
       setIsLoading(true);
+      setIsError(false);
 
-      if (!studentId) {
+      if (!studentId || !user?.id) {
         setCheckIns([]);
+        setIsLoading(false);
         return;
       }
 
       const { data, error } = await supabase.rpc('get_teacher_mood_check_ins', {
-        p_teacher_id: user?.id, // Changed from p_student_id to p_teacher_id
+        p_teacher_id: user.id,
         p_days_back: daysBack
       });
 
       if (error) throw error;
+      
       if (isArrayGuard<TeacherMoodCheckIn>(data)) {
         setCheckIns(data);
       } else {
+        console.log('Data returned is not an array:', data);
         setCheckIns([]);
       }
     } catch (error) {
       console.error('Error fetching teacher mood check-ins:', error);
+      setIsError(true);
       toast({
-        title: "Error",
-        description: "Could not load teacher mood check-ins. Please try again.",
+        title: "Connection Error",
+        description: "Could not connect to the database. Please check your connection and try again.",
         variant: "destructive"
       });
       setCheckIns([]);
@@ -77,6 +83,7 @@ export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
       });
 
       if (error) throw error;
+      
       await fetchTeacherMoodCheckIns();
 
       toast({
@@ -84,13 +91,12 @@ export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
         description: "Student mood check-in has been recorded successfully.",
       });
 
-      // data is an array of results usually
       return data;
     } catch (error) {
       console.error('Error adding teacher mood check-in:', error);
       toast({
-        title: "Error",
-        description: "Could not record check-in. Please try again.",
+        title: "Connection Error",
+        description: "Could not connect to the database. Please check your connection and try again.",
         variant: "destructive"
       });
       return null;
@@ -100,11 +106,12 @@ export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
   useEffect(() => {
     fetchTeacherMoodCheckIns();
     // eslint-disable-next-line
-  }, [studentId, daysBack]);
+  }, [studentId, daysBack, user?.id]);
 
   return {
     checkIns,
     isLoading,
+    isError,
     addTeacherMoodCheckIn,
     refreshTeacherMoodCheckIns: fetchTeacherMoodCheckIns
   };
@@ -113,15 +120,18 @@ export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
 export function useTeacherMoodTrends(studentId: string, daysBack = 30) {
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchTrends = async () => {
       try {
         setIsLoading(true);
+        setIsError(false);
 
         if (!studentId) {
           setData([]);
+          setIsLoading(false);
           return;
         }
 
@@ -131,16 +141,19 @@ export function useTeacherMoodTrends(studentId: string, daysBack = 30) {
         });
 
         if (error) throw error;
+        
         if (isArrayGuard<any>(data)) {
           setData(data);
         } else {
+          console.log('Trend data returned is not an array:', data);
           setData([]);
         }
       } catch (error) {
         console.error('Error fetching teacher mood trends:', error);
+        setIsError(true);
         toast({
-          title: "Error",
-          description: "Could not load teacher mood trends. Please try again.",
+          title: "Connection Error",
+          description: "Could not connect to the database. Please check your connection and try again.",
           variant: "destructive"
         });
         setData([]);
@@ -153,5 +166,5 @@ export function useTeacherMoodTrends(studentId: string, daysBack = 30) {
     // eslint-disable-next-line
   }, [studentId, daysBack]);
 
-  return { data, isLoading };
+  return { data, isLoading, isError };
 }
