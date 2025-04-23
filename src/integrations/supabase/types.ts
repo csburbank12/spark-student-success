@@ -1167,7 +1167,9 @@ export type Database = {
         }[]
       }
       get_teacher_mood_trends: {
-        Args: { p_student_id: string; p_days_back?: number }
+        Args:
+          | Record<PropertyKey, never>
+          | { p_student_id: string; p_days_back?: number }
         Returns: {
           date: string
           mood_type: string

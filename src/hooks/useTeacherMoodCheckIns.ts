@@ -34,7 +34,7 @@ export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
       }
 
       const { data, error } = await supabase.rpc('get_teacher_mood_check_ins', {
-        p_student_id: studentId,
+        p_teacher_id: user?.id, // Changed from p_student_id to p_teacher_id
         p_days_back: daysBack
       });
 
