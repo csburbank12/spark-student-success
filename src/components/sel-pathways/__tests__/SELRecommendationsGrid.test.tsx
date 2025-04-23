@@ -1,8 +1,8 @@
-
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SELRecommendationsGrid } from "../SELRecommendationsGrid";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
+import "@testing-library/jest-dom";
 
 const mockNavigate = vi.fn();
 
@@ -11,28 +11,28 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate
 }));
 
+const mockLessons = [
+  {
+    id: "1",
+    title: "Test Lesson 1",
+    description: "Test Description 1",
+    competency_area: "Self-Awareness",
+    estimated_duration: 10,
+    activity_type: "video"
+  },
+  {
+    id: "2",
+    title: "Test Lesson 2",
+    description: "Test Description 2",
+    competency_area: "Self-Management",
+    estimated_duration: 15,
+    activity_type: "reflection"
+  }
+];
+
+const mockOnSelectLesson = vi.fn();
+
 describe("SELRecommendationsGrid", () => {
-  const mockLessons = [
-    {
-      id: "1",
-      title: "Test Lesson 1",
-      description: "Test Description 1",
-      competency_area: "Self-Awareness",
-      estimated_duration: 10,
-      activity_type: "video"
-    },
-    {
-      id: "2",
-      title: "Test Lesson 2",
-      description: "Test Description 2",
-      competency_area: "Self-Management",
-      estimated_duration: 15,
-      activity_type: "reflection"
-    }
-  ];
-
-  const mockOnSelectLesson = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -47,22 +47,18 @@ describe("SELRecommendationsGrid", () => {
       </MemoryRouter>
     );
     
-    // Check header
     expect(screen.getByText("Recommended For You")).toBeInTheDocument();
     
-    // Check lesson cards
     mockLessons.forEach(lesson => {
       expect(screen.getByText(lesson.title)).toBeInTheDocument();
       expect(screen.getByText(`${lesson.estimated_duration} min activity`)).toBeInTheDocument();
       expect(screen.getByText(lesson.competency_area)).toBeInTheDocument();
     });
     
-    // Test lesson selection
     const startButtons = screen.getAllByText("Start Now");
     fireEvent.click(startButtons[0]);
     expect(mockOnSelectLesson).toHaveBeenCalledWith(mockLessons[0]);
     
-    // Test view all navigation
     const viewAllButton = screen.getByText("View All");
     fireEvent.click(viewAllButton);
     expect(mockNavigate).toHaveBeenCalledWith("/sel-pathways");
@@ -98,7 +94,6 @@ describe("SELRecommendationsGrid", () => {
       </MemoryRouter>
     );
 
-    // Should only show first 3 lessons
     const lessonCards = screen.getAllByRole("article");
     expect(lessonCards).toHaveLength(3);
   });

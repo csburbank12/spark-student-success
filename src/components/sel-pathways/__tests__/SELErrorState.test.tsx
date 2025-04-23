@@ -2,6 +2,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SELErrorState } from "../SELErrorState";
 import { vi } from "vitest";
+import "@testing-library/jest-dom";
 
 describe("SELErrorState", () => {
   const originalLocation = window.location;

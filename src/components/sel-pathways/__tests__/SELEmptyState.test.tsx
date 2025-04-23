@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { SELEmptyState } from "../SELEmptyState";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
+import "@testing-library/jest-dom";
 
 const mockNavigate = vi.fn();
 

@@ -1156,8 +1156,15 @@ export type Database = {
         Returns: Json[]
       }
       get_teacher_mood_check_ins: {
-        Args: { p_student_id: string; p_days_back?: number }
-        Returns: Json[]
+        Args: { p_teacher_id: string; p_days_back?: number }
+        Returns: {
+          id: string
+          student_id: string
+          mood_type: string
+          energy_level: number
+          notes: string
+          created_at: string
+        }[]
       }
       get_teacher_mood_trends: {
         Args: { p_student_id: string; p_days_back?: number }
