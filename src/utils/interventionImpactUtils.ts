@@ -11,6 +11,10 @@ export interface InterventionImpact {
   outcome_notes?: string;
 }
 
+function isArrayGuard<T>(data: any): data is T[] {
+  return Array.isArray(data) && (data.length === 0 || typeof data[0] === 'object');
+}
+
 export const recordInterventionImpact = async (impact: InterventionImpact) => {
   try {
     // Use RPC to bypass type checking
@@ -35,14 +39,16 @@ export const recordInterventionImpact = async (impact: InterventionImpact) => {
 
 export const getStudentInterventionImpacts = async (studentId: string) => {
   try {
-    // Use RPC to bypass type checking
     const { data, error } = await supabase
       .rpc('get_student_intervention_impacts', {
         p_student_id: studentId
       });
 
     if (error) throw error;
-    return data || [];
+    if (isArrayGuard<any>(data)) {
+      return data;
+    }
+    return [];
   } catch (error) {
     console.error('Error fetching intervention impacts:', error);
     return [];

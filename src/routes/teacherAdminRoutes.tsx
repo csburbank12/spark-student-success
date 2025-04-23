@@ -22,84 +22,85 @@ const WithDashboardLayout = ({ element }: { element: React.ReactNode }) => {
   return <DashboardLayout>{element}</DashboardLayout>;
 };
 
-interface ExtendedRouteObject extends RouteObject {
+// Extend RouteObject with extra props directly:
+type ExtendedRouteObject = RouteObject & {
   path: string;
   element: React.ReactNode;
   requiredRole?: string[];
-}
+};
 
 const teacherAdminRoutes: ExtendedRouteObject[] = [
   // Admin Dashboard
   {
     path: "/admin",
-    element: <WithDashboardLayout element={<AdminDashboard />} />,
+    element: React.createElement(WithDashboardLayout, { element: <AdminDashboard /> }),
     requiredRole: ["admin"],
   },
   {
     path: "/admin-enhanced",
-    element: <WithDashboardLayout element={<AdminDashboardEnhanced />} />,
+    element: React.createElement(WithDashboardLayout, { element: <AdminDashboardEnhanced /> }),
     requiredRole: ["admin"],
   },
   // Teacher Dashboard
   {
     path: "/teacher",
-    element: <WithDashboardLayout element={<TeacherDashboard />} />,
+    element: React.createElement(WithDashboardLayout, { element: <TeacherDashboard /> }),
     requiredRole: ["teacher"],
   },
   {
     path: "/teacher-enhanced",
-    element: <WithDashboardLayout element={<TeacherDashboardEnhanced />} />,
+    element: React.createElement(WithDashboardLayout, { element: <TeacherDashboardEnhanced /> }),
     requiredRole: ["teacher"],
   },
   // Shared Teacher & Admin Routes
   {
     path: "/student-management",
-    element: <WithDashboardLayout element={<StudentManagement />} />,
+    element: React.createElement(WithDashboardLayout, { element: <StudentManagement /> }),
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/check-in",
-    element: <WithDashboardLayout element={<CheckIn />} />,
+    element: React.createElement(WithDashboardLayout, { element: <CheckIn /> }),
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/well-lens",
-    element: <WithDashboardLayout element={<WellLensDashboard />} />,
+    element: React.createElement(WithDashboardLayout, { element: <WellLensDashboard /> }),
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/predictive-support",
-    element: <WithDashboardLayout element={<PredictiveSupport />} />,
+    element: React.createElement(WithDashboardLayout, { element: <PredictiveSupport /> }),
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/behavior-prediction",
-    element: <WithDashboardLayout element={<BehaviorPrediction />} />,
+    element: React.createElement(WithDashboardLayout, { element: <BehaviorPrediction /> }),
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/journal",
-    element: <WithDashboardLayout element={<DigitalJournal />} />,
+    element: React.createElement(WithDashboardLayout, { element: <DigitalJournal /> }),
     requiredRole: ["teacher", "admin", "student"],
   },
   {
     path: "/reset-room",
-    element: <WithDashboardLayout element={<ResetRoom />} />,
+    element: React.createElement(WithDashboardLayout, { element: <ResetRoom /> }),
     requiredRole: ["teacher", "admin", "student"],
   },
   {
     path: "/self-regulation-toolbox",
-    element: <WithDashboardLayout element={<SelfRegulationToolboxPage />} />,
+    element: React.createElement(WithDashboardLayout, { element: <SelfRegulationToolboxPage /> }),
     requiredRole: ["teacher", "admin", "student"],
   },
   {
     path: "/trusted-adult-dashboard",
-    element: <WithDashboardLayout element={<TrustedAdultDashboard />} />,
+    element: React.createElement(WithDashboardLayout, { element: <TrustedAdultDashboard /> }),
     requiredRole: ["admin", "teacher"],
   },
   {
     path: "/profile",
-    element: <WithDashboardLayout element={<UserProfile />} />,
+    element: React.createElement(WithDashboardLayout, { element: <UserProfile /> }),
     requiredRole: ["admin", "teacher", "student", "parent"],
   },
 ];

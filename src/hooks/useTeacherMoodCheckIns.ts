@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 export interface TeacherMoodCheckIn {
   id: string;
@@ -14,6 +14,10 @@ export interface TeacherMoodCheckIn {
   created_at: string;
 }
 
+function isArrayGuard<T>(data: any): data is T[] {
+  return Array.isArray(data) && (data.length === 0 || typeof data[0] === 'object');
+}
+
 export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
   const [checkIns, setCheckIns] = useState<TeacherMoodCheckIn[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,21 +27,23 @@ export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
   const fetchTeacherMoodCheckIns = async () => {
     try {
       setIsLoading(true);
-      
+
       if (!studentId) {
         setCheckIns([]);
         return;
       }
 
-      // Fetch using SQL query to bypass type checking
       const { data, error } = await supabase.rpc('get_teacher_mood_check_ins', {
         p_student_id: studentId,
         p_days_back: daysBack
       });
 
       if (error) throw error;
-      
-      setCheckIns(data || []);
+      if (isArrayGuard<TeacherMoodCheckIn>(data)) {
+        setCheckIns(data);
+      } else {
+        setCheckIns([]);
+      }
     } catch (error) {
       console.error('Error fetching teacher mood check-ins:', error);
       toast({
@@ -45,6 +51,7 @@ export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
         description: "Could not load teacher mood check-ins. Please try again.",
         variant: "destructive"
       });
+      setCheckIns([]);
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +68,6 @@ export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
         return null;
       }
 
-      // Insert using SQL RPC to bypass type checking
       const { data, error } = await supabase.rpc('insert_teacher_mood_check_in', {
         p_student_id: checkIn.student_id,
         p_teacher_id: checkIn.teacher_id,
@@ -71,14 +77,14 @@ export function useTeacherMoodCheckIns(studentId: string, daysBack = 30) {
       });
 
       if (error) throw error;
-      
-      fetchTeacherMoodCheckIns();
-      
+      await fetchTeacherMoodCheckIns();
+
       toast({
         title: "Check-in recorded",
         description: "Student mood check-in has been recorded successfully.",
       });
-      
+
+      // data is an array of results usually
       return data;
     } catch (error) {
       console.error('Error adding teacher mood check-in:', error);
@@ -113,21 +119,23 @@ export function useTeacherMoodTrends(studentId: string, daysBack = 30) {
     const fetchTrends = async () => {
       try {
         setIsLoading(true);
-        
+
         if (!studentId) {
           setData([]);
           return;
         }
 
-        // Fetch using SQL query to bypass type checking
         const { data, error } = await supabase.rpc('get_teacher_mood_trends', {
           p_student_id: studentId,
           p_days_back: daysBack
         });
 
         if (error) throw error;
-        
-        setData(data || []);
+        if (isArrayGuard<any>(data)) {
+          setData(data);
+        } else {
+          setData([]);
+        }
       } catch (error) {
         console.error('Error fetching teacher mood trends:', error);
         toast({
@@ -135,6 +143,7 @@ export function useTeacherMoodTrends(studentId: string, daysBack = 30) {
           description: "Could not load teacher mood trends. Please try again.",
           variant: "destructive"
         });
+        setData([]);
       } finally {
         setIsLoading(false);
       }

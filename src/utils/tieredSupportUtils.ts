@@ -10,9 +10,12 @@ export interface TieredSupportRecommendation {
   status?: string;
 }
 
+function isArrayGuard<T>(data: any): data is T[] {
+  return Array.isArray(data) && (data.length === 0 || typeof data[0] === 'object');
+}
+
 export const createTieredSupportRecommendation = async (recommendation: TieredSupportRecommendation) => {
   try {
-    // Use RPC to bypass type checking
     const { data, error } = await supabase
       .rpc('create_tiered_support_recommendation', {
         p_student_id: recommendation.student_id,
@@ -33,14 +36,16 @@ export const createTieredSupportRecommendation = async (recommendation: TieredSu
 
 export const getTieredSupportRecommendations = async (studentId: string) => {
   try {
-    // Use RPC to bypass type checking
     const { data, error } = await supabase
       .rpc('get_tiered_support_recommendations', {
         p_student_id: studentId
       });
 
     if (error) throw error;
-    return data || [];
+    if (isArrayGuard<any>(data)) {
+      return data;
+    }
+    return [];
   } catch (error) {
     console.error('Error fetching tiered support recommendations:', error);
     return [];

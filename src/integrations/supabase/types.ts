@@ -816,6 +816,41 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_tiered_support_recommendation: {
+        Args: {
+          p_student_id: string
+          p_recommended_by: string
+          p_tier: number
+          p_intervention_id?: string
+          p_recommendation_notes?: string
+          p_status?: string
+        }
+        Returns: Json
+      }
+      get_micro_coach_logs: {
+        Args: { p_student_id?: string }
+        Returns: Json[]
+      }
+      get_student_intervention_impacts: {
+        Args: { p_student_id: string }
+        Returns: Json[]
+      }
+      get_teacher_mood_check_ins: {
+        Args: { p_student_id: string; p_days_back?: number }
+        Returns: Json[]
+      }
+      get_teacher_mood_trends: {
+        Args: { p_student_id: string; p_days_back?: number }
+        Returns: {
+          date: string
+          mood_type: string
+          energy_level: number
+        }[]
+      }
+      get_tiered_support_recommendations: {
+        Args: { p_student_id: string }
+        Returns: Json[]
+      }
       get_user_mood_check_ins: {
         Args: { user_uuid: string; days_back?: number }
         Returns: {
@@ -848,6 +883,37 @@ export type Database = {
           required_role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      insert_intervention_impact: {
+        Args: {
+          p_student_id: string
+          p_staff_id: string
+          p_intervention_id: string
+          p_tier: number
+          p_strategy_notes?: string
+          p_impact_score?: number
+          p_outcome_notes?: string
+        }
+        Returns: Json
+      }
+      insert_micro_coach_log: {
+        Args: {
+          p_student_id: string
+          p_user_id: string
+          p_viewed_prompt: string
+          p_context: string
+        }
+        Returns: Json
+      }
+      insert_teacher_mood_check_in: {
+        Args: {
+          p_student_id: string
+          p_teacher_id: string
+          p_mood_type: string
+          p_energy_level: number
+          p_notes?: string
+        }
+        Returns: Json[]
       }
       is_school_admin: {
         Args: { user_id: string; school_uuid: string }
