@@ -11,12 +11,13 @@ import LoopBot from "@/pages/LoopBot";
 import CulturePulseSurvey from "@/pages/CulturePulseSurvey";
 import PersonalizedSELPathways from "@/pages/PersonalizedSELPathways";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { UserRole } from "@/types/roles";
 
 const studentRoutes = [
   {
     path: "/check-in",
     element: (
-      <ProtectedRoute requiredRole={['student']}>
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <CheckIn />
       </ProtectedRoute>
     ),
@@ -24,7 +25,7 @@ const studentRoutes = [
   {
     path: "/mental-health-toolkit",
     element: (
-      <ProtectedRoute requiredRole={['student']}>
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <MentalHealthToolkit />
       </ProtectedRoute>
     ),
@@ -32,7 +33,7 @@ const studentRoutes = [
   {
     path: "/future-me",
     element: (
-      <ProtectedRoute requiredRole={['student']}>
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <FutureMe />
       </ProtectedRoute>
     ),
@@ -40,7 +41,7 @@ const studentRoutes = [
   {
     path: "/digital-journal",
     element: (
-      <ProtectedRoute requiredRole={['student']}>
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <DigitalJournal />
       </ProtectedRoute>
     ),
@@ -48,7 +49,7 @@ const studentRoutes = [
   {
     path: "/self-regulation-toolbox",
     element: (
-      <ProtectedRoute requiredRole={['student']}>
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <SelfRegulationToolboxPage />
       </ProtectedRoute>
     ),
@@ -56,7 +57,7 @@ const studentRoutes = [
   {
     path: "/reset-room",
     element: (
-      <ProtectedRoute requiredRole={['student']}>
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <ResetRoomPage />
       </ProtectedRoute>
     ),
@@ -64,7 +65,7 @@ const studentRoutes = [
   {
     path: "/trusted-adults",
     element: (
-      <ProtectedRoute requiredRole={['student']}>
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <TrustedAdultSelection />
       </ProtectedRoute>
     ),
@@ -72,7 +73,7 @@ const studentRoutes = [
   {
     path: "/loopbot",
     element: (
-      <ProtectedRoute requiredRole={['student']}>
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <LoopBot />
       </ProtectedRoute>
     ),
@@ -80,7 +81,7 @@ const studentRoutes = [
   {
     path: "/pulse-tracker",
     element: (
-      <ProtectedRoute requiredRole={['student']}>
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <CulturePulseSurvey />
       </ProtectedRoute>
     ),
@@ -88,7 +89,7 @@ const studentRoutes = [
   {
     path: "/sel-pathways",
     element: (
-      <ProtectedRoute requiredRole={['student']}>
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <PersonalizedSELPathways />
       </ProtectedRoute>
     ),

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import TeacherDashboard from "@/pages/TeacherDashboard";
@@ -11,12 +12,13 @@ import CulturePulseSurvey from "@/pages/CulturePulseSurvey";
 import AdminPulseTrends from "@/pages/AdminPulseTrends";
 import SELPathwayManagement from "@/pages/SELPathwayManagement";
 import StaffAssistMode from "@/pages/StaffAssistMode";
+import { UserRole } from "@/types/roles";
 
 const teacherAdminRoutes = [
   {
     path: "/teacher-dashboard",
     element: (
-      <ProtectedRoute requiredRole={['staff', 'admin']}>
+      <ProtectedRoute requiredRole={[UserRole.staff, UserRole.admin]}>
         <TeacherDashboard />
       </ProtectedRoute>
     ),
@@ -24,7 +26,7 @@ const teacherAdminRoutes = [
   {
     path: "/admin-dashboard",
     element: (
-      <ProtectedRoute requiredRole={['admin']}>
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
         <AdminDashboard />
       </ProtectedRoute>
     ),
@@ -32,7 +34,7 @@ const teacherAdminRoutes = [
   {
     path: "/student-management",
     element: (
-      <ProtectedRoute requiredRole={['staff', 'admin']}>
+      <ProtectedRoute requiredRole={[UserRole.staff, UserRole.admin]}>
         <StudentManagement />
       </ProtectedRoute>
     ),
@@ -40,7 +42,7 @@ const teacherAdminRoutes = [
   {
     path: "/behavior-prediction",
     element: (
-      <ProtectedRoute requiredRole={['staff', 'admin']}>
+      <ProtectedRoute requiredRole={[UserRole.staff, UserRole.admin]}>
         <BehaviorPrediction />
       </ProtectedRoute>
     ),
@@ -48,7 +50,7 @@ const teacherAdminRoutes = [
   {
     path: "/predictive-support",
     element: (
-      <ProtectedRoute requiredRole={['staff', 'admin']}>
+      <ProtectedRoute requiredRole={[UserRole.staff, UserRole.admin]}>
         <PredictiveSupport />
       </ProtectedRoute>
     ),
@@ -56,7 +58,7 @@ const teacherAdminRoutes = [
   {
     path: "/well-lens",
     element: (
-      <ProtectedRoute requiredRole={['staff', 'admin']}>
+      <ProtectedRoute requiredRole={[UserRole.staff, UserRole.admin]}>
         <WellLensDashboard />
       </ProtectedRoute>
     ),
@@ -64,7 +66,7 @@ const teacherAdminRoutes = [
   {
     path: "/trusted-adult-dashboard",
     element: (
-      <ProtectedRoute requiredRole={['staff', 'admin']}>
+      <ProtectedRoute requiredRole={[UserRole.staff, UserRole.admin]}>
         <TrustedAdultDashboard />
       </ProtectedRoute>
     ),
@@ -72,7 +74,7 @@ const teacherAdminRoutes = [
   {
     path: "/pulse-trends",
     element: (
-      <ProtectedRoute requiredRole={['admin']}>
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
         <AdminPulseTrends />
       </ProtectedRoute>
     ),
@@ -80,7 +82,7 @@ const teacherAdminRoutes = [
   {
     path: "/pulse-survey",
     element: (
-      <ProtectedRoute requiredRole={['staff', 'admin']}>
+      <ProtectedRoute requiredRole={[UserRole.staff, UserRole.admin]}>
         <CulturePulseSurvey />
       </ProtectedRoute>
     ),
@@ -88,7 +90,7 @@ const teacherAdminRoutes = [
   {
     path: "/sel-pathway-management",
     element: (
-      <ProtectedRoute requiredRole={['staff', 'admin']}>
+      <ProtectedRoute requiredRole={[UserRole.staff, UserRole.admin]}>
         <SELPathwayManagement />
       </ProtectedRoute>
     ),
@@ -96,7 +98,7 @@ const teacherAdminRoutes = [
   {
     path: "/staff-assist",
     element: (
-      <ProtectedRoute requiredRole={['staff', 'admin']}>
+      <ProtectedRoute requiredRole={[UserRole.staff, UserRole.admin]}>
         <StaffAssistMode />
       </ProtectedRoute>
     ),

@@ -17,7 +17,7 @@ const StaffAssistMode: React.FC = () => {
 
   // Check role, allow only staff or admin
   const isStaffOrAdmin =
-    user?.role === UserRole.staff || user?.role === UserRole.admin;
+    user?.role === UserRole.staff.toString() || user?.role === UserRole.admin.toString();
 
   // Fetch all students for staff
   const { data: students = [], isLoading: isLoadingStudents } = useQuery({

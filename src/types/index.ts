@@ -1,12 +1,13 @@
 
-export type UserRole = "student" | "teacher" | "admin" | "parent";
+import { UserRole } from "./roles";
+
 export type MoodType = "happy" | "good" | "okay" | "sad" | "stressed";
 
 export interface User {
   id: string;
   email: string;
   name?: string;
-  role: UserRole;
+  role: string;
   avatarUrl?: string;
   schoolId?: string;
 }

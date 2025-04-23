@@ -5,7 +5,7 @@ import StudentDashboardEnhanced from "@/pages/StudentDashboardEnhanced";
 import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
 import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
 import ParentDashboardEnhanced from "@/pages/ParentDashboardEnhanced";
-import { UserRole } from "@/types";
+import { UserRole } from "@/types/roles";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -31,14 +31,17 @@ const DashboardManager: React.FC = () => {
   }
 
   // Render the appropriate dashboard based on user role
-  switch (user.role as UserRole) {
-    case "student":
+  const userRole = user.role;
+  
+  switch (userRole) {
+    case UserRole.student.toString():
       return <StudentDashboardEnhanced />;
-    case "teacher":
+    case UserRole.teacher.toString():
+    case UserRole.staff.toString():
       return <TeacherDashboardEnhanced />;
-    case "admin":
+    case UserRole.admin.toString():
       return <AdminDashboardEnhanced />;
-    case "parent":
+    case UserRole.parent.toString():
       return <ParentDashboardEnhanced />;
     default:
       return <div>Unknown user role</div>;

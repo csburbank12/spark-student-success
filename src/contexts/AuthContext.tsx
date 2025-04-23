@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, UserRole } from '@/types';
+import { User } from '@/types';
+import { UserRole } from '@/types/roles';
 
 interface AuthContextType {
   user: User | null;
@@ -10,35 +11,35 @@ interface AuthContextType {
   setRole: (role: UserRole) => void;
 }
 
-const sampleUsers: Record<UserRole, User> = {
-  student: {
+const sampleUsers: Record<string, User> = {
+  [UserRole.student]: {
     id: 's1',
     name: 'Alex Johnson',
     email: 'alex@school.edu',
-    role: 'student',
+    role: UserRole.student.toString(),
     avatarUrl: '/student-avatar.png',
     schoolId: 'school1',
   },
-  teacher: {
+  [UserRole.teacher]: {
     id: 't1',
     name: 'Ms. Rodriguez',
     email: 'rodriguez@school.edu',
-    role: 'teacher',
+    role: UserRole.teacher.toString(),
     avatarUrl: '/teacher-avatar.png',
     schoolId: 'school1',
   },
-  admin: {
+  [UserRole.admin]: {
     id: 'a1',
     name: 'Principal Wilson',
     email: 'wilson@district.edu',
-    role: 'admin',
+    role: UserRole.admin.toString(),
     avatarUrl: '/admin-avatar.png',
   },
-  parent: {
+  [UserRole.parent]: {
     id: 'p1',
     name: 'Sarah Johnson',
     email: 'sarah@family.com',
-    role: 'parent',
+    role: UserRole.parent.toString(),
     avatarUrl: '/parent-avatar.png',
     schoolId: 'school1',
   },
@@ -67,14 +68,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // In a real app, this would be an API call
     // For demo, we'll simulate with sample users
     // First determine which role from the email
-    let role: UserRole = 'student';
+    let role: UserRole = UserRole.student;
     
     if (email.includes('teacher') || email.includes('rodriguez')) {
-      role = 'teacher';
+      role = UserRole.teacher;
     } else if (email.includes('admin') || email.includes('principal') || email.includes('wilson')) {
-      role = 'admin';
+      role = UserRole.admin;
     } else if (email.includes('parent') || email.includes('family')) {
-      role = 'parent';
+      role = UserRole.parent;
     }
     
     // Simulate API delay
