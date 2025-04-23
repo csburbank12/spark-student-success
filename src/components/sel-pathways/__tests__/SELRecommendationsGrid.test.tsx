@@ -2,11 +2,12 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SELRecommendationsGrid } from "../SELRecommendationsGrid";
 import { MemoryRouter } from "react-router-dom";
+import { vi } from "vitest";
 
-const mockNavigate = jest.fn();
+const mockNavigate = vi.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate
 }));
 
@@ -30,10 +31,10 @@ describe("SELRecommendationsGrid", () => {
     }
   ];
 
-  const mockOnSelectLesson = jest.fn();
+  const mockOnSelectLesson = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("renders recommendations grid with lessons", () => {

@@ -1,6 +1,7 @@
 
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SELErrorState } from "../SELErrorState";
+import { vi } from "vitest";
 
 describe("SELErrorState", () => {
   const originalLocation = window.location;
@@ -8,7 +9,7 @@ describe("SELErrorState", () => {
   beforeAll(() => {
     Object.defineProperty(window, 'location', {
       writable: true,
-      value: { reload: jest.fn() }
+      value: { reload: vi.fn() }
     });
   });
 
@@ -25,7 +26,6 @@ describe("SELErrorState", () => {
     const retryButton = screen.getByRole("button", { name: /try again/i });
     expect(retryButton).toBeInTheDocument();
     
-    // Test retry button click
     fireEvent.click(retryButton);
     expect(window.location.reload).toHaveBeenCalled();
   });

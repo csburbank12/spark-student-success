@@ -2,11 +2,12 @@
 import { render, screen } from "@testing-library/react";
 import { SELEmptyState } from "../SELEmptyState";
 import { MemoryRouter } from "react-router-dom";
+import { vi } from "vitest";
 
-const mockNavigate = jest.fn();
+const mockNavigate = vi.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate
 }));
 
@@ -24,7 +25,6 @@ describe("SELEmptyState", () => {
     const exploreButton = screen.getByRole("button", { name: /explore sel pathways/i });
     expect(exploreButton).toBeInTheDocument();
     
-    // Test navigation on button click
     exploreButton.click();
     expect(mockNavigate).toHaveBeenCalledWith("/sel-pathways");
   });
