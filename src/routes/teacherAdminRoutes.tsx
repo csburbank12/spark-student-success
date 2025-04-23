@@ -17,8 +17,13 @@ import DashboardLayout from "@/routes/DashboardManager";
 import TrustedAdultDashboard from "@/pages/TrustedAdultDashboard";
 import { RouteObject } from "react-router-dom";
 
-// Fix the WithDashboardLayout component to correctly handle children props
-const WithDashboardLayout = ({ children }: { children: React.ReactNode }) => {
+// Define a correct interface for the WithDashboardLayout component
+interface WithDashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+// Fix the WithDashboardLayout component implementation
+const WithDashboardLayout: React.FC<WithDashboardLayoutProps> = ({ children }) => {
   return <DashboardLayout>{children}</DashboardLayout>;
 };
 
