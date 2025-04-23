@@ -1,5 +1,6 @@
 
 import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import SelectedTrustedAdults from "../SelectedTrustedAdults";
 
 describe("SelectedTrustedAdults", () => {
@@ -57,7 +58,7 @@ describe("SelectedTrustedAdults", () => {
       <SelectedTrustedAdults trustedAdults={mockTrustedAdults} onRemove={mockOnRemove} />
     );
 
-    expect(screen.getByText("JA")).toBeInTheDocument(); // Jane Smith initials
+    expect(screen.getByText("JS")).toBeInTheDocument(); // Jane Smith initials
   });
 
   it("calls onRemove when remove button is clicked", () => {
