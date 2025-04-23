@@ -79,12 +79,12 @@ const StaffAssistForm: React.FC<StaffAssistFormProps> = ({
           <label htmlFor="student-select" className="text-sm font-medium">
             Select Student (Optional)
           </label>
-          <Select value={selectedStudentId || ""} onValueChange={setSelectedStudentId}>
+          <Select value={selectedStudentId || "none"} onValueChange={setSelectedStudentId}>
             <SelectTrigger>
               <SelectValue placeholder="Select a student (optional)" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">No specific student</SelectItem>
+              <SelectItem value="none">No specific student</SelectItem>
               {students?.map((student) => (
                 <SelectItem key={student.id} value={student.id}>
                   {student.first_name} {student.last_name}

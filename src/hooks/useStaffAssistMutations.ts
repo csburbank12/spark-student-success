@@ -22,11 +22,15 @@ export function useStaffAssistMutations({
       notes: string;
     }) => {
       if (!user?.id) throw new Error("User not authenticated");
+      
+      // Handle the "none" value for studentId
+      const studentId = data.studentId === "none" ? null : data.studentId;
+      
       const { error } = await supabase
         .from("behavior_logs")
         .insert({
           staff_id: user.id,
-          student_id: data.studentId,
+          student_id: studentId,
           situation_type: data.situationType,
           intervention_used: data.interventionUsed,
           notes: data.notes,
