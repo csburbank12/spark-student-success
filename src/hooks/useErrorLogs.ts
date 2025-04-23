@@ -23,14 +23,20 @@ export function useErrorLogs(showResolved: boolean = false, limit: number = 100,
   const fetchLogs = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.rpc('get_error_logs', {
-        p_limit: limit,
-        p_offset: offset,
-        p_show_resolved: showResolved
-      });
+      let query = supabase
+        .from('error_logs')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      if (!showResolved) {
+        query = query.eq('resolved', false);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
-      setLogs(data || []);
+      setLogs(data as ErrorLog[]);
     } catch (error) {
       console.error('Error fetching error logs:', error);
       toast({
@@ -45,10 +51,12 @@ export function useErrorLogs(showResolved: boolean = false, limit: number = 100,
 
   const toggleResolution = async (logId: string, resolved: boolean) => {
     try {
-      await supabase.rpc('resolve_error_log', {
-        p_log_id: logId,
-        p_resolved: resolved
-      });
+      const { error } = await supabase
+        .from('error_logs')
+        .update({ resolved })
+        .eq('id', logId);
+      
+      if (error) throw error;
       
       await fetchLogs();
       

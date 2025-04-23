@@ -19,12 +19,14 @@ export class ErrorLoggingService {
     status_code,
   }: ErrorLogData) {
     try {
-      const { error } = await supabase.rpc('log_error', {
-        p_action: action,
-        p_error_message: error_message,
-        p_status_code: status_code,
-        p_profile_type: profile_type
-      });
+      const { error } = await supabase
+        .from('error_logs')
+        .insert({
+          action,
+          error_message,
+          profile_type,
+          status_code,
+        });
       
       if (error) throw error;
     } catch (err) {
@@ -34,10 +36,10 @@ export class ErrorLoggingService {
 
   static async resolveError(logId: string, resolved: boolean = true) {
     try {
-      const { error } = await supabase.rpc('resolve_error_log', {
-        p_log_id: logId,
-        p_resolved: resolved
-      });
+      const { error } = await supabase
+        .from('error_logs')
+        .update({ resolved })
+        .eq('id', logId);
       
       if (error) throw error;
     } catch (err) {
@@ -47,13 +49,14 @@ export class ErrorLoggingService {
 
   static async checkRecurringErrors(action: string, hours: number = 1) {
     try {
-      const { data, error } = await supabase.rpc('count_recurring_errors', {
-        p_action: action,
-        p_hours: hours
-      });
+      const { data, error } = await supabase
+        .from('error_logs')
+        .select('id')
+        .eq('action', action)
+        .gte('timestamp', new Date(Date.now() - hours * 60 * 60 * 1000).toISOString());
       
       if (error) throw error;
-      return data || 0;
+      return data ? data.length : 0;
     } catch (err) {
       console.error('Failed to check recurring errors:', err);
       return 0;
