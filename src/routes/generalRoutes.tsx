@@ -5,6 +5,7 @@ import Login from "@/pages/Login";
 import { ProtectedRoute, DashboardRouter } from "./ProtectedRoute";
 import UserProfile from "@/pages/profile/UserProfile";
 import NotFound from "@/pages/NotFound";
+import LoopBot from "@/pages/LoopBot";
 
 // Any general (universal or shared) routes
 const generalRoutes = [
@@ -53,6 +54,14 @@ const generalRoutes = [
     element: (
       <ProtectedRoute>
         <UserProfile />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/loopbot",
+    element: (
+      <ProtectedRoute>
+        <LoopBot />
       </ProtectedRoute>
     ),
   },

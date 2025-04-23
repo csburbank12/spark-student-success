@@ -7,6 +7,7 @@ import DigitalJournal from "@/pages/DigitalJournal";
 import SelfRegulationToolboxPage from "@/pages/SelfRegulationToolbox";
 import ResetRoomPage from "@/pages/ResetRoom";
 import TrustedAdultSelection from "@/pages/TrustedAdultSelection";
+import LoopBot from "@/pages/LoopBot";
 import { ProtectedRoute } from "./ProtectedRoute";
 
 const studentRoutes = [
@@ -61,6 +62,15 @@ const studentRoutes = [
   {
     path: "/trusted-adults",
     element: <TrustedAdultSelection />,
+    requiredRole: ["student"],
+  },
+  {
+    path: "/loopbot",
+    element: (
+      <ProtectedRoute>
+        <LoopBot />
+      </ProtectedRoute>
+    ),
     requiredRole: ["student"],
   },
 ];
