@@ -1,8 +1,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { UserRole } from '@/types/roles';
 
 export type ErrorLogLevel = 'error' | 'warning' | 'info';
-export type ProfileType = 'student' | 'staff' | 'parent' | 'admin';
+export type ProfileType = UserRole | 'unauthenticated' | 'unknown' | string;
 
 interface ErrorLogData {
   action: string;
