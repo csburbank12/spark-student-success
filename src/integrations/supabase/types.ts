@@ -71,6 +71,39 @@ export type Database = {
         }
         Relationships: []
       }
+      behavior_logs: {
+        Row: {
+          created_at: string
+          effectiveness_rating: number | null
+          id: string
+          intervention_used: string
+          notes: string | null
+          situation_type: string
+          staff_id: string
+          student_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          effectiveness_rating?: number | null
+          id?: string
+          intervention_used: string
+          notes?: string | null
+          situation_type: string
+          staff_id: string
+          student_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          effectiveness_rating?: number | null
+          id?: string
+          intervention_used?: string
+          notes?: string | null
+          situation_type?: string
+          staff_id?: string
+          student_id?: string | null
+        }
+        Relationships: []
+      }
       culture_pulse_surveys: {
         Row: {
           belonging_score: number | null

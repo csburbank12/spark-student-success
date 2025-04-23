@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import TeacherDashboard from "@/pages/TeacherDashboard";
@@ -17,7 +16,7 @@ const teacherAdminRoutes = [
   {
     path: "/teacher-dashboard",
     element: (
-      <ProtectedRoute requiredRole={["staff", "admin"]}>
+      <ProtectedRoute requiredRole={['staff', 'admin']}>
         <TeacherDashboard />
       </ProtectedRoute>
     ),
@@ -25,7 +24,7 @@ const teacherAdminRoutes = [
   {
     path: "/admin-dashboard",
     element: (
-      <ProtectedRoute requiredRole={["admin"]}>
+      <ProtectedRoute requiredRole={['admin']}>
         <AdminDashboard />
       </ProtectedRoute>
     ),
@@ -33,7 +32,7 @@ const teacherAdminRoutes = [
   {
     path: "/student-management",
     element: (
-      <ProtectedRoute requiredRole={["staff", "admin"]}>
+      <ProtectedRoute requiredRole={['staff', 'admin']}>
         <StudentManagement />
       </ProtectedRoute>
     ),
@@ -41,7 +40,7 @@ const teacherAdminRoutes = [
   {
     path: "/behavior-prediction",
     element: (
-      <ProtectedRoute requiredRole={["staff", "admin"]}>
+      <ProtectedRoute requiredRole={['staff', 'admin']}>
         <BehaviorPrediction />
       </ProtectedRoute>
     ),
@@ -49,7 +48,7 @@ const teacherAdminRoutes = [
   {
     path: "/predictive-support",
     element: (
-      <ProtectedRoute requiredRole={["staff", "admin"]}>
+      <ProtectedRoute requiredRole={['staff', 'admin']}>
         <PredictiveSupport />
       </ProtectedRoute>
     ),
@@ -57,7 +56,7 @@ const teacherAdminRoutes = [
   {
     path: "/well-lens",
     element: (
-      <ProtectedRoute requiredRole={["staff", "admin"]}>
+      <ProtectedRoute requiredRole={['staff', 'admin']}>
         <WellLensDashboard />
       </ProtectedRoute>
     ),
@@ -65,7 +64,7 @@ const teacherAdminRoutes = [
   {
     path: "/trusted-adult-dashboard",
     element: (
-      <ProtectedRoute requiredRole={["staff", "admin"]}>
+      <ProtectedRoute requiredRole={['staff', 'admin']}>
         <TrustedAdultDashboard />
       </ProtectedRoute>
     ),
@@ -73,7 +72,7 @@ const teacherAdminRoutes = [
   {
     path: "/pulse-trends",
     element: (
-      <ProtectedRoute requiredRole={["admin"]}>
+      <ProtectedRoute requiredRole={['admin']}>
         <AdminPulseTrends />
       </ProtectedRoute>
     ),
@@ -81,7 +80,7 @@ const teacherAdminRoutes = [
   {
     path: "/pulse-survey",
     element: (
-      <ProtectedRoute requiredRole={["staff", "admin"]}>
+      <ProtectedRoute requiredRole={['staff', 'admin']}>
         <CulturePulseSurvey />
       </ProtectedRoute>
     ),
@@ -89,7 +88,7 @@ const teacherAdminRoutes = [
   {
     path: "/sel-pathway-management",
     element: (
-      <ProtectedRoute requiredRole={["staff", "admin"]}>
+      <ProtectedRoute requiredRole={['staff', 'admin']}>
         <SELPathwayManagement />
       </ProtectedRoute>
     ),
@@ -97,7 +96,7 @@ const teacherAdminRoutes = [
   {
     path: "/staff-assist",
     element: (
-      <ProtectedRoute requiredRole={["staff", "admin"]}>
+      <ProtectedRoute requiredRole={['staff', 'admin']}>
         <StaffAssistMode />
       </ProtectedRoute>
     ),

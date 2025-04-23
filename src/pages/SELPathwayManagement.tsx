@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -35,6 +34,9 @@ const SELPathwayManagement: React.FC = () => {
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<SelLesson | null>(null);
 
+  // Use type assertion for role checking
+  const isStaffOrAdmin = user?.role === 'staff' || user?.role === 'admin';
+
   // Fetch all students (for staff to manage)
   const { data: students, isLoading: loadingStudents } = useQuery({
     queryKey: ["students"],
@@ -48,7 +50,7 @@ const SELPathwayManagement: React.FC = () => {
       if (error) throw error;
       return data as StudentProfile[] || [];
     },
-    enabled: !!user?.id && (user?.role === "staff" || user?.role === "admin"),
+    enabled: !!user?.id && isStaffOrAdmin,
   });
 
   // Fetch all SEL lessons
@@ -67,7 +69,7 @@ const SELPathwayManagement: React.FC = () => {
       if (error) throw error;
       return data as SelLesson[] || [];
     },
-    enabled: !!user?.id && (user?.role === "staff" || user?.role === "admin"),
+    enabled: !!user?.id && isStaffOrAdmin,
   });
 
   // Fetch student assignments and progress when a student is selected
@@ -164,7 +166,7 @@ const SELPathwayManagement: React.FC = () => {
   const pathways = [...new Set(lessons?.map(l => l.pathway))].filter(Boolean);
 
   // If not a staff member, show access denied
-  if (user?.role !== "staff" && user?.role !== "admin") {
+  if (!isStaffOrAdmin) {
     return (
       <div className="max-w-lg mx-auto mt-20">
         <Card>

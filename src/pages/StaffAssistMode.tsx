@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -8,8 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/sonner";
 import { HelpCircle, Bookmark, Clock, CheckCircle } from "lucide-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Tables } from "@/integrations/supabase/types";
+import { UserRole } from "@/types/roles";
 
 // Define behavior situation types
 const behaviorSituations = [
@@ -167,17 +168,21 @@ interface BehaviorLog {
 
 const StaffAssistMode: React.FC = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [situation, setSituation] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [selectedResponse, setSelectedResponse] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("assist");
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   
+  // Use type assertion for role checking
+  const isStaffOrAdmin = user?.role === 'staff' || user?.role === 'admin';
+  
   // Fetch students for the current staff member
   const { data: students } = useQuery({
     queryKey: ["staff-students"],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id || !isStaffOrAdmin) return [];
       
       // In a real implementation, you'd fetch students based on class assignments
       const { data, error } = await supabase
@@ -188,14 +193,14 @@ const StaffAssistMode: React.FC = () => {
       if (error) throw error;
       return data || [];
     },
-    enabled: !!user?.id && (user?.role === "staff" || user?.role === "admin"),
+    enabled: isStaffOrAdmin,
   });
   
   // Fetch previous behavior logs
   const { data: behaviorLogs, refetch: refetchLogs } = useQuery({
     queryKey: ["behavior-logs", user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id || !isStaffOrAdmin) return [];
       
       const { data, error } = await supabase
         .from("behavior_logs")
@@ -204,9 +209,9 @@ const StaffAssistMode: React.FC = () => {
         .order("created_at", { ascending: false });
         
       if (error) throw error;
-      return data as BehaviorLog[] || [];
+      return data as Tables<"behavior_logs">[] || [];
     },
-    enabled: !!user?.id && (user?.role === "staff" || user?.role === "admin"),
+    enabled: isStaffOrAdmin,
   });
   
   // Log behavior intervention
@@ -233,15 +238,8 @@ const StaffAssistMode: React.FC = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast("Intervention logged successfully");
       refetchLogs();
-      resetForm();
     },
-    onError: (error) => {
-      toast("Failed to log intervention", {
-        description: error.message,
-      });
-    }
   });
   
   // Update intervention effectiveness
@@ -293,6 +291,22 @@ const StaffAssistMode: React.FC = () => {
   
   // Get suggested responses based on selected situation
   const suggestedResponses = situation ? responseStrategies[situation as keyof typeof responseStrategies] : [];
+  
+  // If not a staff member or admin, return access denied
+  if (!isStaffOrAdmin) {
+    return (
+      <div className="max-w-lg mx-auto mt-20">
+        <Card>
+          <CardHeader>
+            <CardTitle>Access Denied</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>You do not have permission to access Staff Assist Mode.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">

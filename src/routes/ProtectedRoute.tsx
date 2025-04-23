@@ -1,46 +1,32 @@
 
-import React from "react";
-import { Navigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import StudentDashboard from "@/pages/StudentDashboard";
-import TeacherDashboard from "@/pages/TeacherDashboard";
-import AdminDashboard from "@/pages/AdminDashboard";
-import ParentDashboard from "@/pages/ParentDashboard";
-import { AppShell } from "@/components/layout/AppShell";
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { UserRole } from '@/types/roles';
 
-// Handles role-based redirect to appropriate dashboard
-export const DashboardRouter: React.FC = () => {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  requiredRole: UserRole[];
+}
+
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+  children, 
+  requiredRole 
+}) => {
   const { user } = useAuth();
 
+  // If no user is logged in, redirect to login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  switch (user.role) {
-    case "student":
-      return <StudentDashboard />;
-    case "teacher":
-      return <TeacherDashboard />;
-    case "admin":
-      return <AdminDashboard />;
-    case "parent":
-      return <ParentDashboard />;
-    default:
-      return <Navigate to="/login" replace />;
-  }
-};
+  // Check if user's role is in the required roles
+  const hasRequiredRole = user.role && requiredRole.includes(user.role as UserRole);
 
-// Protects routes for authenticated users
-export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
+  // If user doesn't have the required role, redirect to login or dashboard
+  if (!hasRequiredRole) {
+    return <Navigate to="/dashboard" replace />;
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <AppShell>{children}</AppShell>;
+  return <>{children}</>;
 };
