@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { loopBotService, SiteHealth, LoopBotLog } from "@/services/loopbot/LoopBotService";
+import { loopBotService } from "@/services/loopbot/LoopBotService";
+import type { SiteHealth, LoopBotLog } from "@/services/loopbot/types";
 
 interface LoopBotContextType {
   siteHealth: SiteHealth;

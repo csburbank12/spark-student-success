@@ -29,7 +29,7 @@ const SchoolSelectorHeader: React.FC<SchoolSelectorHeaderProps> = ({
             <SelectValue placeholder="Select School" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Schools</SelectItem>
+            <SelectItem value="all-schools">All Schools</SelectItem>
             {mockSchools.map((school) => (
               <SelectItem key={school.id} value={school.id}>
                 {school.name}
@@ -47,4 +47,3 @@ const SchoolSelectorHeader: React.FC<SchoolSelectorHeaderProps> = ({
 };
 
 export default SchoolSelectorHeader;
-

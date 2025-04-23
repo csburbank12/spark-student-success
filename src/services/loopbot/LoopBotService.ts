@@ -1,8 +1,9 @@
+
 import { loopBotScanService } from "./LoopBotScanService";
 import { loopBotLogService } from "./LoopBotLogService";
 import { loopBotRepairService } from "./LoopBotRepairService";
 import { loopBotSchedulerService } from "./LoopBotSchedulerService";
-import type { LoopBotLog, LoopBotScanResult } from "./types";
+import type { LoopBotLog, LoopBotScanResult, SiteHealth } from "./types";
 
 class LoopBotService {
   private lastScanResult: LoopBotScanResult | null = null;

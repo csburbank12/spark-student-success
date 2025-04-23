@@ -11,6 +11,7 @@ import { HealthStatusCard } from "@/components/loopbot/HealthStatusCard";
 import { IssuesSummaryCard } from "@/components/loopbot/IssuesSummaryCard";
 import { ScheduledOperationsCard } from "@/components/loopbot/ScheduledOperationsCard";
 import { LogsTable } from "@/components/loopbot/LogsTable";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const LoopBotLogs: React.FC = () => {
   const [isScanning, setIsScanning] = useState(false);
@@ -107,15 +108,19 @@ const LoopBotLogs: React.FC = () => {
           
           <div className="flex items-center space-x-2">
             <span className="text-sm text-muted-foreground">Show:</span>
-            <select
-              className="text-sm border rounded p-1"
-              value={filterDays}
-              onChange={(e) => setFilterDays(Number(e.target.value))}
+            <Select
+              value={String(filterDays)}
+              onValueChange={(value) => setFilterDays(Number(value))}
             >
-              <option value={1}>Last 24 hours</option>
-              <option value={7}>Last 7 days</option>
-              <option value={30}>Last 30 days</option>
-            </select>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Select period" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">Last 24 hours</SelectItem>
+                <SelectItem value="7">Last 7 days</SelectItem>
+                <SelectItem value="30">Last 30 days</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
