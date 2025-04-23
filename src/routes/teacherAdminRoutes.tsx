@@ -3,6 +3,7 @@ import React, { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Lazy load components for better performance
 const TeacherDashboard = lazy(() => import("@/pages/TeacherDashboard"));
@@ -15,6 +16,12 @@ const BehaviorPrediction = lazy(() => import("@/pages/BehaviorPrediction"));
 const CheckIn = lazy(() => import("@/pages/CheckIn"));
 const TeacherProfile = lazy(() => import("@/pages/profile/TeacherProfile"));
 const EmotionAwareScheduling = lazy(() => import("@/pages/EmotionAwareScheduling"));
+
+// Create a wrapper component to provide user from context to TeacherProfile
+const TeacherProfileWrapper = () => {
+  const { user } = useAuth();
+  return <TeacherProfile user={user} />;
+};
 
 export const teacherAdminRoutes: RouteObject[] = [
   {
@@ -85,7 +92,7 @@ export const teacherAdminRoutes: RouteObject[] = [
     path: "/profile/teacher",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
-        <TeacherProfile />
+        <TeacherProfileWrapper />
       </ProtectedRoute>
     ),
   },
