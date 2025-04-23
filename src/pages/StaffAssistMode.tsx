@@ -17,7 +17,7 @@ const StaffAssistMode: React.FC = () => {
 
   // Check role, allow only staff or admin
   const isStaffOrAdmin =
-    user?.role === "staff" || user?.role === "admin";
+    user?.role === UserRole.staff || user?.role === UserRole.admin;
 
   // Fetch all students for staff
   const { data: students = [], isLoading: isLoadingStudents } = useQuery({
@@ -31,7 +31,7 @@ const StaffAssistMode: React.FC = () => {
       if (error) throw error;
       return data as StudentProfile[] || [];
     },
-    enabled: !!isStaffOrAdmin,
+    enabled: !!user?.id && !!isStaffOrAdmin,
   });
 
   // Fetch all behavior logs by staff user
@@ -47,7 +47,7 @@ const StaffAssistMode: React.FC = () => {
       if (error) throw error;
       return data as BehaviorLog[] || [];
     },
-    enabled: !!isStaffOrAdmin,
+    enabled: !!user?.id && !!isStaffOrAdmin,
   });
 
   // Logging new intervention

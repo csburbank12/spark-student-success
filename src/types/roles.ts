@@ -1,2 +1,8 @@
 
-export type UserRole = 'student' | 'staff' | 'admin' | 'parent';
+export enum UserRole {
+  student = "student",
+  staff = "staff",
+  admin = "admin",
+  parent = "parent",
+  teacher = "teacher"
+}

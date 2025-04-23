@@ -26,7 +26,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Check if user's role is in the required roles
-  const hasRequiredRole = user.role && requiredRole.includes(user.role as UserRole);
+  // Convert string role to UserRole enum
+  const userRole = user.role as unknown as UserRole;
+  const hasRequiredRole = userRole && requiredRole.includes(userRole);
 
   // If user doesn't have the required role, redirect to login or dashboard
   if (!hasRequiredRole) {
@@ -43,14 +45,18 @@ export const DashboardRouter: React.FC = () => {
   // Simple dashboard router based on user role
   if (!user) return <Navigate to="/login" replace />;
   
-  switch (user.role as UserRole) {
-    case 'student':
+  // Convert string role to UserRole enum for the switch
+  const userRole = user.role as unknown as UserRole;
+  
+  switch (userRole) {
+    case UserRole.student:
       return <Navigate to="/check-in" replace />;
-    case 'staff':
+    case UserRole.staff:
+    case UserRole.teacher:
       return <Navigate to="/teacher-dashboard" replace />;
-    case 'admin':
+    case UserRole.admin:
       return <Navigate to="/admin-dashboard" replace />;
-    case 'parent':
+    case UserRole.parent:
       return <Navigate to="/child-activity" replace />;
     default:
       return <Navigate to="/login" replace />;
