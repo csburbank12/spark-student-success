@@ -191,6 +191,39 @@ export type Database = {
         }
         Relationships: []
       }
+      error_logs: {
+        Row: {
+          action: string | null
+          error_message: string | null
+          id: string
+          profile_type: string | null
+          resolved: boolean | null
+          status_code: string | null
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action?: string | null
+          error_message?: string | null
+          id?: string
+          profile_type?: string | null
+          resolved?: boolean | null
+          status_code?: string | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string | null
+          error_message?: string | null
+          id?: string
+          profile_type?: string | null
+          resolved?: boolean | null
+          status_code?: string | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       interventions: {
         Row: {
           created_at: string | null
