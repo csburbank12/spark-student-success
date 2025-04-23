@@ -1,3 +1,4 @@
+
 import React from "react";
 import StudentManagement from "@/pages/StudentManagement";
 import WellLensDashboard from "@/pages/WellLensDashboard";
@@ -14,6 +15,7 @@ import CheckIn from "@/pages/CheckIn";
 import UserProfile from "@/pages/profile/UserProfile";
 import CulturePulseSurvey from "@/pages/CulturePulseSurvey";
 import AdminPulseTrends from "@/pages/AdminPulseTrends";
+import SELPathwayManagement from "@/pages/SELPathwayManagement";
 import { DashboardLayout } from "@/routes/DashboardManager";
 import TrustedAdultDashboard from "@/pages/TrustedAdultDashboard";
 import { RouteObject } from "react-router-dom";
@@ -120,6 +122,15 @@ const teacherAdminRoutes: ExtendedRouteObject[] = [
       </WithDashboardLayout>
     ),
     requiredRole: ["admin"],
+  },
+  {
+    path: "/sel-pathway-management",
+    element: (
+      <WithDashboardLayout>
+        <SELPathwayManagement />
+      </WithDashboardLayout>
+    ),
+    requiredRole: ["teacher", "admin"],
   },
 ];
 
