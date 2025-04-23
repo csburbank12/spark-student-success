@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -17,7 +18,7 @@ import { SelLesson } from "@/components/sel-pathways/types";
 import type { Tables } from "@/integrations/supabase/types";
 import { UserRole } from "@/types/roles";
 
-// Define types for student profiles
+// Define types for student profiles to avoid deep type instantiation
 interface StudentProfile {
   id: string;
   first_name?: string;

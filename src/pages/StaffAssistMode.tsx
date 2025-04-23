@@ -164,6 +164,14 @@ interface BehaviorLog {
   created_at: string;
 }
 
+interface StudentProfile {
+  id: string;
+  first_name?: string;
+  last_name?: string;
+  grade_level?: string;
+  [key: string]: any;
+}
+
 const StaffAssistMode: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -178,7 +186,7 @@ const StaffAssistMode: React.FC = () => {
   const { data: students } = useQuery({
     queryKey: ["staff-students"],
     queryFn: async () => {
-      if (!user?.id || !isStaffOrAdmin) return [];
+      if (!user?.id || !isStaffOrAdmin) return [] as StudentProfile[];
       
       const { data, error } = await supabase
         .from("profiles")
@@ -186,7 +194,7 @@ const StaffAssistMode: React.FC = () => {
         .eq("role", "student");
         
       if (error) throw error;
-      return data || [];
+      return data as StudentProfile[] || [];
     },
     enabled: isStaffOrAdmin,
   });
