@@ -1,4 +1,3 @@
-
 import React, { useState, useTransition } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PredictiveSupportHeader from "./PredictiveSupportHeader";
@@ -11,6 +10,8 @@ import RecommendedInterventions from "./RecommendedInterventions";
 import EarlyWarningIndicators from "./EarlyWarningIndicators";
 import usePredictiveSupportState from "./usePredictiveSupportState";
 import { Skeleton } from "@/components/ui/skeleton";
+import StudentDetailView from "./dashboard/StudentDetailView";
+import StudentListView from "./dashboard/StudentListView";
 
 // Define the types
 export interface Student {
@@ -105,6 +106,17 @@ const PredictiveSupportEngine: React.FC = () => {
   // Make sure we have data before rendering
   const currentStudent = selectedStudent || (filteredStudents.length > 0 ? filteredStudents[0] : null);
 
+  // Render student detail view or list view based on current state
+  if (viewMode === "detail" && selectedStudent) {
+    return (
+      <StudentDetailView 
+        selectedStudent={selectedStudent} 
+        interventions={interventions}
+        onBack={handleBackToList} 
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       <PredictiveSupportHeader />
@@ -137,6 +149,11 @@ const PredictiveSupportEngine: React.FC = () => {
               </>
             )}
           </div>
+          <StudentListView 
+            students={filteredStudents}
+            filteredStudents={filteredStudents}
+            onStudentSelect={handleStudentSelect}
+          />
         </TabsContent>
         
         <TabsContent value="interventions" className="space-y-6">

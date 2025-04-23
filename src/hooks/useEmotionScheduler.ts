@@ -38,12 +38,19 @@ export function useEmotionScheduler(studentId?: string) {
     return analysisQuery.data;
   }, [analysisQuery.data, analysisQuery.isLoading, analysisQuery.isError]);
 
-  return {
+  // Return a stable object reference to prevent unnecessary re-renders
+  return useMemo(() => ({
     emotionAnalysis,
     isLoading: moodCheckInsQuery.isLoading || analysisQuery.isLoading || 
                moodCheckInsQuery.isFetching || analysisQuery.isFetching,
     isError: moodCheckInsQuery.isError || analysisQuery.isError,
     error: moodCheckInsQuery.error || analysisQuery.error,
     isFetching: moodCheckInsQuery.isFetching || analysisQuery.isFetching
-  };
+  }), [
+    emotionAnalysis, 
+    moodCheckInsQuery.isLoading, analysisQuery.isLoading,
+    moodCheckInsQuery.isFetching, analysisQuery.isFetching,
+    moodCheckInsQuery.isError, analysisQuery.isError,
+    moodCheckInsQuery.error, analysisQuery.error
+  ]);
 }
