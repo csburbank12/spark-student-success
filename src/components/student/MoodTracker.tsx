@@ -1,53 +1,73 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { MoodType } from "@/types";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAddMoodCheckIn } from "@/hooks/useMoodCheckIns";
 
+// New imports for refactor/selectors
+import MoodColorPalette from "./MoodColorPalette";
+import EmojiMoodSelector from "./EmojiMoodSelector";
+import MusicGifMoodSelector from "./MusicGifMoodSelector";
+
+type MoodSelectionType = 
+  | { type: "color"; value: string; tag: string }
+  | { type: "emoji"; value: string; tag: string }
+  | { type: "musicGif"; value: string; tag: string }
+  | null;
+
 interface MoodTrackerProps {
-  onSubmit?: (data: { mood: MoodType; energyLevel: number; notes: string }) => void;
+  onSubmit?: (data: { mood: string; energyLevel: number; notes: string; expressionType: string; tag: string }) => void;
 }
 
 export const MoodTracker = ({ onSubmit }: MoodTrackerProps) => {
-  const [mood, setMood] = useState<MoodType | null>(null);
+  const [moodSelection, setMoodSelection] = useState<MoodSelectionType>(null);
   const [energyLevel, setEnergyLevel] = useState<number>(5);
   const [notes, setNotes] = useState<string>("");
   const { user } = useAuth();
   const addMoodCheckIn = useAddMoodCheckIn();
+  const [activeSelector, setActiveSelector] = useState<"color"|"emoji"|"musicGif">("emoji");
 
-  const handleMoodSelect = (selectedMood: MoodType) => {
-    setMood(selectedMood);
+  // Unified handler
+  const handleMoodSelect = (value: string, tag: string) => {
+    setMoodSelection({ type: activeSelector, value, tag });
   };
 
   const handleSubmit = async () => {
-    if (!mood) {
-      toast.error("Please select a mood before submitting");
+    if (!moodSelection) {
+      toast.error("Please select your mood before submitting");
       return;
     }
     if (!user?.id) {
       toast.error("User not authenticated");
       return;
     }
-
+    // Tagging for analytics: mood type, value, and style
     addMoodCheckIn.mutate(
       {
         userId: user.id,
-        mood,
+        mood: moodSelection.tag,
         energyLevel,
         notes,
+        expressionType: moodSelection.type,
       },
       {
         onSuccess: () => {
           toast.success("Check-in submitted successfully!");
-          setMood(null);
+          setMoodSelection(null);
           setEnergyLevel(5);
           setNotes("");
           if (onSubmit) {
-            onSubmit({ mood, energyLevel, notes });
+            onSubmit({ 
+              mood: moodSelection.tag, 
+              energyLevel, 
+              notes, 
+              expressionType: moodSelection.type, 
+              tag: moodSelection.tag 
+            });
           }
         },
         onError: (error: any) => {
@@ -57,36 +77,39 @@ export const MoodTracker = ({ onSubmit }: MoodTrackerProps) => {
     );
   };
 
-  const moods: { type: MoodType; emoji: string; label: string }[] = [
-    { type: "happy", emoji: "😃", label: "Happy" },
-    { type: "good", emoji: "🙂", label: "Good" },
-    { type: "okay", emoji: "😐", label: "Okay" },
-    { type: "sad", emoji: "😔", label: "Sad" },
-    { type: "stressed", emoji: "😣", label: "Stressed" },
-  ];
-
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-xl">How are you feeling today?</CardTitle>
+        <CardTitle className="text-xl">How are you expressing yourself today?</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex justify-between gap-2 mb-4">
-          {moods.map((m) => (
-            <button
-              key={m.type}
-              className={`emoji-button ${mood === m.type ? "scale-125" : ""}`}
-              onClick={() => handleMoodSelect(m.type)}
-              aria-label={`Select ${m.label} mood`}
-            >
-              <div className="flex flex-col items-center space-y-2">
-                <span className="text-4xl">{m.emoji}</span>
-                <span className="text-xs font-medium">{m.label}</span>
-              </div>
-            </button>
-          ))}
+        {/* Selector Switch */}
+        <div className="flex gap-2 justify-center">
+          <Button size="sm" variant={activeSelector==="emoji"?"default":"outline"} onClick={()=>setActiveSelector("emoji")} aria-label="Emoji selector">😊 Emoji</Button>
+          <Button size="sm" variant={activeSelector==="color"?"default":"outline"} onClick={()=>setActiveSelector("color")} aria-label="Color palette selector"><span className="block w-4 h-4 rounded-full bg-primary mr-1 inline-block" />Color</Button>
+          <Button size="sm" variant={activeSelector==="musicGif"?"default":"outline"} onClick={()=>setActiveSelector("musicGif")} aria-label="Music or GIF selector">🎶 GIF/Music</Button>
         </div>
-
+        {/* Mood Selector */}
+        <div>
+          {activeSelector === "emoji" && (
+            <EmojiMoodSelector
+              selectedEmoji={moodSelection?.type==="emoji"?moodSelection.value:null}
+              onSelect={handleMoodSelect}
+            />
+          )}
+          {activeSelector === "color" && (
+            <MoodColorPalette
+              selectedColor={moodSelection?.type==="color"?moodSelection.value:null}
+              onSelect={handleMoodSelect}
+            />
+          )}
+          {activeSelector === "musicGif" && (
+            <MusicGifMoodSelector
+              onSelect={handleMoodSelect}
+            />
+          )}
+        </div>
+        {/* Energy slider, notes */}
         <div className="space-y-2">
           <label htmlFor="energy" className="text-sm font-medium">
             Energy Level
@@ -121,12 +144,11 @@ export const MoodTracker = ({ onSubmit }: MoodTrackerProps) => {
             className="min-h-24"
           />
         </div>
-
         <Button
           onClick={handleSubmit}
           className="w-full"
           size="lg"
-          disabled={!mood}
+          disabled={!moodSelection}
         >
           Submit Check-in
         </Button>
