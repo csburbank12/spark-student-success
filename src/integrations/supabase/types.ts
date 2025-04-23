@@ -997,12 +997,16 @@ export type Database = {
         Row: {
           activity_type: string | null
           age_range: string | null
+          casel_competency: string
           competency_area: string | null
           content_url: string | null
           created_at: string | null
           created_by: string | null
+          cultural_focus: string | null
           description: string | null
           estimated_duration: number | null
+          evidence_base: string | null
+          grade_range: string[] | null
           id: string
           recommended_moods: string[] | null
           title: string
@@ -1010,12 +1014,16 @@ export type Database = {
         Insert: {
           activity_type?: string | null
           age_range?: string | null
+          casel_competency?: string
           competency_area?: string | null
           content_url?: string | null
           created_at?: string | null
           created_by?: string | null
+          cultural_focus?: string | null
           description?: string | null
           estimated_duration?: number | null
+          evidence_base?: string | null
+          grade_range?: string[] | null
           id?: string
           recommended_moods?: string[] | null
           title: string
@@ -1023,12 +1031,16 @@ export type Database = {
         Update: {
           activity_type?: string | null
           age_range?: string | null
+          casel_competency?: string
           competency_area?: string | null
           content_url?: string | null
           created_at?: string | null
           created_by?: string | null
+          cultural_focus?: string | null
           description?: string | null
           estimated_duration?: number | null
+          evidence_base?: string | null
+          grade_range?: string[] | null
           id?: string
           recommended_moods?: string[] | null
           title?: string
@@ -1374,6 +1386,42 @@ export type Database = {
           },
         ]
       }
+      weekly_sel_focus: {
+        Row: {
+          competency: string
+          created_at: string | null
+          description: string
+          featured_lesson_ids: string[] | null
+          id: string
+          school_id: string | null
+          theme_title: string
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          competency: string
+          created_at?: string | null
+          description: string
+          featured_lesson_ids?: string[] | null
+          id?: string
+          school_id?: string | null
+          theme_title: string
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          competency?: string
+          created_at?: string | null
+          description?: string
+          featured_lesson_ids?: string[] | null
+          id?: string
+          school_id?: string | null
+          theme_title?: string
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1389,6 +1437,20 @@ export type Database = {
           p_status?: string
         }
         Returns: Json
+      }
+      get_current_weekly_sel_focus: {
+        Args: { p_school_id?: string }
+        Returns: {
+          competency: string
+          created_at: string | null
+          description: string
+          featured_lesson_ids: string[] | null
+          id: string
+          school_id: string | null
+          theme_title: string
+          week_end: string
+          week_start: string
+        }[]
       }
       get_filtered_loopbot_logs: {
         Args: {
@@ -1410,6 +1472,31 @@ export type Database = {
       get_micro_coach_logs: {
         Args: { p_student_id?: string }
         Returns: Json[]
+      }
+      get_recommended_sel_lessons: {
+        Args: {
+          p_mood?: string
+          p_grade_level?: string
+          p_competency?: string
+          p_limit?: number
+        }
+        Returns: {
+          activity_type: string | null
+          age_range: string | null
+          casel_competency: string
+          competency_area: string | null
+          content_url: string | null
+          created_at: string | null
+          created_by: string | null
+          cultural_focus: string | null
+          description: string | null
+          estimated_duration: number | null
+          evidence_base: string | null
+          grade_range: string[] | null
+          id: string
+          recommended_moods: string[] | null
+          title: string
+        }[]
       }
       get_student_intervention_impacts: {
         Args: { p_student_id: string }
