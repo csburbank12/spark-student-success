@@ -1,10 +1,10 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
   CardContent,
@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserRole } from "@/types/roles";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Login = () => {
   const { login } = useAuth();
@@ -24,6 +25,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,6 +89,16 @@ const Login = () => {
           <p className="text-xl text-muted-foreground">Student Success Platform</p>
         </div>
 
+        <Alert className="bg-amber-50 border-amber-200 text-amber-900">
+          <Lock className="h-5 w-5" />
+          <AlertDescription className="mt-2 text-sm">
+            <strong className="block mb-2">Confidential Platform Access</strong>
+            This website contains proprietary educational data, tools, and intellectual property belonging to ThriveTrackED. 
+            By logging in, you agree not to disclose, distribute, or misuse any information accessed within. 
+            Unauthorized use or sharing is strictly prohibited and may result in legal or administrative action.
+          </AlertDescription>
+        </Alert>
+
         <Card className="border-2">
           <CardHeader>
             <CardTitle className="text-2xl">Welcome back</CardTitle>
@@ -124,10 +136,23 @@ const Login = () => {
                       required
                     />
                   </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="terms" 
+                      checked={agreedToTerms}
+                      onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                    />
+                    <label
+                      htmlFor="terms"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      I understand and agree to the confidentiality terms
+                    </label>
+                  </div>
                   <Button
                     type="submit"
                     className="w-full"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !agreedToTerms}
                   >
                     {isSubmitting ? "Logging in..." : "Log in"}
                   </Button>
@@ -221,9 +246,23 @@ const Login = () => {
                     </Button>
                   </div>
                   
+                  <div className="flex items-center space-x-2 mt-4">
+                    <Checkbox 
+                      id="terms-demo" 
+                      checked={agreedToTerms}
+                      onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                    />
+                    <label
+                      htmlFor="terms-demo"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      I understand and agree to the confidentiality terms
+                    </label>
+                  </div>
+                  
                   <Button 
                     className="w-full"
-                    disabled={!email || !password}
+                    disabled={!email || !password || !agreedToTerms}
                     onClick={handleSubmit}
                   >
                     {isSubmitting ? "Logging in..." : "Log in with Demo Account"}
