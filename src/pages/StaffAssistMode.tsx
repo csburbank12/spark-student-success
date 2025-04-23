@@ -20,66 +20,63 @@ const StaffAssistMode: React.FC = () => {
     user?.role === UserRole.staff.toString() || user?.role === UserRole.admin.toString();
 
   // Fetch all students for staff
+  const fetchStudents = async (): Promise<StudentProfile[]> => {
+    if (!user?.id || !isStaffOrAdmin) return [];
+    
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name")
+      .eq("role", "student");
+      
+    if (error) throw error;
+    
+    return (data || []).map(profile => ({
+      id: profile.id,
+      first_name: profile.first_name || '',
+      last_name: profile.last_name || '',
+    }));
+  };
+  
   const { 
     data: students = [], 
     isLoading: isLoadingStudents 
   } = useQuery({
     queryKey: ["staff-students"],
-    queryFn: async () => {
-      if (!user?.id || !isStaffOrAdmin) return [] as StudentProfile[];
-      
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("role", "student");
-        
-      if (error) throw error;
-      
-      // Convert the response to StudentProfile[] to avoid type recursion
-      const studentProfiles: StudentProfile[] = (data || []).map(profile => ({
-        id: profile.id,
-        first_name: profile.first_name || '',
-        last_name: profile.last_name || '',
-        grade_level: profile.grade_level || ''
-      }));
-      
-      return studentProfiles;
-    },
+    queryFn: fetchStudents,
     enabled: !!user?.id && isStaffOrAdmin,
   });
 
   // Fetch all behavior logs by staff user
+  const fetchBehaviorLogs = async (): Promise<BehaviorLog[]> => {
+    if (!user?.id || !isStaffOrAdmin) return [];
+    
+    const { data, error } = await supabase
+      .from("behavior_logs")
+      .select("*")
+      .eq("staff_id", user.id)
+      .order("created_at", { ascending: false });
+      
+    if (error) throw error;
+    
+    return (data || []).map(log => ({
+      id: log.id,
+      staff_id: log.staff_id,
+      student_id: log.student_id,
+      situation_type: log.situation_type,
+      intervention_used: log.intervention_used,
+      notes: log.notes || '',
+      effectiveness_rating: log.effectiveness_rating,
+      created_at: log.created_at
+    }));
+  };
+  
   const { 
     data: behaviorLogs = [], 
     refetch: refetchLogs, 
     isLoading: isLoadingLogs 
   } = useQuery({
     queryKey: ["behavior-logs", user?.id],
-    queryFn: async () => {
-      if (!user?.id || !isStaffOrAdmin) return [] as BehaviorLog[];
-      
-      const { data, error } = await supabase
-        .from("behavior_logs")
-        .select("*")
-        .eq("staff_id", user.id)
-        .order("created_at", { ascending: false });
-        
-      if (error) throw error;
-      
-      // Convert the response to BehaviorLog[] to avoid type recursion
-      const logs: BehaviorLog[] = (data || []).map(log => ({
-        id: log.id,
-        staff_id: log.staff_id,
-        student_id: log.student_id,
-        situation_type: log.situation_type,
-        intervention_used: log.intervention_used,
-        notes: log.notes || '',
-        effectiveness_rating: log.effectiveness_rating,
-        created_at: log.created_at
-      }));
-      
-      return logs;
-    },
+    queryFn: fetchBehaviorLogs,
     enabled: !!user?.id && isStaffOrAdmin,
   });
 
