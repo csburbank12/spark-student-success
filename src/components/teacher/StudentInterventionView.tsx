@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Calendar, ClipboardList, BarChart2 } from 'lucide-react';
+import { Loader } from '@/components/ui/loader';
 
 import { MicroCoachPrompt } from '../MicroCoachPrompt';
 import { useMicroCoach } from '@/contexts/MicroCoachContext';
@@ -29,18 +30,56 @@ const StudentInterventionView: React.FC<StudentInterventionViewProps> = ({
 }) => {
   const [tieredSupports, setTieredSupports] = useState<any[]>([]);
   const [interventionImpacts, setInterventionImpacts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { getMicroCoachHistory } = useMicroCoach();
 
   useEffect(() => {
     const fetchData = async () => {
-      const supports = await getTieredSupportRecommendations(studentId);
-      const impacts = await getStudentInterventionImpacts(studentId);
-      setTieredSupports(supports);
-      setInterventionImpacts(impacts);
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const supports = await getTieredSupportRecommendations(studentId);
+        const impacts = await getStudentInterventionImpacts(studentId);
+        setTieredSupports(supports);
+        setInterventionImpacts(impacts);
+      } catch (err) {
+        console.error("Error fetching student intervention data:", err);
+        setError("Failed to load student data. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    fetchData();
+    if (studentId) {
+      fetchData();
+    }
   }, [studentId]);
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center">
+          <Button variant="ghost" onClick={onBack} className="mr-2">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <h2 className="text-2xl font-bold">{studentName}</h2>
+        </div>
+        <Card>
+          <CardContent className="flex items-center justify-center p-6">
+            <div className="text-center text-destructive">
+              <p>{error}</p>
+              <Button onClick={() => window.location.reload()} className="mt-4">
+                Retry
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -72,7 +111,11 @@ const StudentInterventionView: React.FC<StudentInterventionViewProps> = ({
               <CardTitle>Tiered Support Recommendations</CardTitle>
             </CardHeader>
             <CardContent>
-              {tieredSupports.length === 0 ? (
+              {isLoading ? (
+                <div className="flex justify-center p-4">
+                  <Loader />
+                </div>
+              ) : tieredSupports.length === 0 ? (
                 <p className="text-muted-foreground">No support recommendations yet.</p>
               ) : (
                 tieredSupports.map((support) => (
@@ -92,7 +135,11 @@ const StudentInterventionView: React.FC<StudentInterventionViewProps> = ({
               <CardTitle>Intervention Impact Analysis</CardTitle>
             </CardHeader>
             <CardContent>
-              {interventionImpacts.length === 0 ? (
+              {isLoading ? (
+                <div className="flex justify-center p-4">
+                  <Loader />
+                </div>
+              ) : interventionImpacts.length === 0 ? (
                 <p className="text-muted-foreground">No intervention impacts recorded.</p>
               ) : (
                 interventionImpacts.map((impact) => (

@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // Helper to check if string is a valid UUID
 const isValidUuid = (id: string): boolean => {
+  if (!id) return false;
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   return uuidRegex.test(id);
 };
@@ -31,15 +32,20 @@ export function useStudentMoodData(studentId?: string, daysBack: number = 90) {
           days_back: daysBack,
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase RPC error:", error);
+          throw error;
+        }
         return data || [];
       } catch (error) {
         console.error("Error fetching mood data:", error);
         return [];
       }
     },
-    enabled: !!targetId,
+    enabled: !!targetId && isValidUuid(targetId),
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
+    suspense: false, // Disable suspense to prevent the error
+    retry: 1, // Reduce retry attempts for failed queries
   });
 }

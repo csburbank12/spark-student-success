@@ -21,11 +21,13 @@ const DEFAULT_ANALYSIS: EmotionAnalysis = {
 export function useEmotionScheduler(studentId?: string) {
   const moodCheckInsQuery = useStudentMoodData(studentId);
   
-  // Only run analysis when we have mood data
+  // Only run analysis when we have mood data and not in a loading state
   const analysisQuery = useEmotionTrendAnalysis({
     moodData: moodCheckInsQuery.data || [],
     studentId,
-    enabled: !moodCheckInsQuery.isLoading && !moodCheckInsQuery.isError && Array.isArray(moodCheckInsQuery.data)
+    enabled: !moodCheckInsQuery.isLoading && !moodCheckInsQuery.isError && 
+             Array.isArray(moodCheckInsQuery.data) && 
+             Boolean(studentId) // Only enable if studentId exists
   });
   
   // Use a memoized default value when data is unavailable to prevent suspense errors
@@ -38,7 +40,8 @@ export function useEmotionScheduler(studentId?: string) {
 
   return {
     emotionAnalysis,
-    isLoading: moodCheckInsQuery.isLoading || analysisQuery.isLoading || moodCheckInsQuery.isFetching || analysisQuery.isFetching,
+    isLoading: moodCheckInsQuery.isLoading || analysisQuery.isLoading || 
+               moodCheckInsQuery.isFetching || analysisQuery.isFetching,
     isError: moodCheckInsQuery.isError || analysisQuery.isError,
     error: moodCheckInsQuery.error || analysisQuery.error,
   };
