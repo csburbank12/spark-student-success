@@ -6,6 +6,7 @@ import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
 import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
 import ParentDashboardEnhanced from "@/pages/ParentDashboardEnhanced";
 import { UserRole } from "@/types/roles";
+import { Loader } from "@/components/ui/loader";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -24,27 +25,49 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 };
 
 const DashboardManager: React.FC = () => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Loader size="lg" />
+      </div>
+    );
+  }
 
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-lg font-medium mb-2">Not logged in</h2>
+          <p className="text-muted-foreground">Please log in to view your dashboard.</p>
+        </div>
+      </div>
+    );
   }
 
   // Render the appropriate dashboard based on user role
-  const userRole = user.role;
+  const userRole = user.role as UserRole;
   
   switch (userRole) {
-    case UserRole.student.toString():
+    case UserRole.student:
       return <StudentDashboardEnhanced />;
-    case UserRole.teacher.toString():
-    case UserRole.staff.toString():
+    case UserRole.teacher:
+    case UserRole.staff:
       return <TeacherDashboardEnhanced />;
-    case UserRole.admin.toString():
+    case UserRole.admin:
       return <AdminDashboardEnhanced />;
-    case UserRole.parent.toString():
+    case UserRole.parent:
       return <ParentDashboardEnhanced />;
     default:
-      return <div>Unknown user role</div>;
+      return (
+        <div className="flex h-full items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-lg font-medium mb-2">Unknown user role</h2>
+            <p className="text-muted-foreground">Please contact an administrator.</p>
+          </div>
+        </div>
+      );
   }
 };
 

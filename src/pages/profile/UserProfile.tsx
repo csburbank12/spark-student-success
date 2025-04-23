@@ -63,6 +63,8 @@ const UserProfile = () => {
         return "bg-purple-100 text-purple-800";
       case UserRole.parent:
         return "bg-amber-100 text-amber-800";
+      case UserRole.staff:
+        return "bg-teal-100 text-teal-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -74,6 +76,7 @@ const UserProfile = () => {
       case UserRole.student:
         return <StudentProfile user={user} />;
       case UserRole.teacher:
+      case UserRole.staff:
         return <TeacherProfile user={user} />;
       case UserRole.admin:
         return <AdminProfile user={user} />;

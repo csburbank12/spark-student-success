@@ -44,7 +44,7 @@ export const DashboardRouter: React.FC = () => {
   // Simple dashboard router based on user role
   if (!user) return <Navigate to="/login" replace />;
   
-  // Convert string role to UserRole for the switch
+  // Get the user role as a UserRole enum value
   const userRole = user.role as UserRole;
   
   switch (userRole) {
@@ -56,6 +56,9 @@ export const DashboardRouter: React.FC = () => {
       return <Navigate to="/admin-dashboard" replace />;
     case UserRole.parent:
       return <Navigate to="/child-activity" replace />;
+    case UserRole.staff:
+      // Staff is redirected to teacher dashboard as a fallback
+      return <Navigate to="/teacher-dashboard" replace />;
     default:
       return <Navigate to="/login" replace />;
   }
