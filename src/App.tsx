@@ -15,8 +15,11 @@ import { Loader } from "./components/ui/loader";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      useErrorBoundary: true,
-      // Remove the suspense option as it's not supported in this version
+      meta: {
+        useErrorBoundary: true,
+      },
+      retryDelay: 1000,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     },
   },
 });
