@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
 import { UserRole } from '@/types/roles';
@@ -16,44 +15,65 @@ interface AuthContextType {
 
 const sampleUsers: Record<string, User> = {
   [UserRole.student]: {
-    id: 's1',
-    name: 'Alex Johnson',
-    email: 'alex@school.edu',
+    id: 'std1',
+    name: 'Jada Thompson',
+    email: 'jada@school.edu',
     role: UserRole.student,
     avatarUrl: '/student-avatar.png',
     schoolId: 'school1',
+    gradeLevel: '10th',
+    lastCheckIn: new Date().toISOString(),
+    academicStatus: 'On Track',
+    selProgress: 75,
+    attendanceRate: 95
   },
   [UserRole.teacher]: {
-    id: 't1',
-    name: 'Ms. Rodriguez',
-    email: 'rodriguez@school.edu',
+    id: 'tch1',
+    name: 'Mr. Ethan Nguyen',
+    email: 'nguyen@school.edu',
     role: UserRole.teacher,
     avatarUrl: '/teacher-avatar.png',
     schoolId: 'school1',
+    department: 'Special Education',
+    classCount: 5,
+    yearsExperience: 8
   },
   [UserRole.admin]: {
-    id: 'a1',
-    name: 'Principal Wilson',
-    email: 'wilson@district.edu',
+    id: 'adm1',
+    name: 'Dr. Maria Rodriguez',
+    email: 'rodriguez@district.edu',
     role: UserRole.admin,
     avatarUrl: '/admin-avatar.png',
+    schoolId: 'school1',
+    position: 'Principal',
+    adminLevel: 'School'
   },
   [UserRole.parent]: {
-    id: 'p1',
-    name: 'Sarah Johnson',
+    id: 'par1',
+    name: 'Sarah Thompson',
     email: 'sarah@family.com',
     role: UserRole.parent,
     avatarUrl: '/parent-avatar.png',
     schoolId: 'school1',
+    children: [
+      {
+        id: 'std1',
+        name: 'Jada Thompson',
+        grade: '10th',
+        status: 'Active'
+      }
+    ]
   },
   [UserRole.staff]: {
-    id: 's2',
-    name: 'Jamie Smith',
-    email: 'jamie@school.edu',
+    id: 'stf1',
+    name: 'Dr. James Chen',
+    email: 'chen@school.edu',
     role: UserRole.staff,
     avatarUrl: '/staff-avatar.png',
     schoolId: 'school1',
-  },
+    department: 'Student Support Services',
+    specialization: 'School Counselor'
+  }
 };
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -62,7 +82,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user is already logged in
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('sparkUser');
@@ -82,7 +101,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Set up session refresh timer (every 30 minutes)
   useEffect(() => {
     if (!user) return;
     
@@ -97,8 +115,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return;
     
     try {
-      // In a real app with JWT tokens, this would validate/refresh the token
-      // For demo purposes, we just re-save the user to reset expiry
       localStorage.setItem('sparkUser', JSON.stringify(user));
       console.log('Session refreshed successfully');
     } catch (error) {
@@ -115,25 +131,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     
     try {
-      // In a real app, this would be an API call
-      // For demo, we'll simulate with sample users
-      // First determine which role from the email
       let role: UserRole = UserRole.student;
       
-      if (email.includes('teacher') || email.includes('rodriguez')) {
+      if (email.includes('nguyen')) {
         role = UserRole.teacher;
-      } else if (email.includes('admin') || email.includes('principal') || email.includes('wilson')) {
+      } else if (email.includes('rodriguez')) {
         role = UserRole.admin;
-      } else if (email.includes('parent') || email.includes('family')) {
+      } else if (email.includes('sarah') || email.includes('family')) {
         role = UserRole.parent;
-      } else if (email.includes('staff') || email.includes('jamie')) {
+      } else if (email.includes('chen')) {
         role = UserRole.staff;
       }
       
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Validate password - for demo all passwords should be "password"
       if (password !== "password") {
         throw new Error("Invalid credentials");
       }
@@ -149,8 +160,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       toast.success(`Welcome back, ${loggedInUser.name}!`);
       
-      setIsLoading(false);
-      
       return loggedInUser;
     } catch (error) {
       setIsLoading(false);
@@ -164,6 +173,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 

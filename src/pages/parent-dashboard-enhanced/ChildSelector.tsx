@@ -1,30 +1,35 @@
 
-import React from "react";
+import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface Child {
   id: string;
   name: string;
+  grade: string;
+  status: string;
 }
 
 interface ChildSelectorProps {
-  childrenList: Child[];
   selectedChild: string;
-  onChange: (id: string) => void;
+  onChange: (childId: string) => void;
+  childrenList: any[];
 }
 
-const ChildSelector: React.FC<ChildSelectorProps> = ({
-  childrenList, selectedChild, onChange
-}) => {
-  if (childrenList.length <= 1) return null;
+const ChildSelector = ({ selectedChild, onChange, childrenList }: ChildSelectorProps) => {
+  const { user } = useAuth();
+  const children = user?.children || [];
+
   return (
     <Select value={selectedChild} onValueChange={onChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[200px]">
         <SelectValue placeholder="Select child" />
       </SelectTrigger>
       <SelectContent>
-        {childrenList.map(child => (
-          <SelectItem key={child.id} value={child.id}>{child.name}</SelectItem>
+        {children.map((child) => (
+          <SelectItem key={child.id} value={child.id}>
+            {child.name} - {child.grade}
+          </SelectItem>
         ))}
       </SelectContent>
     </Select>
