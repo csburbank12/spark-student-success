@@ -1,0 +1,87 @@
+
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { FileUp, Check } from 'lucide-react';
+import { ImportStepProps } from '../types';
+
+export const Step3StaffImport: React.FC<ImportStepProps> = ({ schoolCode, onComplete }) => {
+  const [isImported, setIsImported] = useState(false);
+  
+  const handleImport = () => {
+    // Simulate file upload and import process
+    setTimeout(() => {
+      setIsImported(true);
+      onComplete(true);
+    }, 1500);
+  };
+  
+  return (
+    <div className="space-y-6">
+      <h3 className="text-xl font-medium">Staff Import</h3>
+      <p className="text-muted-foreground">Import staff members for {schoolCode}.</p>
+      
+      <div className="bg-gray-50 border border-dashed border-gray-300 rounded-md p-8 text-center">
+        {!isImported ? (
+          <div className="space-y-6">
+            <div className="flex flex-col items-center">
+              <FileUp className="h-12 w-12 text-muted-foreground mb-4" />
+              <h4 className="text-lg font-medium">Upload Staff CSV</h4>
+              <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                Upload a CSV file containing staff member data. The file should include 
+                first name, last name, email, position, and department for each staff member.
+              </p>
+            </div>
+            
+            <div>
+              <Button 
+                variant="outline" 
+                className="mr-2"
+                onClick={() => window.open('/templates/staff_import_template.csv')}
+              >
+                Download Template
+              </Button>
+              <Button onClick={handleImport}>
+                <FileUp className="mr-2 h-4 w-4" />
+                Upload Staff CSV
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex flex-col items-center">
+              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                <Check className="h-6 w-6 text-green-600" />
+              </div>
+              <h4 className="text-lg font-medium">Staff Import Complete</h4>
+              <p className="text-sm text-muted-foreground">
+                35 staff members have been successfully imported.
+              </p>
+            </div>
+            
+            <div className="max-w-md mx-auto">
+              <div className="bg-white rounded border p-3 text-left">
+                <div className="text-sm flex items-center justify-between font-medium">
+                  <span>Import Summary</span>
+                </div>
+                <div className="mt-2">
+                  <div className="flex justify-between text-sm py-1">
+                    <span className="text-muted-foreground">Total Records:</span>
+                    <span>35</span>
+                  </div>
+                  <div className="flex justify-between text-sm py-1">
+                    <span className="text-muted-foreground">Successfully Imported:</span>
+                    <span>35</span>
+                  </div>
+                  <div className="flex justify-between text-sm py-1">
+                    <span className="text-muted-foreground">Errors:</span>
+                    <span>0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
