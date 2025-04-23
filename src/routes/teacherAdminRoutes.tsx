@@ -1,5 +1,5 @@
 
-import { lazy } from "react";
+import React from "react";
 import StudentManagement from "@/pages/StudentManagement";
 import WellLensDashboard from "@/pages/WellLensDashboard";
 import PredictiveSupport from "@/pages/PredictiveSupport";
@@ -14,15 +14,17 @@ import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
 import CheckIn from "@/pages/CheckIn";
 import UserProfile from "@/pages/profile/UserProfile";
 import DashboardLayout from "@/routes/DashboardManager";
+import TrustedAdultDashboard from "@/pages/TrustedAdultDashboard";
 import { Outlet, RouteObject } from "react-router-dom";
-import React from "react";
 
 // Wrapper component that applies the DashboardLayout
 const WithDashboardLayout = ({ element }: { element: React.ReactNode }) => {
   return <DashboardLayout>{element}</DashboardLayout>;
 };
 
-interface ExtendedRouteObject extends RouteObject {
+interface ExtendedRouteObject {
+  path: string;
+  element: React.ReactNode;
   requiredRole?: string[];
 }
 
@@ -89,6 +91,11 @@ const teacherAdminRoutes: ExtendedRouteObject[] = [
     path: "/self-regulation-toolbox",
     element: <WithDashboardLayout element={<SelfRegulationToolboxPage />} />,
     requiredRole: ["teacher", "admin", "student"],
+  },
+  {
+    path: "/trusted-adult-dashboard",
+    element: <WithDashboardLayout element={<TrustedAdultDashboard />} />,
+    requiredRole: ["admin", "teacher"],
   },
   {
     path: "/profile",

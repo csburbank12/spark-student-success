@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,8 @@ import { Search, UserCheck, UserPlus, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
+import { useTrustedAdults, TrustedAdult } from "@/hooks/useTrustedAdults";
+import { supabase } from "@/integrations/supabase/client";
 
 interface StaffMember {
   id: string;
@@ -30,18 +32,73 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
   onSelectionsChange
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStaff, setSelectedStaff] = useState<StaffMember[]>(currentSelections);
+  const [staffMembers, setStaffMembers] = useState<StaffMember[]>([]);
   const { toast } = useToast();
+  const { 
+    trustedAdults, 
+    isLoading, 
+    addTrustedAdult, 
+    removeTrustedAdult 
+  } = useTrustedAdults(studentId);
 
-  // Mock staff data - in a real app, this would come from an API call
-  const staffMembers: StaffMember[] = [
-    { id: "s1", name: "Dr. Emma Wilson", role: "School Counselor", avatarUrl: "" },
-    { id: "s2", name: "Mr. James Rodriguez", role: "Math Teacher", department: "Mathematics", avatarUrl: "" },
-    { id: "s3", name: "Ms. Sarah Chen", role: "Social Worker", avatarUrl: "" },
-    { id: "s4", name: "Mr. David Johnson", role: "English Teacher", department: "English", avatarUrl: "" },
-    { id: "s5", name: "Dr. Michael Brown", role: "School Psychologist", avatarUrl: "" },
-    { id: "s6", name: "Mrs. Jennifer Lee", role: "Vice Principal", avatarUrl: "" },
-  ];
+  // Transform trusted adults into staff members format for UI
+  const selectedStaff = trustedAdults.map(adult => ({
+    id: adult.staff_id,
+    name: adult.staff_name,
+    role: adult.staff_role,
+    trustedAdultId: adult.id // Keep track of the relationship ID for removal
+  }));
+
+  // Fetch staff members from database
+  useEffect(() => {
+    const fetchStaffMembers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('staff_members')
+          .select(`
+            id,
+            position,
+            department,
+            profiles:user_id (
+              first_name,
+              last_name,
+              avatar_url
+            )
+          `);
+
+        if (error) throw error;
+
+        const formattedStaff = data.map((staff: any) => ({
+          id: staff.id,
+          name: `${staff.profiles?.first_name || ''} ${staff.profiles?.last_name || ''}`,
+          role: staff.position || 'Staff Member',
+          department: staff.department,
+          avatarUrl: staff.profiles?.avatar_url
+        }));
+
+        setStaffMembers(formattedStaff);
+      } catch (error) {
+        console.error('Error fetching staff members:', error);
+        toast({
+          title: "Error",
+          description: "Could not load staff members. Using demo data instead.",
+          variant: "destructive"
+        });
+        
+        // Use mock data as fallback
+        setStaffMembers([
+          { id: "s1", name: "Dr. Emma Wilson", role: "School Counselor", avatarUrl: "" },
+          { id: "s2", name: "Mr. James Rodriguez", role: "Math Teacher", department: "Mathematics", avatarUrl: "" },
+          { id: "s3", name: "Ms. Sarah Chen", role: "Social Worker", avatarUrl: "" },
+          { id: "s4", name: "Mr. David Johnson", role: "English Teacher", department: "English", avatarUrl: "" },
+          { id: "s5", name: "Dr. Michael Brown", role: "School Psychologist", avatarUrl: "" },
+          { id: "s6", name: "Mrs. Jennifer Lee", role: "Vice Principal", avatarUrl: "" },
+        ]);
+      }
+    };
+
+    fetchStaffMembers();
+  }, [toast]);
 
   // Filter staff based on search query
   const filteredStaff = staffMembers.filter(staff =>
@@ -50,7 +107,7 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
     (staff.department && staff.department.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const handleSelectStaff = (staffMember: StaffMember) => {
+  const handleSelectStaff = async (staffMember: StaffMember) => {
     if (selectedStaff.length >= maxSelections) {
       toast({
         title: "Maximum selections reached",
@@ -64,25 +121,22 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
       return;
     }
 
-    const newSelections = [...selectedStaff, staffMember];
-    setSelectedStaff(newSelections);
+    await addTrustedAdult(staffMember.id);
     
     if (onSelectionsChange) {
-      onSelectionsChange(newSelections);
+      onSelectionsChange([...selectedStaff, staffMember]);
     }
-
-    toast({
-      title: "Trusted adult added",
-      description: `${staffMember.name} has been added to your trusted adults.`,
-    });
   };
 
-  const handleRemoveStaff = (staffId: string) => {
-    const newSelections = selectedStaff.filter(staff => staff.id !== staffId);
-    setSelectedStaff(newSelections);
+  const handleRemoveStaff = async (staff: any) => {
+    const trustedAdultToRemove = trustedAdults.find(adult => adult.staff_id === staff.id);
+    
+    if (trustedAdultToRemove) {
+      await removeTrustedAdult(trustedAdultToRemove.id);
+    }
     
     if (onSelectionsChange) {
-      onSelectionsChange(newSelections);
+      onSelectionsChange(selectedStaff.filter(s => s.id !== staff.id));
     }
   };
 
@@ -119,14 +173,14 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
                   >
                     <Avatar className="h-6 w-6">
                       <AvatarImage src={staff.avatarUrl} />
-                      <AvatarFallback>{staff.name.substring(0, 2)}</AvatarFallback>
+                      <AvatarFallback>{staff.name.substring(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <span>{staff.name}</span>
                     <Button 
                       variant="ghost" 
                       size="icon" 
                       className="h-4 w-4 ml-1 hover:bg-muted rounded-full"
-                      onClick={() => handleRemoveStaff(staff.id)}
+                      onClick={() => handleRemoveStaff(staff)}
                     >
                       <X className="h-3 w-3" />
                     </Button>
@@ -136,42 +190,48 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
             </div>
           )}
 
-          {/* Staff list */}
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium">Available staff:</h4>
-            <div className="grid gap-2">
-              {filteredStaff
-                .filter(staff => !selectedStaff.some(s => s.id === staff.id))
-                .map(staff => (
-                  <div 
-                    key={staff.id}
-                    className="flex items-center justify-between p-3 border rounded-md hover:bg-accent transition-colors cursor-pointer"
-                    onClick={() => handleSelectStaff(staff)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={staff.avatarUrl} />
-                        <AvatarFallback>{staff.name.substring(0, 2)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h4 className="text-sm font-medium">{staff.name}</h4>
-                        <p className="text-xs text-muted-foreground">
-                          {staff.role} {staff.department && `(${staff.department})`}
-                        </p>
-                      </div>
-                    </div>
-                    <Button size="sm" variant="ghost">
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Select
-                    </Button>
-                  </div>
-                ))}
-              
-              {filteredStaff.length === 0 && (
-                <p className="text-center py-4 text-muted-foreground">No staff members found</p>
-              )}
+          {isLoading ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Loading staff members...
             </div>
-          </div>
+          ) : (
+            /* Staff list */
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Available staff:</h4>
+              <div className="grid gap-2">
+                {filteredStaff
+                  .filter(staff => !selectedStaff.some(s => s.id === staff.id))
+                  .map(staff => (
+                    <div 
+                      key={staff.id}
+                      className="flex items-center justify-between p-3 border rounded-md hover:bg-accent transition-colors cursor-pointer"
+                      onClick={() => handleSelectStaff(staff)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarImage src={staff.avatarUrl} />
+                          <AvatarFallback>{staff.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h4 className="text-sm font-medium">{staff.name}</h4>
+                          <p className="text-xs text-muted-foreground">
+                            {staff.role} {staff.department && `(${staff.department})`}
+                          </p>
+                        </div>
+                      </div>
+                      <Button size="sm" variant="ghost">
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Select
+                      </Button>
+                    </div>
+                  ))}
+                
+                {filteredStaff.length === 0 && (
+                  <p className="text-center py-4 text-muted-foreground">No staff members found</p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

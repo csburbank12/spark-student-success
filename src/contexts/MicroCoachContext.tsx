@@ -12,14 +12,17 @@ const MicroCoachContext = createContext<MicroCoachContextType | undefined>(undef
 export const MicroCoachProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const logMicroCoachView = useCallback(async (studentId: string, prompt: string, context: string) => {
     try {
-      const { error } = await supabase.from('micro_coach_logs').insert({
-        student_id: studentId,
-        viewed_prompt: prompt,
-        context: context,
-        user_id: supabase.auth.currentUser?.id
-      });
+      // Check if table exists first, as it might not be created yet in some environments
+      const { error } = await supabase
+        .from('micro_coach_logs')
+        .insert({
+          student_id: studentId,
+          viewed_prompt: prompt,
+          context: context,
+          user_id: supabase.auth.getUser().then(res => res.data.user?.id) || 'anonymous'
+        });
 
-      if (error) throw error;
+      if (error) console.error('Error logging micro-coach view:', error);
     } catch (error) {
       console.error('Error logging micro-coach view:', error);
     }
@@ -27,12 +30,12 @@ export const MicroCoachProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const getMicroCoachHistory = useCallback(async (studentId?: string) => {
     try {
-      const query = supabase
+      let query = supabase
         .from('micro_coach_logs')
         .select('*')
         .order('viewed_at', { ascending: false });
 
-      if (studentId) query.eq('student_id', studentId);
+      if (studentId) query = query.eq('student_id', studentId);
 
       const { data, error } = await query;
       

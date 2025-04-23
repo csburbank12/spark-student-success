@@ -11,12 +11,13 @@ import { RouteObject } from "react-router-dom";
 export interface RouteConfig extends RouteObject {
   path: string;
   requiredRole?: string[];
+  element: React.ReactNode;
 }
 
 // Combine and export all routes as a single array for <Routes>
 export const routes: RouteConfig[] = [
   ...generalRoutes,
   ...studentRoutes,
-  ...teacherAdminRoutes,
+  ...teacherAdminRoutes as RouteConfig[],
   ...parentRoutes,
 ];

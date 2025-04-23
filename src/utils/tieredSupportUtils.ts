@@ -14,7 +14,7 @@ export const createTieredSupportRecommendation = async (recommendation: TieredSu
   try {
     const { data, error } = await supabase
       .from('tiered_support_recommendations')
-      .insert(recommendation)
+      .insert(recommendation as any)
       .select();
 
     if (error) throw error;

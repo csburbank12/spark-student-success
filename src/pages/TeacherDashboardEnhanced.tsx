@@ -1,8 +1,9 @@
+
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
-import { StudentInterventionView } from "@/components/teacher/StudentInterventionView";
+import StudentInterventionView from "@/components/teacher/StudentInterventionView";
 import { TeacherStatCardsRow } from "@/components/teacher/TeacherStatCardsRow";
 import { TeacherStudentsSection } from "@/components/teacher/TeacherStudentsSection";
 import { TeacherDashboardTabs } from "@/components/teacher/TeacherDashboardTabs";

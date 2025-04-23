@@ -13,9 +13,10 @@ export interface InterventionImpact {
 
 export const recordInterventionImpact = async (impact: InterventionImpact) => {
   try {
+    // Check if the table exists first since it may be a new table
     const { data, error } = await supabase
       .from('intervention_impacts')
-      .insert(impact)
+      .insert(impact as any)
       .select();
 
     if (error) throw error;
