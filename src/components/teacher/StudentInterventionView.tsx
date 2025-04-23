@@ -35,26 +35,40 @@ const StudentInterventionView: React.FC<StudentInterventionViewProps> = ({
   const { getMicroCoachHistory } = useMicroCoach();
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
+      if (!isMounted) return;
+      
       setIsLoading(true);
       setError(null);
       
       try {
         const supports = await getTieredSupportRecommendations(studentId);
         const impacts = await getStudentInterventionImpacts(studentId);
-        setTieredSupports(supports);
-        setInterventionImpacts(impacts);
+        
+        if (isMounted) {
+          setTieredSupports(supports || []);
+          setInterventionImpacts(impacts || []);
+        }
       } catch (err) {
         console.error("Error fetching student intervention data:", err);
-        setError("Failed to load student data. Please try again.");
+        if (isMounted) {
+          setError("Failed to load student data. Please try again.");
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     if (studentId) {
       fetchData();
     }
+    
+    return () => {
+      isMounted = false;
+    };
   }, [studentId]);
 
   if (error) {

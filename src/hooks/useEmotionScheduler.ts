@@ -44,5 +44,6 @@ export function useEmotionScheduler(studentId?: string) {
                moodCheckInsQuery.isFetching || analysisQuery.isFetching,
     isError: moodCheckInsQuery.isError || analysisQuery.isError,
     error: moodCheckInsQuery.error || analysisQuery.error,
+    isFetching: moodCheckInsQuery.isFetching || analysisQuery.isFetching
   };
 }
