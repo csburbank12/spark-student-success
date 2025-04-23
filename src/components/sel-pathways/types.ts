@@ -1,8 +1,19 @@
 
-import { SELLesson } from "@/hooks/useSELRecommendations";
-
-// Type definitions for SEL pathways
-export type SelLesson = SELLesson;
+// Define SEL pathway types directly without importing from hooks
+export interface SelLesson {
+  id: string;
+  title: string;
+  description?: string;
+  content?: string;
+  competency_area?: string;
+  pathway?: string;
+  estimated_duration?: number;
+  duration?: number;
+  activity_type?: string;
+  difficulty?: string;
+  content_url?: string;
+  recommended_moods?: string[];
+}
 
 export interface SelAssignment {
   id: string;

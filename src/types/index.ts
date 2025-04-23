@@ -12,8 +12,8 @@ export interface User {
   schoolId?: string;
 }
 
-// Use SelLesson from the component types instead of defining it here
-export { SelLesson, SelAssignment, SelProgress } from "@/components/sel-pathways/types";
-
 // Export the UserRole enum from roles.ts
 export { UserRole } from "./roles";
+
+// Export SEL types using proper 'export type' syntax for TypeScript modules
+export type { SelLesson, SelAssignment, SelProgress } from "@/components/sel-pathways/types";
