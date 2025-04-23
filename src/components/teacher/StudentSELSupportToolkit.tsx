@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { useSELRecommendations, useAssignSELLesson, SELLesson } from "@/hooks/useSELRecommendations";
 import { Calendar, CheckCircle, Bell, BookOpen } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,7 +20,6 @@ export const StudentSELSupportToolkit: React.FC<StudentSELSupportToolkitProps> =
   studentName,
   recentMood,
 }) => {
-  const { toast } = useToast();
   const [isAssigningLesson, setIsAssigningLesson] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<SELLesson | null>(null);
   

@@ -1,25 +1,30 @@
 
 import React from "react";
-import CheckIn from "@/pages/CheckIn";
-import MentalHealthToolkit from "@/pages/MentalHealthToolkit";
-import FutureMe from "@/pages/FutureMe";
-import DigitalJournal from "@/pages/DigitalJournal";
-import SelfRegulationToolboxPage from "@/pages/SelfRegulationToolbox";
-import ResetRoomPage from "@/pages/ResetRoom";
-import TrustedAdultSelection from "@/pages/TrustedAdultSelection";
-import LoopBot from "@/pages/LoopBot";
-import CulturePulseSurvey from "@/pages/CulturePulseSurvey";
-import PersonalizedSELPathways from "@/pages/PersonalizedSELPathways";
-import SELLessonDetail from "@/pages/SELLessonDetail";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
+import StudentDashboard from "@/pages/StudentDashboard";
+import StudentDashboardEnhanced from "@/pages/StudentDashboardEnhanced";
+import MentalHealthToolkit from "@/pages/MentalHealthToolkit";
+import DigitalJournal from "@/pages/DigitalJournal";
+import ResetRoom from "@/pages/ResetRoom";
+import CheckIn from "@/pages/CheckIn";
+import TrustedAdults from "@/pages/TrustedAdults";
+import PersonalizedSELPathways from "@/pages/PersonalizedSELPathways";
 
 const studentRoutes = [
   {
-    path: "/check-in",
+    path: "/student-dashboard",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <CheckIn />
+        <StudentDashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/student-dashboard-enhanced",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
+        <StudentDashboardEnhanced />
       </ProtectedRoute>
     ),
   },
@@ -32,14 +37,6 @@ const studentRoutes = [
     ),
   },
   {
-    path: "/future-me",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <FutureMe />
-      </ProtectedRoute>
-    ),
-  },
-  {
     path: "/digital-journal",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
@@ -48,18 +45,18 @@ const studentRoutes = [
     ),
   },
   {
-    path: "/self-regulation-toolbox",
+    path: "/reset-room",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <SelfRegulationToolboxPage />
+        <ResetRoom />
       </ProtectedRoute>
     ),
   },
   {
-    path: "/reset-room",
+    path: "/check-in",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <ResetRoomPage />
+        <CheckIn />
       </ProtectedRoute>
     ),
   },
@@ -67,23 +64,7 @@ const studentRoutes = [
     path: "/trusted-adults",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <TrustedAdultSelection />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/loopbot",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <LoopBot />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/pulse-tracker",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <CulturePulseSurvey />
+        <TrustedAdults />
       </ProtectedRoute>
     ),
   },
@@ -92,15 +73,6 @@ const studentRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
         <PersonalizedSELPathways />
-      </ProtectedRoute>
-    ),
-  },
-  // Add the new SEL lesson detail route
-  {
-    path: "/sel-lessons/:id",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student, UserRole.teacher, UserRole.staff]}>
-        <SELLessonDetail />
       </ProtectedRoute>
     ),
   },

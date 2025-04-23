@@ -1,140 +1,191 @@
 
-import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import React from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserRole } from "@/types/roles";
+import { SliderProps } from "@/components/ui/slider";
+import { Calendar, ChevronsUpDown, BatteryMedium } from "lucide-react";
+import { format } from "date-fns";
 
-interface EmotionStudent {
-  id: string;
-  name: string;
-  mood: string;
-  lastCheckIn: string;
+interface MoodTrendData {
+  mood_type: string;
+  count: number;
+  date: string;
 }
 
-export const EmotionFilterSection: React.FC = () => {
-  const { user } = useAuth();
-  const [selectedEmotion, setSelectedEmotion] = useState<string>("all");
+export const EmotionFilterSection = () => {
+  const today = new Date();
+  const last7Days = new Date(today);
+  last7Days.setDate(today.getDate() - 7);
   
-  // Query to get students and their recent moods
-  const { data: students = [], isLoading } = useQuery({
-    queryKey: ["emotion-filter-students", user?.schoolId],
+  // Get aggregated mood data for the classroom
+  const { data: moodTrends, isLoading } = useQuery({
+    queryKey: ["classroom-mood-trends"],
     queryFn: async () => {
-      if (!user?.id || (user.role !== UserRole.teacher && user.role !== UserRole.staff)) {
-        return [];
-      }
+      // This would typically be a proper database query to get aggregated mood data
+      // For demo, we'll use hardcoded data
       
-      try {
-        // This would normally be a JOIN query with students and mood_check_ins
-        // For now, we'll use mock data
-        const mockStudents: EmotionStudent[] = [
-          { id: "s1", name: "Alex Johnson", mood: "sad", lastCheckIn: "Today, 8:15 AM" },
-          { id: "s2", name: "Zoe Martin", mood: "okay", lastCheckIn: "Today, 9:20 AM" },
-          { id: "s3", name: "Ethan Brown", mood: "good", lastCheckIn: "Yesterday, 3:45 PM" },
-          { id: "s4", name: "Lily Chen", mood: "stressed", lastCheckIn: "2 days ago" },
-          { id: "s5", name: "Noah Williams", mood: "happy", lastCheckIn: "Today, 7:30 AM" },
-          { id: "s6", name: "Emma Davis", mood: "sad", lastCheckIn: "3 days ago" },
-          { id: "s7", name: "Mason Taylor", mood: "angry", lastCheckIn: "Today, 10:45 AM" },
-          { id: "s8", name: "Sophia Martinez", mood: "tired", lastCheckIn: "Yesterday, 1:20 PM" },
-          { id: "s9", name: "Lucas Garcia", mood: "stressed", lastCheckIn: "Today, 8:50 AM" },
-        ];
-        
-        return mockStudents;
-      } catch (error) {
-        console.error("Error fetching students with moods:", error);
-        return [];
-      }
+      const mockMoodTrends: MoodTrendData[] = [
+        { mood_type: "happy", count: 12, date: format(today, 'yyyy-MM-dd') },
+        { mood_type: "sad", count: 4, date: format(today, 'yyyy-MM-dd') },
+        { mood_type: "anxious", count: 6, date: format(today, 'yyyy-MM-dd') },
+        { mood_type: "angry", count: 2, date: format(today, 'yyyy-MM-dd') },
+        { mood_type: "tired", count: 8, date: format(today, 'yyyy-MM-dd') },
+      ];
+      
+      return mockMoodTrends;
     },
-    enabled: !!user?.id && (user.role === UserRole.teacher || user.role === UserRole.staff),
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
-  const { assignLesson } = useAssignSELLesson();
-
-  const filteredStudents = selectedEmotion === "all" 
-    ? students 
-    : students.filter(student => student.mood === selectedEmotion);
-
-  const handleBulkAssign = async () => {
-    // Implementation for bulk assigning lessons
-    // This would open a dialog to select a lesson and assign to all filtered students
-    console.log(`Bulk assign SEL lesson to ${filteredStudents.length} students with mood: ${selectedEmotion}`);
+  
+  const totalMoods = moodTrends?.reduce((sum, entry) => sum + entry.count, 0) || 0;
+  
+  const getMoodPercentage = (count: number): number => {
+    return Math.round((count / totalMoods) * 100);
   };
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Student Emotion Filter</CardTitle>
-          <CardDescription>Filter students by emotions and assign interventions</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-10 w-full mb-4" />
-          <Skeleton className="h-40 w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
-
+  
+  const getMoodColor = (moodType: string): string => {
+    switch (moodType.toLowerCase()) {
+      case 'happy':
+        return 'bg-green-100 text-green-800';
+      case 'sad':
+        return 'bg-blue-100 text-blue-800';
+      case 'anxious':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'angry':
+        return 'bg-red-100 text-red-800';
+      case 'tired':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+  
+  const Meter = ({ value, className }: { value: number; className?: string }) => (
+    <div className={`h-2 rounded-full bg-gray-200 overflow-hidden ${className}`}>
+      <div 
+        className="h-full bg-current" 
+        style={{ width: `${Math.max(5, value)}%` }}
+      />
+    </div>
+  );
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Student Emotion Filter</CardTitle>
-        <CardDescription>Filter students by emotions and assign interventions</CardDescription>
+        <CardTitle className="flex items-center justify-between">
+          <span>Class Mood Overview</span>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <ChevronsUpDown className="h-4 w-4" />
+          </Button>
+        </CardTitle>
+        <CardDescription>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span>Today, {format(new Date(), "MMMM d, yyyy")}</span>
+          </div>
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="all" value={selectedEmotion} onValueChange={setSelectedEmotion}>
-          <TabsList className="grid grid-cols-4 mb-4">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="sad">Sad</TabsTrigger>
-            <TabsTrigger value="stressed">Stressed</TabsTrigger>
-            <TabsTrigger value="angry">Angry</TabsTrigger>
+        <Tabs defaultValue="overview">
+          <TabsList className="mb-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="energy">Energy Levels</TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="all" className="space-y-4">
-            <div className="text-sm text-muted-foreground">
-              Showing all students. Select an emotion to filter.
-            </div>
-          </TabsContent>
-          
-          {["all", "sad", "stressed", "angry"].map((emotion) => (
-            <TabsContent key={emotion} value={emotion} className="space-y-4">
-              <div className="space-y-2">
-                {filteredStudents.map((student) => (
-                  <div key={student.id} className="flex items-center justify-between p-2 border rounded">
-                    <div>
-                      <div className="font-medium">{student.name}</div>
-                      <div className="text-sm text-muted-foreground">{student.lastCheckIn}</div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="mr-2">
-                        <span className="text-sm font-medium">Mood:</span>{" "}
-                        <span>{student.mood}</span>
+
+          <TabsContent value="overview">
+            {isLoading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {moodTrends?.map(entry => (
+                  <div key={entry.mood_type} className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Badge className={getMoodColor(entry.mood_type)}>
+                          {entry.mood_type.charAt(0).toUpperCase() + entry.mood_type.slice(1)}
+                        </Badge>
+                        <span className="text-sm font-medium">{entry.count} students</span>
                       </div>
-                      <Button size="sm" variant="outline">Assign</Button>
+                      <span className="text-sm text-muted-foreground">{getMoodPercentage(entry.count)}%</span>
                     </div>
+                    <Meter 
+                      value={getMoodPercentage(entry.count)} 
+                      className={getMoodColor(entry.mood_type)} 
+                    />
                   </div>
                 ))}
+
+                <div className="flex flex-col pt-2">
+                  <Button variant="outline" size="sm" className="mt-2 w-full">
+                    Filter by Mood
+                  </Button>
+                  <Button variant="outline" size="sm" className="mt-2 w-full">
+                    View Mood Trends
+                  </Button>
+                </div>
               </div>
-            </TabsContent>
-          ))}
+            )}
+          </TabsContent>
+
+          <TabsContent value="energy">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <h4 className="text-sm font-medium">Average Energy Level</h4>
+                  <div className="flex items-center gap-2">
+                    <BatteryMedium className="h-4 w-4 text-amber-500" />
+                    <span className="font-medium text-lg">5.7/10</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <Badge variant="outline">
+                    <span className="text-amber-500 mr-1">⬆</span>
+                    12% from yesterday
+                  </Badge>
+                </div>
+              </div>
+              
+              <div className="border rounded-md p-3">
+                <h4 className="text-sm font-medium mb-2">Energy Distribution</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm">
+                    <span>High Energy (7-10)</span>
+                    <span>38%</span>
+                  </div>
+                  <Meter value={38} className="text-green-600" />
+                  
+                  <div className="flex justify-between items-center text-sm">
+                    <span>Medium Energy (4-6)</span>
+                    <span>45%</span>
+                  </div>
+                  <Meter value={45} className="text-amber-500" />
+                  
+                  <div className="flex justify-between items-center text-sm">
+                    <span>Low Energy (1-3)</span>
+                    <span>17%</span>
+                  </div>
+                  <Meter value={17} className="text-red-500" />
+                </div>
+              </div>
+              
+              <div className="flex flex-col pt-2">
+                <Button variant="outline" size="sm" className="w-full">
+                  Filter by Energy Level
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
       </CardContent>
-      <CardFooter>
-        <Button 
-          className="w-full" 
-          disabled={filteredStudents.length === 0}
-          onClick={handleBulkAssign}
-        >
-          Assign SEL Lesson to {filteredStudents.length} Students
-        </Button>
-      </CardFooter>
     </Card>
   );
 };
-
-import { useAssignSELLesson } from "@/hooks/useSELRecommendations";

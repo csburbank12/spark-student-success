@@ -9,6 +9,7 @@ import { TeacherStudentsSection } from "@/components/teacher/TeacherStudentsSect
 import { TeacherDashboardTabs } from "@/components/teacher/TeacherDashboardTabs";
 import { TeacherDashboardHeader } from "@/components/teacher/TeacherDashboardHeader";
 import { Loader } from "@/components/ui/loader";
+import { EmotionFilterSection } from "@/components/teacher/EmotionFilterSection";
 
 const students = [
   {
@@ -105,12 +106,18 @@ const TeacherDashboardEnhanced = () => {
         <React.Fragment>
           <TeacherDashboardHeader onScheduleCheckIn={handleScheduleCheckIn} />
           <TeacherStatCardsRow />
-          <TeacherStudentsSection
-            students={students}
-            filteredStudents={filteredStudents}
-            onSearch={(e) => setSearchQuery(e.target.value)}
-            onStudentClick={handleStudentClick}
-          />
+          
+          {/* Add the Emotion Filter Section */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <TeacherStudentsSection
+              students={students}
+              filteredStudents={filteredStudents}
+              onSearch={(e) => setSearchQuery(e.target.value)}
+              onStudentClick={handleStudentClick}
+            />
+            <EmotionFilterSection />
+          </div>
+          
           <TeacherDashboardTabs
             students={students}
             onStudentClick={handleStudentClick}

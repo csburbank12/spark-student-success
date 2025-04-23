@@ -1,20 +1,21 @@
 
 import React from "react";
-import { ProtectedRoute } from "./ProtectedRoute";
-import { UserRole } from "@/types/roles";
-import StaffAssistMode from "@/pages/StaffAssistMode";
 import TeacherDashboard from "@/pages/TeacherDashboard";
 import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
-import UserProfile from "@/pages/profile/UserProfile";
-import EmotionAwareScheduling from "@/pages/EmotionAwareScheduling";
-import PredictiveSupport from "@/pages/PredictiveSupport";
+import PredictiveSupportEngine from "@/components/predictive-support/PredictiveSupportEngine";
+import StaffAssistMode from "@/pages/StaffAssistMode";
+import EmotionScheduling from "@/pages/EmotionScheduling";
+import CheckIn from "@/pages/CheckIn";
+import StudentInterventionView from "@/components/teacher/StudentInterventionView";
+import { ProtectedRoute } from "./ProtectedRoute";
+import { UserRole } from "@/types/roles";
 import SELPathwayManagement from "@/pages/SELPathwayManagement";
 
 export const teacherAdminRoutes = [
   {
     path: "/teacher-dashboard",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff, UserRole.admin]}>
         <TeacherDashboard />
       </ProtectedRoute>
     ),
@@ -22,49 +23,57 @@ export const teacherAdminRoutes = [
   {
     path: "/teacher-dashboard-enhanced",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff, UserRole.admin]}>
         <TeacherDashboardEnhanced />
       </ProtectedRoute>
     ),
   },
   {
-    path: "/staff-assist",
+    path: "/student/:studentId",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
-        <StaffAssistMode />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/sel-pathway-management",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
-        <SELPathwayManagement />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/emotion-aware-scheduling",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
-        <EmotionAwareScheduling />
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff, UserRole.admin]}>
+        <StudentInterventionView />
       </ProtectedRoute>
     ),
   },
   {
     path: "/predictive-support",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
-        <PredictiveSupport />
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff, UserRole.admin]}>
+        <PredictiveSupportEngine />
       </ProtectedRoute>
     ),
   },
   {
-    path: "/teacher-profile",
+    path: "/staff-assist",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
-        <UserProfile />
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff, UserRole.admin]}>
+        <StaffAssistMode />
       </ProtectedRoute>
     ),
   },
+  {
+    path: "/emotion-aware-scheduling",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff, UserRole.admin]}>
+        <EmotionScheduling />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/check-in",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.student, UserRole.admin]}>
+        <CheckIn />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/sel-pathway-management",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff, UserRole.admin]}>
+        <SELPathwayManagement />
+      </ProtectedRoute>
+    ),
+  }
 ];

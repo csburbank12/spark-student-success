@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -61,7 +60,8 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
             ...lesson,
             pathway: lesson.competency_area,
             duration: lesson.estimated_duration,
-            difficulty: 'Standard'
+            difficulty: 'Standard',
+            content: lesson.description
           })) as SELLesson[];
         } 
         
@@ -84,7 +84,8 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
             ...lesson,
             pathway: lesson.competency_area,
             duration: lesson.estimated_duration,
-            difficulty: 'Standard'
+            difficulty: 'Standard',
+            content: lesson.description
           })) as SELLesson[];
         }
         
@@ -129,7 +130,7 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
           .from('sel_assignments')
           .select(`
             id, lesson_id, student_id, assigned_by, assigned_at, due_date, status,
-            lesson:sel_lessons(*)
+            sel_lessons:lesson_id(*)
           `)
           .eq('student_id', targetId)
           .order('assigned_at', { ascending: false });
@@ -138,20 +139,21 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
         
         // Map assignments to include needed fields
         return (data || []).map(assignment => {
-          if (assignment.lesson) {
+          if (assignment.sel_lessons) {
+            const lesson = assignment.sel_lessons as any;
             return {
               ...assignment,
-              lesson: {
-                ...assignment.lesson,
-                pathway: assignment.lesson.competency_area,
-                duration: assignment.lesson.estimated_duration,
+              sel_lessons: {
+                ...lesson,
+                pathway: lesson.competency_area,
+                duration: lesson.estimated_duration,
                 difficulty: 'Standard',
-                content: assignment.lesson.description
+                content: lesson.description
               }
             };
           }
           return assignment;
-        }) as SELAssignment[];
+        }) as any[];
       } catch (error) {
         console.error("Error fetching SEL assignments:", error);
         return [];
@@ -173,7 +175,7 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
           .from('sel_progress')
           .select(`
             *,
-            sel_lessons(*)
+            sel_lessons:lesson_id(*)
           `)
           .eq('student_id', targetId);
           
@@ -182,14 +184,15 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
         // Map progress to include needed fields
         return (data || []).map(progress => {
           if (progress.sel_lessons) {
+            const lesson = progress.sel_lessons as any;
             return {
               ...progress,
               sel_lessons: {
-                ...progress.sel_lessons,
-                pathway: progress.sel_lessons.competency_area,
-                duration: progress.sel_lessons.estimated_duration,
+                ...lesson,
+                pathway: lesson.competency_area,
+                duration: lesson.estimated_duration,
                 difficulty: 'Standard',
-                content: progress.sel_lessons.description
+                content: lesson.description
               }
             };
           }

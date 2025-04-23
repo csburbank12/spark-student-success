@@ -32,7 +32,7 @@ const PersonalizedSELPathways: React.FC = () => {
         .from("sel_assignments")
         .select(`
           *,
-          sel_lessons (*)
+          sel_lessons:lesson_id(*)
         `)
         .eq("student_id", user.id)
         .order("assigned_at", { ascending: false });
@@ -42,14 +42,15 @@ const PersonalizedSELPathways: React.FC = () => {
       // Map assignments to include needed fields
       return (data || []).map(assignment => {
         if (assignment.sel_lessons) {
+          const lesson = assignment.sel_lessons as any;
           return {
             ...assignment,
             sel_lessons: {
-              ...assignment.sel_lessons,
-              pathway: assignment.sel_lessons.competency_area,
-              duration: assignment.sel_lessons.estimated_duration,
+              ...lesson,
+              pathway: lesson.competency_area,
+              duration: lesson.estimated_duration,
               difficulty: 'Standard',
-              content: assignment.sel_lessons.description
+              content: lesson.description
             }
           };
         }
@@ -68,7 +69,7 @@ const PersonalizedSELPathways: React.FC = () => {
         .from("sel_progress")
         .select(`
           *,
-          sel_lessons (*)
+          sel_lessons:lesson_id(*)
         `)
         .eq("student_id", user.id)
         .eq("completed", true)
@@ -79,13 +80,14 @@ const PersonalizedSELPathways: React.FC = () => {
       // Map progress to include needed fields
       return (data || []).map(progress => {
         if (progress.sel_lessons) {
+          const lesson = progress.sel_lessons as any;
           return {
             ...progress,
             sel_lessons: {
-              ...progress.sel_lessons,
-              pathway: progress.sel_lessons.competency_area,
-              duration: progress.sel_lessons.estimated_duration,
-              content: progress.sel_lessons.description
+              ...lesson,
+              pathway: lesson.competency_area,
+              duration: lesson.estimated_duration,
+              content: lesson.description
             }
           };
         }
@@ -163,7 +165,10 @@ const PersonalizedSELPathways: React.FC = () => {
   // Handle lesson start
   const handleStartLesson = (assignment: SelAssignment) => {
     if (assignment.sel_lessons) {
-      setSelectedLesson(assignment.sel_lessons);
+      setSelectedLesson({
+        ...assignment.sel_lessons,
+        content: assignment.sel_lessons.description || assignment.sel_lessons.content || ""
+      });
     }
   };
 
@@ -194,6 +199,17 @@ const PersonalizedSELPathways: React.FC = () => {
       </div>
     );
   }
+
+  const formattedCompletedLessons = completedLessons.map(lesson => {
+    if (!lesson.completed_at) {
+      return {
+        ...lesson,
+        completed_at: new Date().toISOString(),
+        sel_lessons: lesson.sel_lessons
+      };
+    }
+    return lesson;
+  });
 
   return (
     <div className="space-y-6">
@@ -276,7 +292,7 @@ const PersonalizedSELPathways: React.FC = () => {
               )}
             </TabsContent>
             <TabsContent value="completed" className="mt-6">
-              <SELCompletedLessonsTable lessons={completedLessons} />
+              <SELCompletedLessonsTable lessons={formattedCompletedLessons} />
             </TabsContent>
           </Tabs>
         </>
