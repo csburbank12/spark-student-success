@@ -5,13 +5,24 @@ import { analyzeTrend, OptimalTimeSlot, EmotionAnalysis } from "./emotionSchedul
 interface UseEmotionTrendAnalysisParams {
   moodData: any[];
   studentId?: string;
+  enabled?: boolean;
 }
 
-export function useEmotionTrendAnalysis({ moodData, studentId }: UseEmotionTrendAnalysisParams) {
+export function useEmotionTrendAnalysis({ moodData, studentId, enabled = true }: UseEmotionTrendAnalysisParams) {
   return useQuery({
     queryKey: ["emotion-scheduler-analysis", studentId],
     queryFn: async () => {
-      if (!moodData?.length) return null;
+      if (!moodData?.length) return {
+        optimalCheckInTimes: [],
+        stressPeriods: [],
+        moodPatterns: {
+          morningTrend: "No data",
+          afternoonTrend: "No data",
+          eveningTrend: "No data",
+          weekdayTrend: "No data",
+          weekendTrend: "No data"
+        }
+      } as EmotionAnalysis;
 
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const dayOfWeekData: Record<string, any[]> = {};
@@ -20,14 +31,20 @@ export function useEmotionTrendAnalysis({ moodData, studentId }: UseEmotionTrend
       ['morning', 'afternoon', 'evening'].forEach(tod => (timeOfDayData[tod] = []));
 
       moodData.forEach((entry: any) => {
-        const date = new Date(entry.date);
-        const day = daysOfWeek[date.getDay()];
-        const hour = date.getHours();
-        let timeOfDay = 'morning';
-        if (hour >= 12 && hour < 17) timeOfDay = 'afternoon';
-        else if (hour >= 17) timeOfDay = 'evening';
-        dayOfWeekData[day].push(entry);
-        timeOfDayData[timeOfDay].push(entry);
+        if (!entry) return;
+        
+        try {
+          const date = new Date(entry.date);
+          const day = daysOfWeek[date.getDay()];
+          const hour = date.getHours();
+          let timeOfDay = 'morning';
+          if (hour >= 12 && hour < 17) timeOfDay = 'afternoon';
+          else if (hour >= 17) timeOfDay = 'evening';
+          dayOfWeekData[day].push(entry);
+          timeOfDayData[timeOfDay].push(entry);
+        } catch (err) {
+          console.error("Error processing mood entry:", err);
+        }
       });
 
       // Analyze mood patterns to find optimal times and stress periods
@@ -39,7 +56,7 @@ export function useEmotionTrendAnalysis({ moodData, studentId }: UseEmotionTrend
       let bestMoodScore = -Infinity, worstMoodScore = Infinity;
       daysOfWeek.forEach(day => {
         if (!dayOfWeekData[day].length) return;
-        const avgEnergy = dayOfWeekData[day].reduce((sum, entry) => sum + entry.energy_level, 0) / dayOfWeekData[day].length;
+        const avgEnergy = dayOfWeekData[day].reduce((sum, entry) => sum + (entry.energy_level || 0), 0) / dayOfWeekData[day].length;
         if (avgEnergy > bestMoodScore) { bestMoodScore = avgEnergy; bestDay = day; }
         if (avgEnergy < worstMoodScore) { worstMoodScore = avgEnergy; worstDay = day; }
       });
@@ -49,7 +66,7 @@ export function useEmotionTrendAnalysis({ moodData, studentId }: UseEmotionTrend
       bestMoodScore = -Infinity; worstMoodScore = Infinity;
       ['morning', 'afternoon', 'evening'].forEach(tod => {
         if (!timeOfDayData[tod].length) return;
-        const avgEnergy = timeOfDayData[tod].reduce((sum, entry) => sum + entry.energy_level, 0) / timeOfDayData[tod].length;
+        const avgEnergy = timeOfDayData[tod].reduce((sum, entry) => sum + (entry.energy_level || 0), 0) / timeOfDayData[tod].length;
         if (avgEnergy > bestMoodScore) { bestMoodScore = avgEnergy; bestTimeOfDay = tod; }
         if (avgEnergy < worstMoodScore) { worstMoodScore = avgEnergy; worstTimeOfDay = tod; }
       });
@@ -71,9 +88,9 @@ export function useEmotionTrendAnalysis({ moodData, studentId }: UseEmotionTrend
       // Secondary: second best day, same tod
       const secondBestDay = daysOfWeek.filter(d => d !== bestDay).sort((a, b) => {
         const aEnergy = dayOfWeekData[a].length ?
-          dayOfWeekData[a].reduce((sum, entry) => sum + entry.energy_level, 0) / dayOfWeekData[a].length : 0;
+          dayOfWeekData[a].reduce((sum, entry) => sum + (entry.energy_level || 0), 0) / dayOfWeekData[a].length : 0;
         const bEnergy = dayOfWeekData[b].length ?
-          dayOfWeekData[b].reduce((sum, entry) => sum + entry.energy_level, 0) / dayOfWeekData[b].length : 0;
+          dayOfWeekData[b].reduce((sum, entry) => sum + (entry.energy_level || 0), 0) / dayOfWeekData[b].length : 0;
         return bEnergy - aEnergy;
       })[0];
 
@@ -113,6 +130,8 @@ export function useEmotionTrendAnalysis({ moodData, studentId }: UseEmotionTrend
         moodPatterns,
       } as EmotionAnalysis;
     },
-    enabled: !!moodData && moodData.length > 0,
+    enabled: enabled && !!studentId && Array.isArray(moodData),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 }
