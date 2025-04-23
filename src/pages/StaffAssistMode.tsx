@@ -32,7 +32,8 @@ const StaffAssistMode: React.FC = () => {
         
       if (error) throw error;
       
-      return (data || []) as StudentProfile[];
+      const typedData: StudentProfile[] = data || [];
+      return typedData;
     },
     enabled: !!user?.id && isStaffOrAdmin,
   });
@@ -51,7 +52,8 @@ const StaffAssistMode: React.FC = () => {
         
       if (error) throw error;
       
-      return (data || []) as BehaviorLog[];
+      const typedData: BehaviorLog[] = data || [];
+      return typedData;
     },
     enabled: !!user?.id && isStaffOrAdmin,
   });
