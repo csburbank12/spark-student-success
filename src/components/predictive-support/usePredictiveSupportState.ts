@@ -1,5 +1,5 @@
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useTransition } from "react";
 import { Student, Intervention, EarlyWarningIndicator } from "./PredictiveSupportEngine";
 
 // Demo/mock data extracted for isolation and re-use
@@ -139,6 +139,7 @@ const earlyWarningIndicators: EarlyWarningIndicator[] = [
 ];
 
 export default function usePredictiveSupportState() {
+  const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(students[0]);
@@ -160,12 +161,28 @@ export default function usePredictiveSupportState() {
   }, [searchQuery, selectedFilter]);
 
   const handleStudentSelect = (student: Student) => {
-    setSelectedStudent(student);
-    setViewMode("detail");
+    startTransition(() => {
+      setSelectedStudent(student);
+      setViewMode("detail");
+    });
   };
 
   const handleBackToList = () => {
-    setViewMode("list");
+    startTransition(() => {
+      setViewMode("list");
+    });
+  };
+
+  const wrappedSetSearchQuery = (value: string) => {
+    startTransition(() => {
+      setSearchQuery(value);
+    });
+  };
+
+  const wrappedSetSelectedFilter = (value: string) => {
+    startTransition(() => {
+      setSelectedFilter(value);
+    });
   };
 
   return {
@@ -173,9 +190,9 @@ export default function usePredictiveSupportState() {
     interventions,
     interventionImpactData,
     searchQuery,
-    setSearchQuery,
+    setSearchQuery: wrappedSetSearchQuery,
     selectedFilter,
-    setSelectedFilter,
+    setSelectedFilter: wrappedSetSelectedFilter,
     filteredStudents,
     selectedStudent,
     setSelectedStudent,
@@ -184,6 +201,7 @@ export default function usePredictiveSupportState() {
     handleStudentSelect,
     handleBackToList,
     dataSources,
-    earlyWarningIndicators
+    earlyWarningIndicators,
+    isPending
   };
 }

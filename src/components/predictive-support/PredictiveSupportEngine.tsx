@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PredictiveSupportHeader from "./PredictiveSupportHeader";
 import StudentFilters from "./StudentFilters";
@@ -10,6 +10,7 @@ import InterventionTimeline from "./InterventionTimeline";
 import RecommendedInterventions from "./RecommendedInterventions";
 import EarlyWarningIndicators from "./EarlyWarningIndicators";
 import usePredictiveSupportState from "./usePredictiveSupportState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Define the types
 export interface Student {
@@ -52,7 +53,18 @@ export interface EarlyWarningIndicator {
   trend: "increasing" | "stable" | "decreasing";
 }
 
+// Loading skeleton for cards
+const CardSkeleton = () => (
+  <div className="space-y-3">
+    <Skeleton className="h-6 w-1/3" />
+    <Skeleton className="h-24 w-full" />
+    <Skeleton className="h-24 w-full" />
+  </div>
+);
+
 const PredictiveSupportEngine: React.FC = () => {
+  const [isPending, startTransition] = useTransition();
+  
   const {
     searchQuery,
     setSearchQuery,
@@ -69,12 +81,29 @@ const PredictiveSupportEngine: React.FC = () => {
   
   const [activeTab, setActiveTab] = useState("overview");
 
-  // Sample risk factors for the card
-  const riskFactors: RiskFactor[] = [
-    { name: "Attendance", weight: 0.8, category: "attendance", trend: "increasing" },
-    { name: "Grade Performance", weight: 0.75, category: "academic", trend: "stable" },
-    { name: "Social Interaction", weight: 0.6, category: "social", trend: "decreasing" },
-  ];
+  // Handle tab change with startTransition to avoid suspension
+  const handleTabChange = (value: string) => {
+    startTransition(() => {
+      setActiveTab(value);
+    });
+  };
+
+  // Handle filter change with startTransition
+  const handleFilterChange = (value: string) => {
+    startTransition(() => {
+      setSelectedFilter(value);
+    });
+  };
+
+  // Handle search query change with startTransition
+  const handleSearchChange = (value: string) => {
+    startTransition(() => {
+      setSearchQuery(value);
+    });
+  };
+
+  // Make sure we have data before rendering
+  const currentStudent = selectedStudent || (filteredStudents.length > 0 ? filteredStudents[0] : null);
 
   return (
     <div className="space-y-6">
@@ -82,12 +111,12 @@ const PredictiveSupportEngine: React.FC = () => {
       
       <StudentFilters 
         searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        setSearchQuery={handleSearchChange}
         selectedFilter={selectedFilter}
-        setSelectedFilter={setSelectedFilter}
+        setSelectedFilter={handleFilterChange}
       />
       
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs defaultValue={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="overview">Student Overview</TabsTrigger>
           <TabsTrigger value="interventions">Interventions</TabsTrigger>
@@ -96,24 +125,50 @@ const PredictiveSupportEngine: React.FC = () => {
         
         <TabsContent value="overview" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
-            <RiskScoreCard student={selectedStudent || filteredStudents[0]} />
-            <RiskFactorsCard student={selectedStudent || filteredStudents[0]} />
+            {isPending || !currentStudent ? (
+              <>
+                <CardSkeleton />
+                <CardSkeleton />
+              </>
+            ) : (
+              <>
+                <RiskScoreCard student={currentStudent} />
+                <RiskFactorsCard student={currentStudent} />
+              </>
+            )}
           </div>
         </TabsContent>
         
         <TabsContent value="interventions" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
-            {interventions.length > 0 && <InterventionCard intervention={interventions[0]} />}
-            <InterventionTimeline interventions={interventions} />
+            {isPending ? (
+              <>
+                <CardSkeleton />
+                <CardSkeleton />
+              </>
+            ) : (
+              <>
+                {interventions.length > 0 && <InterventionCard intervention={interventions[0]} />}
+                <InterventionTimeline interventions={interventions} />
+              </>
+            )}
           </div>
-          <RecommendedInterventions 
-            student={selectedStudent || filteredStudents[0]} 
-            recommendations={[]}
-          />
+          {isPending ? (
+            <CardSkeleton />
+          ) : (
+            <RecommendedInterventions 
+              student={currentStudent || filteredStudents[0]} 
+              recommendations={[]}
+            />
+          )}
         </TabsContent>
         
         <TabsContent value="warnings" className="space-y-6">
-          <EarlyWarningIndicators indicators={earlyWarningIndicators} />
+          {isPending ? (
+            <CardSkeleton />
+          ) : (
+            <EarlyWarningIndicators indicators={earlyWarningIndicators} />
+          )}
         </TabsContent>
       </Tabs>
     </div>
