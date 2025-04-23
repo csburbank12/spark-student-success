@@ -3,6 +3,14 @@
 export interface Student {
   id: string;
   name: string;
+  first_name?: string;
+  last_name?: string;
+}
+
+export interface StudentProfile {
+  id: string;
+  first_name: string;
+  last_name: string;
 }
 
 export interface BehaviorLog {
@@ -22,6 +30,7 @@ export interface BehaviorLog {
   effectiveness_rating?: number;
   notes?: string;
   timestamp?: string;
+  created_at: string; // Adding the missing property
 }
 
 export type InterventionEffectiveness = 1 | 2 | 3 | 4 | 5;
