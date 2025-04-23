@@ -4,11 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
 import { Check, Upload, FileUp, AlertCircle } from 'lucide-react';
-import { Card, CardContent } from "@/components/ui/card";
 
-// Type definitions
+// Types
 export interface StepStatus {
   step1Complete: boolean;
   step2Complete: boolean;
