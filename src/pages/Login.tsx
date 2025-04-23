@@ -1,10 +1,7 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GraduationCap, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
   CardContent,
@@ -17,7 +14,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserRole } from "@/types/roles";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LoginHeader } from "@/components/auth/LoginHeader";
+import { ConfidentialityNotice } from "@/components/auth/ConfidentialityNotice";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { DemoAccounts } from "@/components/auth/DemoAccounts";
 
 const Login = () => {
   const { login } = useAuth();
@@ -81,23 +81,8 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-primary-50 to-background p-4">
       <div className="w-full max-w-md space-y-8">
-        <div className="flex flex-col items-center space-y-2 text-center">
-          <div className="flex items-center gap-2">
-            <GraduationCap className="h-10 w-10 text-primary" />
-            <h1 className="text-4xl font-heading font-bold">Spark</h1>
-          </div>
-          <p className="text-xl text-muted-foreground">Student Success Platform</p>
-        </div>
-
-        <Alert className="bg-amber-50 border-amber-200 text-amber-900">
-          <Lock className="h-5 w-5" />
-          <AlertDescription className="mt-2 text-sm">
-            <strong className="block mb-2">Confidential Platform Access</strong>
-            This website contains proprietary educational data, tools, and intellectual property belonging to ThriveTrackED. 
-            By logging in, you agree not to disclose, distribute, or misuse any information accessed within. 
-            Unauthorized use or sharing is strictly prohibited and may result in legal or administrative action.
-          </AlertDescription>
-        </Alert>
+        <LoginHeader />
+        <ConfidentialityNotice />
 
         <Card className="border-2">
           <CardHeader>
@@ -114,160 +99,28 @@ const Login = () => {
               </TabsList>
               
               <TabsContent value="login">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your.email@school.edu"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="terms" 
-                      checked={agreedToTerms}
-                      onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-                    />
-                    <label
-                      htmlFor="terms"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      I understand and agree to the confidentiality terms
-                    </label>
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isSubmitting || !agreedToTerms}
-                  >
-                    {isSubmitting ? "Logging in..." : "Log in"}
-                  </Button>
-                </form>
+                <LoginForm 
+                  email={email}
+                  setEmail={setEmail}
+                  password={password}
+                  setPassword={setPassword}
+                  isSubmitting={isSubmitting}
+                  agreedToTerms={agreedToTerms}
+                  setAgreedToTerms={setAgreedToTerms}
+                  onSubmit={handleSubmit}
+                />
               </TabsContent>
               
               <TabsContent value="demo">
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Choose a demo account to experience the platform:
-                  </p>
-                  <div className="grid gap-2">
-                    <Button 
-                      onClick={() => presetLogin("student")}
-                      variant="outline" 
-                      className="justify-start hover:bg-primary-50 border-primary-100"
-                    >
-                      <div className="flex items-center">
-                        <div className="mr-3 h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                          <span className="text-sm font-medium text-primary-600">S</span>
-                        </div>
-                        <div className="text-left">
-                          <p className="font-medium">Alex Johnson</p>
-                          <p className="text-xs text-muted-foreground">Student Account</p>
-                        </div>
-                      </div>
-                    </Button>
-                    
-                    <Button 
-                      onClick={() => presetLogin("teacher")}
-                      variant="outline" 
-                      className="justify-start hover:bg-primary-50 border-primary-100"
-                    >
-                      <div className="flex items-center">
-                        <div className="mr-3 h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                          <span className="text-sm font-medium text-primary-600">T</span>
-                        </div>
-                        <div className="text-left">
-                          <p className="font-medium">Ms. Rodriguez</p>
-                          <p className="text-xs text-muted-foreground">Teacher Account</p>
-                        </div>
-                      </div>
-                    </Button>
-                    
-                    <Button 
-                      onClick={() => presetLogin("admin")}
-                      variant="outline" 
-                      className="justify-start hover:bg-primary-50 border-primary-100"
-                    >
-                      <div className="flex items-center">
-                        <div className="mr-3 h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                          <span className="text-sm font-medium text-primary-600">A</span>
-                        </div>
-                        <div className="text-left">
-                          <p className="font-medium">Principal Wilson</p>
-                          <p className="text-xs text-muted-foreground">Administrator Account</p>
-                        </div>
-                      </div>
-                    </Button>
-                    
-                    <Button 
-                      onClick={() => presetLogin("parent")}
-                      variant="outline" 
-                      className="justify-start hover:bg-primary-50 border-primary-100"
-                    >
-                      <div className="flex items-center">
-                        <div className="mr-3 h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                          <span className="text-sm font-medium text-primary-600">P</span>
-                        </div>
-                        <div className="text-left">
-                          <p className="font-medium">Sarah Johnson</p>
-                          <p className="text-xs text-muted-foreground">Parent Account</p>
-                        </div>
-                      </div>
-                    </Button>
-                    
-                    <Button 
-                      onClick={() => presetLogin("staff")}
-                      variant="outline" 
-                      className="justify-start hover:bg-primary-50 border-primary-100"
-                    >
-                      <div className="flex items-center">
-                        <div className="mr-3 h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                          <span className="text-sm font-medium text-primary-600">S</span>
-                        </div>
-                        <div className="text-left">
-                          <p className="font-medium">Jamie Smith</p>
-                          <p className="text-xs text-muted-foreground">Staff Account</p>
-                        </div>
-                      </div>
-                    </Button>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2 mt-4">
-                    <Checkbox 
-                      id="terms-demo" 
-                      checked={agreedToTerms}
-                      onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-                    />
-                    <label
-                      htmlFor="terms-demo"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      I understand and agree to the confidentiality terms
-                    </label>
-                  </div>
-                  
-                  <Button 
-                    className="w-full"
-                    disabled={!email || !password || !agreedToTerms}
-                    onClick={handleSubmit}
-                  >
-                    {isSubmitting ? "Logging in..." : "Log in with Demo Account"}
-                  </Button>
-                </div>
+                <DemoAccounts 
+                  presetLogin={presetLogin}
+                  email={email}
+                  password={password}
+                  isSubmitting={isSubmitting}
+                  agreedToTerms={agreedToTerms}
+                  setAgreedToTerms={setAgreedToTerms}
+                  handleSubmit={handleSubmit}
+                />
               </TabsContent>
             </Tabs>
           </CardContent>
