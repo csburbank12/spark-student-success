@@ -13,7 +13,7 @@ import TeacherDashboard from "@/pages/TeacherDashboard";
 import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
 import CheckIn from "@/pages/CheckIn";
 import UserProfile from "@/pages/profile/UserProfile";
-import DashboardLayout from "@/routes/DashboardManager";
+import { DashboardLayout } from "@/routes/DashboardManager";
 import TrustedAdultDashboard from "@/pages/TrustedAdultDashboard";
 import { RouteObject } from "react-router-dom";
 

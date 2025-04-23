@@ -7,6 +7,22 @@ import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
 import ParentDashboardEnhanced from "@/pages/ParentDashboardEnhanced";
 import { UserRole } from "@/types";
 
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+// First fix the DashboardLayout component to accept children
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+  return (
+    <div className="dashboard-layout">
+      {/* You can add common dashboard elements here (like a header or sidebar) */}
+      <div className="dashboard-content">
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const DashboardManager: React.FC = () => {
   const { user } = useAuth();
 
@@ -30,3 +46,4 @@ const DashboardManager: React.FC = () => {
 };
 
 export default DashboardManager;
+export { DashboardLayout };
