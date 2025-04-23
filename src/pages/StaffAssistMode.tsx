@@ -6,6 +6,7 @@ import { useStaffAssistStudentsAndLogs } from "@/hooks/useStaffAssistStudentsAnd
 import { useStaffAssistMutations } from "@/hooks/useStaffAssistMutations";
 import StaffAssistAccessDenied from "@/components/staff-assist/StaffAssistAccessDenied";
 import StaffAssistTabs from "@/components/staff-assist/StaffAssistTabs";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 /**
  * Main StaffAssistMode Page (Presenter)
@@ -13,6 +14,7 @@ import StaffAssistTabs from "@/components/staff-assist/StaffAssistTabs";
  */
 const StaffAssistMode: React.FC = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const isStaffOrAdmin =
     user?.role === UserRole.staff.toString() || user?.role === UserRole.admin.toString();
 
@@ -36,15 +38,17 @@ const StaffAssistMode: React.FC = () => {
   }
 
   return (
-    <StaffAssistTabs
-      students={students}
-      isLoadingStudents={isLoadingStudents}
-      behaviorLogs={behaviorLogs}
-      refetchLogs={refetchLogs}
-      isLoadingLogs={isLoadingLogs}
-      logIntervention={logIntervention}
-      updateEffectiveness={updateEffectiveness}
-    />
+    <div className={`container mx-auto px-4 ${isMobile ? 'py-2' : 'py-6'}`}>
+      <StaffAssistTabs
+        students={students}
+        isLoadingStudents={isLoadingStudents}
+        behaviorLogs={behaviorLogs}
+        refetchLogs={refetchLogs}
+        isLoadingLogs={isLoadingLogs}
+        logIntervention={logIntervention}
+        updateEffectiveness={updateEffectiveness}
+      />
+    </div>
   );
 };
 

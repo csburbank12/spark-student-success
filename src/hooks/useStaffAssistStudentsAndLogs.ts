@@ -3,6 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StudentProfile, BehaviorLog } from "@/components/staff-assist/types";
 
+/**
+ * Fetches students data for staff assistance
+ */
 export const fetchStudents = async (
   userId: string | undefined,
   isStaffOrAdmin: boolean
@@ -25,6 +28,9 @@ export const fetchStudents = async (
   }
 };
 
+/**
+ * Fetches behavior logs for staff assistance
+ */
 export const fetchBehaviorLogs = async (
   userId: string | undefined,
   isStaffOrAdmin: boolean
@@ -56,7 +62,7 @@ export const fetchBehaviorLogs = async (
 /**
  * Provides queries for both students and behavior logs.
  */
-export function useStaffAssistStudentsAndLogs(user, isStaffOrAdmin) {
+export function useStaffAssistStudentsAndLogs(user: any, isStaffOrAdmin: boolean) {
   const studentsQuery = useQuery({
     queryKey: ["staff-students"],
     queryFn: () => fetchStudents(user?.id, isStaffOrAdmin),

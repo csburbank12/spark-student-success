@@ -8,6 +8,7 @@ import { toast } from "@/components/ui/sonner";
 import { HelpCircle, Bookmark, CheckCircle } from "lucide-react";
 import { behaviorSituations, responseStrategies } from "./constants";
 import { StudentProfile } from "./types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface StaffAssistFormProps {
   students: StudentProfile[];
@@ -28,6 +29,7 @@ const StaffAssistForm: React.FC<StaffAssistFormProps> = ({
   const [notes, setNotes] = useState("");
   const [selectedResponse, setSelectedResponse] = useState<string | null>(null);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   const suggestedResponses =
     situation && responseStrategies[situation as keyof typeof responseStrategies]
@@ -63,7 +65,7 @@ const StaffAssistForm: React.FC<StaffAssistFormProps> = ({
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className={isMobile ? "p-4" : "p-6"}>
         <CardTitle className="flex items-center gap-2">
           <HelpCircle className="h-5 w-5" />
           Behavior Response Assistant
@@ -72,7 +74,7 @@ const StaffAssistForm: React.FC<StaffAssistFormProps> = ({
           Get immediate, research-backed strategies for classroom behaviors
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className={`space-y-4 ${isMobile ? "px-4" : ""}`}>
         <div className="space-y-2">
           <label htmlFor="student-select" className="text-sm font-medium">
             Select Student (Optional)
@@ -112,9 +114,9 @@ const StaffAssistForm: React.FC<StaffAssistFormProps> = ({
 
         {situation && (
           <>
-            <div className="border rounded-md p-4 bg-muted/30">
-              <h3 className="text-lg font-medium mb-3">Recommended Strategies:</h3>
-              <div className="space-y-4">
+            <div className="border rounded-md p-3 md:p-4 bg-muted/30">
+              <h3 className="text-base md:text-lg font-medium mb-3">Recommended Strategies:</h3>
+              <div className="space-y-3 md:space-y-4">
                 {suggestedResponses.map((response, index) => (
                   <Card
                     key={index}
@@ -125,21 +127,21 @@ const StaffAssistForm: React.FC<StaffAssistFormProps> = ({
                     }`}
                     onClick={() => setSelectedResponse(response.title)}
                   >
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start">
-                        <h4 className="font-medium text-base">{response.title}</h4>
+                    <CardContent className="p-3 md:p-4">
+                      <div className="flex justify-between items-start gap-2">
+                        <h4 className="font-medium text-sm md:text-base">{response.title}</h4>
                         {selectedResponse === response.title && (
-                          <CheckCircle className="h-5 w-5 text-primary" />
+                          <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      <p className="text-xs md:text-sm text-muted-foreground mt-1">
                         {response.description}
                       </p>
-                      <div className="mt-3 p-3 bg-secondary/20 rounded-md">
-                        <p className="text-sm font-medium">Sample Script:</p>
-                        <p className="italic text-sm mt-1">{response.script}</p>
+                      <div className="mt-2 md:mt-3 p-2 md:p-3 bg-secondary/20 rounded-md">
+                        <p className="text-xs md:text-sm font-medium">Sample Script:</p>
+                        <p className="italic text-xs md:text-sm mt-1">{response.script}</p>
                       </div>
-                      <div className="mt-3 text-xs text-muted-foreground">
+                      <div className="mt-2 md:mt-3 text-xs text-muted-foreground">
                         <p className="font-medium">Research:</p>
                         <p>{response.research}</p>
                       </div>
@@ -158,16 +160,21 @@ const StaffAssistForm: React.FC<StaffAssistFormProps> = ({
                 placeholder="Add additional context or observations"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
+                className="min-h-[100px]"
               />
             </div>
           </>
         )}
       </CardContent>
-      <CardFooter className="flex justify-between">
+      <CardFooter className={`flex justify-between ${isMobile ? "p-4" : ""}`}>
         <Button variant="outline" onClick={handleReset}>
           Reset
         </Button>
-        <Button onClick={handleAssist} className="gap-2" disabled={isLogging || !situation || !selectedResponse}>
+        <Button 
+          onClick={handleAssist} 
+          className="gap-2" 
+          disabled={isLogging || !situation || !selectedResponse}
+        >
           <Bookmark className="h-4 w-4" />
           {isLogging ? "Logging..." : "Log Intervention"}
         </Button>
