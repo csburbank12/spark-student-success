@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
@@ -10,6 +9,7 @@ import SchoolManagement from "@/pages/admin/SchoolManagement";
 import SchoolOnboarding from "@/pages/admin/SchoolOnboarding";
 import DataAnalytics from "@/pages/admin/DataAnalytics";
 import LoopBotLogs from "@/pages/admin/LoopBotLogs";
+import IntegrationsManager from "@/pages/admin/IntegrationsManager";
 
 // Admin-specific routes
 const adminRoutes = [
@@ -74,6 +74,14 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <LoopBotLogs />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/integrations",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <IntegrationsManager />
       </ProtectedRoute>
     ),
   },

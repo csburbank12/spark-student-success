@@ -224,6 +224,162 @@ export type Database = {
         }
         Relationships: []
       }
+      external_integrations: {
+        Row: {
+          config: Json
+          created_at: string | null
+          id: string
+          integration_type: Database["public"]["Enums"]["integration_type"]
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          config: Json
+          created_at?: string | null
+          id?: string
+          integration_type: Database["public"]["Enums"]["integration_type"]
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          id?: string
+          integration_type?: Database["public"]["Enums"]["integration_type"]
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      external_system_mappings: {
+        Row: {
+          created_at: string | null
+          entity_type: string
+          external_id: string
+          id: string
+          integration_id: string
+          internal_id: string
+          metadata: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          entity_type: string
+          external_id: string
+          id?: string
+          integration_id: string
+          internal_id: string
+          metadata?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          entity_type?: string
+          external_id?: string
+          id?: string
+          integration_id?: string
+          internal_id?: string
+          metadata?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_system_mappings_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "external_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_credentials: {
+        Row: {
+          created_at: string | null
+          credential_type: string
+          credential_value: string
+          expires_at: string | null
+          id: string
+          integration_id: string
+          is_active: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          credential_type: string
+          credential_value: string
+          expires_at?: string | null
+          id?: string
+          integration_id: string
+          is_active?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          credential_type?: string
+          credential_value?: string
+          expires_at?: string | null
+          id?: string
+          integration_id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_credentials_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "external_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_sync_logs: {
+        Row: {
+          completed_at: string | null
+          details: Json | null
+          error_message: string | null
+          id: string
+          integration_id: string
+          records_failed: number | null
+          records_processed: number | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["sync_status"]
+        }
+        Insert: {
+          completed_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          integration_id: string
+          records_failed?: number | null
+          records_processed?: number | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["sync_status"]
+        }
+        Update: {
+          completed_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          integration_id?: string
+          records_failed?: number | null
+          records_processed?: number | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["sync_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_sync_logs_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "external_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interventions: {
         Row: {
           created_at: string | null
@@ -1025,6 +1181,50 @@ export type Database = {
           },
         ]
       }
+      sync_schedules: {
+        Row: {
+          created_at: string | null
+          entity_type: string
+          frequency_minutes: number
+          id: string
+          integration_id: string
+          is_active: boolean | null
+          last_run: string | null
+          next_run: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          entity_type: string
+          frequency_minutes: number
+          id?: string
+          integration_id: string
+          is_active?: boolean | null
+          last_run?: string | null
+          next_run?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          entity_type?: string
+          frequency_minutes?: number
+          id?: string
+          integration_id?: string
+          is_active?: boolean | null
+          last_run?: string | null
+          next_run?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_schedules_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "external_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       system_settings: {
         Row: {
           created_at: string | null
@@ -1285,13 +1485,52 @@ export type Database = {
         Args: { user_id: string }
         Returns: boolean
       }
+      log_integration_sync: {
+        Args: {
+          p_integration_id: string
+          p_status: Database["public"]["Enums"]["sync_status"]
+          p_records_processed?: number
+          p_records_failed?: number
+          p_error_message?: string
+          p_details?: Json
+        }
+        Returns: string
+      }
+      map_external_entity: {
+        Args: {
+          p_integration_id: string
+          p_external_id: string
+          p_internal_id: string
+          p_entity_type: string
+          p_metadata?: Json
+        }
+        Returns: string
+      }
+      register_external_integration: {
+        Args: {
+          p_name: string
+          p_type: Database["public"]["Enums"]["integration_type"]
+          p_config: Json
+        }
+        Returns: string
+      }
+      schedule_integration_sync: {
+        Args: {
+          p_integration_id: string
+          p_entity_type: string
+          p_frequency_minutes: number
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "student" | "staff" | "admin" | "parent"
+      integration_type: "classlink" | "skyward" | "other"
       loopbot_severity: "info" | "warning" | "critical"
       loopbot_status: "fixed" | "needs_review" | "ignored"
       mood_type: "happy" | "good" | "okay" | "sad" | "stressed"
       pulse_survey_type: "student" | "staff"
+      sync_status: "pending" | "in_progress" | "completed" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1408,10 +1647,12 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["student", "staff", "admin", "parent"],
+      integration_type: ["classlink", "skyward", "other"],
       loopbot_severity: ["info", "warning", "critical"],
       loopbot_status: ["fixed", "needs_review", "ignored"],
       mood_type: ["happy", "good", "okay", "sad", "stressed"],
       pulse_survey_type: ["student", "staff"],
+      sync_status: ["pending", "in_progress", "completed", "failed"],
     },
   },
 } as const
