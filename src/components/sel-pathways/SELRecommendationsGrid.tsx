@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,7 @@ export const SELRecommendationsGrid = ({ lessons, onSelectLesson }: SELRecommend
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="sel-recommendations">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-heading font-bold">Recommended For You</h2>
         <Button variant="link" onClick={handleViewAllClick}>
@@ -30,7 +29,7 @@ export const SELRecommendationsGrid = ({ lessons, onSelectLesson }: SELRecommend
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {lessons.slice(0, 3).map(lesson => (
-          <Card key={lesson.id} className="overflow-hidden">
+          <Card key={lesson.id} className="overflow-hidden" role="article">
             <div className="relative h-32 bg-gradient-to-r from-indigo-500 to-purple-500">
               <div className="absolute inset-0 flex items-center justify-center">
                 <Badge variant="outline" className="bg-white/90 text-sm">
