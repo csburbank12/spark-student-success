@@ -36,9 +36,6 @@ export const DemoAccounts = ({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Select a demo account to explore the platform:
-      </p>
       <div className="grid gap-2">
         {demoAccounts.map((account) => (
           <Button 
@@ -80,4 +77,3 @@ export const DemoAccounts = ({
     </div>
   );
 };
-
