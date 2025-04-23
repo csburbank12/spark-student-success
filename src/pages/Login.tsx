@@ -1,22 +1,12 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserRole } from "@/types/roles";
 import { LoginHeader } from "@/components/auth/LoginHeader";
 import { ConfidentialityNotice } from "@/components/auth/ConfidentialityNotice";
-import { LoginForm } from "@/components/auth/LoginForm";
 import { DemoAccounts } from "@/components/auth/DemoAccounts";
 
 const Login = () => {
@@ -86,43 +76,21 @@ const Login = () => {
 
         <Card className="border-2">
           <CardHeader>
-            <CardTitle className="text-2xl">Welcome back</CardTitle>
+            <CardTitle className="text-2xl">Welcome to Spark</CardTitle>
             <CardDescription>
-              Log in to access your student support dashboard
+              Choose a demo account to explore the platform
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid grid-cols-2 mb-6">
-                <TabsTrigger value="login">Log In</TabsTrigger>
-                <TabsTrigger value="demo">Demo Access</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="login">
-                <LoginForm 
-                  email={email}
-                  setEmail={setEmail}
-                  password={password}
-                  setPassword={setPassword}
-                  isSubmitting={isSubmitting}
-                  agreedToTerms={agreedToTerms}
-                  setAgreedToTerms={setAgreedToTerms}
-                  onSubmit={handleSubmit}
-                />
-              </TabsContent>
-              
-              <TabsContent value="demo">
-                <DemoAccounts 
-                  presetLogin={presetLogin}
-                  email={email}
-                  password={password}
-                  isSubmitting={isSubmitting}
-                  agreedToTerms={agreedToTerms}
-                  setAgreedToTerms={setAgreedToTerms}
-                  handleSubmit={handleSubmit}
-                />
-              </TabsContent>
-            </Tabs>
+            <DemoAccounts 
+              presetLogin={presetLogin}
+              email={email}
+              password={password}
+              isSubmitting={isSubmitting}
+              agreedToTerms={agreedToTerms}
+              setAgreedToTerms={setAgreedToTerms}
+              handleSubmit={handleSubmit}
+            />
           </CardContent>
           <CardFooter className="flex flex-col space-y-2">
             <div className="text-center w-full text-sm text-muted-foreground">
