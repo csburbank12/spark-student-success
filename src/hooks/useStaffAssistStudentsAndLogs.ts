@@ -70,7 +70,7 @@ export const fetchBehaviorLogs = async (
  * Provides queries for both students and behavior logs.
  */
 export function useStaffAssistStudentsAndLogs(user: any, isStaffOrAdmin: boolean) {
-  // Avoid deeply inferred types by splitting variables and any excessive inference
+  // Fix type issues by explicitly typing the query results
   const studentsQuery = useQuery({
     queryKey: ["staff-students"],
     queryFn: () => fetchStudents(user?.id, isStaffOrAdmin),
@@ -83,11 +83,11 @@ export function useStaffAssistStudentsAndLogs(user: any, isStaffOrAdmin: boolean
     enabled: !!user?.id && isStaffOrAdmin,
   });
 
-  // Remove excessive data chaining
+  // Use more explicit typing to avoid deep inference issues
   return {
-    students: studentsQuery.data ? studentsQuery.data : [],
+    students: studentsQuery.data || [],
     isLoadingStudents: studentsQuery.isLoading,
-    behaviorLogs: behaviorLogsQuery.data ? behaviorLogsQuery.data : [],
+    behaviorLogs: behaviorLogsQuery.data || [],
     refetchLogs: behaviorLogsQuery.refetch,
     isLoadingLogs: behaviorLogsQuery.isLoading,
   };
