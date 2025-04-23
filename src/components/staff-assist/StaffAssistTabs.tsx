@@ -5,6 +5,7 @@ import StaffAssistForm from "./StaffAssistForm";
 import InterventionHistory from "./InterventionHistory";
 import { StudentProfile, BehaviorLog } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { UseMutationResult } from "@tanstack/react-query";
 
 interface StaffAssistTabsProps {
   students: StudentProfile[];
@@ -12,19 +13,16 @@ interface StaffAssistTabsProps {
   behaviorLogs: BehaviorLog[];
   refetchLogs: () => void;
   isLoadingLogs: boolean;
-  logIntervention: {
-    isPending: boolean;
-    mutate: (data: {
-      studentId: string | null;
-      situationType: string;
-      interventionUsed: string;
-      notes: string;
-    }) => void;
-  };
-  updateEffectiveness: {
-    isPending: boolean;
-    mutate: (data: { logId: string; rating: number }) => void;
-  };
+  logIntervention: UseMutationResult<void, Error, {
+    studentId: string | null;
+    situationType: string;
+    interventionUsed: string;
+    notes: string;
+  }, unknown>;
+  updateEffectiveness: UseMutationResult<void, Error, {
+    logId: string;
+    rating: number;
+  }, unknown>;
 }
 
 const StaffAssistTabs: React.FC<StaffAssistTabsProps> = ({
