@@ -20,7 +20,7 @@ const StaffAssistMode: React.FC = () => {
     user?.role === "staff" || user?.role === "admin";
 
   // Fetch all students for staff
-  const { data: students = [] } = useQuery({
+  const { data: students = [], isLoading: isLoadingStudents } = useQuery({
     queryKey: ["staff-students"],
     queryFn: async () => {
       if (!user?.id || !isStaffOrAdmin) return [] as StudentProfile[];
@@ -31,14 +31,14 @@ const StaffAssistMode: React.FC = () => {
       if (error) throw error;
       return data as StudentProfile[] || [];
     },
-    enabled: isStaffOrAdmin,
+    enabled: !!isStaffOrAdmin,
   });
 
   // Fetch all behavior logs by staff user
   const { data: behaviorLogs = [], refetch: refetchLogs, isLoading: isLoadingLogs } = useQuery({
     queryKey: ["behavior-logs", user?.id],
     queryFn: async () => {
-      if (!user?.id || !isStaffOrAdmin) return [];
+      if (!user?.id || !isStaffOrAdmin) return [] as BehaviorLog[];
       const { data, error } = await supabase
         .from("behavior_logs")
         .select("*")
@@ -47,7 +47,7 @@ const StaffAssistMode: React.FC = () => {
       if (error) throw error;
       return data as BehaviorLog[] || [];
     },
-    enabled: isStaffOrAdmin,
+    enabled: !!isStaffOrAdmin,
   });
 
   // Logging new intervention
