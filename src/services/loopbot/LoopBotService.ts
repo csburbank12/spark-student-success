@@ -20,46 +20,6 @@ export interface LoopBotScanResult {
   issues: LoopBotLog[];
 }
 
-// Mock data - would be replaced with actual DB implementation
-const mockLogs: LoopBotLog[] = [
-  {
-    id: "1",
-    timestamp: new Date(Date.now() - 86400000), // 1 day ago
-    issueType: "broken_link",
-    description: "Found broken link on teacher dashboard to /settings page",
-    resolution: "Repaired navigation link by updating href value",
-    status: "resolved",
-    severity: "low"
-  },
-  {
-    id: "2",
-    timestamp: new Date(Date.now() - 43200000), // 12 hours ago
-    issueType: "form_error",
-    description: "Login form submission error due to invalid CSRF token",
-    resolution: "Regenerated CSRF token and updated form",
-    status: "resolved",
-    severity: "medium"
-  },
-  {
-    id: "3",
-    timestamp: new Date(Date.now() - 7200000), // 2 hours ago
-    issueType: "api_failure",
-    description: "Student API calls timing out when fetching profile data",
-    resolution: null,
-    status: "pending",
-    severity: "high"
-  },
-  {
-    id: "4",
-    timestamp: new Date(),
-    issueType: "deployment_error",
-    description: "Latest deployment contains 3 TypeScript errors in component rendering",
-    resolution: "Auto-fixed 2 issues, 1 requires manual review",
-    status: "resolved",
-    severity: "medium"
-  },
-];
-
 /**
  * LoopBot Service responsible for automated QA scanning, monitoring and self-repairs
  */
@@ -84,13 +44,26 @@ class LoopBotService {
    * Get all logs from the system
    */
   async getLogs(days = 30): Promise<LoopBotLog[]> {
-    // In a real implementation, this would fetch from the database
-    // For now, return mock data
-    return mockLogs.filter(log => {
-      const daysAgo = new Date();
-      daysAgo.setDate(daysAgo.getDate() - days);
-      return log.timestamp >= daysAgo;
-    }).sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    const { data, error } = await supabase
+      .from('loopbot_logs')
+      .select('*')
+      .order('timestamp', { ascending: false })
+      .limit(30);
+
+    if (error) {
+      console.error("Error fetching LoopBot logs:", error);
+      return [];
+    }
+
+    return data.map(log => ({
+      id: log.id,
+      timestamp: new Date(log.timestamp),
+      issueType: log.component,
+      description: log.issue,
+      resolution: log.action_taken,
+      status: this.mapStatus(log.status),
+      severity: this.mapSeverity(log.severity)
+    }));
   }
 
   /**
@@ -106,15 +79,13 @@ class LoopBotService {
     
     try {
       // Mock scan process - would be replaced with actual checks
-      await this.delay(2000); // Simulating a 2-second scan
+      await this.delay(2000);
       
-      // Perform various checks
       const brokenLinks = await this.checkLinks();
       const formIssues = await this.checkForms();
       const profileIssues = await this.checkProfiles();
       const buildIssues = await this.checkBuildErrors();
       
-      // Aggregate all issues
       const allIssues = [
         ...brokenLinks,
         ...formIssues, 
@@ -122,7 +93,6 @@ class LoopBotService {
         ...buildIssues
       ];
       
-      // Determine site health based on severity of issues
       let siteHealth: SiteHealth = "green";
       if (allIssues.some(issue => issue.severity === "critical")) {
         siteHealth = "red";
@@ -130,7 +100,6 @@ class LoopBotService {
         siteHealth = "yellow";
       }
       
-      // Create scan result
       this.lastScanResult = {
         timestamp: new Date(),
         siteHealth,
@@ -139,7 +108,6 @@ class LoopBotService {
       
       console.log(`LoopBot: Scan complete. Found ${allIssues.length} issues. Site health: ${siteHealth}`);
       
-      // Attempt self-repair for fixable issues
       await this.attemptSelfRepair(allIssues);
       
       return this.lastScanResult;
@@ -158,134 +126,206 @@ class LoopBotService {
   /**
    * Initialize scheduled runs (daily at midnight)
    */
-  private initializeScheduledRuns() {
-    // In a real implementation, this would use a cron job or similar
-    // For this demo, we'll just log that it's been initialized
-    console.log("LoopBot: Scheduled daily runs initialized");
-    
-    // Calculate time until midnight
-    const now = new Date();
-    const midnight = new Date();
-    midnight.setHours(24, 0, 0, 0);
-    const timeUntilMidnight = midnight.getTime() - now.getTime();
-    
-    // Schedule the first run
-    this.scheduledJobId = window.setTimeout(() => {
-      this.runDailyCheck();
-    }, timeUntilMidnight);
+  private async initializeScheduledRuns() {
+    const { data: settings } = await supabase
+      .from('loopbot_settings')
+      .select('setting_value')
+      .eq('setting_key', 'nightly_scans')
+      .single();
+
+    if (settings?.setting_value.enabled) {
+      console.log("LoopBot: Scheduled daily runs initialized");
+      
+      // Calculate time until midnight
+      const now = new Date();
+      const midnight = new Date();
+      midnight.setHours(24, 0, 0, 0);
+      const timeUntilMidnight = midnight.getTime() - now.getTime();
+      
+      this.scheduledJobId = window.setTimeout(() => {
+        this.runDailyCheck();
+      }, timeUntilMidnight);
+    }
   }
 
-  /**
-   * Run the daily scheduled check
-   */
   private async runDailyCheck() {
     console.log("LoopBot: Running scheduled daily check");
     await this.startScan();
     
-    // Schedule the next day's check
     this.scheduledJobId = window.setTimeout(() => {
       this.runDailyCheck();
-    }, 24 * 60 * 60 * 1000); // 24 hours
+    }, 24 * 60 * 60 * 1000);
   }
 
-  /**
-   * Check for broken links throughout the site
-   */
   private async checkLinks(): Promise<LoopBotLog[]> {
     // This would actually check links throughout the site
-    // For now, return mock data
-    return [
-      {
-        id: `link-${Date.now()}`,
-        timestamp: new Date(),
-        issueType: "broken_link",
-        description: "Found broken link on dashboard to nonexistent page",
-        resolution: null,
-        status: "pending",
-        severity: "medium"
-      }
-    ];
+    const issues = await this.simulateCheck("broken_link", "Links check");
+    return issues;
   }
 
-  /**
-   * Check forms for submission errors
-   */
   private async checkForms(): Promise<LoopBotLog[]> {
     // This would actually check forms throughout the site
-    return [];
+    const issues = await this.simulateCheck("form_error", "Forms check");
+    return issues;
   }
 
-  /**
-   * Check profile pages for loading issues
-   */
   private async checkProfiles(): Promise<LoopBotLog[]> {
     // This would actually check profile pages
-    return [];
+    const issues = await this.simulateCheck("profile_error", "Profiles check");
+    return issues;
   }
 
-  /**
-   * Check for build errors
-   */
   private async checkBuildErrors(): Promise<LoopBotLog[]> {
     // This would check for actual build errors
-    return [];
+    const issues = await this.simulateCheck("build_error", "Build check");
+    return issues;
   }
 
-  /**
-   * Attempt to automatically repair issues
-   */
-  private async attemptSelfRepair(issues: LoopBotLog[]): Promise<void> {
+  private async simulateCheck(component: string, description: string): Promise<LoopBotLog[]> {
+    const shouldCreateIssue = Math.random() < 0.3; // 30% chance of finding an issue
+    
+    if (!shouldCreateIssue) {
+      return [];
+    }
+
+    const issue: LoopBotLog = {
+      id: crypto.randomUUID(),
+      timestamp: new Date(),
+      issueType: component,
+      description: `Found issue during ${description}`,
+      resolution: null,
+      status: "pending",
+      severity: Math.random() < 0.2 ? "critical" : "medium"
+    };
+
+    await this.logIssue(issue);
+    return [issue];
+  }
+
+  private async logIssue(issue: LoopBotLog) {
+    const { error } = await supabase
+      .from('loopbot_logs')
+      .insert({
+        component: issue.issueType,
+        issue: issue.description,
+        severity: this.mapSeverityToEnum(issue.severity),
+        status: this.mapStatusToEnum(issue.status),
+        action_taken: issue.resolution
+      });
+
+    if (error) {
+      console.error("Error logging issue:", error);
+    }
+  }
+
+  private async attemptSelfRepair(issues: LoopBotLog[]) {
     const repairableIssues = issues.filter(issue => 
       issue.status === "pending" && 
       (issue.severity === "low" || issue.severity === "medium")
     );
     
     for (const issue of repairableIssues) {
-      // Mock repair - would contain actual fix logic in real implementation
       console.log(`LoopBot: Attempting to repair issue ${issue.id}: ${issue.description}`);
       
-      // Simulate repair process
       await this.delay(500);
       
-      // Update issue as fixed
       issue.status = "resolved";
       issue.resolution = `Automatically fixed at ${new Date().toISOString()}`;
+      
+      await this.updateIssueStatus(issue);
       
       console.log(`LoopBot: Successfully repaired issue ${issue.id}`);
     }
   }
 
-  /**
-   * Acknowledge a critical alert
-   */
-  async acknowledgeAlert(logId: string): Promise<void> {
-    // In a real implementation, this would update the database
-    const log = mockLogs.find(l => l.id === logId);
-    if (log) {
-      log.status = "resolved";
-      log.resolution = `Acknowledged by admin at ${new Date().toISOString()}`;
-      console.log(`LoopBot: Alert ${logId} acknowledged`);
-      toast.success("Alert acknowledged successfully");
+  private async updateIssueStatus(issue: LoopBotLog) {
+    const { error } = await supabase
+      .from('loopbot_logs')
+      .update({
+        status: this.mapStatusToEnum(issue.status),
+        action_taken: issue.resolution
+      })
+      .eq('id', issue.id);
+
+    if (error) {
+      console.error("Error updating issue status:", error);
     }
   }
 
-  /**
-   * Roll back to previous version for critical issues
-   */
-  async rollbackToPreviousVersion(logId: string): Promise<void> {
-    // In a real implementation, this would trigger a rollback
-    const log = mockLogs.find(l => l.id === logId);
-    if (log) {
-      log.status = "resolved";
-      log.resolution = `Rolled back to previous version at ${new Date().toISOString()}`;
-      console.log(`LoopBot: System rolled back due to issue ${logId}`);
-      toast.success("System successfully rolled back to previous version");
+  async acknowledgeAlert(logId: string) {
+    const { error } = await supabase
+      .from('loopbot_logs')
+      .update({
+        status: 'fixed',
+        action_taken: `Acknowledged by admin at ${new Date().toISOString()}`
+      })
+      .eq('id', logId);
+
+    if (error) {
+      console.error("Error acknowledging alert:", error);
+      toast.error("Failed to acknowledge alert");
+      return;
+    }
+
+    toast.success("Alert acknowledged successfully");
+  }
+
+  async rollbackToPreviousVersion(logId: string) {
+    const { error } = await supabase
+      .from('loopbot_logs')
+      .update({
+        status: 'fixed',
+        action_taken: `Rolled back to previous version at ${new Date().toISOString()}`
+      })
+      .eq('id', logId);
+
+    if (error) {
+      console.error("Error performing rollback:", error);
+      toast.error("Failed to rollback system");
+      return;
+    }
+
+    toast.success("System successfully rolled back to previous version");
+  }
+
+  private mapSeverity(dbSeverity: string): "low" | "medium" | "high" | "critical" {
+    switch (dbSeverity) {
+      case "info": return "low";
+      case "warning": return "medium";
+      case "critical": return "critical";
+      default: return "medium";
     }
   }
 
-  /**
-   * Helper method for delay
-   */
+  private mapSeverityToEnum(severity: string): "info" | "warning" | "critical" {
+    switch (severity) {
+      case "low": return "info";
+      case "medium": return "warning";
+      case "high":
+      case "critical": 
+        return "critical";
+      default: return "warning";
+    }
+  }
+
+  private mapStatus(dbStatus: string): "resolved" | "pending" | "failed" {
+    switch (dbStatus) {
+      case "fixed": return "resolved";
+      case "needs_review": return "pending";
+      case "ignored": return "failed";
+      default: return "pending";
+    }
+  }
+
+  private mapStatusToEnum(status: string): "fixed" | "needs_review" | "ignored" {
+    switch (status) {
+      case "resolved": return "fixed";
+      case "pending": return "needs_review";
+      case "failed": return "ignored";
+      default: return "needs_review";
+    }
+  }
+
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }

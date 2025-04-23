@@ -15,7 +15,7 @@ const LoopBotContext = createContext<LoopBotContextType | undefined>(undefined);
 
 export const useLoopBot = () => {
   const context = useContext(LoopBotContext);
-  if (context === undefined) {
+  if (context ===   undefined) {
     throw new Error("useLoopBot must be used within a LoopBotProvider");
   }
   return context;

@@ -316,6 +316,60 @@ export type Database = {
         }
         Relationships: []
       }
+      loopbot_logs: {
+        Row: {
+          action_taken: string | null
+          component: string
+          id: string
+          issue: string
+          scan_id: string | null
+          severity: Database["public"]["Enums"]["loopbot_severity"]
+          status: Database["public"]["Enums"]["loopbot_status"]
+          timestamp: string
+        }
+        Insert: {
+          action_taken?: string | null
+          component: string
+          id?: string
+          issue: string
+          scan_id?: string | null
+          severity: Database["public"]["Enums"]["loopbot_severity"]
+          status?: Database["public"]["Enums"]["loopbot_status"]
+          timestamp?: string
+        }
+        Update: {
+          action_taken?: string | null
+          component?: string
+          id?: string
+          issue?: string
+          scan_id?: string | null
+          severity?: Database["public"]["Enums"]["loopbot_severity"]
+          status?: Database["public"]["Enums"]["loopbot_status"]
+          timestamp?: string
+        }
+        Relationships: []
+      }
+      loopbot_settings: {
+        Row: {
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       meetings: {
         Row: {
           created_at: string | null
@@ -1086,6 +1140,23 @@ export type Database = {
         }
         Returns: Json
       }
+      get_filtered_loopbot_logs: {
+        Args: {
+          p_severity?: Database["public"]["Enums"]["loopbot_severity"][]
+          p_component?: string[]
+          p_days_back?: number
+        }
+        Returns: {
+          action_taken: string | null
+          component: string
+          id: string
+          issue: string
+          scan_id: string | null
+          severity: Database["public"]["Enums"]["loopbot_severity"]
+          status: Database["public"]["Enums"]["loopbot_status"]
+          timestamp: string
+        }[]
+      }
       get_micro_coach_logs: {
         Args: { p_student_id?: string }
         Returns: Json[]
@@ -1185,6 +1256,8 @@ export type Database = {
     }
     Enums: {
       app_role: "student" | "staff" | "admin" | "parent"
+      loopbot_severity: "info" | "warning" | "critical"
+      loopbot_status: "fixed" | "needs_review" | "ignored"
       mood_type: "happy" | "good" | "okay" | "sad" | "stressed"
       pulse_survey_type: "student" | "staff"
     }
@@ -1303,6 +1376,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["student", "staff", "admin", "parent"],
+      loopbot_severity: ["info", "warning", "critical"],
+      loopbot_status: ["fixed", "needs_review", "ignored"],
       mood_type: ["happy", "good", "okay", "sad", "stressed"],
       pulse_survey_type: ["student", "staff"],
     },
