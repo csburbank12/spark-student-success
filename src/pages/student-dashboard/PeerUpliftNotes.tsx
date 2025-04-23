@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { User } from "@/types";
 
 interface KindnessNote {
   id: string;
@@ -40,7 +38,7 @@ const PeerUpliftNotes: React.FC = () => {
     }
     const note: KindnessNote = {
       id: Math.random().toString(36).slice(2),
-      sender: anonymous ? null : user?.full_name ?? null,
+      sender: anonymous ? null : user?.name ?? null,
       recipient,
       message: message.trim(),
       anonymous,
