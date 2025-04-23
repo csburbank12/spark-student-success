@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -39,7 +40,7 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
   const userRole = user?.role as UserRole;
   
   // Get recommended lessons based on user's mood or recent check-ins
-  const { data: recommendedLessons = [], isLoading: isLoadingRecommendations } = useQuery({
+  const { data: recommendedLessons = [], isLoading: isLoadingRecommendations, isError: isRecommendationsError } = useQuery({
     queryKey: ["sel-recommendations", targetId, mood],
     queryFn: async () => {
       // If no target user, return empty array
@@ -119,7 +120,7 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
   });
 
   // Get lessons assigned to the student
-  const { data: assignedLessons = [], isLoading: isLoadingAssignments } = useQuery({
+  const { data: assignedLessons = [], isLoading: isLoadingAssignments, isError: isAssignmentsError } = useQuery({
     queryKey: ["sel-assignments", targetId],
     queryFn: async () => {
       // If no target user or not a student, return empty array
@@ -164,7 +165,7 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
   });
 
   // Get progress on SEL lessons
-  const { data: lessonProgress = [], isLoading: isLoadingProgress } = useQuery({
+  const { data: lessonProgress = [], isLoading: isLoadingProgress, isError: isProgressError } = useQuery({
     queryKey: ["sel-progress", targetId],
     queryFn: async () => {
       // If no target user, return empty array
@@ -207,11 +208,15 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
     refetchOnWindowFocus: false,
   });
 
+  // Compute isError based on any of the query errors
+  const isError = isRecommendationsError || isAssignmentsError || isProgressError;
+
   return {
     recommendedLessons,
     assignedLessons,
     lessonProgress,
-    isLoading: isLoadingRecommendations || isLoadingAssignments || isLoadingProgress
+    isLoading: isLoadingRecommendations || isLoadingAssignments || isLoadingProgress,
+    isError
   };
 }
 
