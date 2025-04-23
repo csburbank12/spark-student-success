@@ -5,6 +5,7 @@ import { TermsAgreement } from "./TermsAgreement";
 import { toast } from "sonner";
 import { ErrorLoggingService } from "@/services/ErrorLoggingService";
 import { UserRole } from "@/types/roles";
+import { demoUsers } from "@/data/demoUsers";
 
 interface DemoAccount {
   role: string;
@@ -36,36 +37,36 @@ export const DemoAccounts = ({
   const demoAccounts: DemoAccount[] = [
     { 
       role: UserRole.student, 
-      name: "Student Demo", 
-      email: "jada@school.edu",
-      description: "Access student dashboard, mood tracking, and SEL resources",
+      name: demoUsers[UserRole.student].name,
+      email: demoUsers[UserRole.student].email,
+      description: "Access student dashboard, mood tracking, SEL resources, and digital journal",
       iconClass: "bg-emerald-100 text-emerald-600"
     },
     { 
       role: UserRole.teacher, 
-      name: "Teacher Demo", 
-      email: "nguyen@school.edu",
+      name: demoUsers[UserRole.teacher].name,
+      email: demoUsers[UserRole.teacher].email,
       description: "View student data, assign interventions, and track progress",
       iconClass: "bg-blue-100 text-blue-600"
     },
     { 
       role: UserRole.admin, 
-      name: "Admin Demo", 
-      email: "rodriguez@district.edu",
+      name: demoUsers[UserRole.admin].name,
+      email: demoUsers[UserRole.admin].email,
       description: "Manage school settings, users, and access analytics",
       iconClass: "bg-purple-100 text-purple-600"
     },
     { 
       role: UserRole.parent, 
-      name: "Parent Demo", 
-      email: "sarah@family.com",
+      name: demoUsers[UserRole.parent].name,
+      email: demoUsers[UserRole.parent].email,
       description: "Monitor child activities, wellness, and communicate with staff",
       iconClass: "bg-amber-100 text-amber-600"
     },
     { 
       role: UserRole.staff, 
-      name: "Staff Demo", 
-      email: "chen@school.edu",
+      name: demoUsers[UserRole.staff].name,
+      email: demoUsers[UserRole.staff].email,
       description: "Support student wellness, track interventions, access resources",
       iconClass: "bg-indigo-100 text-indigo-600"
     }

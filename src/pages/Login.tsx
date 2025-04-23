@@ -9,6 +9,7 @@ import { LoginHeader } from "@/components/auth/LoginHeader";
 import { ConfidentialityNotice } from "@/components/auth/ConfidentialityNotice";
 import { DemoAccounts } from "@/components/auth/DemoAccounts";
 import { ErrorLoggingService } from "@/services/ErrorLoggingService";
+import { demoUsers } from "@/data/demoUsers";
 
 const Login = () => {
   const { login, user } = useAuth();
@@ -86,23 +87,12 @@ const Login = () => {
   };
 
   const presetLogin = (role: string) => {
-    let email = "";
-    switch (role) {
-      case "student":
-        email = "alex@school.edu";
-        break;
-      case "teacher":
-        email = "rodriguez@school.edu";
-        break;
-      case "admin":
-        email = "wilson@district.edu";
-        break;
-      case "parent":
-        email = "sarah@family.com";
-        break;
+    if (demoUsers[role]) {
+      setEmail(demoUsers[role].email);
+      setPassword("password");
+    } else {
+      toast.error("Demo user not found");
     }
-    setEmail(email);
-    setPassword("password");
   };
 
   return (

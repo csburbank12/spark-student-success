@@ -57,16 +57,17 @@ export const useAuthProvider = () => {
     setIsLoading(true);
     
     try {
-      let role: UserRole = UserRole.student;
+      let role: UserRole | undefined;
       
-      if (email.includes('nguyen')) {
-        role = UserRole.teacher;
-      } else if (email.includes('rodriguez')) {
-        role = UserRole.admin;
-      } else if (email.includes('sarah') || email.includes('family')) {
-        role = UserRole.parent;
-      } else if (email.includes('chen')) {
-        role = UserRole.staff;
+      // Find which demo user has this email
+      Object.entries(demoUsers).forEach(([userRole, userData]) => {
+        if (userData.email.toLowerCase() === email.toLowerCase()) {
+          role = userRole as UserRole;
+        }
+      });
+      
+      if (!role) {
+        throw new Error("User not found");
       }
       
       await new Promise(resolve => setTimeout(resolve, 1000));
