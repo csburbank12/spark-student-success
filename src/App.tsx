@@ -7,10 +7,26 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { MicroCoachProvider } from "./contexts/MicroCoachContext";
 import { LoopBotProvider } from "./contexts/LoopBotContext";
+import { Suspense, lazy } from "react";
 // Reuse route configs from refactored routes file
 import { routes } from "./routes";
+import { Loader } from "./components/ui/loader";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: false, // Disable suspense mode for React Query by default
+      useErrorBoundary: true,
+    },
+  },
+});
+
+// Fallback component for lazy-loaded routes
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center h-screen">
+    <Loader size="lg" />
+  </div>
+);
 
 const App = () => {
   return (
@@ -22,15 +38,17 @@ const App = () => {
               <Toaster />
               <Sonner />
               <BrowserRouter>
-                <Routes>
-                  {routes.map((route) => (
-                    <Route 
-                      key={route.path} 
-                      path={route.path} 
-                      element={route.element} 
-                    />
-                  ))}
-                </Routes>
+                <Suspense fallback={<LoadingFallback />}>
+                  <Routes>
+                    {routes.map((route) => (
+                      <Route 
+                        key={route.path} 
+                        path={route.path} 
+                        element={route.element} 
+                      />
+                    ))}
+                  </Routes>
+                </Suspense>
               </BrowserRouter>
             </TooltipProvider>
           </LoopBotProvider>
