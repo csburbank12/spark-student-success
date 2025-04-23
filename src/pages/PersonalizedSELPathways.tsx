@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { type SelLesson } from "@/components/sel-pathways/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -14,8 +14,7 @@ import { PlayCircle, CheckCircle, BookOpen, Clock, ArrowUp, ArrowDown } from "lu
 import SELLessonPlayer from "@/components/sel-pathways/SELLessonPlayer";
 import SELAssignmentCard from "@/components/sel-pathways/SELAssignmentCard";
 import SELCompletedLessonsTable from "@/components/sel-pathways/SELCompletedLessonsTable";
-import { SELLesson } from "@/hooks/useSELRecommendations";
-import { SelAssignment, SelProgress } from "@/components/sel-pathways/types";
+import { SelLesson as SELLessonType, SelAssignment, SelProgress } from "@/components/sel-pathways/types";
 
 interface Props {
   lessons?: SelLesson[];
@@ -24,7 +23,7 @@ interface Props {
 const PersonalizedSELPathways: React.FC<Props> = ({ lessons }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [selectedLesson, setSelectedLesson] = useState<SELLesson | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<SELLessonType | null>(null);
   const [activeTab, setActiveTab] = useState("assigned");
 
   // Fetch SEL pathway assignments for the current user

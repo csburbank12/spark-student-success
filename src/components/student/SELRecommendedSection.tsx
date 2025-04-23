@@ -1,8 +1,10 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSELRecommendations, SelLesson } from "@/hooks/useSELRecommendations";
+import { useSELRecommendations } from "@/hooks/useSELRecommendations";
+import { SelLesson } from "@/components/sel-pathways/types"; 
 import { ArrowRight, Play, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
