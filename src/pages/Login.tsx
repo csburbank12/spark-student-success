@@ -60,9 +60,6 @@ const Login = () => {
       case "parent":
         email = "sarah@family.com";
         break;
-      case "staff":
-        email = "jamie@school.edu";
-        break;
     }
     setEmail(email);
     setPassword("password");

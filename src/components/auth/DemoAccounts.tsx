@@ -2,29 +2,11 @@
 import { Button } from "@/components/ui/button";
 import { TermsAgreement } from "./TermsAgreement";
 
-interface DemoAccountProps {
+interface DemoAccount {
   role: string;
   name: string;
-  presetLogin: (role: string) => void;
+  email: string;
 }
-
-const DemoAccount = ({ role, name, presetLogin }: DemoAccountProps) => (
-  <Button 
-    onClick={() => presetLogin(role)}
-    variant="outline" 
-    className="justify-start hover:bg-primary-50 border-primary-100"
-  >
-    <div className="flex items-center">
-      <div className="mr-3 h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-        <span className="text-sm font-medium text-primary-600">{name[0]}</span>
-      </div>
-      <div className="text-left">
-        <p className="font-medium">{name}</p>
-        <p className="text-xs text-muted-foreground">{role.charAt(0).toUpperCase() + role.slice(1)} Account</p>
-      </div>
-    </div>
-  </Button>
-);
 
 interface DemoAccountsProps {
   presetLogin: (role: string) => void;
@@ -45,27 +27,40 @@ export const DemoAccounts = ({
   setAgreedToTerms,
   handleSubmit,
 }: DemoAccountsProps) => {
-  const demoAccounts = [
-    { role: "student", name: "Alex Johnson" },
-    { role: "teacher", name: "Ms. Rodriguez" },
-    { role: "admin", name: "Principal Wilson" },
-    { role: "parent", name: "Sarah Johnson" },
-    { role: "staff", name: "Jamie Smith" },
+  const demoAccounts: DemoAccount[] = [
+    { role: "student", name: "Student Demo", email: "alex@school.edu" },
+    { role: "teacher", name: "Teacher Demo", email: "rodriguez@school.edu" },
+    { role: "admin", name: "Admin Demo", email: "wilson@district.edu" },
+    { role: "parent", name: "Parent Demo", email: "sarah@family.com" },
   ];
 
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Choose a demo account to experience the platform:
+        Select a demo account to explore the platform:
       </p>
       <div className="grid gap-2">
         {demoAccounts.map((account) => (
-          <DemoAccount
+          <Button 
             key={account.role}
-            role={account.role}
-            name={account.name}
-            presetLogin={presetLogin}
-          />
+            onClick={() => presetLogin(account.role)}
+            variant="outline" 
+            className="justify-start hover:bg-primary-50 border-primary-100 w-full"
+          >
+            <div className="flex items-center">
+              <div className="mr-3 h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                <span className="text-sm font-medium text-primary-600">
+                  {account.name[0]}
+                </span>
+              </div>
+              <div className="text-left">
+                <p className="font-medium">{account.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {account.role.charAt(0).toUpperCase() + account.role.slice(1)} Account
+                </p>
+              </div>
+            </div>
+          </Button>
         ))}
       </div>
       
@@ -80,7 +75,7 @@ export const DemoAccounts = ({
         disabled={!email || !password || !agreedToTerms}
         onClick={handleSubmit}
       >
-        {isSubmitting ? "Logging in..." : "Log in with Demo Account"}
+        {isSubmitting ? "Logging in..." : "Log in with Selected Account"}
       </Button>
     </div>
   );
