@@ -17,8 +17,13 @@ import DashboardLayout from "@/routes/DashboardManager";
 import TrustedAdultDashboard from "@/pages/TrustedAdultDashboard";
 import { RouteObject } from "react-router-dom";
 
-// Fix for the WithDashboardLayout component
-const WithDashboardLayout = ({ element }: { element: React.ReactNode }) => {
+// Define proper props interface for WithDashboardLayout
+interface WithDashboardLayoutProps {
+  element: React.ReactNode;
+}
+
+// Fixed WithDashboardLayout component
+const WithDashboardLayout: React.FC<WithDashboardLayoutProps> = ({ element }) => {
   return <DashboardLayout>{element}</DashboardLayout>;
 };
 
@@ -33,74 +38,74 @@ const teacherAdminRoutes: ExtendedRouteObject[] = [
   // Admin Dashboard
   {
     path: "/admin",
-    element: React.createElement(WithDashboardLayout, { element: <AdminDashboard /> }),
+    element: <WithDashboardLayout element={<AdminDashboard />} />,
     requiredRole: ["admin"],
   },
   {
     path: "/admin-enhanced",
-    element: React.createElement(WithDashboardLayout, { element: <AdminDashboardEnhanced /> }),
+    element: <WithDashboardLayout element={<AdminDashboardEnhanced />} />,
     requiredRole: ["admin"],
   },
   // Teacher Dashboard
   {
     path: "/teacher",
-    element: React.createElement(WithDashboardLayout, { element: <TeacherDashboard /> }),
+    element: <WithDashboardLayout element={<TeacherDashboard />} />,
     requiredRole: ["teacher"],
   },
   {
     path: "/teacher-enhanced",
-    element: React.createElement(WithDashboardLayout, { element: <TeacherDashboardEnhanced /> }),
+    element: <WithDashboardLayout element={<TeacherDashboardEnhanced />} />,
     requiredRole: ["teacher"],
   },
   // Shared Teacher & Admin Routes
   {
     path: "/student-management",
-    element: React.createElement(WithDashboardLayout, { element: <StudentManagement /> }),
+    element: <WithDashboardLayout element={<StudentManagement />} />,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/check-in",
-    element: React.createElement(WithDashboardLayout, { element: <CheckIn /> }),
+    element: <WithDashboardLayout element={<CheckIn />} />,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/well-lens",
-    element: React.createElement(WithDashboardLayout, { element: <WellLensDashboard /> }),
+    element: <WithDashboardLayout element={<WellLensDashboard />} />,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/predictive-support",
-    element: React.createElement(WithDashboardLayout, { element: <PredictiveSupport /> }),
+    element: <WithDashboardLayout element={<PredictiveSupport />} />,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/behavior-prediction",
-    element: React.createElement(WithDashboardLayout, { element: <BehaviorPrediction /> }),
+    element: <WithDashboardLayout element={<BehaviorPrediction />} />,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/journal",
-    element: React.createElement(WithDashboardLayout, { element: <DigitalJournal /> }),
+    element: <WithDashboardLayout element={<DigitalJournal />} />,
     requiredRole: ["teacher", "admin", "student"],
   },
   {
     path: "/reset-room",
-    element: React.createElement(WithDashboardLayout, { element: <ResetRoom /> }),
+    element: <WithDashboardLayout element={<ResetRoom />} />,
     requiredRole: ["teacher", "admin", "student"],
   },
   {
     path: "/self-regulation-toolbox",
-    element: React.createElement(WithDashboardLayout, { element: <SelfRegulationToolboxPage /> }),
+    element: <WithDashboardLayout element={<SelfRegulationToolboxPage />} />,
     requiredRole: ["teacher", "admin", "student"],
   },
   {
     path: "/trusted-adult-dashboard",
-    element: React.createElement(WithDashboardLayout, { element: <TrustedAdultDashboard /> }),
+    element: <WithDashboardLayout element={<TrustedAdultDashboard />} />,
     requiredRole: ["admin", "teacher"],
   },
   {
     path: "/profile",
-    element: React.createElement(WithDashboardLayout, { element: <UserProfile /> }),
+    element: <WithDashboardLayout element={<UserProfile />} />,
     requiredRole: ["admin", "teacher", "student", "parent"],
   },
 ];

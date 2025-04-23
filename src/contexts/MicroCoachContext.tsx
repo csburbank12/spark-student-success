@@ -55,8 +55,16 @@ export const MicroCoachProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       if (error) throw error;
       if (!data || typeof data === 'boolean') return [];
-      // Should always be array of objects
-      return data as MicroCoachLog[];
+      
+      // Properly cast the returned JSON data to our MicroCoachLog type
+      return (data as any[]).map(item => ({
+        id: item.id,
+        student_id: item.student_id,
+        viewed_prompt: item.viewed_prompt,
+        context: item.context,
+        viewed_at: item.viewed_at,
+        user_id: item.user_id
+      }));
     } catch (error) {
       console.error('Error fetching micro-coach history:', error);
       toast({

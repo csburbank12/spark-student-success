@@ -6,7 +6,7 @@ import teacherAdminRoutes from "./teacherAdminRoutes";
 import parentRoutes from "./parentRoutes";
 import { RouteObject } from "react-router-dom";
 
-// RouteConfig interface simply extends RouteObject and adds element and requiredRole
+// RouteConfig interface extends RouteObject with additional properties
 export type RouteConfig = RouteObject & { 
   path: string; 
   requiredRole?: string[]; 
