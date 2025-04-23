@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,13 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { EmotionFilterSection } from "@/components/teacher/EmotionFilterSection";
 import { SELLesson, SELAssignment } from "@/hooks/useSELRecommendations";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Clock, Edit, FileText, Plus, Video } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/sonner";
 
 const SELPathwayManagement: React.FC = () => {
   const { user } = useAuth();
@@ -41,7 +40,13 @@ const SELPathwayManagement: React.FC = () => {
           .order("created_at", { ascending: false });
           
         if (error) throw error;
-        return data as SELLesson[];
+        
+        return (data || []).map(lesson => ({
+          ...lesson,
+          pathway: lesson.competency_area,
+          duration: lesson.estimated_duration,
+          difficulty: 'Standard'
+        })) as SELLesson[];
       } catch (error) {
         console.error("Error fetching SEL lessons:", error);
         return [];
@@ -64,7 +69,22 @@ const SELPathwayManagement: React.FC = () => {
           .limit(20);
           
         if (error) throw error;
-        return data as SELAssignment[];
+        
+        // Map assignments to include needed fields
+        return (data || []).map(assignment => {
+          if (assignment.lesson) {
+            return {
+              ...assignment,
+              lesson: {
+                ...assignment.lesson,
+                pathway: assignment.lesson.competency_area,
+                duration: assignment.lesson.estimated_duration,
+                difficulty: 'Standard'
+              }
+            };
+          }
+          return assignment;
+        }) as SELAssignment[];
       } catch (error) {
         console.error("Error fetching SEL assignments:", error);
         return [];
@@ -74,7 +94,7 @@ const SELPathwayManagement: React.FC = () => {
   
   const filteredLessons = lessons.filter(lesson => 
     lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    lesson.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    lesson.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     lesson.competency_area.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
@@ -83,17 +103,35 @@ const SELPathwayManagement: React.FC = () => {
       setIsAddingLesson(true);
       
       if (!user?.id || !newLesson.title || !newLesson.competency_area) {
-        throw new Error("Missing required fields");
+        toast({
+          title: "Error",
+          description: "Missing required fields",
+          variant: "destructive"
+        });
+        setIsAddingLesson(false);
+        return;
       }
+      
+      const lessonData = {
+        title: newLesson.title,
+        description: newLesson.description,
+        activity_type: newLesson.activity_type,
+        competency_area: newLesson.competency_area,
+        estimated_duration: newLesson.estimated_duration,
+        age_range: newLesson.age_range,
+        created_by: user.id
+      };
       
       const { error } = await supabase
         .from("sel_lessons")
-        .insert({
-          ...newLesson,
-          created_by: user.id
-        });
+        .insert(lessonData);
         
       if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Lesson created successfully"
+      });
       
       // Reset form
       setNewLesson({
@@ -109,6 +147,11 @@ const SELPathwayManagement: React.FC = () => {
       refetch();
     } catch (error) {
       console.error("Error adding SEL lesson:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create lesson",
+        variant: "destructive"
+      });
       setIsAddingLesson(false);
     }
   };

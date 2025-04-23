@@ -14,20 +14,17 @@ import { PlayCircle, CheckCircle, BookOpen, Clock, ArrowUp, ArrowDown } from "lu
 import SELLessonPlayer from "@/components/sel-pathways/SELLessonPlayer";
 import SELAssignmentCard from "@/components/sel-pathways/SELAssignmentCard";
 import SELCompletedLessonsTable from "@/components/sel-pathways/SELCompletedLessonsTable";
-import type { Tables } from "@/integrations/supabase/types";
-
-// Type aliases for table rows for clarity
-type SelAssignment = Tables<"sel_assignments"> & { sel_lessons: Tables<"sel_lessons"> };
-type SelProgress = Tables<"sel_progress"> & { sel_lessons: Tables<"sel_lessons"> };
+import { SELLesson } from "@/hooks/useSELRecommendations";
+import { SelAssignment, SelProgress } from "@/components/sel-pathways/types";
 
 const PersonalizedSELPathways: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [selectedLesson, setSelectedLesson] = useState<Tables<"sel_lessons"> | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<SELLesson | null>(null);
   const [activeTab, setActiveTab] = useState("assigned");
 
   // Fetch SEL pathway assignments for the current user
-  const { data: selAssignments, isLoading: loadingAssignments } = useQuery({
+  const { data: selAssignments = [], isLoading: loadingAssignments } = useQuery({
     queryKey: ["sel-assignments", user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
@@ -38,16 +35,32 @@ const PersonalizedSELPathways: React.FC = () => {
           sel_lessons (*)
         `)
         .eq("student_id", user.id)
-        .order("assigned_at", { ascending: false })
-        .returns<Array<SelAssignment>>();
+        .order("assigned_at", { ascending: false });
+        
       if (error) throw error;
-      return data || [];
+      
+      // Map assignments to include needed fields
+      return (data || []).map(assignment => {
+        if (assignment.sel_lessons) {
+          return {
+            ...assignment,
+            sel_lessons: {
+              ...assignment.sel_lessons,
+              pathway: assignment.sel_lessons.competency_area,
+              duration: assignment.sel_lessons.estimated_duration,
+              difficulty: 'Standard',
+              content: assignment.sel_lessons.description
+            }
+          };
+        }
+        return assignment;
+      }) as SelAssignment[];
     },
     enabled: !!user?.id,
   });
 
   // Fetch completed lessons for the student
-  const { data: completedLessons, isLoading: loadingCompleted } = useQuery({
+  const { data: completedLessons = [], isLoading: loadingCompleted } = useQuery({
     queryKey: ["sel-completed", user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
@@ -59,10 +72,25 @@ const PersonalizedSELPathways: React.FC = () => {
         `)
         .eq("student_id", user.id)
         .eq("completed", true)
-        .order("completed_at", { ascending: false })
-        .returns<Array<SelProgress>>();
+        .order("completed_at", { ascending: false });
+        
       if (error) throw error;
-      return data || [];
+      
+      // Map progress to include needed fields
+      return (data || []).map(progress => {
+        if (progress.sel_lessons) {
+          return {
+            ...progress,
+            sel_lessons: {
+              ...progress.sel_lessons,
+              pathway: progress.sel_lessons.competency_area,
+              duration: progress.sel_lessons.estimated_duration,
+              content: progress.sel_lessons.description
+            }
+          };
+        }
+        return progress;
+      }) as SelProgress[];
     },
     enabled: !!user?.id,
   });
@@ -77,7 +105,7 @@ const PersonalizedSELPathways: React.FC = () => {
         .select("*")
         .eq("student_id", user.id)
         .eq("lesson_id", lessonId)
-        .maybeSingle<Tables<"sel_progress">>();
+        .maybeSingle();
 
       if (existingProgress) {
         const { error } = await supabase
@@ -98,7 +126,7 @@ const PersonalizedSELPathways: React.FC = () => {
             completed: true,
             completed_at: new Date().toISOString(),
             progress: 100,
-          } as Tables<"sel_progress">);
+          });
         if (error) throw error;
       }
 
@@ -134,7 +162,9 @@ const PersonalizedSELPathways: React.FC = () => {
 
   // Handle lesson start
   const handleStartLesson = (assignment: SelAssignment) => {
-    setSelectedLesson(assignment.sel_lessons);
+    if (assignment.sel_lessons) {
+      setSelectedLesson(assignment.sel_lessons);
+    }
   };
 
   // Handle lesson completion
@@ -147,9 +177,9 @@ const PersonalizedSELPathways: React.FC = () => {
   const pendingAssignments = selAssignments?.filter((a) => a.status !== "completed") || [];
   const progress = calculateProgress();
 
-  // Group assignments by pathway
+  // Group assignments by pathway (using competency_area as pathway)
   const groupedAssignments = pendingAssignments.reduce((acc: Record<string, SelAssignment[]>, curr: SelAssignment) => {
-    const pathway = curr.sel_lessons.pathway || "General";
+    const pathway = curr.sel_lessons?.competency_area || "General";
     if (!acc[pathway]) {
       acc[pathway] = [];
     }
@@ -227,16 +257,16 @@ const PersonalizedSELPathways: React.FC = () => {
                 Object.entries(groupedAssignments).map(([pathway, assignments]) => (
                   <div key={pathway} className="space-y-4">
                     <h3 className="text-lg font-medium flex items-center gap-2">
-                      {pathway === "Anxiety" && <ArrowDown className="text-blue-500" />}
-                      {pathway === "Focus" && <ArrowUp className="text-green-500" />}
-                      {pathway === "Social" && <ArrowUp className="text-purple-500" />}
+                      {pathway === "Self-Awareness" && <ArrowUp className="text-blue-500" />}
+                      {pathway === "Self-Management" && <ArrowUp className="text-green-500" />}
+                      {pathway === "Social Awareness" && <ArrowUp className="text-purple-500" />}
                       {pathway} Pathway
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {assignments.map((assignment) => (
                         <SELAssignmentCard
                           key={assignment.id}
-                          assignment={assignment}
+                          assignment={assignment as any}
                           onStart={() => handleStartLesson(assignment)}
                         />
                       ))}
@@ -246,7 +276,7 @@ const PersonalizedSELPathways: React.FC = () => {
               )}
             </TabsContent>
             <TabsContent value="completed" className="mt-6">
-              <SELCompletedLessonsTable lessons={completedLessons || []} />
+              <SELCompletedLessonsTable lessons={completedLessons} />
             </TabsContent>
           </Tabs>
         </>

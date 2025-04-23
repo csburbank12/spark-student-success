@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,6 +14,13 @@ export interface SELLesson {
   recommended_moods?: string[];
   estimated_duration?: number;
   age_range?: string;
+  created_at?: string;
+  created_by?: string;
+  // Add fields needed by components
+  pathway?: string; // Map to competency_area when needed
+  duration?: number; // Map to estimated_duration
+  difficulty?: string; // Default value provided when needed
+  content?: string; // Map to description or content_url when needed
 }
 
 export interface SELAssignment {
@@ -47,7 +55,14 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
             .contains('recommended_moods', [mood.toLowerCase()]);
             
           if (error) throw error;
-          return data as SELLesson[];
+          
+          // Map lessons to include pathway and duration fields
+          return (data || []).map(lesson => ({
+            ...lesson,
+            pathway: lesson.competency_area,
+            duration: lesson.estimated_duration,
+            difficulty: 'Standard'
+          })) as SELLesson[];
         } 
         
         // Otherwise, get user's recent moods to recommend lessons
@@ -64,7 +79,13 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
             .limit(3);
             
           if (error) throw error;
-          return generalLessons as SELLesson[];
+          
+          return (generalLessons || []).map(lesson => ({
+            ...lesson,
+            pathway: lesson.competency_area,
+            duration: lesson.estimated_duration,
+            difficulty: 'Standard'
+          })) as SELLesson[];
         }
         
         // Get the most recent mood
@@ -78,7 +99,14 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
           .limit(3);
           
         if (lessonError) throw lessonError;
-        return (moodBasedLessons?.length ? moodBasedLessons : []) as SELLesson[];
+        
+        return (moodBasedLessons || []).map(lesson => ({
+          ...lesson,
+          pathway: lesson.competency_area,
+          duration: lesson.estimated_duration,
+          difficulty: 'Standard',
+          content: lesson.description
+        })) as SELLesson[];
       } catch (error) {
         console.error("Error fetching SEL recommendations:", error);
         return [];
@@ -107,7 +135,23 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
           .order('assigned_at', { ascending: false });
           
         if (error) throw error;
-        return data as SELAssignment[];
+        
+        // Map assignments to include needed fields
+        return (data || []).map(assignment => {
+          if (assignment.lesson) {
+            return {
+              ...assignment,
+              lesson: {
+                ...assignment.lesson,
+                pathway: assignment.lesson.competency_area,
+                duration: assignment.lesson.estimated_duration,
+                difficulty: 'Standard',
+                content: assignment.lesson.description
+              }
+            };
+          }
+          return assignment;
+        }) as SELAssignment[];
       } catch (error) {
         console.error("Error fetching SEL assignments:", error);
         return [];
@@ -127,11 +171,30 @@ export function useSELRecommendations(studentId?: string, mood?: string) {
       try {
         const { data, error } = await supabase
           .from('sel_progress')
-          .select('*')
+          .select(`
+            *,
+            sel_lessons(*)
+          `)
           .eq('student_id', targetId);
           
         if (error) throw error;
-        return data;
+        
+        // Map progress to include needed fields
+        return (data || []).map(progress => {
+          if (progress.sel_lessons) {
+            return {
+              ...progress,
+              sel_lessons: {
+                ...progress.sel_lessons,
+                pathway: progress.sel_lessons.competency_area,
+                duration: progress.sel_lessons.estimated_duration,
+                difficulty: 'Standard',
+                content: progress.sel_lessons.description
+              }
+            };
+          }
+          return progress;
+        });
       } catch (error) {
         console.error("Error fetching SEL progress:", error);
         return [];
@@ -218,7 +281,7 @@ export function useSELProgress() {
         .select('*')
         .eq('student_id', user.id)
         .eq('lesson_id', lessonId)
-        .single();
+        .maybeSingle();
         
       if (checkError && checkError.code !== 'PGRST116') { // PGRST116 means no rows returned
         throw checkError;

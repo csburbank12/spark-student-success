@@ -1,12 +1,31 @@
 
-import { Tables } from "@/integrations/supabase/types";
+import { SELLesson } from "@/hooks/useSELRecommendations";
 
 // Type definitions for SEL pathways
-export type SelLesson = Tables<"sel_lessons">;
-export type SelAssignment = Tables<"sel_assignments"> & { sel_lessons: SelLesson };
-export type SelProgress = Tables<"sel_progress"> & { sel_lessons: SelLesson };
+export type SelLesson = SELLesson;
+
+export interface SelAssignment {
+  id: string;
+  lesson_id: string;
+  student_id: string;
+  assigned_by: string;
+  assigned_at: string;
+  due_date?: string;
+  status: 'assigned' | 'in-progress' | 'completed';
+  sel_lessons?: SelLesson;
+}
+
+export interface SelProgress {
+  id: string;
+  student_id: string;
+  lesson_id: string;
+  progress: number;
+  completed: boolean;
+  completed_at?: string;
+  sel_lessons?: SelLesson;
+}
 
 export interface StudentSelData {
-  assignments: (SelAssignment & { sel_lessons: SelLesson })[];
-  progress: (SelProgress & { sel_lessons: SelLesson })[];
+  assignments: SelAssignment[];
+  progress: SelProgress[];
 }
