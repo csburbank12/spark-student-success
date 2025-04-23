@@ -29,7 +29,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const userRole = user.role as UserRole;
   const hasRequiredRole = userRole && requiredRole.includes(userRole);
 
-  // If user doesn't have the required role, redirect to login or dashboard
+  // If user doesn't have the required role, redirect to appropriate dashboard
   if (!hasRequiredRole) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -49,16 +49,14 @@ export const DashboardRouter: React.FC = () => {
   
   switch (userRole) {
     case UserRole.student:
-      return <Navigate to="/check-in" replace />;
+      return <Navigate to="/student-dashboard-enhanced" replace />;
     case UserRole.teacher:
-      return <Navigate to="/teacher-dashboard" replace />;
-    case UserRole.admin:
-      return <Navigate to="/admin-dashboard" replace />;
-    case UserRole.parent:
-      return <Navigate to="/child-activity" replace />;
     case UserRole.staff:
-      // Staff is redirected to teacher dashboard as a fallback
-      return <Navigate to="/teacher-dashboard" replace />;
+      return <Navigate to="/teacher-dashboard-enhanced" replace />;
+    case UserRole.admin:
+      return <Navigate to="/admin-dashboard-enhanced" replace />;
+    case UserRole.parent:
+      return <Navigate to="/parent-dashboard-enhanced" replace />;
     default:
       return <Navigate to="/login" replace />;
   }

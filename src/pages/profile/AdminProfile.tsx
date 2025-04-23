@@ -1,203 +1,601 @@
 
 import React from "react";
-import { User } from "@/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { School, Users, AlertCircle, UserCheck } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import {
+  Activity,
+  BarChart,
+  Building,
+  FileText,
+  Settings,
+  Users,
+  ShieldCheck,
+  School,
+} from "lucide-react";
+import { User } from "@/types";
 
 interface AdminProfileProps {
-  user: User | null;
+  user: User;
 }
 
 const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
-  // Mock data for admin profile
-  const adminData = {
-    role: "School Administrator",
-    schools: [
-      { name: "Washington High School", id: "whs001", students: 1250, staff: 85 },
-      { name: "Lincoln Middle School", id: "lms002", students: 780, staff: 54 },
-      { name: "Roosevelt Elementary", id: "res003", students: 560, staff: 42 },
-    ],
-    systemStats: {
-      totalUsers: 2721,
-      activeUsers: 2350,
-      activationRate: 86,
-      alertsThisWeek: 24,
-      resolvedAlerts: 18,
-    },
-    pendingTasks: [
-      { task: "Review Staff Accounts", priority: "high", due: "Today" },
-      { task: "Approve New Student Registrations", priority: "medium", due: "Tomorrow" },
-      { task: "Update System Settings", priority: "low", due: "This Week" },
-    ],
-    recentActivities: [
-      {
-        action: "Added new staff member",
-        details: "Ms. Rodriguez - Science Teacher",
-        timestamp: "2 hours ago",
-      },
-      {
-        action: "Updated school settings",
-        details: "Changed notification preferences for Washington High",
-        timestamp: "Yesterday",
-      },
-      {
-        action: "Reviewed student risk reports",
-        details: "Processed 15 alerts from Lincoln Middle School",
-        timestamp: "2 days ago",
-      },
-    ],
-  };
-
-  const getPriorityBadge = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return <Badge className="bg-red-100 text-red-800">High</Badge>;
-      case "medium":
-        return <Badge className="bg-amber-100 text-amber-800">Medium</Badge>;
-      case "low":
-        return <Badge className="bg-green-100 text-green-800">Low</Badge>;
-      default:
-        return <Badge variant="outline">Unknown</Badge>;
-    }
-  };
-
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Administrative Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Role:</span>
-              <span className="font-medium">{adminData.role}</span>
-            </div>
-            
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Managed Schools</h4>
-              <ul className="space-y-2">
-                {adminData.schools.map((school) => (
-                  <li
-                    key={school.id}
-                    className="flex items-center justify-between p-2 rounded bg-muted/50"
-                  >
-                    <div className="flex items-center gap-2">
-                      <School className="h-4 w-4 text-primary" />
-                      <span>{school.name}</span>
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid grid-cols-4 mb-4">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="system">System</TabsTrigger>
+          <TabsTrigger value="users">User Management</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-4">
+          {/* Admin overview tab */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Administrator Information</CardTitle>
+                <CardDescription>Account details and permissions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div className="space-y-1">
+                      <div className="text-sm text-muted-foreground">Name</div>
+                      <div className="font-medium">{user.name}</div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {school.students} students • {school.staff} staff
+                    <div className="space-y-1">
+                      <div className="text-sm text-muted-foreground">Email</div>
+                      <div className="font-medium">{user.email}</div>
                     </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            <Button className="w-full">Manage Schools</Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">System Analytics</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col items-center justify-center p-4 rounded-md bg-muted/50">
-                <Users className="h-8 w-8 text-primary mb-2" />
-                <span className="text-2xl font-bold">{adminData.systemStats.totalUsers}</span>
-                <span className="text-sm text-muted-foreground">Total Users</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-4 rounded-md bg-muted/50">
-                <UserCheck className="h-8 w-8 text-primary mb-2" />
-                <span className="text-2xl font-bold">{adminData.systemStats.activeUsers}</span>
-                <span className="text-sm text-muted-foreground">Active Users</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-4 rounded-md bg-muted/50">
-                <AlertCircle className="h-8 w-8 text-amber-500 mb-2" />
-                <span className="text-2xl font-bold">{adminData.systemStats.alertsThisWeek}</span>
-                <span className="text-sm text-muted-foreground">Alerts This Week</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-4 rounded-md bg-muted/50">
-                <AlertCircle className="h-8 w-8 text-green-500 mb-2" />
-                <span className="text-2xl font-bold">{adminData.systemStats.resolvedAlerts}</span>
-                <span className="text-sm text-muted-foreground">Resolved Alerts</span>
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <div className="flex justify-between text-sm">
-                <span>User Activation Rate</span>
-                <span className="font-medium">{adminData.systemStats.activationRate}%</span>
-              </div>
-              <Progress value={adminData.systemStats.activationRate} className="h-2" />
-            </div>
-
-            <Button variant="outline" className="w-full">View Analytics Dashboard</Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Pending Tasks</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {adminData.pendingTasks.map((task, index) => (
-                <li
-                  key={index}
-                  className="flex items-center justify-between p-2 rounded bg-muted/50"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-primary">📋</span>
+                    <div className="space-y-1">
+                      <div className="text-sm text-muted-foreground">Position</div>
+                      <div className="font-medium">Principal</div>
                     </div>
-                    <span>{task.task}</span>
+                    <div className="space-y-1">
+                      <div className="text-sm text-muted-foreground">Admin Level</div>
+                      <div className="font-medium">Super Admin</div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {getPriorityBadge(task.priority)}
-                    <span className="text-xs text-muted-foreground">{task.due}</span>
+                  
+                  <div className="pt-3 border-t">
+                    <div className="font-medium mb-2">Access Permissions</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="border rounded-lg p-2 bg-green-50">
+                        <div className="text-xs font-medium">User Management</div>
+                        <div className="text-xs text-muted-foreground">Full Access</div>
+                      </div>
+                      <div className="border rounded-lg p-2 bg-green-50">
+                        <div className="text-xs font-medium">School Settings</div>
+                        <div className="text-xs text-muted-foreground">Full Access</div>
+                      </div>
+                      <div className="border rounded-lg p-2 bg-green-50">
+                        <div className="text-xs font-medium">Data Analytics</div>
+                        <div className="text-xs text-muted-foreground">Full Access</div>
+                      </div>
+                      <div className="border rounded-lg p-2 bg-green-50">
+                        <div className="text-xs font-medium">System Settings</div>
+                        <div className="text-xs text-muted-foreground">Full Access</div>
+                      </div>
+                    </div>
                   </div>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 flex justify-end">
-              <Button variant="outline" size="sm">View All Tasks</Button>
-            </div>
-          </CardContent>
-        </Card>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">System Health</CardTitle>
+                <CardDescription>Platform status and alerts</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="border rounded-lg p-4 bg-green-50">
+                    <div className="flex items-center">
+                      <div className="h-8 w-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center mr-3">
+                        <ShieldCheck className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <div className="font-medium">System Status</div>
+                        <div className="text-sm text-green-700">All systems operational</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium">Recent Alerts</div>
+                    <div className="border rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="font-medium">Backup Completed</div>
+                        <Badge variant="outline">2 hours ago</Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Daily system backup completed successfully.
+                      </div>
+                    </div>
+                    <div className="border rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="font-medium">User Import</div>
+                        <Badge variant="outline">Yesterday</Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        125 new student accounts created successfully.
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button variant="outline" className="w-full">
+                    View System Logs
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Recent Activities</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {adminData.recentActivities.map((activity, index) => (
-                <li
-                  key={index}
-                  className="p-2 rounded bg-muted/50 space-y-1"
-                >
-                  <div className="flex justify-between">
-                    <span className="font-medium">{activity.action}</span>
-                    <span className="text-xs text-muted-foreground">{activity.timestamp}</span>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <Button variant="outline" className="h-auto flex-col py-4 px-2">
+                  <Users className="h-5 w-5 mb-1" />
+                  <span className="text-xs">Manage Users</span>
+                </Button>
+                <Button variant="outline" className="h-auto flex-col py-4 px-2">
+                  <Building className="h-5 w-5 mb-1" />
+                  <span className="text-xs">School Settings</span>
+                </Button>
+                <Button variant="outline" className="h-auto flex-col py-4 px-2">
+                  <BarChart className="h-5 w-5 mb-1" />
+                  <span className="text-xs">Analytics</span>
+                </Button>
+                <Button variant="outline" className="h-auto flex-col py-4 px-2">
+                  <Settings className="h-5 w-5 mb-1" />
+                  <span className="text-xs">System Config</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="system" className="space-y-4">
+          {/* System settings tab */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">School Management</CardTitle>
+              <CardDescription>Manage schools and district settings</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
+                <div>
+                  <div className="font-medium mb-2">Schools</div>
+                  <div className="border rounded-lg divide-y">
+                    <div className="p-3 flex items-center">
+                      <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                        <School className="h-5 w-5 text-blue-700" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Westfield High School</div>
+                        <div className="text-sm text-muted-foreground">
+                          1250 students • 85 staff members
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm" className="ml-auto">
+                        Manage
+                      </Button>
+                    </div>
+                    <div className="p-3 flex items-center">
+                      <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                        <School className="h-5 w-5 text-green-700" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Eastside Middle School</div>
+                        <div className="text-sm text-muted-foreground">
+                          850 students • 62 staff members
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm" className="ml-auto">
+                        Manage
+                      </Button>
+                    </div>
+                    <div className="p-3 flex items-center">
+                      <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center mr-3">
+                        <School className="h-5 w-5 text-amber-700" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Valley Elementary</div>
+                        <div className="text-sm text-muted-foreground">
+                          620 students • 45 staff members
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm" className="ml-auto">
+                        Manage
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">{activity.details}</p>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 flex justify-end">
-              <Button variant="outline" size="sm">View Activity Log</Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                </div>
+                
+                <div className="flex justify-between">
+                  <Button variant="outline">
+                    <School className="mr-2 h-4 w-4" />
+                    Add New School
+                  </Button>
+                  <Button variant="outline">
+                    <Settings className="mr-2 h-4 w-4" />
+                    District Settings
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">System Configuration</CardTitle>
+              <CardDescription>Configure platform settings and integrations</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center">
+                    <Settings className="h-5 w-5 mr-2 text-blue-500" />
+                    <div className="font-medium">General Settings</div>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Configure system-wide settings, branding, and defaults
+                  </div>
+                  <div className="pt-2">
+                    <Button size="sm" variant="outline">Configure</Button>
+                  </div>
+                </div>
+                
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center">
+                    <ShieldCheck className="h-5 w-5 mr-2 text-green-500" />
+                    <div className="font-medium">Security Settings</div>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Manage authentication, permissions, and data policies
+                  </div>
+                  <div className="pt-2">
+                    <Button size="sm" variant="outline">Configure</Button>
+                  </div>
+                </div>
+                
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center">
+                    <FileText className="h-5 w-5 mr-2 text-purple-500" />
+                    <div className="font-medium">Content Management</div>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Manage SEL resources, lessons, and educational content
+                  </div>
+                  <div className="pt-2">
+                    <Button size="sm" variant="outline">Manage Content</Button>
+                  </div>
+                </div>
+                
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center">
+                    <Activity className="h-5 w-5 mr-2 text-amber-500" />
+                    <div className="font-medium">Monitoring & Alerts</div>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Configure system monitoring, alerts, and notifications
+                  </div>
+                  <div className="pt-2">
+                    <Button size="sm" variant="outline">Configure</Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="users" className="space-y-4">
+          {/* User management tab */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">User Management</CardTitle>
+              <CardDescription>Manage administrators, teachers, and students</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="font-medium">User Overview</div>
+                  <Button variant="outline" size="sm">Add New User</Button>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                  <div className="border rounded-lg p-3 text-center">
+                    <div className="text-3xl font-bold text-blue-600 mb-1">25</div>
+                    <div className="text-sm text-muted-foreground">Administrators</div>
+                  </div>
+                  <div className="border rounded-lg p-3 text-center">
+                    <div className="text-3xl font-bold text-green-600 mb-1">192</div>
+                    <div className="text-sm text-muted-foreground">Teachers</div>
+                  </div>
+                  <div className="border rounded-lg p-3 text-center">
+                    <div className="text-3xl font-bold text-amber-600 mb-1">2720</div>
+                    <div className="text-sm text-muted-foreground">Students</div>
+                  </div>
+                  <div className="border rounded-lg p-3 text-center">
+                    <div className="text-3xl font-bold text-purple-600 mb-1">1850</div>
+                    <div className="text-sm text-muted-foreground">Parents</div>
+                  </div>
+                </div>
+                
+                <div className="pt-3 border-t">
+                  <div className="font-medium mb-2">Recent User Activity</div>
+                  <div className="border rounded-lg divide-y">
+                    <div className="p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="font-medium">New Staff Onboarded</div>
+                        <Badge variant="outline">Today</Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        5 new staff members were added to Westfield High School.
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="font-medium">Role Changes</div>
+                        <Badge variant="outline">Yesterday</Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        2 teachers were promoted to administrative roles.
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="font-medium">User Import</div>
+                        <Badge variant="outline">3 days ago</Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Bulk import of 125 student accounts completed.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-between pt-2">
+                <Button variant="outline">
+                  <Users className="mr-2 h-4 w-4" />
+                  User Directory
+                </Button>
+                <Button variant="outline">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Access Control
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Bulk User Operations</CardTitle>
+              <CardDescription>Import, export, and manage users in bulk</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="font-medium">Import Users</div>
+                  <div className="text-sm text-muted-foreground">
+                    Bulk import users from CSV files or via School Information System integration
+                  </div>
+                  <Button variant="outline">
+                    Import Users
+                  </Button>
+                </div>
+                
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="font-medium">Export Users</div>
+                  <div className="text-sm text-muted-foreground">
+                    Export user data for reporting or backup purposes
+                  </div>
+                  <Button variant="outline">
+                    Export Users
+                  </Button>
+                </div>
+                
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="font-medium">Batch Actions</div>
+                  <div className="text-sm text-muted-foreground">
+                    Perform actions on multiple user accounts at once
+                  </div>
+                  <Button variant="outline">
+                    Batch Operations
+                  </Button>
+                </div>
+                
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="font-medium">User Templates</div>
+                  <div className="text-sm text-muted-foreground">
+                    Create templates for different user types and permissions
+                  </div>
+                  <Button variant="outline">
+                    Manage Templates
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-4">
+          {/* Analytics tab */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">System Analytics</CardTitle>
+              <CardDescription>Platform usage and performance metrics</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
+                <div>
+                  <div className="font-medium mb-2">Platform Usage</div>
+                  <div className="h-64 border rounded-lg p-4 flex items-end space-x-2">
+                    <div className="flex-1 h-full flex flex-col justify-end">
+                      <div className="bg-blue-500 h-2/3 rounded-t-sm"></div>
+                      <div className="text-xs text-center mt-1">Mon</div>
+                    </div>
+                    <div className="flex-1 h-full flex flex-col justify-end">
+                      <div className="bg-blue-500 h-4/5 rounded-t-sm"></div>
+                      <div className="text-xs text-center mt-1">Tue</div>
+                    </div>
+                    <div className="flex-1 h-full flex flex-col justify-end">
+                      <div className="bg-blue-500 h-full rounded-t-sm"></div>
+                      <div className="text-xs text-center mt-1">Wed</div>
+                    </div>
+                    <div className="flex-1 h-full flex flex-col justify-end">
+                      <div className="bg-blue-500 h-3/4 rounded-t-sm"></div>
+                      <div className="text-xs text-center mt-1">Thu</div>
+                    </div>
+                    <div className="flex-1 h-full flex flex-col justify-end">
+                      <div className="bg-blue-500 h-2/3 rounded-t-sm"></div>
+                      <div className="text-xs text-center mt-1">Fri</div>
+                    </div>
+                    <div className="flex-1 h-full flex flex-col justify-end">
+                      <div className="bg-blue-500 h-1/3 rounded-t-sm"></div>
+                      <div className="text-xs text-center mt-1">Sat</div>
+                    </div>
+                    <div className="flex-1 h-full flex flex-col justify-end">
+                      <div className="bg-blue-500 h-1/4 rounded-t-sm"></div>
+                      <div className="text-xs text-center mt-1">Sun</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                  <div className="border rounded-lg p-3">
+                    <div className="text-sm text-muted-foreground mb-1">Active Users</div>
+                    <div className="text-2xl font-bold">3,842</div>
+                    <div className="text-xs text-green-600">↑12% from last week</div>
+                  </div>
+                  
+                  <div className="border rounded-lg p-3">
+                    <div className="text-sm text-muted-foreground mb-1">Check-ins</div>
+                    <div className="text-2xl font-bold">2,156</div>
+                    <div className="text-xs text-green-600">↑8% from last week</div>
+                  </div>
+                  
+                  <div className="border rounded-lg p-3">
+                    <div className="text-sm text-muted-foreground mb-1">SEL Lessons</div>
+                    <div className="text-2xl font-bold">945</div>
+                    <div className="text-xs text-green-600">↑15% from last week</div>
+                  </div>
+                  
+                  <div className="border rounded-lg p-3">
+                    <div className="text-sm text-muted-foreground mb-1">Support Requests</div>
+                    <div className="text-2xl font-bold">78</div>
+                    <div className="text-xs text-red-600">↑23% from last week</div>
+                  </div>
+                </div>
+              </div>
+              
+              <Button variant="outline" className="w-full">
+                <BarChart className="mr-2 h-4 w-4" />
+                View Detailed Analytics
+              </Button>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Wellness Trends</CardTitle>
+              <CardDescription>School-wide emotional health metrics</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="border rounded-lg p-4">
+                <div className="mb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium">School Climate Pulse</div>
+                    <Badge className="bg-blue-50 text-blue-800">Updated Today</Badge>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex items-center justify-between text-sm mb-1">
+                        <span>Student Wellbeing Index</span>
+                        <span className="font-medium">72/100</span>
+                      </div>
+                      <div className="h-2 bg-muted rounded-full">
+                        <div className="h-full bg-green-500 rounded-full" style={{ width: "72%" }}></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between text-sm mb-1">
+                        <span>Teacher Wellbeing Index</span>
+                        <span className="font-medium">68/100</span>
+                      </div>
+                      <div className="h-2 bg-muted rounded-full">
+                        <div className="h-full bg-green-500 rounded-full" style={{ width: "68%" }}></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between text-sm mb-1">
+                        <span>School Safety Perception</span>
+                        <span className="font-medium">85/100</span>
+                      </div>
+                      <div className="h-2 bg-muted rounded-full">
+                        <div className="h-full bg-blue-500 rounded-full" style={{ width: "85%" }}></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="font-medium text-sm mb-1">Mood Distribution</div>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="h-3 w-3 rounded-full bg-green-500"></div>
+                      <div className="flex-1 flex items-center justify-between">
+                        <span className="text-sm">Happy/Content</span>
+                        <span className="text-sm font-medium">42%</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="h-3 w-3 rounded-full bg-blue-500"></div>
+                      <div className="flex-1 flex items-center justify-between">
+                        <span className="text-sm">Neutral</span>
+                        <span className="text-sm font-medium">35%</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="h-3 w-3 rounded-full bg-amber-500"></div>
+                      <div className="flex-1 flex items-center justify-between">
+                        <span className="text-sm">Stressed</span>
+                        <span className="text-sm font-medium">18%</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-3 w-3 rounded-full bg-red-500"></div>
+                      <div className="flex-1 flex items-center justify-between">
+                        <span className="text-sm">Struggling</span>
+                        <span className="text-sm font-medium">5%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-4 pt-4 border-t">
+                  <Button variant="outline">
+                    View Detailed Wellness Report
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

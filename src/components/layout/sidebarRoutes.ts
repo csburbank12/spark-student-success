@@ -18,6 +18,7 @@ import {
   BookOpen,
   HelpCircle,
   Home,
+  User,
 } from "lucide-react";
 import { UserRole } from "@/types/roles";
 
@@ -58,7 +59,7 @@ export const teacherAdminRoutes = [
   },
   {
     name: "SEL Pathways",
-    href: "/sel-pathways",
+    href: "/sel-pathway-management",
     icon: Target,
   },
   {
@@ -80,6 +81,11 @@ export const teacherAdminRoutes = [
     name: "Emotion Scheduling",
     href: "/emotion-aware-scheduling",
     icon: Calendar,
+  },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: User,
   },
 ];
 
@@ -124,6 +130,11 @@ export const studentRoutes = [
     href: "/trusted-adults",
     icon: Users,
   },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: User,
+  },
 ];
 
 export const adminRoutes = [
@@ -157,6 +168,11 @@ export const adminRoutes = [
     href: "/system-settings",
     icon: Settings,
   },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: User,
+  },
 ];
 
 export const parentRoutes = [
@@ -189,6 +205,11 @@ export const parentRoutes = [
     name: "Resources",
     href: "/parent-resources",
     icon: BookOpen,
+  },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: User,
   },
 ];
 

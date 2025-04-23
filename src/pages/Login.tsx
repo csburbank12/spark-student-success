@@ -16,6 +16,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserRole } from "@/types/roles";
 
 const Login = () => {
   const { login } = useAuth();
@@ -29,8 +30,21 @@ const Login = () => {
     setIsSubmitting(true);
 
     try {
-      await login(email, password);
-      navigate("/dashboard");
+      const user = await login(email, password);
+      
+      // Redirect based on role
+      if (user?.role === UserRole.student) {
+        navigate("/student-dashboard-enhanced");
+      } else if (user?.role === UserRole.teacher || user?.role === UserRole.staff) {
+        navigate("/teacher-dashboard-enhanced");
+      } else if (user?.role === UserRole.admin) {
+        navigate("/admin-dashboard-enhanced");
+      } else if (user?.role === UserRole.parent) {
+        navigate("/parent-dashboard-enhanced");
+      } else {
+        navigate("/dashboard");
+      }
+      
       toast.success("Logged in successfully!");
     } catch (error) {
       toast.error("Failed to log in. Please check your credentials.");
@@ -50,6 +64,12 @@ const Login = () => {
         break;
       case "admin":
         email = "wilson@district.edu";
+        break;
+      case "parent":
+        email = "sarah@family.com";
+        break;
+      case "staff":
+        email = "jamie@school.edu";
         break;
     }
     setEmail(email);
@@ -164,6 +184,38 @@ const Login = () => {
                         <div className="text-left">
                           <p className="font-medium">Principal Wilson</p>
                           <p className="text-xs text-muted-foreground">Administrator Account</p>
+                        </div>
+                      </div>
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => presetLogin("parent")}
+                      variant="outline" 
+                      className="justify-start hover:bg-primary-50 border-primary-100"
+                    >
+                      <div className="flex items-center">
+                        <div className="mr-3 h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                          <span className="text-sm font-medium text-primary-600">P</span>
+                        </div>
+                        <div className="text-left">
+                          <p className="font-medium">Sarah Johnson</p>
+                          <p className="text-xs text-muted-foreground">Parent Account</p>
+                        </div>
+                      </div>
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => presetLogin("staff")}
+                      variant="outline" 
+                      className="justify-start hover:bg-primary-50 border-primary-100"
+                    >
+                      <div className="flex items-center">
+                        <div className="mr-3 h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                          <span className="text-sm font-medium text-primary-600">S</span>
+                        </div>
+                        <div className="text-left">
+                          <p className="font-medium">Jamie Smith</p>
+                          <p className="text-xs text-muted-foreground">Staff Account</p>
                         </div>
                       </div>
                     </Button>
