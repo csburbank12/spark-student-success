@@ -2,152 +2,38 @@
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { UserRole } from "@/types/roles";
-import { toast } from "@/components/ui/sonner";
 import StaffAssistForm from "@/components/staff-assist/StaffAssistForm";
 import InterventionHistory from "@/components/staff-assist/InterventionHistory";
-import { StudentProfile, BehaviorLog } from "@/components/staff-assist/types";
+import { UserRole } from "@/types/roles";
+import { useStaffAssistStudentsAndLogs } from "@/hooks/useStaffAssistStudentsAndLogs";
+import { useStaffAssistMutations } from "@/hooks/useStaffAssistMutations";
 
-// Explicitly define data fetching functions outside the component
-// to avoid deep type nesting issues
-const fetchStudents = async (userId: string | undefined, isStaffOrAdmin: boolean): Promise<StudentProfile[]> => {
-  if (!userId || !isStaffOrAdmin) return [];
-  
-  try {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("id, first_name, last_name")
-      .eq("role", "student");
-      
-    if (error) throw error;
-    
-    // Map to our type with explicit construction
-    return (data || []).map((item) => ({
-      id: item.id,
-      first_name: item.first_name || '',
-      last_name: item.last_name || '',
-    }));
-  } catch (error) {
-    console.error("Error fetching students:", error);
-    return [];
-  }
-};
-
-const fetchBehaviorLogs = async (userId: string | undefined, isStaffOrAdmin: boolean): Promise<BehaviorLog[]> => {
-  if (!userId || !isStaffOrAdmin) return [];
-  
-  try {
-    const { data, error } = await supabase
-      .from("behavior_logs")
-      .select("id, staff_id, student_id, situation_type, intervention_used, notes, effectiveness_rating, created_at")
-      .eq("staff_id", userId)
-      .order("created_at", { ascending: false });
-      
-    if (error) throw error;
-    
-    // Map to our type with explicit construction
-    return (data || []).map((item) => ({
-      id: item.id,
-      staff_id: item.staff_id,
-      student_id: item.student_id,
-      situation_type: item.situation_type,
-      intervention_used: item.intervention_used,
-      notes: item.notes || '',
-      effectiveness_rating: item.effectiveness_rating,
-      created_at: item.created_at
-    }));
-  } catch (error) {
-    console.error("Error fetching behavior logs:", error);
-    return [];
-  }
-};
-
+/**
+ * Main StaffAssistMode Page (Presenter)
+ * Handles role gating and orchestrates UI and hooks.
+ */
 const StaffAssistMode: React.FC = () => {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<string>("assist");
-
-  // Check role, allow only staff or admin
   const isStaffOrAdmin =
     user?.role === UserRole.staff.toString() || user?.role === UserRole.admin.toString();
 
-  // Fetch all students for staff
-  const { 
-    data: students = [], 
-    isLoading: isLoadingStudents 
-  } = useQuery({
-    queryKey: ["staff-students"],
-    queryFn: () => fetchStudents(user?.id, isStaffOrAdmin),
-    enabled: !!user?.id && isStaffOrAdmin,
-  });
-  
-  // Fetch all behavior logs by staff user
-  const { 
-    data: behaviorLogs = [], 
-    refetch: refetchLogs, 
-    isLoading: isLoadingLogs 
-  } = useQuery({
-    queryKey: ["behavior-logs", user?.id],
-    queryFn: () => fetchBehaviorLogs(user?.id, isStaffOrAdmin),
-    enabled: !!user?.id && isStaffOrAdmin,
+  // Queries for students and logs
+  const {
+    students,
+    isLoadingStudents,
+    behaviorLogs,
+    refetchLogs,
+    isLoadingLogs,
+  } = useStaffAssistStudentsAndLogs(user, isStaffOrAdmin);
+
+  // Mutations for logging and updating interventions
+  const { logIntervention, updateEffectiveness } = useStaffAssistMutations({
+    user,
+    refetchLogs,
   });
 
-  // Logging new intervention
-  const logIntervention = useMutation({
-    mutationFn: async (data: {
-      studentId: string | null;
-      situationType: string;
-      interventionUsed: string;
-      notes: string;
-    }) => {
-      if (!user?.id) throw new Error("User not authenticated");
-      const { error } = await supabase
-        .from("behavior_logs")
-        .insert({
-          staff_id: user.id,
-          student_id: data.studentId,
-          situation_type: data.situationType,
-          intervention_used: data.interventionUsed,
-          notes: data.notes,
-          created_at: new Date().toISOString(),
-        });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      refetchLogs();
-      toast("Intervention logged");
-    },
-  });
-
-  // Update effectiveness rating
-  const updateEffectiveness = useMutation({
-    mutationFn: async ({
-      logId,
-      rating,
-    }: {
-      logId: string;
-      rating: number;
-    }) => {
-      const { error } = await supabase
-        .from("behavior_logs")
-        .update({ effectiveness_rating: rating })
-        .eq("id", logId);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast("Effectiveness rating saved");
-      refetchLogs();
-    },
-    onError: (error) => {
-      toast("Failed to save rating", {
-        description: error.message,
-      });
-    },
-  });
-
-  // Reset form (noop here for top-level, reset state in child forms)
+  // Forwards to child (no local state management needed here)
   const resetForm = () => {};
 
   if (!isStaffOrAdmin) {
