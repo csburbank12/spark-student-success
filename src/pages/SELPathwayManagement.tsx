@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +14,17 @@ import { Search, BookOpen, PlusCircle, Users, BarChart2 } from "lucide-react";
 import SELProgressOverview from "@/components/sel-pathways/SELProgressOverview";
 import SELLessonsList from "@/components/sel-pathways/SELLessonsList";
 import SELAssignLessonDialog from "@/components/sel-pathways/SELAssignLessonDialog";
+import { SelLesson } from "@/components/sel-pathways/types";
+import type { Tables } from "@/integrations/supabase/types";
+
+// Define types for student profiles
+interface StudentProfile {
+  id: string;
+  first_name?: string;
+  last_name?: string;
+  grade_level?: string;
+  [key: string]: any;
+}
 
 const SELPathwayManagement: React.FC = () => {
   const { user } = useAuth();
@@ -22,7 +33,7 @@ const SELPathwayManagement: React.FC = () => {
   const [selectedPathway, setSelectedPathway] = useState("all");
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
-  const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [selectedLesson, setSelectedLesson] = useState<SelLesson | null>(null);
 
   // Fetch all students (for staff to manage)
   const { data: students, isLoading: loadingStudents } = useQuery({
@@ -32,13 +43,12 @@ const SELPathwayManagement: React.FC = () => {
       // In a real app, you would filter by staff's class or school
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
-        .eq("role", "student");
+        .select("*");
       
       if (error) throw error;
-      return data || [];
+      return data as StudentProfile[] || [];
     },
-    enabled: !!user?.id && (user?.role === "teacher" || user?.role === "admin"),
+    enabled: !!user?.id && (user?.role === "staff" || user?.role === "admin"),
   });
 
   // Fetch all SEL lessons
@@ -55,9 +65,9 @@ const SELPathwayManagement: React.FC = () => {
       
       const { data, error } = await query.order("title");
       if (error) throw error;
-      return data || [];
+      return data as SelLesson[] || [];
     },
-    enabled: !!user?.id && (user?.role === "teacher" || user?.role === "admin"),
+    enabled: !!user?.id && (user?.role === "staff" || user?.role === "admin"),
   });
 
   // Fetch student assignments and progress when a student is selected
@@ -117,10 +127,9 @@ const SELPathwayManagement: React.FC = () => {
       toast("Lesson assigned successfully!");
       setIsAssignDialogOpen(false);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast("Failed to assign lesson", {
         description: error.message,
-        variant: "destructive"
       });
     }
   });
@@ -128,9 +137,7 @@ const SELPathwayManagement: React.FC = () => {
   // Handle assign lesson
   const handleAssignLesson = (lessonId: string, dueDate?: string) => {
     if (!selectedStudent) {
-      toast("Please select a student first", {
-        variant: "destructive"
-      });
+      toast("Please select a student first");
       return;
     }
     
@@ -157,7 +164,7 @@ const SELPathwayManagement: React.FC = () => {
   const pathways = [...new Set(lessons?.map(l => l.pathway))].filter(Boolean);
 
   // If not a staff member, show access denied
-  if (user?.role !== "teacher" && user?.role !== "admin") {
+  if (user?.role !== "staff" && user?.role !== "admin") {
     return (
       <div className="max-w-lg mx-auto mt-20">
         <Card>

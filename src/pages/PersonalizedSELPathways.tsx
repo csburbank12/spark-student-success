@@ -120,7 +120,6 @@ const PersonalizedSELPathways: React.FC = () => {
     onError: (error: any) => {
       toast("Error saving progress", {
         description: error.message,
-        variant: "destructive",
       });
     },
   });
@@ -257,4 +256,3 @@ const PersonalizedSELPathways: React.FC = () => {
 };
 
 export default PersonalizedSELPathways;
-

@@ -1,136 +1,106 @@
 
 import React from "react";
-import StudentManagement from "@/pages/StudentManagement";
-import WellLensDashboard from "@/pages/WellLensDashboard";
-import PredictiveSupport from "@/pages/PredictiveSupport";
-import BehaviorPrediction from "@/pages/BehaviorPrediction";
-import ResetRoom from "@/pages/ResetRoom";
-import DigitalJournal from "@/pages/DigitalJournal";
-import SelfRegulationToolboxPage from "@/pages/SelfRegulationToolbox";
-import AdminDashboard from "@/pages/AdminDashboard";
-import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
+import { ProtectedRoute } from "./ProtectedRoute";
 import TeacherDashboard from "@/pages/TeacherDashboard";
-import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
-import CheckIn from "@/pages/CheckIn";
-import UserProfile from "@/pages/profile/UserProfile";
+import AdminDashboard from "@/pages/AdminDashboard";
+import StudentManagement from "@/pages/StudentManagement";
+import BehaviorPrediction from "@/pages/BehaviorPrediction";
+import PredictiveSupport from "@/pages/PredictiveSupport";
+import WellLensDashboard from "@/pages/WellLensDashboard";
+import TrustedAdultDashboard from "@/pages/TrustedAdultDashboard";
 import CulturePulseSurvey from "@/pages/CulturePulseSurvey";
 import AdminPulseTrends from "@/pages/AdminPulseTrends";
 import SELPathwayManagement from "@/pages/SELPathwayManagement";
-import { DashboardLayout } from "@/routes/DashboardManager";
-import TrustedAdultDashboard from "@/pages/TrustedAdultDashboard";
-import { RouteObject } from "react-router-dom";
+import StaffAssistMode from "@/pages/StaffAssistMode";
 
-interface WithDashboardLayoutProps {
-  children: React.ReactNode;
-}
-
-const WithDashboardLayout: React.FC<WithDashboardLayoutProps> = ({ children }) => {
-  return <DashboardLayout>{children}</DashboardLayout>;
-};
-
-type ExtendedRouteObject = RouteObject & {
-  path: string;
-  element: React.ReactNode;
-  requiredRole?: string[];
-};
-
-const teacherAdminRoutes: ExtendedRouteObject[] = [
+const teacherAdminRoutes = [
   {
-    path: "/admin",
-    element: <WithDashboardLayout><AdminDashboard /></WithDashboardLayout>,
-    requiredRole: ["admin"],
+    path: "/teacher-dashboard",
+    element: (
+      <ProtectedRoute requiredRole={["staff", "admin"]}>
+        <TeacherDashboard />
+      </ProtectedRoute>
+    ),
   },
   {
-    path: "/admin-enhanced",
-    element: <WithDashboardLayout><AdminDashboardEnhanced /></WithDashboardLayout>,
-    requiredRole: ["admin"],
-  },
-  {
-    path: "/teacher",
-    element: <WithDashboardLayout><TeacherDashboard /></WithDashboardLayout>,
-    requiredRole: ["teacher"],
-  },
-  {
-    path: "/teacher-enhanced",
-    element: <WithDashboardLayout><TeacherDashboardEnhanced /></WithDashboardLayout>,
-    requiredRole: ["teacher"],
+    path: "/admin-dashboard",
+    element: (
+      <ProtectedRoute requiredRole={["admin"]}>
+        <AdminDashboard />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/student-management",
-    element: <WithDashboardLayout><StudentManagement /></WithDashboardLayout>,
-    requiredRole: ["teacher", "admin"],
-  },
-  {
-    path: "/check-in",
-    element: <WithDashboardLayout><CheckIn /></WithDashboardLayout>,
-    requiredRole: ["teacher", "admin"],
-  },
-  {
-    path: "/well-lens",
-    element: <WithDashboardLayout><WellLensDashboard /></WithDashboardLayout>,
-    requiredRole: ["teacher", "admin"],
-  },
-  {
-    path: "/predictive-support",
-    element: <WithDashboardLayout><PredictiveSupport /></WithDashboardLayout>,
-    requiredRole: ["teacher", "admin"],
+    element: (
+      <ProtectedRoute requiredRole={["staff", "admin"]}>
+        <StudentManagement />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/behavior-prediction",
-    element: <WithDashboardLayout><BehaviorPrediction /></WithDashboardLayout>,
-    requiredRole: ["teacher", "admin"],
+    element: (
+      <ProtectedRoute requiredRole={["staff", "admin"]}>
+        <BehaviorPrediction />
+      </ProtectedRoute>
+    ),
   },
   {
-    path: "/journal",
-    element: <WithDashboardLayout><DigitalJournal /></WithDashboardLayout>,
-    requiredRole: ["teacher", "admin", "student"],
+    path: "/predictive-support",
+    element: (
+      <ProtectedRoute requiredRole={["staff", "admin"]}>
+        <PredictiveSupport />
+      </ProtectedRoute>
+    ),
   },
   {
-    path: "/reset-room",
-    element: <WithDashboardLayout><ResetRoom /></WithDashboardLayout>,
-    requiredRole: ["teacher", "admin", "student"],
-  },
-  {
-    path: "/self-regulation-toolbox",
-    element: <WithDashboardLayout><SelfRegulationToolboxPage /></WithDashboardLayout>,
-    requiredRole: ["teacher", "admin", "student"],
+    path: "/well-lens",
+    element: (
+      <ProtectedRoute requiredRole={["staff", "admin"]}>
+        <WellLensDashboard />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/trusted-adult-dashboard",
-    element: <WithDashboardLayout><TrustedAdultDashboard /></WithDashboardLayout>,
-    requiredRole: ["admin", "teacher"],
-  },
-  {
-    path: "/profile",
-    element: <WithDashboardLayout><UserProfile /></WithDashboardLayout>,
-    requiredRole: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    path: "/pulse-tracker",
     element: (
-      <WithDashboardLayout>
-        <CulturePulseSurvey />
-      </WithDashboardLayout>
+      <ProtectedRoute requiredRole={["staff", "admin"]}>
+        <TrustedAdultDashboard />
+      </ProtectedRoute>
     ),
-    requiredRole: ["teacher", "student", "staff"],
   },
   {
-    path: "/admin-pulse-trends",
+    path: "/pulse-trends",
     element: (
-      <WithDashboardLayout>
+      <ProtectedRoute requiredRole={["admin"]}>
         <AdminPulseTrends />
-      </WithDashboardLayout>
+      </ProtectedRoute>
     ),
-    requiredRole: ["admin"],
+  },
+  {
+    path: "/pulse-survey",
+    element: (
+      <ProtectedRoute requiredRole={["staff", "admin"]}>
+        <CulturePulseSurvey />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/sel-pathway-management",
     element: (
-      <WithDashboardLayout>
+      <ProtectedRoute requiredRole={["staff", "admin"]}>
         <SELPathwayManagement />
-      </WithDashboardLayout>
+      </ProtectedRoute>
     ),
-    requiredRole: ["teacher", "admin"],
+  },
+  {
+    path: "/staff-assist",
+    element: (
+      <ProtectedRoute requiredRole={["staff", "admin"]}>
+        <StaffAssistMode />
+      </ProtectedRoute>
+    ),
   },
 ];
 
