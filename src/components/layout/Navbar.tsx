@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bell, Search, Menu, User } from 'lucide-react';
+import { Bell, Search, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -14,9 +14,11 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
 import { Link } from 'react-router-dom';
+import { useSidebar } from '@/components/ui/sidebar';
 
 export const Navbar = () => {
   const { user, logout, setRole } = useAuth();
+  const { toggleSidebar } = useSidebar();
 
   const handleRoleSwitch = (role: UserRole) => {
     setRole(role);
@@ -24,7 +26,7 @@ export const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-card px-4 md:px-6">
-      <Button variant="outline" size="icon" className="md:hidden">
+      <Button variant="outline" size="icon" className="md:hidden" onClick={toggleSidebar}>
         <Menu className="h-5 w-5" />
       </Button>
       <div className="hidden md:flex md:flex-1 md:items-center md:gap-4">
@@ -93,10 +95,7 @@ export const Navbar = () => {
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" asChild>
-              <Link to="/profile">
-                <User className="h-4 w-4 mr-2" />
-                <span>View Profile</span>
-              </Link>
+              <Link to="/profile">View Profile</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch(UserRole.student)}>

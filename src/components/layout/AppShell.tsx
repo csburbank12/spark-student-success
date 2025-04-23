@@ -1,6 +1,11 @@
 
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { 
+  SidebarProvider,
+  SidebarInset,
+  SidebarRail
+} from '@/components/ui/sidebar';
 import Sidebar from './Sidebar';
 import { Navbar } from './Navbar';
 import { Loader } from '@/components/ui/loader';
@@ -21,14 +26,19 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Navbar />
-        <main className="flex-1 overflow-auto bg-background p-4 md:p-6">
-          {children}
-        </main>
+    <SidebarProvider>
+      <div className="flex h-screen w-full overflow-hidden">
+        <Sidebar />
+        <SidebarRail />
+        <SidebarInset>
+          <div className="flex flex-1 flex-col overflow-hidden">
+            <Navbar />
+            <main className="flex-1 overflow-auto bg-background p-4 md:p-6">
+              {children}
+            </main>
+          </div>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };

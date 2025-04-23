@@ -21,10 +21,21 @@ import {
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { 
+  Sidebar as SidebarContainer, 
+  SidebarContent,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  useSidebar
+} from "@/components/ui/sidebar";
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const { state } = useSidebar();
 
   const isTeacherOrAdmin =
     user?.role === "teacher" || user?.role === "administrator";
@@ -197,50 +208,53 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="w-64 flex-shrink-0 border-r bg-gray-50 py-4 dark:border-gray-700 dark:bg-gray-800">
-      <div className="flex h-14 items-center px-6">
-        <p className="font-semibold">Beacon</p>
-      </div>
-      <div className="flex flex-col space-y-1 px-2">
-        {routes.map((route) => (
-          <NavLink
-            key={route.href}
-            to={route.href}
-            className={({ isActive }) =>
-              `flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-50 ${
-                isActive
-                  ? "bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-50"
-                  : "text-gray-500 dark:text-gray-400"
-              }`
-            }
-          >
-            <route.icon className="mr-2 h-4 w-4" />
-            {route.name}
-          </NavLink>
-        ))}
-      </div>
-      <div className="mt-auto border-t p-4 dark:border-gray-700">
-        <NavLink
-          to="/profile"
-          className={({ isActive }) =>
-            `flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-50 mb-2 ${
-              isActive
-                ? "bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-50"
-                : "text-gray-500 dark:text-gray-400"
-            }`
-          }
-        >
-          <User className="mr-2 h-4 w-4" />
-          Profile
-        </NavLink>
-        <button
-          onClick={logout}
-          className="w-full flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-50 text-gray-500 dark:text-gray-400"
-        >
-          Sign Out
-        </button>
-      </div>
-    </div>
+    <SidebarContainer>
+      <SidebarHeader>
+        <div className="flex h-14 items-center px-4">
+          <span className="font-semibold text-xl">Beacon</span>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarMenu>
+          {routes.map((route) => (
+            <SidebarMenuItem key={route.href}>
+              <SidebarMenuButton 
+                asChild 
+                isActive={location.pathname === route.href} 
+                tooltip={state === "collapsed" ? route.name : undefined}
+              >
+                <NavLink to={route.href}>
+                  <route.icon className="h-5 w-5" />
+                  <span>{route.name}</span>
+                </NavLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton 
+              asChild 
+              isActive={location.pathname === "/profile"}
+              tooltip={state === "collapsed" ? "Profile" : undefined}
+            >
+              <NavLink to="/profile">
+                <User className="h-5 w-5" />
+                <span>Profile</span>
+              </NavLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={logout} tooltip={state === "collapsed" ? "Sign Out" : undefined}>
+              <User className="h-5 w-5" />
+              <span>Sign Out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </SidebarContainer>
   );
 };
 
