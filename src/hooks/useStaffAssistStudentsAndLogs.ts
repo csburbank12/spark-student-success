@@ -59,16 +59,7 @@ export const fetchBehaviorLogs = async (
       .eq("staff_id", userId)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return (data || []).map((item) => ({
-      id: item.id,
-      staff_id: item.staff_id,
-      student_id: item.student_id,
-      situation_type: item.situation_type,
-      intervention_used: item.intervention_used,
-      notes: item.notes || '',
-      effectiveness_rating: item.effectiveness_rating,
-      created_at: item.created_at,
-    }));
+    return data || [];
   } catch (error) {
     console.error("Error fetching behavior logs:", error);
     return [];

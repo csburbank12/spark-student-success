@@ -2,8 +2,9 @@
 import type { User } from "@/types";
 import generalRoutes from "./generalRoutes";
 import studentRoutes from "./studentRoutes";
-import teacherAdminRoutes from "./teacherAdminRoutes";
+import { teacherAdminRoutes } from "./teacherAdminRoutes";
 import parentRoutes from "./parentRoutes";
+import adminRoutes from "./adminRoutes";
 import { RouteObject } from "react-router-dom";
 
 // RouteConfig interface extends RouteObject with additional properties
@@ -17,6 +18,7 @@ export type RouteConfig = RouteObject & {
 export const routes: RouteConfig[] = [
   ...generalRoutes,
   ...studentRoutes,
-  ...(teacherAdminRoutes as RouteConfig[]),
+  ...teacherAdminRoutes,
   ...parentRoutes,
+  ...adminRoutes,
 ];

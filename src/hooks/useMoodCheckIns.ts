@@ -45,19 +45,17 @@ export function useAddMoodCheckIn() {
       expressionType
     }: {
       userId: string,
-      mood: string,
+      mood: "happy" | "good" | "okay" | "sad" | "stressed",
       energyLevel: number,
       notes?: string,
       expressionType?: string
     }) => {
-      const { error } = await supabase.from("mood_check_ins").insert([
-        {
-          user_id: userId,
-          mood_type: mood,
-          energy_level: energyLevel,
-          notes,
-        },
-      ]);
+      const { error } = await supabase.from("mood_check_ins").insert({
+        user_id: userId,
+        mood_type: mood,
+        energy_level: energyLevel,
+        notes,
+      });
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
