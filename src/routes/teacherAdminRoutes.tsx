@@ -4,7 +4,7 @@ import TeacherDashboard from "@/pages/TeacherDashboard";
 import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
 import PredictiveSupportEngine from "@/components/predictive-support/PredictiveSupportEngine";
 import StaffAssistMode from "@/pages/StaffAssistMode";
-import EmotionScheduling from "@/pages/EmotionScheduling";
+import EmotionAwareScheduling from "@/pages/EmotionAwareScheduling";
 import CheckIn from "@/pages/CheckIn";
 import StudentInterventionView from "@/components/teacher/StudentInterventionView";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -56,7 +56,7 @@ export const teacherAdminRoutes = [
     path: "/emotion-aware-scheduling",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff, UserRole.admin]}>
-        <EmotionScheduling />
+        <EmotionAwareScheduling />
       </ProtectedRoute>
     ),
   },

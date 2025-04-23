@@ -6,20 +6,20 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSELRecommendations } from "@/hooks/useSELRecommendations";
 import { ArrowRight, Play, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SELLesson } from "@/hooks/useSELRecommendations";
 import SELLessonPlayer from "@/components/sel-pathways/SELLessonPlayer";
 
 export function SELRecommendedSection() {
   const { user } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [selectedLesson, setSelectedLesson] = useState<SELLesson | null>(null);
   
   const { recommendedLessons, isLoading } = useSELRecommendations();
   
   const handleViewAllClick = () => {
-    router.navigate("/sel-pathways");
+    navigate("/sel-pathways");
   };
   
   if (isLoading) {
@@ -41,7 +41,10 @@ export function SELRecommendedSection() {
   if (selectedLesson) {
     return (
       <SELLessonPlayer 
-        lesson={selectedLesson} 
+        lesson={{
+          ...selectedLesson,
+          content: selectedLesson.description || ""
+        }}
         onComplete={() => setSelectedLesson(null)}
         onBack={() => setSelectedLesson(null)}
       />
@@ -101,10 +104,7 @@ export function SELRecommendedSection() {
             <CardFooter>
               <Button 
                 className="w-full" 
-                onClick={() => setSelectedLesson({
-                  ...lesson,
-                  content: lesson.description || ""
-                })}
+                onClick={() => setSelectedLesson(lesson)}
               >
                 <Play className="mr-2 h-4 w-4" /> Start Now
               </Button>

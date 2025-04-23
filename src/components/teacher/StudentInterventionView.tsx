@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Student } from "@/components/predictive-support/PredictiveSupportEngine";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, Calendar, Clock, BookOpen, ChevronRight, ChevronsUpDown } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, BookOpen, ChevronRight, ChevronsUpDown, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
