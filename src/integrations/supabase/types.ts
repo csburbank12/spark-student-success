@@ -660,6 +660,115 @@ export type Database = {
         }
         Relationships: []
       }
+      sel_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string
+          due_date: string | null
+          id: string
+          lesson_id: string
+          status: string
+          student_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by: string
+          due_date?: string | null
+          id?: string
+          lesson_id: string
+          status?: string
+          student_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string
+          due_date?: string | null
+          id?: string
+          lesson_id?: string
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sel_assignments_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "sel_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sel_lessons: {
+        Row: {
+          content: string
+          created_at: string
+          description: string | null
+          difficulty: string | null
+          duration: number
+          id: string
+          media_url: string | null
+          pathway: string
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          duration: number
+          id?: string
+          media_url?: string | null
+          pathway: string
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          duration?: number
+          id?: string
+          media_url?: string | null
+          pathway?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      sel_progress: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          id: string
+          lesson_id: string
+          progress: number
+          student_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          lesson_id: string
+          progress?: number
+          student_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          lesson_id?: string
+          progress?: number
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sel_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "sel_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_members: {
         Row: {
           created_at: string | null
