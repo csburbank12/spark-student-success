@@ -4,7 +4,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const ConfidentialityNotice = () => {
   return (
-    <Alert className="bg-amber-50 border-amber-200 text-amber-900">
+    <Alert className="bg-emerald-50 border-emerald-200 text-emerald-900">
       <Lock className="h-5 w-5" />
       <AlertDescription className="mt-2 text-sm">
         <strong className="block mb-2">Confidential Platform Access</strong>
