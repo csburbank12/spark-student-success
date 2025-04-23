@@ -29,7 +29,7 @@ const StaffAssistMode: React.FC = () => {
         .select("*")
         .eq("role", "student");
       if (error) throw error;
-      return data as StudentProfile[] || [];
+      return (data as StudentProfile[]) || [];
     },
     enabled: !!user?.id && isStaffOrAdmin,
   });
@@ -45,7 +45,7 @@ const StaffAssistMode: React.FC = () => {
         .eq("staff_id", user.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as BehaviorLog[] || [];
+      return (data as BehaviorLog[]) || [];
     },
     enabled: !!user?.id && isStaffOrAdmin,
   });
