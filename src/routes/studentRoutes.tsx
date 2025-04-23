@@ -16,7 +16,7 @@ const studentRoutes = [
   {
     path: "/check-in",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['student']}>
         <CheckIn />
       </ProtectedRoute>
     ),
@@ -24,7 +24,7 @@ const studentRoutes = [
   {
     path: "/mental-health-toolkit",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['student']}>
         <MentalHealthToolkit />
       </ProtectedRoute>
     ),
@@ -32,7 +32,7 @@ const studentRoutes = [
   {
     path: "/future-me",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['student']}>
         <FutureMe />
       </ProtectedRoute>
     ),
@@ -40,7 +40,7 @@ const studentRoutes = [
   {
     path: "/digital-journal",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['student']}>
         <DigitalJournal />
       </ProtectedRoute>
     ),
@@ -48,7 +48,7 @@ const studentRoutes = [
   {
     path: "/self-regulation-toolbox",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['student']}>
         <SelfRegulationToolboxPage />
       </ProtectedRoute>
     ),
@@ -56,38 +56,42 @@ const studentRoutes = [
   {
     path: "/reset-room",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['student']}>
         <ResetRoomPage />
       </ProtectedRoute>
     ),
   },
   {
     path: "/trusted-adults",
-    element: <TrustedAdultSelection />,
-    requiredRole: ["student"],
+    element: (
+      <ProtectedRoute requiredRole={['student']}>
+        <TrustedAdultSelection />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/loopbot",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['student']}>
         <LoopBot />
       </ProtectedRoute>
     ),
-    requiredRole: ["student"],
   },
   {
     path: "/pulse-tracker",
-    element: <CulturePulseSurvey />,
-    requiredRole: ["student"],
+    element: (
+      <ProtectedRoute requiredRole={['student']}>
+        <CulturePulseSurvey />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/sel-pathways",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['student']}>
         <PersonalizedSELPathways />
       </ProtectedRoute>
     ),
-    requiredRole: ["student"],
   },
 ];
 

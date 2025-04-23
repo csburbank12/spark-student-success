@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ import SELLessonsList from "@/components/sel-pathways/SELLessonsList";
 import SELAssignLessonDialog from "@/components/sel-pathways/SELAssignLessonDialog";
 import { SelLesson } from "@/components/sel-pathways/types";
 import type { Tables } from "@/integrations/supabase/types";
+import { UserRole } from "@/types/roles";
 
 // Define types for student profiles
 interface StudentProfile {
@@ -34,7 +36,7 @@ const SELPathwayManagement: React.FC = () => {
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<SelLesson | null>(null);
 
-  // Use type assertion for role checking
+  // Check if user role is staff or admin
   const isStaffOrAdmin = user?.role === 'staff' || user?.role === 'admin';
 
   // Fetch all students (for staff to manage)

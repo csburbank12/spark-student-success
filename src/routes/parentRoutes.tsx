@@ -10,7 +10,7 @@ const parentRoutes = [
   {
     path: "/child-activity",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['parent']}>
         <ChildActivity />
       </ProtectedRoute>
     ),
@@ -18,7 +18,7 @@ const parentRoutes = [
   {
     path: "/child-wellness",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['parent']}>
         <ChildWellness />
       </ProtectedRoute>
     ),
@@ -26,7 +26,7 @@ const parentRoutes = [
   {
     path: "/messages",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={['parent']}>
         <ParentMessages />
       </ProtectedRoute>
     ),

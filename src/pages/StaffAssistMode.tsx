@@ -12,7 +12,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
 import { UserRole } from "@/types/roles";
 
-// Define behavior situation types
 const behaviorSituations = [
   { id: "refusal", label: "Student Refusal", category: "compliance" },
   { id: "verbal_outburst", label: "Verbal Outburst", category: "disruptive" },
@@ -25,7 +24,6 @@ const behaviorSituations = [
   { id: "other", label: "Other", category: "miscellaneous" }
 ];
 
-// Responses database
 const responseStrategies = {
   refusal: [
     {
@@ -175,16 +173,13 @@ const StaffAssistMode: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("assist");
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   
-  // Use type assertion for role checking
   const isStaffOrAdmin = user?.role === 'staff' || user?.role === 'admin';
   
-  // Fetch students for the current staff member
   const { data: students } = useQuery({
     queryKey: ["staff-students"],
     queryFn: async () => {
       if (!user?.id || !isStaffOrAdmin) return [];
       
-      // In a real implementation, you'd fetch students based on class assignments
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -196,7 +191,6 @@ const StaffAssistMode: React.FC = () => {
     enabled: isStaffOrAdmin,
   });
   
-  // Fetch previous behavior logs
   const { data: behaviorLogs, refetch: refetchLogs } = useQuery({
     queryKey: ["behavior-logs", user?.id],
     queryFn: async () => {
@@ -214,7 +208,6 @@ const StaffAssistMode: React.FC = () => {
     enabled: isStaffOrAdmin,
   });
   
-  // Log behavior intervention
   const logIntervention = useMutation({
     mutationFn: async (data: {
       studentId: string | null;
@@ -242,7 +235,6 @@ const StaffAssistMode: React.FC = () => {
     },
   });
   
-  // Update intervention effectiveness
   const updateEffectiveness = useMutation({
     mutationFn: async ({ logId, rating }: { logId: string; rating: number }) => {
       const { error } = await supabase
@@ -289,10 +281,8 @@ const StaffAssistMode: React.FC = () => {
     setSelectedStudentId(null);
   };
   
-  // Get suggested responses based on selected situation
   const suggestedResponses = situation ? responseStrategies[situation as keyof typeof responseStrategies] : [];
   
-  // If not a staff member or admin, return access denied
   if (!isStaffOrAdmin) {
     return (
       <div className="max-w-lg mx-auto mt-20">
@@ -442,11 +432,9 @@ const StaffAssistMode: React.FC = () => {
               {behaviorLogs && behaviorLogs.length > 0 ? (
                 <div className="space-y-4">
                   {behaviorLogs.map((log) => {
-                    // Find the student name if available
                     const student = students?.find(s => s.id === log.student_id);
                     const studentName = student ? `${student.first_name} ${student.last_name}` : "No specific student";
                     
-                    // Find the situation label
                     const situationItem = behaviorSituations.find(s => s.id === log.situation_type);
                     
                     return (
