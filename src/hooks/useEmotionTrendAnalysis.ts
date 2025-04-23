@@ -8,21 +8,24 @@ interface UseEmotionTrendAnalysisParams {
   enabled?: boolean;
 }
 
+// Default empty analysis to avoid null/undefined issues
+const DEFAULT_ANALYSIS: EmotionAnalysis = {
+  optimalCheckInTimes: [],
+  stressPeriods: [],
+  moodPatterns: {
+    morningTrend: "No data",
+    afternoonTrend: "No data",
+    eveningTrend: "No data",
+    weekdayTrend: "No data",
+    weekendTrend: "No data"
+  }
+};
+
 export function useEmotionTrendAnalysis({ moodData, studentId, enabled = true }: UseEmotionTrendAnalysisParams) {
   return useQuery({
     queryKey: ["emotion-scheduler-analysis", studentId],
     queryFn: async () => {
-      if (!moodData?.length) return {
-        optimalCheckInTimes: [],
-        stressPeriods: [],
-        moodPatterns: {
-          morningTrend: "No data",
-          afternoonTrend: "No data",
-          eveningTrend: "No data",
-          weekdayTrend: "No data",
-          weekendTrend: "No data"
-        }
-      } as EmotionAnalysis;
+      if (!moodData?.length) return DEFAULT_ANALYSIS;
 
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const dayOfWeekData: Record<string, any[]> = {};

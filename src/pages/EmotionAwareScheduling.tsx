@@ -20,8 +20,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => (
     <CardContent className="p-6">
       <h3 className="text-lg font-medium mb-2">Something went wrong</h3>
       <p className="text-muted-foreground">
-        There was an error loading the emotion-aware scheduling data. 
-        Please try refreshing the page.
+        {error.message || "There was an error loading the emotion-aware scheduling data."}
       </p>
       <div className="mt-4">
         <Button onClick={resetErrorBoundary}>Try again</Button>
@@ -35,7 +34,9 @@ const EmotionAwareScheduling: React.FC = () => {
   const [isPending, startTransition] = useTransition();
   const [selectedStudentId, setSelectedStudentId] = useState<string>(user?.id || '');
   const [activeTab, setActiveTab] = useState<string>("overview");
-  const { emotionAnalysis, isLoading } = useEmotionScheduler(selectedStudentId);
+  
+  // Use the hook with proper error handling
+  const { emotionAnalysis, isLoading, isError, error } = useEmotionScheduler(selectedStudentId);
 
   const handleStudentChange = (value: string) => {
     // Wrap state update that may trigger suspense in startTransition
@@ -45,7 +46,7 @@ const EmotionAwareScheduling: React.FC = () => {
   };
 
   const handleTabChange = (value: string) => {
-    // Wrap tab changes in startTransition as well, since this could trigger data loading
+    // Wrap tab changes in startTransition as well
     startTransition(() => {
       setActiveTab(value);
     });
@@ -55,6 +56,24 @@ const EmotionAwareScheduling: React.FC = () => {
     // In a real implementation, this would integrate with a calendar system
     toast.success("Event scheduled successfully!");
   };
+
+  // If there's an error loading the data, show an error message before the ErrorBoundary kicks in
+  if (isError && error) {
+    console.error("Error in EmotionAwareScheduling:", error);
+    return (
+      <Card className="border-red-300">
+        <CardContent className="p-6">
+          <h3 className="text-lg font-medium mb-2">Error loading data</h3>
+          <p className="text-muted-foreground">
+            {error.message || "There was a problem loading the emotion scheduling data."}
+          </p>
+          <div className="mt-4">
+            <Button onClick={() => window.location.reload()}>Refresh page</Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -83,8 +102,10 @@ const EmotionAwareScheduling: React.FC = () => {
         FallbackComponent={ErrorFallback}
         onReset={() => {
           // Reset the app state here if needed
-          setSelectedStudentId(user?.id || '');
-          setActiveTab("overview");
+          startTransition(() => {
+            setSelectedStudentId(user?.id || '');
+            setActiveTab("overview");
+          });
         }}
       >
         <Tabs value={activeTab} onValueChange={handleTabChange}>
