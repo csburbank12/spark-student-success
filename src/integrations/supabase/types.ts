@@ -166,6 +166,36 @@ export type Database = {
         }
         Relationships: []
       }
+      kindness_notes: {
+        Row: {
+          anonymous: boolean
+          id: string
+          message: string
+          recipient_id: string
+          sender_id: string | null
+          sent_at: string
+          signed: boolean
+        }
+        Insert: {
+          anonymous?: boolean
+          id?: string
+          message: string
+          recipient_id: string
+          sender_id?: string | null
+          sent_at?: string
+          signed?: boolean
+        }
+        Update: {
+          anonymous?: boolean
+          id?: string
+          message?: string
+          recipient_id?: string
+          sender_id?: string | null
+          sent_at?: string
+          signed?: boolean
+        }
+        Relationships: []
+      }
       meetings: {
         Row: {
           created_at: string | null
