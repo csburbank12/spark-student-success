@@ -124,7 +124,6 @@ const SELPathwayManagement: React.FC = () => {
     } else {
       toast("Failed to assign lesson", {
         description: "There was an error assigning the lesson",
-        variant: "destructive"
       });
     }
   };

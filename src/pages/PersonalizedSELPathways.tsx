@@ -200,22 +200,35 @@ const PersonalizedSELPathways: React.FC = () => {
     );
   }
 
-  const formattedCompletedLessons = completedLessons.map(lesson => {
-    if (!lesson.completed_at) {
-      return {
-        ...lesson,
-        completed_at: new Date().toISOString(),
-        sel_lessons: lesson.sel_lessons
-      };
+  // Prepare the selected lesson for the player if exists
+  const preparedSelectedLesson = selectedLesson ? {
+    id: selectedLesson.id,
+    title: selectedLesson.title,
+    description: selectedLesson.description || "",
+    content: selectedLesson.description || selectedLesson.content || "",
+    pathway: selectedLesson.competency_area || selectedLesson.pathway || "",
+    duration: selectedLesson.estimated_duration || selectedLesson.duration || 5,
+    difficulty: selectedLesson.difficulty || "Standard",
+    media_url: selectedLesson.content_url
+  } : null;
+
+  // Format completed lessons for the table component
+  const formattedCompletedLessons = completedLessons.map(lesson => ({
+    id: lesson.id,
+    completed_at: lesson.completed_at || new Date().toISOString(),
+    sel_lessons: {
+      id: lesson.sel_lessons?.id || "",
+      title: lesson.sel_lessons?.title || "",
+      pathway: lesson.sel_lessons?.pathway || lesson.sel_lessons?.competency_area || "",
+      duration: lesson.sel_lessons?.duration || lesson.sel_lessons?.estimated_duration || 0
     }
-    return lesson;
-  });
+  }));
 
   return (
     <div className="space-y-6">
-      {selectedLesson ? (
+      {preparedSelectedLesson ? (
         <SELLessonPlayer
-          lesson={selectedLesson}
+          lesson={preparedSelectedLesson}
           onComplete={handleCompleteLesson}
           onBack={() => setSelectedLesson(null)}
         />

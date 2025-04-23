@@ -39,12 +39,21 @@ export function SELRecommendedSection() {
   }
   
   if (selectedLesson) {
+    // Ensure we correctly map the SELLesson to the format expected by SELLessonPlayer
+    const playerLesson = {
+      id: selectedLesson.id,
+      title: selectedLesson.title,
+      description: selectedLesson.description || "",
+      content: selectedLesson.description || selectedLesson.content || "",
+      pathway: selectedLesson.competency_area || selectedLesson.pathway || "",
+      duration: selectedLesson.estimated_duration || selectedLesson.duration || 5,
+      difficulty: selectedLesson.difficulty || "Standard",
+      media_url: selectedLesson.content_url || undefined
+    };
+    
     return (
       <SELLessonPlayer 
-        lesson={{
-          ...selectedLesson,
-          content: selectedLesson.description || ""
-        }}
+        lesson={playerLesson}
         onComplete={() => setSelectedLesson(null)}
         onBack={() => setSelectedLesson(null)}
       />
