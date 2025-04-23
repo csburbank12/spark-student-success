@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { FileUp, Check, AlertCircle } from 'lucide-react';
+import { FileUp, Check } from 'lucide-react';
 import { ImportStepProps } from '../types';
 
 export const Step4StudentImport: React.FC<ImportStepProps> = ({ schoolCode, onComplete }) => {
@@ -54,7 +54,7 @@ export const Step4StudentImport: React.FC<ImportStepProps> = ({ schoolCode, onCo
               </div>
               <h4 className="text-lg font-medium">Student Import Complete</h4>
               <p className="text-sm text-muted-foreground">
-                1,250 students have been successfully imported.
+                128 students have been successfully imported.
               </p>
             </div>
             
@@ -66,33 +66,15 @@ export const Step4StudentImport: React.FC<ImportStepProps> = ({ schoolCode, onCo
                 <div className="mt-2">
                   <div className="flex justify-between text-sm py-1">
                     <span className="text-muted-foreground">Total Records:</span>
-                    <span>1,253</span>
+                    <span>130</span>
                   </div>
                   <div className="flex justify-between text-sm py-1">
                     <span className="text-muted-foreground">Successfully Imported:</span>
-                    <span>1,250</span>
+                    <span>128</span>
                   </div>
-                  <div className="flex justify-between text-sm py-1 text-amber-600">
-                    <span>Errors:</span>
-                    <span>3</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-4 text-left">
-                <div className="rounded-md bg-amber-50 p-4">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <AlertCircle className="h-5 w-5 text-amber-400" aria-hidden="true" />
-                    </div>
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-amber-800">Import Warnings</h3>
-                      <div className="mt-2 text-sm text-amber-700">
-                        <ul className="list-disc space-y-1 pl-5">
-                          <li>3 records had duplicate student IDs and were skipped</li>
-                        </ul>
-                      </div>
-                    </div>
+                  <div className="flex justify-between text-sm py-1">
+                    <span className="text-muted-foreground">Errors:</span>
+                    <span>2</span>
                   </div>
                 </div>
               </div>
