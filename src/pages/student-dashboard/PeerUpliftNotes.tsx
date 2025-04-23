@@ -1,12 +1,12 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Mail, Send, Heart } from "lucide-react";
+import { Mail } from "lucide-react";
+import KindnessNoteList from "./KindnessNoteList";
+import SendUpliftForm from "./SendUpliftForm";
 
 interface UserOpt {
   id: string;
@@ -158,121 +158,20 @@ const PeerUpliftNotes: React.FC = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-col md:flex-row gap-2">
-          <Input
-            placeholder="Recipient (type to search)"
-            list="uplift-recipients"
-            value={
-              recipient
-                ? users.find((u) => u.id === recipient)?.name || ""
-                : ""
-            }
-            onChange={(e) => {
-              const name = e.target.value;
-              const found = users.find((u) => u.name === name);
-              if (found) setRecipient(found.id);
-              else setRecipient("");
-            }}
-            className="md:w-56"
-            disabled={loading}
-            autoComplete="off"
-          />
-          <datalist id="uplift-recipients">
-            {users.map((u) =>
-              u.id !== "anon" ? (
-                <option key={u.id} value={u.name} />
-              ) : null
-            )}
-          </datalist>
-          <Textarea
-            placeholder="Write your message of encouragement or gratitude..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="flex-auto"
-            disabled={loading}
-            maxLength={280}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <input
-            id="uplift-anonymous"
-            type="checkbox"
-            checked={anonymous}
-            onChange={() => setAnonymous((v) => !v)}
-            className="form-checkbox h-4 w-4"
-            disabled={loading}
-          />
-          <label
-            htmlFor="uplift-anonymous"
-            className="text-sm text-muted-foreground"
-          >
-            Send anonymously
-          </label>
-          <Button
-            onClick={handleSend}
-            className="ml-auto flex gap-1 items-center"
-            size="sm"
-            disabled={
-              loading ||
-              submitting ||
-              !recipient ||
-              !message.trim() ||
-              (recipient === user?.id && anonymous)
-            }
-            title={
-              recipient === user?.id && anonymous
-                ? "You can't send a fully anonymous note to yourself."
-                : "Send Uplift"
-            }
-          >
-            <Send size={16} /> Send Uplift
-          </Button>
-        </div>
-        {loading && (
-          <div className="text-center text-muted-foreground py-6">
-            Loading notes...
-          </div>
-        )}
-        {!loading && notes.length > 0 && (
-          <div>
-            <div className="font-semibold mb-2 flex gap-2 items-center">
-              <Heart className="text-pink-600" size={16} />
-              Kindness Notes Log:
-            </div>
-            <ul className="space-y-2">
-              {notes.map((n) => (
-                <li
-                  key={n.id}
-                  className={`border rounded p-2 text-sm flex flex-col transition-all ${
-                    n.recipient_id === user?.id
-                      ? "bg-pink-50/40"
-                      : "bg-white"
-                  }`}
-                >
-                  <span className="text-sm">
-                    <span className="font-medium">
-                      {n.anonymous
-                        ? "Anonymous"
-                        : n.sender?.name || "Unknown"}
-                    </span>
-                    {" "}
-                    <span className="text-muted-foreground">➜</span>{" "}
-                    <span className="italic">{n.recipient?.name || "Someone"}</span>
-                  </span>
-                  <span className="block break-words mt-1">{n.message}</span>
-                  <span className="text-xs text-muted-foreground mt-1">
-                    {new Date(n.sent_at).toLocaleString()}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {!loading && notes.length === 0 && (
-          <div className="text-muted-foreground text-sm text-center py-4">
-            No kindness notes sent or received yet.
-          </div>
-        )}
+        <SendUpliftForm
+          users={users}
+          recipient={recipient}
+          setRecipient={setRecipient}
+          message={message}
+          setMessage={setMessage}
+          anonymous={anonymous}
+          setAnonymous={setAnonymous}
+          loading={loading}
+          submitting={submitting}
+          onSend={handleSend}
+          userId={user?.id}
+        />
+        <KindnessNoteList notes={notes} userId={user?.id} loading={loading} />
       </CardContent>
     </Card>
   );
