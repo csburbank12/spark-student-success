@@ -33,8 +33,8 @@ export function useStudentMoodData(studentId?: string, daysBack: number = 90) {
         });
         
         if (error) {
-          console.error("Supabase RPC error:", error);
-          throw error;
+          console.error("Error fetching student mood data:", error);
+          return [];
         }
         return data || [];
       } catch (error) {

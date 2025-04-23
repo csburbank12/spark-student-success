@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CheckInListProps {
   checkIns: any[];
@@ -25,7 +26,16 @@ const CheckInList: React.FC<CheckInListProps> = ({ checkIns, isLoading }) => (
     </CardHeader>
     <CardContent>
       {isLoading ? (
-        <div className="py-8 text-center">Loading...</div>
+        <div className="space-y-4">
+          {[1, 2, 3].map((index) => (
+            <div key={index} className="flex items-center gap-4 pb-4 border-b">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 flex-1" />
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="space-y-4">
           {checkIns.length === 0 ? (
@@ -52,14 +62,14 @@ const CheckInList: React.FC<CheckInListProps> = ({ checkIns, isLoading }) => (
                     <div className="h-2 bg-primary/20 rounded-full w-24">
                       <div
                         className="h-2 bg-primary rounded-full"
-                        style={{ width: `${checkIn.energy_level * 10}%` }}
+                        style={{ width: `${(checkIn.energy_level || 0) * 10}%` }}
                       ></div>
                     </div>
-                    <span className="text-sm">{checkIn.energy_level}/10</span>
+                    <span className="text-sm">{checkIn.energy_level || 0}/10</span>
                   </div>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">{checkIn.notes}</p>
+                  <p className="text-sm text-muted-foreground">{checkIn.notes || ""}</p>
                 </div>
               </div>
             ))
