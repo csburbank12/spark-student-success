@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
-import { SELAssignment } from "@/components/sel-pathways/types";
+import { SelAssignment } from "@/components/sel-pathways/types";
 
 export function useAssignedLessons(studentId?: string) {
   const { user } = useAuth();
@@ -44,7 +44,7 @@ export function useAssignedLessons(studentId?: string) {
             };
           }
           return assignment;
-        }) as SELAssignment[];
+        }) as SelAssignment[];
       } catch (error) {
         console.error("Error fetching SEL assignments:", error);
         return [];

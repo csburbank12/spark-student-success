@@ -1,7 +1,8 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { SELLesson } from "@/components/sel-pathways/types";
+import { SelLesson } from "@/components/sel-pathways/types";
 
 export function useRecommendedLessons(studentId?: string, mood?: string) {
   const { user } = useAuth();
@@ -30,7 +31,7 @@ export function useRecommendedLessons(studentId?: string, mood?: string) {
             duration: lesson.estimated_duration,
             difficulty: 'Standard',
             content: lesson.description
-          })) as SELLesson[];
+          })) as SelLesson[];
         } 
         
         // Otherwise, get user's recent moods to recommend lessons
@@ -54,7 +55,7 @@ export function useRecommendedLessons(studentId?: string, mood?: string) {
             duration: lesson.estimated_duration,
             difficulty: 'Standard',
             content: lesson.description
-          })) as SELLesson[];
+          })) as SelLesson[];
         }
         
         // Get the most recent mood
@@ -75,7 +76,7 @@ export function useRecommendedLessons(studentId?: string, mood?: string) {
           duration: lesson.estimated_duration,
           difficulty: 'Standard',
           content: lesson.description
-        })) as SELLesson[];
+        })) as SelLesson[];
       } catch (error) {
         console.error("Error fetching SEL recommendations:", error);
         return [];

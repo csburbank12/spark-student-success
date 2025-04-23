@@ -2,10 +2,10 @@
 import { useRecommendedLessons } from "./useRecommendedLessons";
 import { useAssignedLessons } from "./useAssignedLessons";
 import { useLessonProgress } from "./useLessonProgress";
-import { SELLesson, SELAssignment } from "@/components/sel-pathways/types";
+import { SelLesson, SelAssignment } from "@/components/sel-pathways/types";
 
 // Re-export SEL types for backward compatibility
-export type { SELLesson, SELAssignment };
+export type { SelLesson, SelAssignment };
 
 // Combined hook that provides all SEL data
 export function useSELRecommendations(studentId?: string, mood?: string) {

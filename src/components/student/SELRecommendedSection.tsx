@@ -1,20 +1,18 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSELRecommendations } from "@/hooks/useSELRecommendations";
+import { useSELRecommendations, SelLesson } from "@/hooks/useSELRecommendations";
 import { ArrowRight, Play, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SELLesson } from "@/hooks/useSELRecommendations";
 import SELLessonPlayer from "@/components/sel-pathways/SELLessonPlayer";
 
 export function SELRecommendedSection() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [selectedLesson, setSelectedLesson] = useState<SELLesson | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<SelLesson | null>(null);
   
   const { recommendedLessons, isLoading, isError } = useSELRecommendations();
   
@@ -56,7 +54,6 @@ export function SELRecommendedSection() {
   }
   
   if (selectedLesson) {
-    // Ensure we correctly map the SELLesson to the format expected by SELLessonPlayer
     const playerLesson = {
       id: selectedLesson.id,
       title: selectedLesson.title,

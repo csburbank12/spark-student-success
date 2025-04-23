@@ -2,13 +2,13 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SELLesson } from "@/hooks/useSELRecommendations";
+import { SelLesson } from "@/hooks/useSELRecommendations";
 import { useNavigate } from "react-router-dom";
 import { Clock, BookOpen, Video, FileText, Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface SELRecommendationCardProps {
-  lesson: SELLesson;
+  lesson: SelLesson;
   onStartActivity?: (lessonId: string) => void;
 }
 
