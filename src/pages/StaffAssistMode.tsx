@@ -20,7 +20,10 @@ const StaffAssistMode: React.FC = () => {
     user?.role === UserRole.staff.toString() || user?.role === UserRole.admin.toString();
 
   // Fetch all students for staff
-  const { data: students = [], isLoading: isLoadingStudents } = useQuery({
+  const { 
+    data: students = [], 
+    isLoading: isLoadingStudents 
+  } = useQuery({
     queryKey: ["staff-students"],
     queryFn: async () => {
       if (!user?.id || !isStaffOrAdmin) return [] as StudentProfile[];
@@ -32,14 +35,25 @@ const StaffAssistMode: React.FC = () => {
         
       if (error) throw error;
       
-      // Type assertion to explicitly tell TypeScript what we're returning
-      return (data || []) as unknown as StudentProfile[];
+      // Convert the response to StudentProfile[] to avoid type recursion
+      const studentProfiles: StudentProfile[] = (data || []).map(profile => ({
+        id: profile.id,
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        grade_level: profile.grade_level || ''
+      }));
+      
+      return studentProfiles;
     },
     enabled: !!user?.id && isStaffOrAdmin,
   });
 
   // Fetch all behavior logs by staff user
-  const { data: behaviorLogs = [], refetch: refetchLogs, isLoading: isLoadingLogs } = useQuery({
+  const { 
+    data: behaviorLogs = [], 
+    refetch: refetchLogs, 
+    isLoading: isLoadingLogs 
+  } = useQuery({
     queryKey: ["behavior-logs", user?.id],
     queryFn: async () => {
       if (!user?.id || !isStaffOrAdmin) return [] as BehaviorLog[];
@@ -52,8 +66,19 @@ const StaffAssistMode: React.FC = () => {
         
       if (error) throw error;
       
-      // Type assertion to explicitly tell TypeScript what we're returning
-      return (data || []) as unknown as BehaviorLog[];
+      // Convert the response to BehaviorLog[] to avoid type recursion
+      const logs: BehaviorLog[] = (data || []).map(log => ({
+        id: log.id,
+        staff_id: log.staff_id,
+        student_id: log.student_id,
+        situation_type: log.situation_type,
+        intervention_used: log.intervention_used,
+        notes: log.notes || '',
+        effectiveness_rating: log.effectiveness_rating,
+        created_at: log.created_at
+      }));
+      
+      return logs;
     },
     enabled: !!user?.id && isStaffOrAdmin,
   });
