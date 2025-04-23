@@ -1,3 +1,4 @@
+
 import React from "react";
 import StudentManagement from "@/pages/StudentManagement";
 import WellLensDashboard from "@/pages/WellLensDashboard";
@@ -58,52 +59,52 @@ const teacherAdminRoutes: ExtendedRouteObject[] = [
   // Shared Teacher & Admin Routes
   {
     path: "/student-management",
-    element: <WithDashboardLayout element={<StudentManagement />} />,
+    element: <WithDashboardLayout><StudentManagement /></WithDashboardLayout>,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/check-in",
-    element: <WithDashboardLayout element={<CheckIn />} />,
+    element: <WithDashboardLayout><CheckIn /></WithDashboardLayout>,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/well-lens",
-    element: <WithDashboardLayout element={<WellLensDashboard />} />,
+    element: <WithDashboardLayout><WellLensDashboard /></WithDashboardLayout>,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/predictive-support",
-    element: <WithDashboardLayout element={<PredictiveSupport />} />,
+    element: <WithDashboardLayout><PredictiveSupport /></WithDashboardLayout>,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/behavior-prediction",
-    element: <WithDashboardLayout element={<BehaviorPrediction />} />,
+    element: <WithDashboardLayout><BehaviorPrediction /></WithDashboardLayout>,
     requiredRole: ["teacher", "admin"],
   },
   {
     path: "/journal",
-    element: <WithDashboardLayout element={<DigitalJournal />} />,
+    element: <WithDashboardLayout><DigitalJournal /></WithDashboardLayout>,
     requiredRole: ["teacher", "admin", "student"],
   },
   {
     path: "/reset-room",
-    element: <WithDashboardLayout element={<ResetRoom />} />,
+    element: <WithDashboardLayout><ResetRoom /></WithDashboardLayout>,
     requiredRole: ["teacher", "admin", "student"],
   },
   {
     path: "/self-regulation-toolbox",
-    element: <WithDashboardLayout element={<SelfRegulationToolboxPage />} />,
+    element: <WithDashboardLayout><SelfRegulationToolboxPage /></WithDashboardLayout>,
     requiredRole: ["teacher", "admin", "student"],
   },
   {
     path: "/trusted-adult-dashboard",
-    element: <WithDashboardLayout element={<TrustedAdultDashboard />} />,
+    element: <WithDashboardLayout><TrustedAdultDashboard /></WithDashboardLayout>,
     requiredRole: ["admin", "teacher"],
   },
   {
     path: "/profile",
-    element: <WithDashboardLayout element={<UserProfile />} />,
+    element: <WithDashboardLayout><UserProfile /></WithDashboardLayout>,
     requiredRole: ["admin", "teacher", "student", "parent"],
   },
 ];
