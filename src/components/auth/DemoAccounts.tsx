@@ -1,11 +1,14 @@
 
 import { Button } from "@/components/ui/button";
 import { TermsAgreement } from "./TermsAgreement";
+import { toast } from "sonner";
+import { ErrorLoggingService } from "@/services/ErrorLoggingService";
 
 interface DemoAccount {
   role: string;
   name: string;
   email: string;
+  description: string;
 }
 
 interface DemoAccountsProps {
@@ -28,11 +31,60 @@ export const DemoAccounts = ({
   handleSubmit,
 }: DemoAccountsProps) => {
   const demoAccounts: DemoAccount[] = [
-    { role: "student", name: "Student Demo", email: "alex@school.edu" },
-    { role: "teacher", name: "Teacher Demo", email: "rodriguez@school.edu" },
-    { role: "admin", name: "Admin Demo", email: "wilson@district.edu" },
-    { role: "parent", name: "Parent Demo", email: "sarah@family.com" },
+    { 
+      role: "student", 
+      name: "Student Demo", 
+      email: "alex@school.edu",
+      description: "Access student dashboard, mood tracking, and SEL resources"
+    },
+    { 
+      role: "teacher", 
+      name: "Teacher Demo", 
+      email: "rodriguez@school.edu",
+      description: "View student data, assign interventions, and track progress"
+    },
+    { 
+      role: "admin", 
+      name: "Admin Demo", 
+      email: "wilson@district.edu",
+      description: "Manage school settings, users, and access analytics"
+    },
+    { 
+      role: "parent", 
+      name: "Parent Demo", 
+      email: "sarah@family.com",
+      description: "Monitor child activities, wellness, and communicate with staff"
+    },
   ];
+
+  const handleAccountSelect = (role: string) => {
+    try {
+      presetLogin(role);
+      toast.info(`${role.charAt(0).toUpperCase() + role.slice(1)} demo account selected`);
+    } catch (error) {
+      console.error("Error selecting demo account:", error);
+      ErrorLoggingService.logError({
+        action: "demo_account_selection",
+        error_message: `Failed to select ${role} demo account: ${error instanceof Error ? error.message : String(error)}`,
+        profile_type: role
+      });
+      toast.error(`Could not load ${role} demo account`);
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    try {
+      handleSubmit(e);
+    } catch (error) {
+      console.error("Error in form submission:", error);
+      ErrorLoggingService.logError({
+        action: "demo_login_submit",
+        error_message: `Demo login form submission failed: ${error instanceof Error ? error.message : String(error)}`,
+        profile_type: email.includes("@") ? email.split("@")[0] : "unknown"
+      });
+      toast.error("Login failed. Please try again.");
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -40,20 +92,21 @@ export const DemoAccounts = ({
         {demoAccounts.map((account) => (
           <Button 
             key={account.role}
-            onClick={() => presetLogin(account.role)}
+            onClick={() => handleAccountSelect(account.role)}
             variant="outline" 
             className="justify-start hover:bg-primary-50 border-primary-100 w-full"
+            aria-label={`Select ${account.name} account`}
           >
-            <div className="flex items-center">
-              <div className="mr-3 h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                <span className="text-sm font-medium text-primary-600">
+            <div className="flex items-center w-full">
+              <div className="mr-3 h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                <span className="text-sm font-medium text-emerald-600">
                   {account.name[0]}
                 </span>
               </div>
-              <div className="text-left">
+              <div className="text-left flex-1">
                 <p className="font-medium">{account.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {account.role.charAt(0).toUpperCase() + account.role.slice(1)} Account
+                  {account.description}
                 </p>
               </div>
             </div>
@@ -69,11 +122,18 @@ export const DemoAccounts = ({
       
       <Button 
         className="w-full"
-        disabled={!email || !password || !agreedToTerms}
-        onClick={handleSubmit}
+        disabled={!email || !password || !agreedToTerms || isSubmitting}
+        onClick={handleFormSubmit}
+        aria-busy={isSubmitting}
       >
         {isSubmitting ? "Logging in..." : "Log in with Selected Account"}
       </Button>
+
+      {email && !password && (
+        <p className="text-sm text-muted-foreground text-center">
+          For demo accounts, the password is always "password"
+        </p>
+      )}
     </div>
   );
 };
