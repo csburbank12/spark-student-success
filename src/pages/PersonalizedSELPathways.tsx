@@ -1,5 +1,5 @@
-
-import React, { useState } from "react";
+import React from "react";
+import { type SelLesson } from "@/components/sel-pathways/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +17,11 @@ import SELCompletedLessonsTable from "@/components/sel-pathways/SELCompletedLess
 import { SELLesson } from "@/hooks/useSELRecommendations";
 import { SelAssignment, SelProgress } from "@/components/sel-pathways/types";
 
-const PersonalizedSELPathways: React.FC = () => {
+interface Props {
+  lessons?: SelLesson[];
+}
+
+const PersonalizedSELPathways: React.FC<Props> = ({ lessons }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedLesson, setSelectedLesson] = useState<SELLesson | null>(null);
