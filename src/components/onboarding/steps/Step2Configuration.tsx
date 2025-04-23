@@ -79,46 +79,24 @@ export const Step2Configuration: React.FC<SchoolDataStepProps> = ({
         </div>
         
         <div className="space-y-3">
-          <Label htmlFor="primary-color">Primary Color</Label>
-          <div className="flex items-center gap-3">
-            <div 
-              className="w-10 h-10 rounded-full border" 
-              style={{backgroundColor: schoolData.primaryColor || '#0f766e'}}
-            />
-            <Input
-              id="primary-color"
-              type="color"
-              value={schoolData.primaryColor || '#0f766e'}
-              onChange={(e) => updateSchoolData({ primaryColor: e.target.value })}
-              className="w-20 h-10 p-1"
-            />
-            <span className="text-sm text-muted-foreground">
-              {schoolData.primaryColor || '#0f766e'}
-            </span>
-          </div>
+          <ColorPicker
+            id="primary-color"
+            label="Primary Color"
+            value={schoolData.primaryColor || '#0f766e'}
+            onChange={(e) => updateSchoolData({ primaryColor: e.target.value })}
+          />
           <p className="text-xs text-muted-foreground">
             This color will be used for primary buttons and accents throughout the app.
           </p>
         </div>
         
         <div className="space-y-3">
-          <Label htmlFor="secondary-color">Secondary Color</Label>
-          <div className="flex items-center gap-3">
-            <div 
-              className="w-10 h-10 rounded-full border" 
-              style={{backgroundColor: schoolData.secondaryColor || '#6366f1'}}
-            />
-            <Input
-              id="secondary-color"
-              type="color"
-              value={schoolData.secondaryColor || '#6366f1'}
-              onChange={(e) => updateSchoolData({ secondaryColor: e.target.value })}
-              className="w-20 h-10 p-1"
-            />
-            <span className="text-sm text-muted-foreground">
-              {schoolData.secondaryColor || '#6366f1'}
-            </span>
-          </div>
+          <ColorPicker
+            id="secondary-color"
+            label="Secondary Color"
+            value={schoolData.secondaryColor || '#6366f1'}
+            onChange={(e) => updateSchoolData({ secondaryColor: e.target.value })}
+          />
           <p className="text-xs text-muted-foreground">
             This color will be used for secondary elements and highlights.
           </p>

@@ -1,14 +1,17 @@
 
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { TermsAgreement } from "./TermsAgreement";
 import { toast } from "sonner";
 import { ErrorLoggingService } from "@/services/ErrorLoggingService";
+import { UserRole } from "@/types/roles";
 
 interface DemoAccount {
   role: string;
   name: string;
   email: string;
   description: string;
+  iconClass: string;
 }
 
 interface DemoAccountsProps {
@@ -32,29 +35,40 @@ export const DemoAccounts = ({
 }: DemoAccountsProps) => {
   const demoAccounts: DemoAccount[] = [
     { 
-      role: "student", 
+      role: UserRole.student, 
       name: "Student Demo", 
-      email: "alex@school.edu",
-      description: "Access student dashboard, mood tracking, and SEL resources"
+      email: "jada@school.edu",
+      description: "Access student dashboard, mood tracking, and SEL resources",
+      iconClass: "bg-emerald-100 text-emerald-600"
     },
     { 
-      role: "teacher", 
+      role: UserRole.teacher, 
       name: "Teacher Demo", 
-      email: "rodriguez@school.edu",
-      description: "View student data, assign interventions, and track progress"
+      email: "nguyen@school.edu",
+      description: "View student data, assign interventions, and track progress",
+      iconClass: "bg-blue-100 text-blue-600"
     },
     { 
-      role: "admin", 
+      role: UserRole.admin, 
       name: "Admin Demo", 
-      email: "wilson@district.edu",
-      description: "Manage school settings, users, and access analytics"
+      email: "rodriguez@district.edu",
+      description: "Manage school settings, users, and access analytics",
+      iconClass: "bg-purple-100 text-purple-600"
     },
     { 
-      role: "parent", 
+      role: UserRole.parent, 
       name: "Parent Demo", 
       email: "sarah@family.com",
-      description: "Monitor child activities, wellness, and communicate with staff"
+      description: "Monitor child activities, wellness, and communicate with staff",
+      iconClass: "bg-amber-100 text-amber-600"
     },
+    { 
+      role: UserRole.staff, 
+      name: "Staff Demo", 
+      email: "chen@school.edu",
+      description: "Support student wellness, track interventions, access resources",
+      iconClass: "bg-indigo-100 text-indigo-600"
+    }
   ];
 
   const handleAccountSelect = (role: string) => {
@@ -94,12 +108,12 @@ export const DemoAccounts = ({
             key={account.role}
             onClick={() => handleAccountSelect(account.role)}
             variant="outline" 
-            className="justify-start hover:bg-primary-50 border-primary-100 w-full"
+            className="justify-start hover:bg-primary-50 border-primary-100 w-full transition-all"
             aria-label={`Select ${account.name} account`}
           >
             <div className="flex items-center w-full">
-              <div className="mr-3 h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                <span className="text-sm font-medium text-emerald-600">
+              <div className={`mr-3 h-10 w-10 rounded-full ${account.iconClass} flex items-center justify-center`}>
+                <span className="text-sm font-medium">
                   {account.name[0]}
                 </span>
               </div>
@@ -134,6 +148,9 @@ export const DemoAccounts = ({
           For demo accounts, the password is always "password"
         </p>
       )}
+      <p className="text-xs text-center text-muted-foreground">
+        All demo profiles are fully functional with realistic data
+      </p>
     </div>
   );
 };

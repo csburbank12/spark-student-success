@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSELRecommendations } from "@/hooks/useSELRecommendations";
 import { SelLesson } from "@/components/sel-pathways/types"; 
-import { ArrowRight, Play, BookOpen } from "lucide-react";
+import { ArrowRight, Play, BookOpen, Clock, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import SELLessonPlayer from "@/components/sel-pathways/SELLessonPlayer";
+import { toast } from "sonner";
 
 export function SELRecommendedSection() {
   const { user } = useAuth();
@@ -20,6 +21,11 @@ export function SELRecommendedSection() {
   
   const handleViewAllClick = () => {
     navigate("/sel-pathways");
+  };
+
+  const handleLessonSelect = (lesson: SelLesson) => {
+    setSelectedLesson(lesson);
+    toast.info(`Loading "${lesson.title}"...`);
   };
   
   if (isLoading) {
@@ -70,8 +76,16 @@ export function SELRecommendedSection() {
     return (
       <SELLessonPlayer 
         lesson={playerLesson}
-        onComplete={() => setSelectedLesson(null)}
-        onBack={() => setSelectedLesson(null)}
+        onComplete={() => {
+          setSelectedLesson(null);
+          toast.success("Lesson completed!", {
+            description: "Your progress has been saved"
+          });
+        }}
+        onBack={() => {
+          setSelectedLesson(null);
+          toast.info("Lesson exited");
+        }}
       />
     );
   }
@@ -104,7 +118,7 @@ export function SELRecommendedSection() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {recommendedLessons.slice(0, 3).map(lesson => (
-          <Card key={lesson.id} className="overflow-hidden">
+          <Card key={lesson.id} className="overflow-hidden hover:shadow-md transition-shadow">
             <div className="relative h-32 bg-gradient-to-r from-indigo-500 to-purple-500">
               <div className="absolute inset-0 flex items-center justify-center">
                 <Badge variant="outline" className="bg-white/90 text-sm">
@@ -117,7 +131,8 @@ export function SELRecommendedSection() {
                 <CardTitle className="text-lg">{lesson.title}</CardTitle>
                 <Badge variant="secondary">{lesson.competency_area}</Badge>
               </div>
-              <CardDescription>
+              <CardDescription className="flex items-center">
+                <Clock className="h-3 w-3 mr-1" />
                 {lesson.estimated_duration || 5} min activity
               </CardDescription>
             </CardHeader>
@@ -125,11 +140,17 @@ export function SELRecommendedSection() {
               <p className="text-sm text-muted-foreground line-clamp-2">
                 {lesson.description}
               </p>
+              <div className="flex items-center mt-2">
+                <Award className="h-3 w-3 text-amber-500 mr-1" />
+                <span className="text-xs text-muted-foreground">
+                  {lesson.difficulty || "Standard"} difficulty
+                </span>
+              </div>
             </CardContent>
             <CardFooter>
               <Button 
                 className="w-full" 
-                onClick={() => setSelectedLesson(lesson)}
+                onClick={() => handleLessonSelect(lesson)}
               >
                 <Play className="mr-2 h-4 w-4" /> Start Now
               </Button>
