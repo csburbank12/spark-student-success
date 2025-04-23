@@ -7,6 +7,7 @@ import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
 import SystemSettings from "@/pages/admin/SystemSettings";
 import UserManagement from "@/pages/admin/UserManagement";
 import SchoolManagement from "@/pages/admin/SchoolManagement";
+import SchoolOnboarding from "@/pages/admin/SchoolOnboarding";
 import DataAnalytics from "@/pages/admin/DataAnalytics";
 
 // Admin-specific routes
@@ -48,6 +49,14 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <SchoolManagement />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/school-onboarding",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <SchoolOnboarding />
       </ProtectedRoute>
     ),
   },

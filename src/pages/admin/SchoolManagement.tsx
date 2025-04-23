@@ -1,5 +1,5 @@
-
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,10 +59,12 @@ const SchoolManagement = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-heading font-bold">School Management</h2>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add School
-        </Button>
+        <Link to="/school-onboarding">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Add School
+          </Button>
+        </Link>
       </div>
       
       <div className="grid md:grid-cols-3 gap-4">
@@ -183,7 +185,9 @@ const SchoolManagement = () => {
           </div>
           
           <div className="flex justify-end">
-            <Button>View Detailed Guide</Button>
+            <Link to="/school-onboarding">
+              <Button>Start Onboarding Process</Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
