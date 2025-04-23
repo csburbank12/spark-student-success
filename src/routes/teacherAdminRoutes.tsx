@@ -1,4 +1,3 @@
-
 import React from "react";
 import StudentManagement from "@/pages/StudentManagement";
 import WellLensDashboard from "@/pages/WellLensDashboard";
@@ -17,12 +16,11 @@ import DashboardLayout from "@/routes/DashboardManager";
 import TrustedAdultDashboard from "@/pages/TrustedAdultDashboard";
 import { RouteObject } from "react-router-dom";
 
-// Define proper props interface for WithDashboardLayout
+// Updated WithDashboardLayout component with explicit props
 interface WithDashboardLayoutProps {
-  element: React.ReactNode;
+  element: React.ReactElement;
 }
 
-// Fixed WithDashboardLayout component
 const WithDashboardLayout: React.FC<WithDashboardLayoutProps> = ({ element }) => {
   return <DashboardLayout>{element}</DashboardLayout>;
 };
