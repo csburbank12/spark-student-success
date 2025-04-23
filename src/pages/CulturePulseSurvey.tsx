@@ -91,7 +91,7 @@ const CulturePulseSurvey: React.FC = () => {
         <CardHeader>
           <CardTitle>Culture Pulse Tracker</CardTitle>
           <div className="text-muted-foreground text-sm">
-            Weekly check-in on mood, safety, and belonging ({user?.role === "staff" ? "Staff" : "Student"})
+            Weekly check-in on mood, safety, and belonging ({user?.role === "teacher" || user?.role === "admin" ? "Staff" : "Student"})
           </div>
         </CardHeader>
         <CardContent>
