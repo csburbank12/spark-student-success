@@ -24,12 +24,15 @@ const StaffAssistMode: React.FC = () => {
     queryKey: ["staff-students"],
     queryFn: async () => {
       if (!user?.id || !isStaffOrAdmin) return [] as StudentProfile[];
+      
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("role", "student");
+        
       if (error) throw error;
-      return (data as StudentProfile[]) || [];
+      
+      return (data || []) as StudentProfile[];
     },
     enabled: !!user?.id && isStaffOrAdmin,
   });
@@ -39,13 +42,16 @@ const StaffAssistMode: React.FC = () => {
     queryKey: ["behavior-logs", user?.id],
     queryFn: async () => {
       if (!user?.id || !isStaffOrAdmin) return [] as BehaviorLog[];
+      
       const { data, error } = await supabase
         .from("behavior_logs")
         .select("*")
         .eq("staff_id", user.id)
         .order("created_at", { ascending: false });
+        
       if (error) throw error;
-      return (data as BehaviorLog[]) || [];
+      
+      return (data || []) as BehaviorLog[];
     },
     enabled: !!user?.id && isStaffOrAdmin,
   });
