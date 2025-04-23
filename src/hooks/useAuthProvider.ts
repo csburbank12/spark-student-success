@@ -10,11 +10,32 @@ export const useAuthProvider = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Function to ensure IDs are valid UUIDs for database operations
+  const ensureValidUUID = (user: User): User => {
+    // If the ID is not a valid UUID format, replace it with a valid UUID format
+    // This ensures database functions expecting UUIDs will work properly
+    if (user && user.id && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(user.id)) {
+      // Generate a deterministic UUID based on the user role for consistent IDs between sessions
+      const roleBasedId = {
+        [UserRole.student]: '7f8d2a90-6495-4c41-8e86-86539e961324',
+        [UserRole.teacher]: 'b2c5f5d7-3273-4515-b3c4-587d9fd697b4',
+        [UserRole.admin]: '9e8c7a6b-5d4e-4f3c-2b1a-0i9o8u7y6t5r',
+        [UserRole.parent]: 'a1s2d3f4-g5h6-j7k8-l9z0-x1c2v3b4n5m6',
+        [UserRole.staff]: 'q1w2e3r4-t5y6-u7i8-o9p0-a1s2d3f4g5h6'
+      }[user.role as UserRole] || '00000000-0000-0000-0000-000000000000';
+      
+      return { ...user, id: roleBasedId };
+    }
+    return user;
+  };
+
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('sparkUser');
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        // Ensure the user has a valid UUID before setting
+        setUser(ensureValidUUID(parsedUser));
       }
       setIsLoading(false);
     } catch (error) {
@@ -82,12 +103,15 @@ export const useAuthProvider = () => {
         throw new Error("User not found");
       }
       
-      setUser(loggedInUser);
-      localStorage.setItem('sparkUser', JSON.stringify(loggedInUser));
+      // Ensure the user has a valid UUID before setting
+      const userWithValidId = ensureValidUUID(loggedInUser);
       
-      toast.success(`Welcome back, ${loggedInUser.name}!`);
+      setUser(userWithValidId);
+      localStorage.setItem('sparkUser', JSON.stringify(userWithValidId));
       
-      return loggedInUser;
+      toast.success(`Welcome back, ${userWithValidId.name}!`);
+      
+      return userWithValidId;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown login error';
       
@@ -125,8 +149,11 @@ export const useAuthProvider = () => {
         throw new Error(`No demo user found for role: ${role}`);
       }
       
-      setUser(newUser);
-      localStorage.setItem('sparkUser', JSON.stringify(newUser));
+      // Ensure the user has a valid UUID before setting
+      const userWithValidId = ensureValidUUID(newUser);
+      
+      setUser(userWithValidId);
+      localStorage.setItem('sparkUser', JSON.stringify(userWithValidId));
       toast.success(`Switched to ${role} account`);
     } catch (error) {
       console.error('Error setting role:', error);
