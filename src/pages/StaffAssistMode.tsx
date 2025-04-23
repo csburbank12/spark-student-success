@@ -32,8 +32,8 @@ const StaffAssistMode: React.FC = () => {
         
       if (error) throw error;
       
-      // Using explicit type annotation to break type recursion
-      return (data || []) as StudentProfile[];
+      // Type assertion to explicitly tell TypeScript what we're returning
+      return (data || []) as unknown as StudentProfile[];
     },
     enabled: !!user?.id && isStaffOrAdmin,
   });
@@ -52,8 +52,8 @@ const StaffAssistMode: React.FC = () => {
         
       if (error) throw error;
       
-      // Using explicit type annotation to break type recursion
-      return (data || []) as BehaviorLog[];
+      // Type assertion to explicitly tell TypeScript what we're returning
+      return (data || []) as unknown as BehaviorLog[];
     },
     enabled: !!user?.id && isStaffOrAdmin,
   });
