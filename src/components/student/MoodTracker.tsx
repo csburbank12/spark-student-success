@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -36,6 +35,13 @@ export const MoodTracker = ({ onSubmit }: MoodTrackerProps) => {
     setMoodSelection({ type: activeSelector, value, tag });
   };
 
+  // Helper to map tags to valid mood type
+  const validMoodTypes = ["happy", "good", "okay", "sad", "stressed"] as const;
+  function tagToMoodType(tag: string): "happy" | "good" | "okay" | "sad" | "stressed" {
+    // Fallback to "okay" if not found
+    return validMoodTypes.includes(tag as any) ? (tag as "happy" | "good" | "okay" | "sad" | "stressed") : "okay";
+  }
+
   const handleSubmit = async () => {
     if (!moodSelection) {
       toast.error("Please select your mood before submitting");
@@ -45,11 +51,10 @@ export const MoodTracker = ({ onSubmit }: MoodTrackerProps) => {
       toast.error("User not authenticated");
       return;
     }
-    // Tagging for analytics: mood type, value, and style
     addMoodCheckIn.mutate(
       {
         userId: user.id,
-        mood: moodSelection.tag,
+        mood: tagToMoodType(moodSelection.tag),
         energyLevel,
         notes,
         expressionType: moodSelection.type,

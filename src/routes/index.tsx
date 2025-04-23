@@ -1,4 +1,3 @@
-
 import type { User } from "@/types";
 import generalRoutes from "./generalRoutes";
 import studentRoutes from "./studentRoutes";
@@ -15,7 +14,8 @@ export type RouteConfig = RouteObject & {
 };
 
 // Combine and export all routes as a single array for <Routes>
-export const routes: RouteConfig[] = [
+import { RouteObject } from "react-router-dom";
+export const routes: RouteObject[] = [
   ...generalRoutes,
   ...studentRoutes,
   ...teacherAdminRoutes,

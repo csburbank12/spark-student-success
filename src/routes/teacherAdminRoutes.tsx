@@ -1,6 +1,6 @@
-
 import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const TeacherDashboard = lazy(() => import("@/pages/TeacherDashboard"));
 const TeacherDashboardEnhanced = lazy(() => import("@/pages/TeacherDashboardEnhanced"));
@@ -12,6 +12,8 @@ const BehaviorPrediction = lazy(() => import("@/pages/BehaviorPrediction"));
 const CheckIn = lazy(() => import("@/pages/CheckIn"));
 const TeacherProfile = lazy(() => import("@/pages/profile/TeacherProfile"));
 const EmotionAwareScheduling = lazy(() => import("@/pages/EmotionAwareScheduling"));
+
+const dummyTeacherUser = { id: "dummy", role: "teacher" } as any; // For demo only, adjust as needed.
 
 export const teacherAdminRoutes: RouteObject[] = [
   {
@@ -48,7 +50,7 @@ export const teacherAdminRoutes: RouteObject[] = [
   },
   {
     path: "/profile/teacher",
-    element: <TeacherProfile />,
+    element: <TeacherProfile user={dummyTeacherUser} />,
   },
   {
     path: "/emotion-aware-scheduling",
