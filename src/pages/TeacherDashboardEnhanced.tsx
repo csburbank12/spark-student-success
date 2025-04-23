@@ -82,10 +82,11 @@ const TeacherDashboardEnhanced = () => {
     // Placeholder for schedule check-in logic
   };
 
+  // Wrap the conditional rendering in a React Fragment to ensure a single root element
   return (
     <div className="space-y-6">
       {!selectedStudent ? (
-        <>
+        <React.Fragment>
           <TeacherDashboardHeader onScheduleCheckIn={handleScheduleCheckIn} />
           <TeacherStatCardsRow />
           <TeacherStudentsSection
@@ -98,7 +99,7 @@ const TeacherDashboardEnhanced = () => {
             students={students}
             onStudentClick={handleStudentClick}
           />
-        </>
+        </React.Fragment>
       ) : (
         <StudentInterventionView
           studentId={selectedStudent}
