@@ -10,6 +10,24 @@ import StaffAssistForm from "@/components/staff-assist/StaffAssistForm";
 import InterventionHistory from "@/components/staff-assist/InterventionHistory";
 import { StudentProfile, BehaviorLog } from "@/components/staff-assist/types";
 
+// Define strictly typed fetch function interfaces
+interface StudentData {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+}
+
+interface BehaviorLogData {
+  id: string;
+  staff_id: string;
+  student_id: string | null;
+  situation_type: string;
+  intervention_used: string;
+  notes: string | null;
+  effectiveness_rating: number | null;
+  created_at: string;
+}
+
 const StaffAssistMode: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -20,63 +38,71 @@ const StaffAssistMode: React.FC = () => {
     user?.role === UserRole.staff.toString() || user?.role === UserRole.admin.toString();
 
   // Fetch all students for staff
-  const fetchStudents = async (): Promise<StudentProfile[]> => {
-    if (!user?.id || !isStaffOrAdmin) return [];
-    
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("id, first_name, last_name")
-      .eq("role", "student");
-      
-    if (error) throw error;
-    
-    return (data || []).map(profile => ({
-      id: profile.id,
-      first_name: profile.first_name || '',
-      last_name: profile.last_name || '',
-    }));
-  };
-  
   const { 
     data: students = [], 
     isLoading: isLoadingStudents 
   } = useQuery({
     queryKey: ["staff-students"],
-    queryFn: fetchStudents,
+    queryFn: async (): Promise<StudentProfile[]> => {
+      if (!user?.id || !isStaffOrAdmin) return [];
+      
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("id, first_name, last_name")
+          .eq("role", "student");
+          
+        if (error) throw error;
+        
+        // Explicitly map the data to our type
+        return (data || []).map((item: StudentData) => ({
+          id: item.id,
+          first_name: item.first_name || '',
+          last_name: item.last_name || '',
+        }));
+      } catch (error) {
+        console.error("Error fetching students:", error);
+        return [];
+      }
+    },
     enabled: !!user?.id && isStaffOrAdmin,
   });
-
-  // Fetch all behavior logs by staff user
-  const fetchBehaviorLogs = async (): Promise<BehaviorLog[]> => {
-    if (!user?.id || !isStaffOrAdmin) return [];
-    
-    const { data, error } = await supabase
-      .from("behavior_logs")
-      .select("*")
-      .eq("staff_id", user.id)
-      .order("created_at", { ascending: false });
-      
-    if (error) throw error;
-    
-    return (data || []).map(log => ({
-      id: log.id,
-      staff_id: log.staff_id,
-      student_id: log.student_id,
-      situation_type: log.situation_type,
-      intervention_used: log.intervention_used,
-      notes: log.notes || '',
-      effectiveness_rating: log.effectiveness_rating,
-      created_at: log.created_at
-    }));
-  };
   
+  // Fetch all behavior logs by staff user
   const { 
     data: behaviorLogs = [], 
     refetch: refetchLogs, 
     isLoading: isLoadingLogs 
   } = useQuery({
     queryKey: ["behavior-logs", user?.id],
-    queryFn: fetchBehaviorLogs,
+    queryFn: async (): Promise<BehaviorLog[]> => {
+      if (!user?.id || !isStaffOrAdmin) return [];
+      
+      try {
+        const { data, error } = await supabase
+          .from("behavior_logs")
+          .select("id, staff_id, student_id, situation_type, intervention_used, notes, effectiveness_rating, created_at")
+          .eq("staff_id", user.id)
+          .order("created_at", { ascending: false });
+          
+        if (error) throw error;
+        
+        // Explicitly map the data to our type
+        return (data || []).map((item: BehaviorLogData) => ({
+          id: item.id,
+          staff_id: item.staff_id,
+          student_id: item.student_id,
+          situation_type: item.situation_type,
+          intervention_used: item.intervention_used,
+          notes: item.notes || '',
+          effectiveness_rating: item.effectiveness_rating,
+          created_at: item.created_at
+        }));
+      } catch (error) {
+        console.error("Error fetching behavior logs:", error);
+        return [];
+      }
+    },
     enabled: !!user?.id && isStaffOrAdmin,
   });
 
