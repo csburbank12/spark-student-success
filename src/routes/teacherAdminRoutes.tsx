@@ -91,7 +91,15 @@ export const teacherAdminRoutes: RouteObject[] = [
   {
     path: "/profile/teacher",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+      <ProtectedRoute requiredRole={[UserRole.teacher]}>
+        <TeacherProfileWrapper />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/profile/staff",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.staff]}>
         <TeacherProfileWrapper />
       </ProtectedRoute>
     ),
@@ -101,6 +109,28 @@ export const teacherAdminRoutes: RouteObject[] = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
         <EmotionAwareScheduling />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/professional-development",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff]}>
+        <div className="container mx-auto py-6">
+          <h1 className="text-3xl font-bold mb-6">Professional Development</h1>
+          <p className="text-xl">Coming soon: Professional development courses for educators and staff.</p>
+        </div>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/messages",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.staff, UserRole.parent]}>
+        <div className="container mx-auto py-6">
+          <h1 className="text-3xl font-bold mb-6">Messages</h1>
+          <p className="text-xl">Coming soon: Secure messaging with students, parents, and colleagues.</p>
+        </div>
       </ProtectedRoute>
     ),
   },

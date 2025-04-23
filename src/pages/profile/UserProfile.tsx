@@ -14,7 +14,9 @@ import StudentProfile from "./StudentProfile";
 import TeacherProfile from "./TeacherProfile";
 import AdminProfile from "./AdminProfile";
 import ParentProfile from "./ParentProfile";
+import StaffProfile from "./StaffProfile";
 import { Loader } from "@/components/ui/loader";
+import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
   const { user, isLoading } = useAuth();
@@ -23,6 +25,7 @@ const UserProfile = () => {
     name: user?.name || "",
     email: user?.email || "",
   });
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -40,6 +43,7 @@ const UserProfile = () => {
           <p className="text-muted-foreground mb-4">
             You need to be logged in to view your profile.
           </p>
+          <Button onClick={() => navigate("/login")}>Go to Login</Button>
         </CardContent>
       </Card>
     );
@@ -76,12 +80,13 @@ const UserProfile = () => {
       case UserRole.student:
         return <StudentProfile user={user} />;
       case UserRole.teacher:
-      case UserRole.staff:
         return <TeacherProfile user={user} />;
       case UserRole.admin:
         return <AdminProfile user={user} />;
       case UserRole.parent:
         return <ParentProfile user={user} />;
+      case UserRole.staff:
+        return <StaffProfile user={user} />;
       default:
         return <div>Unknown role: {user?.role}</div>;
     }
@@ -168,6 +173,15 @@ const UserProfile = () => {
                 </div>
                 <Switch defaultChecked />
               </div>
+            </div>
+            
+            <div className="space-y-2 pt-4 border-t">
+              <Button variant="outline" className="w-full" onClick={() => navigate("/settings")}>
+                Account Settings
+              </Button>
+              <Button variant="outline" className="w-full" onClick={() => navigate("/help")}>
+                Help & Support
+              </Button>
             </div>
           </CardContent>
         </Card>
