@@ -1,9 +1,9 @@
 
-// Fixed for new trusted_adults schema
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { ErrorLoggingService } from '@/services/ErrorLoggingService';
 
 export interface TrustedAdult {
   id: string;
@@ -28,7 +28,6 @@ export function useTrustedAdults(studentId: string) {
       return;
     }
     try {
-      // Query trusted_adults join staff_members and profiles
       const { data, error } = await supabase
         .from('trusted_adults')
         .select(`
@@ -50,7 +49,6 @@ export function useTrustedAdults(studentId: string) {
 
       if (error) throw error;
 
-      // Build trusted adult objects with avatar/profile support
       const formattedData = (data || []).map((item: any) => ({
         id: item.id,
         staff_id: item.staff_id,
@@ -64,9 +62,14 @@ export function useTrustedAdults(studentId: string) {
       setTrustedAdults(formattedData);
     } catch (error) {
       console.error('Error fetching trusted adults:', error);
+      await ErrorLoggingService.logError({
+        action: 'fetch_trusted_adults',
+        error_message: error.message,
+        profile_type: 'student'
+      });
       toast({
-        title: "Error",
-        description: "Could not load trusted adults. Please try again later.",
+        title: "Could not load trusted adults",
+        description: "Please try again later. If the problem persists, contact support.",
         variant: "destructive",
       });
     }
@@ -86,19 +89,25 @@ export function useTrustedAdults(studentId: string) {
         .select();
 
       if (error) throw error;
-      fetchTrustedAdults();
+      
+      await fetchTrustedAdults();
 
       toast({
         title: "Trusted Adult Added",
-        description: "This staff member has been added to your trusted adults.",
+        description: "You can now reach out to this staff member when you need support.",
       });
 
       return data;
     } catch (error) {
       console.error('Error adding trusted adult:', error);
+      await ErrorLoggingService.logError({
+        action: 'add_trusted_adult',
+        error_message: error.message,
+        profile_type: 'student'
+      });
       toast({
-        title: "Error",
-        description: "Could not add trusted adult. Please try again.",
+        title: "Could not add trusted adult",
+        description: "Please try again. If the problem persists, contact support.",
         variant: "destructive",
       });
     }
@@ -112,16 +121,23 @@ export function useTrustedAdults(studentId: string) {
         .eq('id', trustedAdultId);
 
       if (error) throw error;
+      
       setTrustedAdults((prev) => prev.filter(adult => adult.id !== trustedAdultId));
+      
       toast({
         title: "Trusted Adult Removed",
-        description: "This staff member has been removed from your trusted adults.",
+        description: "The staff member has been removed from your trusted adults.",
       });
     } catch (error) {
       console.error('Error removing trusted adult:', error);
+      await ErrorLoggingService.logError({
+        action: 'remove_trusted_adult',
+        error_message: error.message,
+        profile_type: 'student'
+      });
       toast({
-        title: "Error",
-        description: "Could not remove trusted adult. Please try again.",
+        title: "Could not remove trusted adult",
+        description: "Please try again. If the problem persists, contact support.",
         variant: "destructive",
       });
     }
@@ -129,7 +145,6 @@ export function useTrustedAdults(studentId: string) {
 
   useEffect(() => {
     fetchTrustedAdults();
-    // eslint-disable-next-line
   }, [studentId]);
 
   return {

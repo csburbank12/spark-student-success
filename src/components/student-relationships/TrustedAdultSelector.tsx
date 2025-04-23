@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, UserCheck, UserPlus, X } from "lucide-react";
+import { Search, UserPlus, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useTrustedAdults, TrustedAdult } from "@/hooks/useTrustedAdults";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader } from "@/components/ui/loader";
 
 interface StaffMember {
   id: string;
@@ -20,18 +21,17 @@ interface StaffMember {
 interface TrustedAdultSelectorProps {
   studentId: string;
   maxSelections?: number;
-  currentSelections?: StaffMember[];
   onSelectionsChange?: (selections: StaffMember[]) => void;
 }
 
 const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
   studentId,
   maxSelections = 3,
-  currentSelections = [],
   onSelectionsChange
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [staffMembers, setStaffMembers] = useState<StaffMember[]>([]);
+  const [isLoadingStaff, setIsLoadingStaff] = useState(true);
   const { toast } = useToast();
   const { 
     trustedAdults, 
@@ -39,14 +39,6 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
     addTrustedAdult, 
     removeTrustedAdult 
   } = useTrustedAdults(studentId);
-
-  const selectedStaff = trustedAdults.map(adult => ({
-    id: adult.staff_id,
-    name: adult.staff_name,
-    role: adult.staff_role,
-    trustedAdultId: adult.id,
-    avatarUrl: adult.avatarUrl
-  }));
 
   useEffect(() => {
     const fetchStaffMembers = async () => {
@@ -75,6 +67,7 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
         }));
 
         setStaffMembers(formattedStaff);
+        setIsLoadingStaff(false);
       } catch (error) {
         console.error('Error fetching staff members:', error);
         toast({
@@ -90,20 +83,15 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
           { id: "s5", name: "Dr. Michael Brown", role: "School Psychologist", avatarUrl: "" },
           { id: "s6", name: "Mrs. Jennifer Lee", role: "Vice Principal", avatarUrl: "" },
         ]);
+        setIsLoadingStaff(false);
       }
     };
 
     fetchStaffMembers();
   }, [toast]);
 
-  const filteredStaff = staffMembers.filter(staff =>
-    staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    staff.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (staff.department && staff.department.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-
   const handleSelectStaff = async (staffMember: StaffMember) => {
-    if (selectedStaff.length >= maxSelections) {
+    if (trustedAdults.length >= maxSelections) {
       toast({
         title: "Maximum selections reached",
         description: `You can only select up to ${maxSelections} trusted adults.`,
@@ -112,14 +100,19 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
       return;
     }
 
-    if (selectedStaff.some(staff => staff.id === staffMember.id)) {
+    if (trustedAdults.some(staff => staff.staff_id === staffMember.id)) {
       return;
     }
 
     await addTrustedAdult(staffMember.id);
 
     if (onSelectionsChange) {
-      onSelectionsChange([...selectedStaff, staffMember]);
+      onSelectionsChange([...trustedAdults.map(ta => ({
+        id: ta.staff_id,
+        name: ta.staff_name,
+        role: ta.staff_role,
+        avatarUrl: ta.avatarUrl
+      })), staffMember]);
     }
   };
 
@@ -129,7 +122,12 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
       await removeTrustedAdult(trustedAdultToRemove.id);
     }
     if (onSelectionsChange) {
-      onSelectionsChange(selectedStaff.filter(s => s.id !== staff.id));
+      onSelectionsChange(trustedAdults.filter(s => s.staff_id !== staff.id).map(ta => ({
+        id: ta.staff_id,
+        name: ta.staff_name,
+        role: ta.staff_role,
+        avatarUrl: ta.avatarUrl
+      })));
     }
   };
 
@@ -139,6 +137,11 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
         <CardTitle>Choose Your Trusted Adults</CardTitle>
         <CardDescription>
           Select up to {maxSelections} staff members you feel comfortable talking to when you need support.
+          {trustedAdults.length > 0 && (
+            <div className="mt-2 text-sm">
+              You have selected {trustedAdults.length} of {maxSelections} trusted adults.
+            </div>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -152,80 +155,94 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          {selectedStaff.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Your trusted adults:</h4>
-              <div className="flex flex-wrap gap-2">
-                {selectedStaff.map(staff => (
-                  <Badge 
-                    key={staff.id} 
-                    variant="secondary"
-                    className="flex items-center gap-1 pl-1 pr-2 py-1"
-                  >
-                    <Avatar className="h-6 w-6">
-                      {staff.avatarUrl ? (
-                        <AvatarImage src={staff.avatarUrl} />
-                      ) : (
-                        <AvatarFallback>{staff.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                      )}
-                    </Avatar>
-                    <span>{staff.name}</span>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-4 w-4 ml-1 hover:bg-muted rounded-full"
-                      onClick={() => handleRemoveStaff(staff)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
 
-          {isLoading ? (
-            <div className="text-center py-8 text-muted-foreground">
-              Loading staff members...
+          {(isLoading || isLoadingStaff) ? (
+            <div className="flex justify-center py-8">
+              <Loader size="lg" />
             </div>
           ) : (
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Available staff:</h4>
-              <div className="grid gap-2">
-                {filteredStaff
-                  .filter(staff => !selectedStaff.some(s => s.id === staff.id))
-                  .map(staff => (
-                    <div 
-                      key={staff.id}
-                      className="flex items-center justify-between p-3 border rounded-md hover:bg-accent transition-colors cursor-pointer"
-                      onClick={() => handleSelectStaff(staff)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Avatar>
+            <>
+              {trustedAdults.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Your trusted adults:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {trustedAdults.map(staff => (
+                      <Badge 
+                        key={staff.id} 
+                        variant="secondary"
+                        className="flex items-center gap-1 pl-1 pr-2 py-1"
+                      >
+                        <Avatar className="h-6 w-6">
                           {staff.avatarUrl ? (
                             <AvatarImage src={staff.avatarUrl} />
                           ) : (
-                            <AvatarFallback>{staff.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                            <AvatarFallback>{staff.staff_name.substring(0, 2).toUpperCase()}</AvatarFallback>
                           )}
                         </Avatar>
-                        <div>
-                          <h4 className="text-sm font-medium">{staff.name}</h4>
-                          <p className="text-xs text-muted-foreground">
-                            {staff.role} {staff.department && `(${staff.department})`}
-                          </p>
+                        <span className="text-sm">{staff.staff_name}</span>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-4 w-4 ml-1 hover:bg-muted rounded-full"
+                          onClick={() => handleRemoveStaff({ id: staff.staff_id })}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium">Available staff:</h4>
+                <div className="grid gap-2">
+                  {staffMembers
+                    .filter(staff => !trustedAdults.some(s => s.staff_id === staff.id))
+                    .filter(staff => 
+                      staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      staff.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      (staff.department && staff.department.toLowerCase().includes(searchQuery.toLowerCase()))
+                    )
+                    .map(staff => (
+                      <div 
+                        key={staff.id}
+                        className="flex items-center justify-between p-3 border rounded-md hover:bg-accent transition-colors cursor-pointer"
+                        onClick={() => handleSelectStaff(staff)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            {staff.avatarUrl ? (
+                              <AvatarImage src={staff.avatarUrl} />
+                            ) : (
+                              <AvatarFallback>{staff.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                            )}
+                          </Avatar>
+                          <div>
+                            <h4 className="text-sm font-medium">{staff.name}</h4>
+                            <p className="text-xs text-muted-foreground">
+                              {staff.role} {staff.department && `(${staff.department})`}
+                            </p>
+                          </div>
                         </div>
+                        <Button size="sm" variant="ghost">
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Select
+                        </Button>
                       </div>
-                      <Button size="sm" variant="ghost">
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Select
-                      </Button>
-                    </div>
-                  ))}
-                {filteredStaff.length === 0 && (
-                  <p className="text-center py-4 text-muted-foreground">No staff members found</p>
-                )}
+                    ))}
+                  {staffMembers
+                    .filter(staff => !trustedAdults.some(s => s.staff_id === staff.id))
+                    .filter(staff => 
+                      staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      staff.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      (staff.department && staff.department.toLowerCase().includes(searchQuery.toLowerCase()))
+                    ).length === 0 && (
+                    <p className="text-center py-4 text-muted-foreground">No staff members found</p>
+                  )}
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </CardContent>
