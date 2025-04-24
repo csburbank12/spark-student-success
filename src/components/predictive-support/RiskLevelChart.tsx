@@ -9,7 +9,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  TooltipProps
 } from "recharts";
 
 // Mock data for the risk chart
@@ -21,12 +20,6 @@ const data = [
   { name: 'Week 5', high: 5, medium: 6, low: 3 },
   { name: 'Week 6', high: 4, medium: 5, low: 4 },
 ];
-
-// Custom formatter for tooltip
-const CustomTooltipFormatter = (value: number, name: string) => {
-  const formattedName = name.charAt(0).toUpperCase() + name.slice(1) + " Risk";
-  return [value, formattedName];
-};
 
 const RiskLevelChart: React.FC = () => {
   return (

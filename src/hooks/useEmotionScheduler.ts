@@ -15,7 +15,7 @@ export interface EmotionAnalysis {
   recommendations: string[];
 }
 
-export const useEmotionScheduler = () => {
+export const useEmotionScheduler = (studentId?: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   

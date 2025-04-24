@@ -53,12 +53,12 @@ const EmotionAwareTeacherDashboard: React.FC<EmotionAwareTeacherDashboardProps> 
         <TabsContent value="student" className="space-y-6 pt-4">
           <div className="grid md:grid-cols-2 gap-6">
             <OptimalTimesCard
-              optimalTimes={emotionAnalysis?.optimalCheckInTimes}
-              stressPeriods={emotionAnalysis?.stressPeriods}
+              optimalTimes={emotionAnalysis?.optimalTimes}
+              stressPeriods={[]}
               isLoading={isLoading}
             />
             <MoodPatternsCard
-              moodPatterns={emotionAnalysis?.moodPatterns}
+              moodPatterns={emotionAnalysis?.patterns}
               isLoading={isLoading}
             />
           </div>
