@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, HelpCircle, Home, LogOut } from 'lucide-react';
@@ -6,6 +7,9 @@ import { useSidebar } from '@/components/ui/sidebar/sidebar-context';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { toast } from 'sonner';
+import SearchBar from './navbar/SearchBar';
+import NotificationMenu from './navbar/NotificationMenu';
+import UserMenu from './navbar/UserMenu';
 
 export const Navbar = () => {
   const { toggleSidebar } = useSidebar();
