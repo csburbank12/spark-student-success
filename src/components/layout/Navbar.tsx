@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, HelpCircle, Home } from 'lucide-react';
@@ -9,6 +8,7 @@ import SearchBar from './navbar/SearchBar';
 import NotificationMenu from './navbar/NotificationMenu';
 import UserMenu from './navbar/UserMenu';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Logo } from '@/components/branding/Logo';
 
 export const Navbar = () => {
   const { toggleSidebar } = useSidebar();
@@ -46,15 +46,7 @@ export const Navbar = () => {
       </Button>
       
       <div className="hidden md:flex md:flex-1 md:items-center md:gap-4">
-        <h1 className="text-xl font-heading font-semibold">{getPageTitle()}</h1>
-        {location.pathname !== '/dashboard' && (
-          <Button variant="ghost" size="sm" asChild className="ml-2">
-            <Link to="/dashboard">
-              <Home className="h-4 w-4 mr-1" />
-              Dashboard
-            </Link>
-          </Button>
-        )}
+        <Logo showTagline={false} />
       </div>
 
       <div className="flex items-center gap-4 ml-auto md:hidden">
