@@ -34,7 +34,7 @@ export function useAdminDatabaseTools() {
         toast({
           title: "Validation Issues Found",
           description: `${results.tables.filter(t => !t.valid).length} tables have issues that need attention.`,
-          variant: "destructive" // Changed from 'warning'
+          variant: "destructive"
         });
       } else {
         toast({
@@ -99,16 +99,76 @@ export function useAdminDatabaseTools() {
    */
   const getDatabaseHealth = async () => {
     try {
-      // We'll implement this with a more basic approach since the function might not exist yet
-      const { data, error } = await supabase.rpc('run_db_health_check');
+      // Use direct SQL query approach instead of RPC
+      // Get tables first
+      const { data: allTables, error: tablesError } = await supabase
+        .from('information_schema.tables')
+        .select('table_name')
+        .eq('table_schema', 'public');
       
-      if (error) {
-        // Fallback to a simple health check
-        const simpleHealth = await performSimpleHealthCheck();
-        return simpleHealth;
+      if (tablesError) {
+        throw tablesError;
       }
       
-      return data;
+      // Perform a simple health check and compile the results
+      const tableNames = allTables?.map(t => t.table_name) || [];
+      const healthData = {
+        check_time: new Date().toISOString(),
+        tables: tableNames,
+        tables_without_timestamps: [],
+        tables_without_primary_keys: [],
+        rls_status: {}
+      };
+      
+      // Check tables for timestamps
+      for (const tableName of tableNames) {
+        const { data: columns, error: columnsError } = await supabase
+          .from('information_schema.columns')
+          .select('column_name')
+          .eq('table_schema', 'public')
+          .eq('table_name', tableName);
+          
+        if (!columnsError && columns) {
+          const columnNames = columns.map(c => c.column_name);
+          const hasCreatedAt = columnNames.includes('created_at');
+          const hasUpdatedAt = columnNames.includes('updated_at');
+          
+          if (!hasCreatedAt || !hasUpdatedAt) {
+            healthData.tables_without_timestamps.push(tableName);
+          }
+          
+          // Check for primary keys
+          const { data: primaryKeys, error: pkError } = await supabase
+            .from('information_schema.table_constraints')
+            .select('constraint_name')
+            .eq('table_schema', 'public')
+            .eq('table_name', tableName)
+            .eq('constraint_type', 'PRIMARY KEY')
+            .maybeSingle();
+            
+          if (!pkError && !primaryKeys) {
+            healthData.tables_without_primary_keys.push(tableName);
+          }
+          
+          // Check RLS status
+          try {
+            const rlsCheck = await supabase
+              .from('pg_class')
+              .select('relrowsecurity')
+              .eq('relname', tableName)
+              .eq('relnamespace', 'public'::any)
+              .maybeSingle();
+              
+            if (!rlsCheck.error) {
+              (healthData.rls_status as any)[tableName] = !!rlsCheck.data?.relrowsecurity;
+            }
+          } catch (e) {
+            console.error(`Error checking RLS for ${tableName}:`, e);
+          }
+        }
+      }
+      
+      return healthData;
     } catch (error) {
       console.error('Error fetching database health:', error);
       toast({
@@ -118,35 +178,12 @@ export function useAdminDatabaseTools() {
       });
       
       // Return fallback data
-      return await performSimpleHealthCheck();
-    }
-  };
-  
-  /**
-   * Performs a simple health check if the full function is not available
-   */
-  const performSimpleHealthCheck = async () => {
-    try {
-      // Get tables without timestamps
-      const { data: tablesWithoutTimestamps, error: timestampError } = await supabase
-        .from('pg_tables')
-        .select('tablename')
-        .eq('schemaname', 'public');
-      
-      if (timestampError) throw timestampError;
-      
-      // Simple check structure
       return {
         check_time: new Date().toISOString(),
-        tables: tablesWithoutTimestamps?.map(t => t.tablename) || [],
+        tables: [],
         tables_without_timestamps: [],
         tables_without_primary_keys: [],
-        rls_status: {}
-      };
-    } catch (error) {
-      console.error('Error in simple health check:', error);
-      return {
-        check_time: new Date().toISOString(),
+        rls_status: {},
         error: error instanceof Error ? error.message : String(error)
       };
     }

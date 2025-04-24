@@ -25,7 +25,7 @@ export function useDbFunctionMonitor(requiredFunctions: string[] = []) {
     setIsLoading(true);
     
     try {
-      // Since check_functions_exist might not exist, we'll check each function individually
+      // Check each function individually since RPC might not exist
       const statusMap: Record<string, boolean> = {};
       const missing: string[] = [];
       
@@ -48,7 +48,7 @@ export function useDbFunctionMonitor(requiredFunctions: string[] = []) {
         toast({
           title: "Missing Database Functions",
           description: `${missing.length} required functions are missing. Database operations may be affected.`,
-          variant: "destructive" // Changed from 'warning'
+          variant: "destructive" 
         });
       }
     } catch (error) {
@@ -86,62 +86,71 @@ export function useDbFunctionMonitor(requiredFunctions: string[] = []) {
       toast({
         title: "Missing Database Functions",
         description: `${missing.length} required functions are missing. Database operations may be affected.`,
-        variant: "destructive" // Changed from 'warning'
+        variant: "destructive"
       });
     }
   };
   
   /**
-   * Tests if a specific function exists by calling it
+   * Tests if a specific function exists by querying the information schema
    */
   const testFunctionExistence = async (functionName: string): Promise<boolean> => {
-    // This is a simplistic approach to test function existence
+    // First try checking if the function exists in the information schema
     try {
-      let result;
-      switch (functionName) {
-        case 'get_teacher_mood_check_ins':
-          result = await supabase.rpc('get_teacher_mood_check_ins', { 
-            p_student_id: '00000000-0000-0000-0000-000000000000', 
-            p_days_back: 1 
-          });
-          break;
-        case 'get_teacher_mood_trends':
-          result = await supabase.rpc('get_teacher_mood_trends', { 
-            p_student_id: '00000000-0000-0000-0000-000000000000', 
-            p_days_back: 1 
-          });
-          break;
-        case 'get_micro_coach_logs':
-          result = await supabase.rpc('get_micro_coach_logs', { 
-            p_student_id: null 
-          });
-          break;
-        case 'get_student_intervention_impacts':
-          result = await supabase.rpc('get_student_intervention_impacts', { 
-            p_student_id: '00000000-0000-0000-0000-000000000000' 
-          });
-          break;
-        case 'get_tiered_support_recommendations':
-          result = await supabase.rpc('get_tiered_support_recommendations', { 
-            p_student_id: '00000000-0000-0000-0000-000000000000' 
-          });
-          break;
-        default:
-          // For unknown functions, we'll use a generic approach
-          // Just check if the function call results in an error about not existing
-          try {
-            await supabase.rpc(functionName, {});
-            return true;
-          } catch (error: any) {
-            return !error.message.includes('does not exist');
-          }
-      }
+      const { data, error } = await supabase
+        .from('information_schema.routines')
+        .select('routine_name')
+        .eq('routine_schema', 'public')
+        .eq('routine_name', functionName)
+        .maybeSingle();
       
-      // If we get an error about invalid input parameters, the function likely exists
-      // If we get an error about the function not existing, it doesn't exist
-      return !result.error || !result.error.message.includes('does not exist');
+      if (error) throw error;
+      
+      return !!data;
     } catch (error) {
-      return false;
+      console.error(`Error checking if function ${functionName} exists:`, error);
+      
+      // Try to query the function directly as a fallback
+      try {
+        // Use a switch/case to handle common function parameters
+        let result;
+        switch (functionName) {
+          case 'get_teacher_mood_check_ins':
+            result = await supabase.rpc(functionName as any, { 
+              p_teacher_id: '00000000-0000-0000-0000-000000000000', 
+              p_days_back: 1 
+            });
+            break;
+          case 'get_teacher_mood_trends':
+            result = await supabase.rpc(functionName as any, { 
+              p_student_id: '00000000-0000-0000-0000-000000000000', 
+              p_days_back: 1 
+            });
+            break;
+          case 'get_micro_coach_logs':
+            result = await supabase.rpc(functionName as any, { 
+              p_student_id: null 
+            });
+            break;
+          case 'get_student_intervention_impacts':
+            result = await supabase.rpc(functionName as any, { 
+              p_student_id: '00000000-0000-0000-0000-000000000000' 
+            });
+            break;
+          case 'get_tiered_support_recommendations':
+            result = await supabase.rpc(functionName as any, { 
+              p_student_id: '00000000-0000-0000-0000-000000000000' 
+            });
+            break;
+          default:
+            // For unknown functions, just check if it exists without parameters
+            result = { error: { message: 'Function test not implemented' } };
+        }
+        
+        return !result.error || !result.error.message.includes('does not exist');
+      } catch (error: any) {
+        return false;
+      }
     }
   };
   

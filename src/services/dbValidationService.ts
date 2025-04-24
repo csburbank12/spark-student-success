@@ -61,16 +61,16 @@ export class DbValidationService {
   private static async validateTable(config: DatabaseValidationConfig) {
     try {
       // Check if table exists using information_schema
-      const { data: tableExists, error: tableError } = await supabase
-        .from('pg_tables')
-        .select('tablename')
-        .eq('schemaname', 'public')
-        .eq('tablename', config.tableName)
+      const { data: tableData, error: tableError } = await supabase
+        .from('information_schema.tables')
+        .select('table_name')
+        .eq('table_schema', 'public')
+        .eq('table_name', config.tableName)
         .maybeSingle();
       
       if (tableError) throw tableError;
       
-      if (!tableExists) {
+      if (!tableData) {
         return {
           tableName: config.tableName,
           exists: false,
@@ -84,7 +84,7 @@ export class DbValidationService {
       }
       
       // Check columns using information_schema
-      const { data: columns, error: columnsError } = await supabase
+      const { data: columnsData, error: columnsError } = await supabase
         .from('information_schema.columns')
         .select('column_name')
         .eq('table_schema', 'public')
@@ -92,11 +92,11 @@ export class DbValidationService {
       
       if (columnsError) throw columnsError;
       
-      const columnNames = columns?.map(c => c.column_name) || [];
+      const columnNames = columnsData ? columnsData.map(c => c.column_name) : [];
       const missingColumns = config.requiredColumns.filter(col => !columnNames.includes(col));
       
       // Check for primary key
-      const { data: primaryKey, error: pkError } = await supabase
+      const { data: primaryKeyData, error: pkError } = await supabase
         .from('information_schema.table_constraints')
         .select('constraint_name')
         .eq('table_schema', 'public')
@@ -115,7 +115,7 @@ export class DbValidationService {
         exists: true,
         structure: {
           valid: missingColumns.length === 0,
-          hasPrimaryKey: !!primaryKey,
+          hasPrimaryKey: !!primaryKeyData,
           hasTimestamps: hasCreatedAt && hasUpdatedAt,
           missingColumns
         }

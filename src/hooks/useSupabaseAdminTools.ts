@@ -22,17 +22,22 @@ export function useSupabaseAdminTools() {
   const fetchTablesList = async () => {
     setIsLoading(true);
     try {
-      // Use direct SQL query for now since the list_tables function may not exist yet
-      const { data, error } = await supabase.rpc('list_tables');
+      // Use SQL query instead of RPC
+      const { data, error } = await supabase
+        .from('information_schema.tables')
+        .select('table_name')
+        .eq('table_schema', 'public')
+        .order('table_name', { ascending: true });
       
       if (error) {
         console.error('Error fetching tables:', error);
         throw error;
       }
       
-      // Handle potential format differences
+      // Extract table names from the response
       if (Array.isArray(data)) {
-        setTables(data.map(item => typeof item === 'string' ? item : item.table_name || ''));
+        const tableNames = data.map(item => item.table_name || '');
+        setTables(tableNames);
       } else {
         setTables([]);
       }
@@ -57,7 +62,10 @@ export function useSupabaseAdminTools() {
     try {
       // Direct query approach since functions might not exist yet
       const { data: columns, error: columnsError } = await supabase
-        .rpc('get_table_columns', { p_table_name: tableName });
+        .from('information_schema.columns')
+        .select('column_name, data_type, is_nullable, column_default')
+        .eq('table_schema', 'public')
+        .eq('table_name', tableName);
       
       if (columnsError) {
         console.error(`Error fetching columns for table ${tableName}:`, columnsError);
@@ -65,7 +73,10 @@ export function useSupabaseAdminTools() {
       }
       
       const { data: constraints, error: constraintsError } = await supabase
-        .rpc('get_table_constraints', { p_table_name: tableName });
+        .from('information_schema.table_constraints')
+        .select('constraint_name, constraint_type')
+        .eq('table_schema', 'public')
+        .eq('table_name', tableName);
       
       if (constraintsError) {
         console.error(`Error fetching constraints for table ${tableName}:`, constraintsError);
@@ -103,13 +114,49 @@ export function useSupabaseAdminTools() {
    */
   const getDatabaseHealth = async () => {
     try {
-      const { data, error } = await supabase.rpc('run_db_health_check');
-      if (error) {
-        console.error('Error fetching database health:', error);
-        throw error;
+      // Use SQL query directly instead of RPC
+      const { data: tables, error: tablesError } = await supabase
+        .from('information_schema.tables')
+        .select('table_name')
+        .eq('table_schema', 'public');
+
+      if (tablesError) {
+        throw tablesError;
       }
-      setHealthData(data);
-      return data;
+
+      // Get tables without timestamps
+      const { data: tablesWithoutTimestamps, error: timestampError } = await supabase
+        .from('information_schema.columns')
+        .select('table_name')
+        .eq('table_schema', 'public')
+        .eq('column_name', 'created_at');
+
+      if (timestampError) {
+        throw timestampError;
+      }
+
+      // Get RLS status for tables
+      const rlsStatus: Record<string, boolean> = {};
+      if (tables) {
+        for (const table of tables) {
+          const tableName = table.table_name;
+          const rlsCheck = await SupabaseErrorService.checkRLSPolicyIssues(tableName);
+          rlsStatus[tableName] = rlsCheck.hasRLS;
+        }
+      }
+
+      const healthData = {
+        check_time: new Date().toISOString(),
+        tables: tables?.map(t => t.table_name) || [],
+        tables_without_timestamps: tables?.filter(t => 
+          !tablesWithoutTimestamps?.some(wt => wt.table_name === t.table_name)
+        ).map(t => t.table_name) || [],
+        tables_without_primary_keys: [],
+        rls_status: rlsStatus
+      };
+
+      setHealthData(healthData);
+      return healthData;
     } catch (error) {
       console.error('Error fetching database health:', error);
       toast({

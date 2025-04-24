@@ -33,20 +33,27 @@ export class SupabaseErrorService {
    */
   static async checkRLSPolicyIssues(tableName: string) {
     try {
-      // Check if table has RLS enabled
+      // Check if table has RLS enabled using direct SQL query
       const { data: rlsStatus, error: rlsError } = await supabase
-        .rpc('get_table_rls_status', { p_table_name: tableName });
+        .from('information_schema.tables')
+        .select('relrowsecurity')
+        .eq('table_name', tableName)
+        .eq('table_schema', 'public')
+        .maybeSingle();
       
       if (rlsError) throw rlsError;
       
-      // Check for missing policies
+      // Check for policies using direct SQL query
       const { data: policies, error: policiesError } = await supabase
-        .rpc('get_table_policies', { p_table_name: tableName });
-        
+        .from('pg_policies')
+        .select('*')
+        .eq('tablename', tableName)
+        .eq('schemaname', 'public');
+      
       if (policiesError) throw policiesError;
       
       return {
-        hasRLS: rlsStatus?.rls_enabled || false,
+        hasRLS: rlsStatus?.relrowsecurity || false,
         policies: policies || [],
         missingCrudPolicies: this.detectMissingCrudPolicies(policies || [])
       };
@@ -64,7 +71,8 @@ export class SupabaseErrorService {
    */
   private static detectMissingCrudPolicies(policies: any[]) {
     const operations = ['SELECT', 'INSERT', 'UPDATE', 'DELETE'];
-    const existingOps = policies.map(p => p.operation);
+    const existingOps = Array.isArray(policies) ? 
+      policies.map(p => p.cmd?.toUpperCase?.() || p.operation?.toUpperCase?.()) : [];
     
     return operations.reduce((missing, op) => {
       missing[op.toLowerCase()] = !existingOps.includes(op);

@@ -34,12 +34,18 @@ export class DatabaseMigrationService {
       }
       
       // Execute the migration using raw SQL
-      // Note: We're using a raw query as RPC might not exist yet
-      const { data, error } = await supabase.rpc('execute_sql_transaction', {
-        p_sql: sqlScript
-      }).single();
+      // Note: We're using raw queries instead of RPC since function might not exist yet
+      const { data, error } = await supabase
+        .rpc('execute_sql', {
+          sql_query: sqlScript
+        })
+        .single();
       
-      if (error) throw error;
+      if (error) {
+        // If function doesn't exist, use direct query instead
+        const { error: rawError } = await supabase.sql(sqlScript);
+        if (rawError) throw rawError;
+      }
       
       // Record the successful migration in error_logs temporarily
       await supabase
