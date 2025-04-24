@@ -5,32 +5,54 @@ import { useStudentToolkit } from "@/hooks/useStudentToolkit";
 import { AddToolkitItemDialog } from "./toolkit/AddToolkitItemDialog";
 import { ToolkitItemList } from "./toolkit/ToolkitItemList";
 import { EmptyToolkit } from "./toolkit/EmptyToolkit";
-import type { ToolkitItem } from "@/types/toolkit";
+import { Loader } from "@/components/ui/loader";
+import { AlertTriangle } from "lucide-react";
+import type { ToolkitItem, ToolkitItemsByType } from "@/types/toolkit";
 
 export function ToolkitTab() {
   const { user } = useAuth();
-  const { data: toolkitItems, isLoading, isError } = useStudentToolkit(user?.id);
+  const { 
+    data: toolkitItems, 
+    isLoading, 
+    isError,
+    refetch 
+  } = useStudentToolkit(user?.id);
+  
   const [open, setOpen] = useState(false);
   
+  // Show proper loading state
   if (isLoading) {
-    return <div className="flex items-center justify-center p-8">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader className="h-8 w-8 text-primary" />
+        <span className="ml-2 text-sm text-muted-foreground">Loading your toolkit...</span>
+      </div>
+    );
   }
   
+  // Show proper error state with retry option
   if (isError) {
     return (
-      <div className="flex items-center justify-center p-8 text-destructive">
-        Failed to load toolkit items. Please try again.
+      <div className="flex flex-col items-center justify-center p-8 text-destructive">
+        <AlertTriangle className="h-8 w-8 mb-2" />
+        <p className="mb-4">Failed to load toolkit items</p>
+        <button 
+          onClick={() => refetch()} 
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
   
   // Group toolkit items by type
-  const itemsByType = toolkitItems?.reduce((acc, item) => {
+  const itemsByType: ToolkitItemsByType = toolkitItems?.reduce((acc, item) => {
     const type = item.item_type || 'Other';
     if (!acc[type]) acc[type] = [];
     acc[type].push(item);
     return acc;
-  }, {} as Record<string, ToolkitItem[]>) || {};
+  }, {} as ToolkitItemsByType) || {};
   
   return (
     <div className="space-y-6">

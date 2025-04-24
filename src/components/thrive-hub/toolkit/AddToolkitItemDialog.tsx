@@ -1,20 +1,27 @@
 
-import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
+import React, { useState } from "react";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
   DialogTitle,
-  DialogFooter,
   DialogTrigger,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus } from "lucide-react";
-import { toast } from "sonner";
 import { useAddToolkitItem } from "@/hooks/useStudentToolkit";
+import type { ToolkitItemInput } from "@/types/toolkit";
 
 interface AddToolkitItemDialogProps {
   open: boolean;
@@ -22,30 +29,38 @@ interface AddToolkitItemDialogProps {
 }
 
 export function AddToolkitItemDialog({ open, setOpen }: AddToolkitItemDialogProps) {
-  const { mutate: addToolkitItem } = useAddToolkitItem();
-  const [newItem, setNewItem] = React.useState({
+  const initialState: ToolkitItemInput = {
     type: "",
     label: "",
     url: "",
-    content: ""
-  });
+    content: "",
+  };
 
-  const handleAddItem = () => {
-    if (!newItem.type || !newItem.label) {
-      toast.error("Please fill in all required fields");
-      return;
+  const [formData, setFormData] = useState<ToolkitItemInput>(initialState);
+  const { mutate: addItem, isPending } = useAddToolkitItem();
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleTypeChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, type: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.type || !formData.label) {
+      return; // Form validation
     }
     
-    addToolkitItem({
-      type: newItem.type,
-      label: newItem.label,
-      url: newItem.url || undefined,
-      content: newItem.content || undefined
-    }, {
+    addItem(formData, {
       onSuccess: () => {
         setOpen(false);
-        setNewItem({ type: "", label: "", url: "", content: "" });
-        toast.success("Added to your toolkit!");
+        setFormData(initialState);
       }
     });
   };
@@ -53,8 +68,8 @@ export function AddToolkitItemDialog({ open, setOpen }: AddToolkitItemDialogProp
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
           Add to Toolkit
         </Button>
       </DialogTrigger>
@@ -62,14 +77,10 @@ export function AddToolkitItemDialog({ open, setOpen }: AddToolkitItemDialogProp
         <DialogHeader>
           <DialogTitle>Add to Your Toolkit</DialogTitle>
         </DialogHeader>
-        
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          <div className="space-y-2">
             <Label htmlFor="type">Type</Label>
-            <Select 
-              value={newItem.type} 
-              onValueChange={(value) => setNewItem({...newItem, type: value})}
-            >
+            <Select value={formData.type} onValueChange={handleTypeChange} required>
               <SelectTrigger id="type">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
@@ -80,43 +91,56 @@ export function AddToolkitItemDialog({ open, setOpen }: AddToolkitItemDialogProp
                 <SelectItem value="affirmation">Affirmation</SelectItem>
                 <SelectItem value="strategy">Strategy</SelectItem>
                 <SelectItem value="activity">Activity</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
-          <div className="grid gap-2">
-            <Label htmlFor="label">Title/Label</Label>
-            <Input 
-              id="label" 
-              value={newItem.label}
-              onChange={(e) => setNewItem({...newItem, label: e.target.value})}
+          <div className="space-y-2">
+            <Label htmlFor="label">Title</Label>
+            <Input
+              id="label"
+              name="label"
+              value={formData.label}
+              onChange={handleChange}
+              required
             />
           </div>
-          
-          <div className="grid gap-2">
+          <div className="space-y-2">
             <Label htmlFor="url">URL (optional)</Label>
-            <Input 
-              id="url" 
-              value={newItem.url}
-              onChange={(e) => setNewItem({...newItem, url: e.target.value})}
-              placeholder="https://..."
+            <Input
+              id="url"
+              name="url"
+              type="url"
+              value={formData.url || ""}
+              onChange={handleChange}
+              placeholder="https://example.com"
             />
           </div>
-          
-          <div className="grid gap-2">
+          <div className="space-y-2">
             <Label htmlFor="content">Notes (optional)</Label>
-            <Input 
-              id="content" 
-              value={newItem.content}
-              onChange={(e) => setNewItem({...newItem, content: e.target.value})}
+            <Textarea
+              id="content"
+              name="content"
+              value={formData.content || ""}
+              onChange={handleChange}
+              rows={3}
+              placeholder="Additional notes or description"
             />
           </div>
-        </div>
-        
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={handleAddItem}>Add to Toolkit</Button>
-        </DialogFooter>
+          <DialogFooter className="pt-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setOpen(false)}
+              disabled={isPending}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={!formData.type || !formData.label || isPending}>
+              {isPending ? "Adding..." : "Add to Toolkit"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

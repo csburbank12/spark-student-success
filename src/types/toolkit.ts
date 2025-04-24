@@ -9,6 +9,13 @@ export type ToolkitItem = {
   added_on: string;
 };
 
+export type ToolkitItemInput = {
+  type: string;
+  label: string;
+  url?: string;
+  content?: string;
+};
+
 export type ToolkitError = {
   message: string;
   code?: string;
@@ -18,3 +25,6 @@ export type ToolkitResponse = {
   data: ToolkitItem[] | null;
   error: ToolkitError | null;
 };
+
+// Group of toolkit items by their type
+export type ToolkitItemsByType = Record<string, ToolkitItem[]>;
