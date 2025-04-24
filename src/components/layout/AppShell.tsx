@@ -3,9 +3,9 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   SidebarProvider,
-} from '@/components/ui/sidebar/components/sidebar-provider';
-import { SidebarInset } from '@/components/ui/sidebar/components/sidebar-inset';
-import { SidebarRail } from '@/components/ui/sidebar/components/sidebar-rail';
+} from '@/components/ui/sidebar';
+import { SidebarInset } from '@/components/ui/sidebar';
+import { SidebarRail } from '@/components/ui/sidebar';
 import Sidebar from './Sidebar';
 import { Navbar } from './Navbar';
 import { Loader } from '@/components/ui/loader';
