@@ -8,6 +8,9 @@ import { ConfidentialityNotice } from "@/components/auth/ConfidentialityNotice";
 import { DemoAccounts } from "@/components/auth/DemoAccounts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ErrorLoggingService, ProfileType } from "@/services/ErrorLoggingService";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { InfoIcon, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const { login } = useAuth();
@@ -29,12 +32,12 @@ const Login = () => {
       await login(email, password);
       navigate(redirectTo);
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "Failed to login";
-      console.error(errorMsg);
+      const errorMessage = error instanceof Error ? error.message : "Failed to login";
+      console.error(errorMessage);
       
       ErrorLoggingService.logError({
         action: "login_failed",
-        error_message: errorMsg,
+        error_message: errorMessage,
         profile_type: email.includes("@") ? email.split("@")[0] as ProfileType : "unknown"
       });
     } finally {
@@ -109,8 +112,24 @@ const Login = () => {
             </TabsContent>
           </Tabs>
 
-          <div className="mt-8">
+          <div className="mt-8 space-y-4">
             <ConfidentialityNotice />
+            
+            {/* Add FERPA Compliance Notice */}
+            <Alert className="bg-blue-50 border-blue-200 text-blue-900">
+              <Shield className="h-5 w-5" />
+              <AlertTitle className="font-medium">FERPA Compliance</AlertTitle>
+              <AlertDescription className="mt-2 text-sm">
+                This platform is FERPA compliant. All educational records are protected in accordance with
+                the Family Educational Rights and Privacy Act. By logging in, you agree to handle student data
+                according to FERPA guidelines.
+                <div className="mt-2">
+                  <Link to="/privacy-policy" className="text-blue-600 hover:underline">
+                    View our Privacy Policy
+                  </Link>
+                </div>
+              </AlertDescription>
+            </Alert>
           </div>
         </div>
       </div>

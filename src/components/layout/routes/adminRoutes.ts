@@ -1,55 +1,35 @@
-import {
-  LayoutDashboard,
-  BarChartBig,
-  School,
-  Users,
-  Activity,
-  AlertTriangle,
-  Settings,
-  User,
-} from "lucide-react";
+
+import { Users, BarChart3, School, Settings, Shield, Keyboard } from "lucide-react";
 
 export const adminRoutes = [
   {
-    name: "Dashboard",
-    href: "/admin-dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Enhanced Dashboard",
-    href: "/admin-dashboard-enhanced",
-    icon: BarChartBig,
-  },
-  {
-    name: "School Management",
-    href: "/school-management",
-    icon: School,
-  },
-  {
     name: "User Management",
-    href: "/user-management",
+    href: "/admin/user-management",
     icon: Users,
   },
   {
     name: "Data Analytics",
-    href: "/data-analytics",
-    icon: Activity,
+    href: "/admin/data-analytics",
+    icon: BarChart3,
   },
   {
-    name: "Error Logs",
-    href: "/error-logs",
-    icon: AlertTriangle,
+    name: "School Management",
+    href: "/admin/school-management",
+    icon: School,
+  },
+  {
+    name: "FERPA Compliance", // Add FERPA Compliance link
+    href: "/admin/ferpa-compliance",
+    icon: Shield,
   },
   {
     name: "System Settings",
-    href: "/system-settings",
+    href: "/admin/system-settings",
     icon: Settings,
   },
   {
-    name: "Profile",
-    href: "/profile",
-    icon: User,
+    name: "LoopBot Logs",
+    href: "/admin/loopbot-logs",
+    icon: Keyboard,
   },
 ];
-
-export default adminRoutes;
