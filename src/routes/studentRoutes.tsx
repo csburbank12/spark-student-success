@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
@@ -10,6 +9,7 @@ import ResetRoom from "@/pages/ResetRoom";
 import CheckIn from "@/pages/CheckIn";
 import TrustedAdults from "@/pages/TrustedAdults";
 import PersonalizedSELPathways from "@/pages/PersonalizedSELPathways";
+import ThriveHub from "@/pages/ThriveHub";
 
 const studentRoutes = [
   {
@@ -73,6 +73,14 @@ const studentRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
         <PersonalizedSELPathways />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/thrive-hub",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
+        <ThriveHub />
       </ProtectedRoute>
     ),
   },

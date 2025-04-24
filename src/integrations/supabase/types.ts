@@ -975,6 +975,7 @@ export type Database = {
           sel_completion_score: number
           status: string
           total_score: number
+          user_id: string
         }
         Insert: {
           alert_resolution_score?: number
@@ -987,6 +988,7 @@ export type Database = {
           sel_completion_score?: number
           status?: string
           total_score?: number
+          user_id: string
         }
         Update: {
           alert_resolution_score?: number
@@ -999,6 +1001,7 @@ export type Database = {
           sel_completion_score?: number
           status?: string
           total_score?: number
+          user_id?: string
         }
         Relationships: [
           {
@@ -1201,6 +1204,76 @@ export type Database = {
           },
         ]
       }
+      student_badges: {
+        Row: {
+          badge_name: string | null
+          badge_type: string | null
+          date_earned: string | null
+          id: string
+          student_id: string | null
+        }
+        Insert: {
+          badge_name?: string | null
+          badge_type?: string | null
+          date_earned?: string | null
+          id?: string
+          student_id?: string | null
+        }
+        Update: {
+          badge_name?: string | null
+          badge_type?: string | null
+          date_earned?: string | null
+          id?: string
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_badges_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_goals: {
+        Row: {
+          created_at: string | null
+          goal_text: string | null
+          id: string
+          is_completed: boolean | null
+          reflection_on_goal: string | null
+          student_id: string | null
+          week_start: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          goal_text?: string | null
+          id?: string
+          is_completed?: boolean | null
+          reflection_on_goal?: string | null
+          student_id?: string | null
+          week_start?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          goal_text?: string | null
+          id?: string
+          is_completed?: boolean | null
+          reflection_on_goal?: string | null
+          student_id?: string | null
+          week_start?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_goals_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_import_logs: {
         Row: {
           created_at: string | null
@@ -1241,6 +1314,76 @@ export type Database = {
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_reflections: {
+        Row: {
+          date_submitted: string | null
+          id: string
+          prompt_used: string | null
+          reflection_text: string | null
+          shared_with: string | null
+          student_id: string | null
+        }
+        Insert: {
+          date_submitted?: string | null
+          id?: string
+          prompt_used?: string | null
+          reflection_text?: string | null
+          shared_with?: string | null
+          student_id?: string | null
+        }
+        Update: {
+          date_submitted?: string | null
+          id?: string
+          prompt_used?: string | null
+          reflection_text?: string | null
+          shared_with?: string | null
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_reflections_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_toolkit: {
+        Row: {
+          added_on: string | null
+          id: string
+          item_label: string | null
+          item_type: string | null
+          item_url: string | null
+          student_id: string | null
+        }
+        Insert: {
+          added_on?: string | null
+          id?: string
+          item_label?: string | null
+          item_type?: string | null
+          item_url?: string | null
+          student_id?: string | null
+        }
+        Update: {
+          added_on?: string | null
+          id?: string
+          item_label?: string | null
+          item_type?: string | null
+          item_url?: string | null
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_toolkit_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
             referencedColumns: ["id"]
           },
         ]
@@ -1392,6 +1535,7 @@ export type Database = {
           severity: Database["public"]["Enums"]["alert_severity"]
           student_id: string
           updated_at: string
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -1407,6 +1551,7 @@ export type Database = {
           severity?: Database["public"]["Enums"]["alert_severity"]
           student_id: string
           updated_at?: string
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -1422,6 +1567,7 @@ export type Database = {
           severity?: Database["public"]["Enums"]["alert_severity"]
           student_id?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1532,6 +1678,7 @@ export type Database = {
           id: string
           school_id: string | null
           theme_title: string
+          user_id: string
           week_end: string
           week_start: string
         }
@@ -1543,6 +1690,7 @@ export type Database = {
           id?: string
           school_id?: string | null
           theme_title: string
+          user_id: string
           week_end: string
           week_start: string
         }
@@ -1554,6 +1702,7 @@ export type Database = {
           id?: string
           school_id?: string | null
           theme_title?: string
+          user_id?: string
           week_end?: string
           week_start?: string
         }
@@ -1593,6 +1742,7 @@ export type Database = {
           id: string
           school_id: string | null
           theme_title: string
+          user_id: string
           week_end: string
           week_start: string
         }[]
@@ -1683,11 +1833,12 @@ export type Database = {
         }[]
       }
       get_user_mood_stats: {
-        Args: { user_uuid: string; days_back?: number }
+        Args:
+          | Record<PropertyKey, never>
+          | { user_uuid: string; days_back?: number }
         Returns: {
-          most_common_mood: string
-          average_energy: number
-          check_in_count: number
+          mood: string
+          count: number
         }[]
       }
       get_user_mood_trends: {
@@ -1699,10 +1850,13 @@ export type Database = {
         }[]
       }
       has_role: {
-        Args: {
-          user_id: string
-          required_role: Database["public"]["Enums"]["app_role"]
-        }
+        Args:
+          | { role_name: string }
+          | {
+              user_id: string
+              required_role: Database["public"]["Enums"]["app_role"]
+            }
+          | { user_id: string; required_role: string }
         Returns: boolean
       }
       insert_intervention_impact: {
@@ -1756,22 +1910,26 @@ export type Database = {
         Returns: string
       }
       map_external_entity: {
-        Args: {
-          p_integration_id: string
-          p_external_id: string
-          p_internal_id: string
-          p_entity_type: string
-          p_metadata?: Json
-        }
-        Returns: string
+        Args:
+          | Record<PropertyKey, never>
+          | {
+              p_integration_id: string
+              p_external_id: string
+              p_internal_id: string
+              p_entity_type: string
+              p_metadata?: Json
+            }
+        Returns: undefined
       }
       register_external_integration: {
-        Args: {
-          p_name: string
-          p_type: Database["public"]["Enums"]["integration_type"]
-          p_config: Json
-        }
-        Returns: string
+        Args:
+          | Record<PropertyKey, never>
+          | {
+              p_name: string
+              p_type: Database["public"]["Enums"]["integration_type"]
+              p_config: Json
+            }
+        Returns: undefined
       }
       reset_demo_environment: {
         Args: Record<PropertyKey, never>
@@ -1784,6 +1942,10 @@ export type Database = {
           p_frequency_minutes: number
         }
         Returns: string
+      }
+      send_email_on_emergent_need_toggle: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
     }
     Enums: {
