@@ -7,8 +7,8 @@ import parentRoutes from "./parentRoutes";
 import { teacherAdminRoutes } from "./teacherAdminRoutes";
 import staffRoutes from "./staffRoutes";
 import studentRoutes from "./studentRoutes";
-import adminRoutes from "./adminRoutes";
-import { generalRoutes } from "./generalRoutes";
+import { AdminRoutes } from "./adminRoutes";
+import { GeneralRoutes } from "./generalRoutes";
 import { AppShell } from "@/components/layout/AppShell";
 
 // Process routes to add AppShell wrapper
@@ -27,10 +27,10 @@ const processRoutes = (routes: any[]) => {
 
 // All the routes in the application
 export const routes = [
-  ...processRoutes(generalRoutes),
+  ...processRoutes(GeneralRoutes()),
   ...processRoutes(studentRoutes),
   ...processRoutes(teacherAdminRoutes),
   ...processRoutes(parentRoutes),
   ...processRoutes(staffRoutes),
-  ...processRoutes(adminRoutes),
+  ...processRoutes(AdminRoutes()),
 ];

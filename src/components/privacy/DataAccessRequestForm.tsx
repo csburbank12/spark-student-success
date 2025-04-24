@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { ErrorLoggingService } from "@/services/ErrorLoggingService";
+import { ErrorLoggingService, ProfileType } from "@/services/ErrorLoggingService";
 
 export const DataAccessRequestForm = () => {
   const { user } = useAuth();
@@ -40,7 +40,7 @@ export const DataAccessRequestForm = () => {
       await ErrorLoggingService.logError({
         action: "data_access_request",
         error_message: `User submitted a ${requestType} request`,
-        profile_type: user?.role || "unknown"
+        profile_type: (user?.role as ProfileType) || "unknown"
       });
 
       toast.success("Your request has been submitted successfully");
