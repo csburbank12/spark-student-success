@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface TeacherMoodCheckIn {
@@ -38,16 +37,16 @@ export const recordTeacherMoodCheckIn = async (checkIn: TeacherMoodCheckIn) => {
 };
 
 /**
- * Retrieves teacher mood check-ins for a specific student
- * @param studentId - The student's ID
+ * Retrieves teacher mood check-ins for a specific teacher
+ * @param teacherId - The teacher's ID
  * @param daysBack - Number of days to look back (default: 30)
  * @returns Array of mood check-in records
  */
-export const getTeacherMoodCheckIns = async (studentId: string, daysBack: number = 30) => {
+export const getTeacherMoodCheckIns = async (teacherId: string, daysBack: number = 30) => {
   try {
     const { data, error } = await supabase
       .rpc('get_teacher_mood_check_ins', {
-        p_student_id: studentId,
+        p_teacher_id: teacherId,
         p_days_back: daysBack
       });
 
