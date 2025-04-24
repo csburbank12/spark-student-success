@@ -1,142 +1,49 @@
 
-import React, { useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { useResetSession } from "./hooks/useResetSession";
-import { useResetTimer } from "./hooks/useResetTimer";
-import { useResetAnimation } from "./hooks/useResetAnimation";
-import ResetHeader from "./components/ResetHeader";
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import ResetBenefits from "./components/ResetBenefits";
-import ResetVisualizer from "./components/ResetVisualizer";
-import ActivityTabs from "./components/ActivityTabs";
-import TimerDurationSelector from "./components/TimerDurationSelector";
-import TimerControls from "./components/TimerControls";
-import MoodAssessment from "./components/MoodAssessment";
+import ResetContent from "./components/ResetContent";
 
 const ResetRoom: React.FC = () => {
-  const { toast } = useToast();
-  
-  const {
-    initialMood,
-    finalMood,
-    selectedGoal,
-    completedReset,
-    sessionCount,
-    updateInitialMood,
-    updateFinalMood,
-    setSelectedGoal,
-    completeReset,
-    finishSession
-  } = useResetSession();
-
-  const {
-    timerRunning,
-    progress,
-    timeRemaining,
-    startTimer,
-    stopTimer,
-    resetTimer,
-    setCustomTime,
-    isCustomTime,
-    customTime,
-  } = useResetTimer();
-
-  const { animationUrl } = useResetAnimation(selectedGoal);
-
-  useEffect(() => {
-    if (timerRunning && timeRemaining === 0) {
-      completeReset();
-      toast({
-        title: "Reset Complete",
-        description: "Great job! How are you feeling now?",
-      });
-    }
-  }, [timerRunning, timeRemaining, completeReset, toast]);
-
-  const handleStartTimer = () => {
-    startTimer();
-    toast({
-      title: "Reset Started",
-      description: `Taking ${isCustomTime ? customTime / 60 : 5} minutes to ${selectedGoal}.`,
-    });
-  };
-
-  const handleStopTimer = () => {
-    stopTimer();
-    resetTimer();
-    toast({
-      description: "Reset paused. Take your time.",
-    });
-  };
-
-  const handleFinishEarly = () => {
-    stopTimer();
-    completeReset();
-    toast({
-      title: "Reset Completed Early",
-      description: "How are you feeling now?",
-    });
-  };
+  const navigate = useNavigate();
+  const [sessionCount, setSessionCount] = useState(() => {
+    const saved = localStorage.getItem("resetRoomSessionCount");
+    return saved ? parseInt(saved, 10) : 0;
+  });
 
   return (
     <div className="space-y-6">
-      <ResetHeader sessionCount={sessionCount} />
+      <Button
+        variant="outline"
+        size="sm"
+        className="mb-4"
+        onClick={() => navigate(-1)}
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+      </Button>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <div className="space-y-6 p-6">
-            {!timerRunning && !completedReset && (
-              <MoodAssessment
-                type="before"
-                moodValue={initialMood}
-                onMoodChange={updateInitialMood}
-                selectedGoal={selectedGoal}
-                onGoalSelect={setSelectedGoal}
-              />
-            )}
-
-            {!completedReset && (
-              <>
-                {!timerRunning && (
-                  <TimerDurationSelector
-                    isCustomTime={isCustomTime}
-                    customTime={customTime}
-                    onDurationSelect={(minutes) => setCustomTime(minutes * 60)}
-                  />
-                )}
-
-                <TimerControls
-                  progress={progress}
-                  timerRunning={timerRunning}
-                  timeRemaining={timeRemaining}
-                  isCustomTime={isCustomTime}
-                  customTime={customTime}
-                  onStart={handleStartTimer}
-                  onStop={handleStopTimer}
-                  onFinishEarly={handleFinishEarly}
-                />
-              </>
-            )}
-
-            {completedReset && (
-              <MoodAssessment
-                type="after"
-                moodValue={finalMood}
-                onMoodChange={updateFinalMood}
-                onSubmit={finishSession}
-              />
-            )}
+      <Card className="border-2 border-primary/20">
+        <CardHeader className="bg-muted/30 pb-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Take a moment to reset</CardTitle>
+              <CardDescription>
+                Choose an activity below and take a few minutes to refocus your energy.
+              </CardDescription>
+            </div>
+            <div className="text-sm text-muted-foreground font-medium">
+              Total resets: {sessionCount}
+            </div>
           </div>
-        </Card>
-
-        <ResetVisualizer
-          animationUrl={animationUrl}
-          isTimerRunning={timerRunning}
-          selectedGoal={selectedGoal}
-        />
-      </div>
-
-      <ActivityTabs />
+        </CardHeader>
+        <CardContent className="pt-6">
+          <ResetContent sessionCount={sessionCount} setSessionCount={setSessionCount} />
+        </CardContent>
+      </Card>
+      
       <ResetBenefits />
     </div>
   );
