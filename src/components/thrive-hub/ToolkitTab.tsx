@@ -29,6 +29,17 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+// Define a type for toolkit items to ensure type safety
+type ToolkitItem = {
+  id: string;
+  student_id: string;
+  item_type: string;
+  item_label: string;
+  item_url?: string;
+  item_content?: string;
+  added_on: string;
+};
+
 export function ToolkitTab() {
   const { user } = useAuth();
   const { data: toolkitItems } = useStudentToolkit(user?.id);
@@ -68,7 +79,7 @@ export function ToolkitTab() {
     if (!acc[type]) acc[type] = [];
     acc[type].push(item);
     return acc;
-  }, {} as Record<string, typeof toolkitItems>) || {};
+  }, {} as Record<string, ToolkitItem[]>) || {};
   
   // Get icon based on item type
   const getItemIcon = (type: string) => {
