@@ -24,11 +24,11 @@ const Sidebar = () => {
     <SidebarContainer>
       <SidebarHeader>
         <div className="flex h-14 items-center px-4">
-          <Link to="/" className="font-semibold text-xl hover:text-primary transition-colors">Home</Link>
+          <Link to="/dashboard" className="font-semibold text-xl hover:text-primary transition-colors">Dashboard</Link>
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarNavLinks routes={routes} />
+        <SidebarNavLinks routes={routes} includeUniversalRoutes={false} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarFooterActions />

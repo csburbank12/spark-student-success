@@ -7,6 +7,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { universalRoutes } from "./routes/universalRoutes";
 
 interface Route {
   name: string;
@@ -16,15 +17,24 @@ interface Route {
 
 interface SidebarNavLinksProps {
   routes: Route[];
+  includeUniversalRoutes?: boolean;
 }
 
-const SidebarNavLinks: React.FC<SidebarNavLinksProps> = ({ routes }) => {
+const SidebarNavLinks: React.FC<SidebarNavLinksProps> = ({ 
+  routes, 
+  includeUniversalRoutes = false 
+}) => {
   const location = useLocation();
   const { state } = useSidebar();
+  
+  // Combine role-specific routes with universal routes if needed
+  const displayRoutes = includeUniversalRoutes 
+    ? [...routes, ...universalRoutes.filter(route => route.href !== "/dashboard")] 
+    : routes;
 
   return (
     <SidebarMenu>
-      {routes.map((route) => (
+      {displayRoutes.map((route) => (
         <SidebarMenuItem key={route.href}>
           <SidebarMenuButton
             asChild

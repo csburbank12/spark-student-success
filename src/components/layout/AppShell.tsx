@@ -9,6 +9,7 @@ import {
 import Sidebar from './Sidebar';
 import { Navbar } from './Navbar';
 import { Loader } from '@/components/ui/loader';
+import { useLocation } from 'react-router-dom';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -16,6 +17,12 @@ interface AppShellProps {
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { isLoading } = useAuth();
+  const location = useLocation();
+  
+  // Determine if we're on a public page that doesn't need the full shell
+  const isPublicPage = location.pathname === '/login' || 
+                      location.pathname === '/signup' ||
+                      location.pathname.includes('/auth/');
 
   if (isLoading) {
     return (
@@ -23,6 +30,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         <Loader size="lg" />
       </div>
     );
+  }
+  
+  // For public pages, render without the sidebar and navbar
+  if (isPublicPage) {
+    return <>{children}</>;
   }
 
   return (

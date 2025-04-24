@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Bell, Search, Menu, HelpCircle, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,7 +29,16 @@ export const Navbar = () => {
   const getPageTitle = () => {
     const path = location.pathname;
     
-    if (user?.role === 'admin') {
+    // Common paths across all user roles
+    if (path.includes('qa-dashboard')) return 'QA Dashboard';
+    if (path.includes('profile')) return 'User Profile';
+    if (path.includes('settings')) return 'Settings';
+    if (path.includes('help')) return 'Help & Support';
+    if (path === '/') return 'Home';
+    if (path === '/dashboard') return 'Dashboard';
+    
+    // Role-specific paths
+    if (user?.role === UserRole.admin) {
       if (path.includes('user-management')) return 'User Management';
       if (path.includes('data-analytics')) return 'Data Analytics';
       if (path.includes('school-management')) return 'School Management';
@@ -42,7 +52,7 @@ export const Navbar = () => {
       return 'Admin Console';
     }
     
-    if (user?.role === 'teacher') {
+    if (user?.role === UserRole.teacher) {
       if (path.includes('students')) return 'Student Management';
       if (path.includes('sel-pathway')) return 'SEL Pathway Management';
       if (path.includes('staff-assist')) return 'Staff Assist Mode';
@@ -51,17 +61,17 @@ export const Navbar = () => {
       return 'Teacher Dashboard';
     }
     
-    if (user?.role === 'student') {
+    if (user?.role === UserRole.student) {
       if (path.includes('mental-health')) return 'Mental Health Toolkit';
       if (path.includes('digital-journal')) return 'Digital Journal';
       if (path.includes('reset-room')) return 'Reset Room';
       if (path.includes('check-in')) return 'Check-In';
       if (path.includes('sel-pathways')) return 'SEL Pathways';
       if (path.includes('trusted-adults')) return 'Trusted Adults';
-      return 'My Dashboard';
+      return 'Student Dashboard';
     }
     
-    if (user?.role === 'parent') {
+    if (user?.role === UserRole.parent) {
       if (path.includes('child-activity')) return 'Child Activity';
       if (path.includes('child-wellness')) return 'Child Wellness';
       if (path.includes('messages')) return 'Messages';
@@ -69,12 +79,21 @@ export const Navbar = () => {
       return 'Parent Portal';
     }
     
-    if (path.includes('qa-dashboard')) return 'QA Dashboard';
+    if (user?.role === UserRole.staff) {
+      if (path.includes('staff-assist')) return 'Staff Assist Mode';
+      if (path.includes('support-tools')) return 'Support Tools';
+      return 'Staff Portal';
+    }
     
-    if (path.includes('profile')) return 'User Profile';
-    if (path.includes('settings')) return 'Settings';
-    if (path.includes('help')) return 'Help & Support';
-    if (path === '/') return 'Home';
+    // If no specific title matches, extract from path
+    const pathSegments = path.split('/').filter(Boolean);
+    if (pathSegments.length > 0) {
+      const lastSegment = pathSegments[pathSegments.length - 1];
+      return lastSegment
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    }
     
     return 'Dashboard';
   };
@@ -86,23 +105,25 @@ export const Navbar = () => {
       </Button>
       <div className="hidden md:flex md:flex-1 md:items-center md:gap-4">
         <h1 className="text-xl font-heading font-semibold">{getPageTitle()}</h1>
-        {location.pathname !== '/' && (
+        {location.pathname !== '/dashboard' && (
           <Button variant="ghost" size="sm" asChild className="ml-2">
-            <Link to="/">
+            <Link to="/dashboard">
               <Home className="h-4 w-4 mr-1" />
-              Home
+              Dashboard
             </Link>
           </Button>
         )}
       </div>
       <div className="flex items-center gap-4 ml-auto md:hidden">
         <Button variant="ghost" size="icon" asChild>
-          <Link to="/">
+          <Link to="/dashboard">
             <Home className="h-5 w-5" />
           </Link>
         </Button>
-        <Button variant="ghost" size="icon">
-          <HelpCircle className="h-5 w-5" />
+        <Button variant="ghost" size="icon" asChild>
+          <Link to="/help">
+            <HelpCircle className="h-5 w-5" />
+          </Link>
         </Button>
       </div>
       <div className="hidden flex-1 items-center gap-4 md:flex">
@@ -117,8 +138,10 @@ export const Navbar = () => {
             className="w-full rounded-lg bg-background pl-8 md:w-64"
           />
         </form>
-        <Button variant="ghost" size="icon" className="hidden md:flex">
-          <HelpCircle className="h-5 w-5" />
+        <Button variant="ghost" size="icon" className="hidden md:flex" asChild>
+          <Link to="/help">
+            <HelpCircle className="h-5 w-5" />
+          </Link>
         </Button>
         <Link to="/qa-dashboard">
           <Button variant="outline" size="sm">QA Dashboard</Button>
@@ -193,6 +216,9 @@ export const Navbar = () => {
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch(UserRole.parent)}>
               Switch to Parent View
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSwitch(UserRole.staff)}>
+              Switch to Staff View
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" onClick={() => logout()}>
