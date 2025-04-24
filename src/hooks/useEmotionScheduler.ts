@@ -1,6 +1,14 @@
 
 import { useState } from 'react';
-import { TimeSlot, MoodPattern } from '@/components/predictive-support/types';
+import { MoodPattern } from '@/components/predictive-support/types';
+
+// Define the TimeSlot interface locally to avoid conflicts
+export interface TimeSlot {
+  day: string;
+  timeRange: string;
+  confidence: number;
+  reason: string;
+}
 
 export interface EmotionAnalysis {
   optimalTimes: TimeSlot[];

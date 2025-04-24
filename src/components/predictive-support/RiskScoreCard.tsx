@@ -60,8 +60,7 @@ const RiskScoreCard: React.FC<RiskScoreCardProps> = ({ student, showDetails = tr
         <Progress 
           value={riskScore} 
           max={100} 
-          className="h-2" 
-          indicatorClassName={getProgressColor(riskScore)} 
+          className={`h-2 ${getProgressColor(riskScore)}`} 
         />
 
         <div className="mt-4 space-y-3">

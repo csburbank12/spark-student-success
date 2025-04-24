@@ -5,7 +5,7 @@ import { Clock, AlertTriangle, Users } from "lucide-react";
 import OptimalTimesCard from "@/components/emotion-scheduling/OptimalTimesCard";
 import MoodPatternsCard from "@/components/emotion-scheduling/MoodPatternsCard";
 import { Button } from "@/components/ui/button";
-import { useEmotionScheduler } from "@/hooks/useEmotionScheduler";
+import { useEmotionScheduler, TimeSlot } from "@/hooks/useEmotionScheduler";
 
 interface EmotionAwareTeacherDashboardProps {
   studentId: string;
