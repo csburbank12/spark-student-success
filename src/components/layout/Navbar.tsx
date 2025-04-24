@@ -13,16 +13,70 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useSidebar } from '@/components/ui/sidebar';
 import NavBreadcrumbs from './NavBreadcrumbs';
 
 export const Navbar = () => {
   const { user, logout, setRole } = useAuth();
   const { toggleSidebar } = useSidebar();
+  const location = useLocation();
 
   const handleRoleSwitch = (role: UserRole) => {
     setRole(role);
+  };
+  
+  // Get the appropriate title based on current path
+  const getPageTitle = () => {
+    const path = location.pathname;
+    
+    if (user?.role === 'admin') {
+      if (path.includes('user-management')) return 'User Management';
+      if (path.includes('data-analytics')) return 'Data Analytics';
+      if (path.includes('school-management')) return 'School Management';
+      if (path.includes('ferpa-compliance')) return 'FERPA Compliance';
+      if (path.includes('system-settings')) return 'System Settings';
+      if (path.includes('loopbot-logs')) return 'LoopBot Logs';
+      if (path.includes('error-logs')) return 'Error Logs';
+      if (path.includes('pulse-trends')) return 'Pulse Trends';
+      if (path.includes('onboarding')) return 'School Onboarding';
+      if (path.includes('integrations')) return 'Integrations';
+      return 'Admin Console';
+    }
+    
+    if (user?.role === 'teacher') {
+      if (path.includes('students')) return 'Student Management';
+      if (path.includes('sel-pathway')) return 'SEL Pathway Management';
+      if (path.includes('staff-assist')) return 'Staff Assist Mode';
+      if (path.includes('predictive-support')) return 'Predictive Support';
+      if (path.includes('emotion-aware')) return 'Emotion Scheduling';
+      return 'Teacher Dashboard';
+    }
+    
+    if (user?.role === 'student') {
+      if (path.includes('mental-health')) return 'Mental Health Toolkit';
+      if (path.includes('digital-journal')) return 'Digital Journal';
+      if (path.includes('reset-room')) return 'Reset Room';
+      if (path.includes('check-in')) return 'Check-In';
+      if (path.includes('sel-pathways')) return 'SEL Pathways';
+      if (path.includes('trusted-adults')) return 'Trusted Adults';
+      return 'My Dashboard';
+    }
+    
+    if (user?.role === 'parent') {
+      if (path.includes('child-activity')) return 'Child Activity';
+      if (path.includes('child-wellness')) return 'Child Wellness';
+      if (path.includes('messages')) return 'Messages';
+      if (path.includes('parent-resources')) return 'Resources';
+      return 'Parent Portal';
+    }
+    
+    // Default titles for common paths
+    if (path.includes('profile')) return 'User Profile';
+    if (path.includes('settings')) return 'Settings';
+    if (path.includes('help')) return 'Help & Support';
+    
+    return 'Dashboard';
   };
 
   return (
@@ -31,12 +85,7 @@ export const Navbar = () => {
         <Menu className="h-5 w-5" />
       </Button>
       <div className="hidden md:flex md:flex-1 md:items-center md:gap-4">
-        <h1 className="text-xl font-heading font-semibold">
-          {user?.role === 'student' && 'My Dashboard'}
-          {user?.role === 'teacher' && 'Teacher Dashboard'}
-          {user?.role === 'admin' && 'Admin Console'}
-          {user?.role === 'parent' && 'Parent Portal'}
-        </h1>
+        <h1 className="text-xl font-heading font-semibold">{getPageTitle()}</h1>
       </div>
       <div className="flex items-center gap-4 ml-auto md:hidden">
         <Button variant="ghost" size="icon">

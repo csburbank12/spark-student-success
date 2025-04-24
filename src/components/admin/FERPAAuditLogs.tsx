@@ -1,12 +1,25 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, FileDown, Calendar } from "lucide-react";
+import { Search, FileDown, Calendar, Filter } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import { FERPAAccessType, FERPARecordType } from "@/services/FERPAComplianceService";
+import { 
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem
+} from "@/components/ui/dropdown-menu";
 
+// Types
+export type FERPAAccessType = "view" | "edit" | "delete" | "create" | "export";
+export type FERPARecordType = "student_record" | "mood_data" | "intervention" | "sel_progress" | "consent";
+
+// Mock data
 const mockLogs = [
   {
     id: "log1",
@@ -58,6 +71,36 @@ const mockLogs = [
     student_name: "Multiple Students",
     timestamp: "2024-04-21T09:15:00Z",
     successful: true
+  },
+  {
+    id: "log6",
+    user_name: "Ms. Johnson",
+    user_role: "teacher",
+    record_type: "student_record",
+    access_type: "edit",
+    student_name: "James Wilson",
+    timestamp: "2024-04-20T13:45:00Z",
+    successful: true
+  },
+  {
+    id: "log7",
+    user_name: "Admin User",
+    user_role: "admin",
+    record_type: "consent",
+    access_type: "view",
+    student_name: "Various Students",
+    timestamp: "2024-04-20T10:30:00Z",
+    successful: true
+  },
+  {
+    id: "log8",
+    user_name: "Ms. Thompson",
+    user_role: "teacher",
+    record_type: "sel_progress",
+    access_type: "view",
+    student_name: "Emily Davis",
+    timestamp: "2024-04-19T14:15:00Z",
+    successful: true
   }
 ];
 
@@ -71,6 +114,8 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
   const [accessType, setAccessType] = useState<string>("");
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
+  const [userRole, setUserRole] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
 
   // Filter logic
   const filteredLogs = mockLogs.filter(log => {
@@ -81,6 +126,10 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
     
     const matchesRecordType = recordType === "" || log.record_type === recordType;
     const matchesAccessType = accessType === "" || log.access_type === accessType;
+    const matchesUserRole = userRole === "" || log.user_role === userRole;
+    const matchesStatus = status === "" || 
+      (status === "success" && log.successful) ||
+      (status === "failure" && !log.successful);
     
     const logDate = new Date(log.timestamp);
     const fromDate = dateFrom ? new Date(dateFrom) : null;
@@ -89,38 +138,121 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
     const matchesDateFrom = !fromDate || logDate >= fromDate;
     const matchesDateTo = !toDate || logDate <= toDate;
     
-    return matchesSearch && matchesRecordType && matchesAccessType && matchesDateFrom && matchesDateTo;
+    return matchesSearch && 
+           matchesRecordType && 
+           matchesAccessType && 
+           matchesDateFrom && 
+           matchesDateTo && 
+           matchesUserRole && 
+           matchesStatus;
   });
 
   const handleExport = () => {
     console.log("Exporting filtered logs:", filteredLogs);
+    // Implement actual export functionality here
+  };
+
+  const resetFilters = () => {
+    setSearchQuery("");
+    setRecordType("");
+    setAccessType("");
+    setDateFrom("");
+    setDateTo("");
+    setUserRole("");
+    setStatus("");
+  };
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
   };
 
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>FERPA Audit Logs</CardTitle>
-        <CardDescription>
-          Track and monitor all data access in compliance with FERPA regulations
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Search and filters */}
-        <div className="space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <CardTitle>FERPA Audit Logs</CardTitle>
+            <CardDescription>
+              Track and monitor all data access in compliance with FERPA regulations
+            </CardDescription>
+          </div>
           <div className="flex items-center gap-2">
-            <div className="relative flex-grow">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search by user or student name..." 
-                className="pl-8"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
             <Button variant="outline" onClick={handleExport}>
               <FileDown className="mr-2 h-4 w-4" />
               Export
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filters
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Filter Options</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="p-2">
+                  <div className="space-y-2 mb-3">
+                    <Label>User Role</Label>
+                    <Select value={userRole} onValueChange={setUserRole}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="All roles" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">All roles</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="teacher">Teacher</SelectItem>
+                        <SelectItem value="staff">Staff</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2 mb-3">
+                    <Label>Status</Label>
+                    <Select value={status} onValueChange={setStatus}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="All statuses" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">All statuses</SelectItem>
+                        <SelectItem value="success">Success</SelectItem>
+                        <SelectItem value="failure">Failure</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <Button 
+                    variant="secondary" 
+                    className="w-full mt-2" 
+                    onClick={resetFilters}
+                  >
+                    Reset All Filters
+                  </Button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Search and filters */}
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search by user or student name..." 
+              className="pl-8"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -205,7 +337,7 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
                 {filteredLogs.map((log) => (
                   <tr key={log.id} className="border-b transition-colors hover:bg-muted/50">
                     <td className="p-4 align-middle">
-                      {new Date(log.timestamp).toLocaleDateString()} {new Date(log.timestamp).toLocaleTimeString()}
+                      {formatDate(log.timestamp)}
                     </td>
                     <td className="p-4 align-middle font-medium">{log.user_name}</td>
                     <td className="p-4 align-middle capitalize">{log.user_role}</td>
@@ -234,6 +366,7 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
         
         <div className="text-xs text-muted-foreground mt-4">
           <p>This audit log is maintained in compliance with FERPA regulations and is used to monitor and track all access to student educational records.</p>
+          <p className="mt-1">Log retention period: 1 year</p>
         </div>
       </CardContent>
     </Card>

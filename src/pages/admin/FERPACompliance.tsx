@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FERPAAuditLogs } from "@/components/admin/FERPAAuditLogs";
@@ -14,12 +15,20 @@ const FERPACompliance = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-heading font-bold">FERPA Compliance Management</h2>
-          <Button variant="outline" asChild>
-            <Link to="/privacy-policy">
-              <FileText className="mr-2 h-4 w-4" />
-              View Privacy Policy
-            </Link>
-          </Button>
+          <div className="space-x-2">
+            <Button variant="outline" asChild>
+              <Link to="/privacy-policy">
+                <FileText className="mr-2 h-4 w-4" />
+                View Privacy Policy
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/admin/user-management">
+                <Shield className="mr-2 h-4 w-4" />
+                User Management
+              </Link>
+            </Button>
+          </div>
         </div>
         
         {/* Compliance Status Cards */}
@@ -74,17 +83,18 @@ const FERPACompliance = () => {
         </div>
         
         <Tabs defaultValue="audit-logs">
-          <TabsList>
+          <TabsList className="mb-4">
             <TabsTrigger value="audit-logs">Access Audit Logs</TabsTrigger>
             <TabsTrigger value="access-requests">Record Access Requests</TabsTrigger>
             <TabsTrigger value="consent-management">Consent Management</TabsTrigger>
+            <TabsTrigger value="policy">Privacy Policy</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="audit-logs" className="mt-6">
+          <TabsContent value="audit-logs">
             <FERPAAuditLogs />
           </TabsContent>
           
-          <TabsContent value="access-requests" className="mt-6">
+          <TabsContent value="access-requests">
             <Card>
               <CardHeader>
                 <CardTitle>FERPA Record Access Requests</CardTitle>
@@ -155,7 +165,7 @@ const FERPACompliance = () => {
             </Card>
           </TabsContent>
           
-          <TabsContent value="consent-management" className="mt-6">
+          <TabsContent value="consent-management">
             <Card>
               <CardHeader>
                 <CardTitle>School-Wide Consent Management</CardTitle>
@@ -185,6 +195,64 @@ const FERPACompliance = () => {
                     Last bulk consent refresh: August 15, 2022
                   </p>
                   <Button>Schedule Annual Consent Refresh</Button>
+                </div>
+                
+                <div className="mt-6 space-y-4">
+                  <h3 className="text-lg font-medium">Manage Consent Templates</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="outline">View Standard Templates</Button>
+                    <Button variant="outline">Create Custom Template</Button>
+                    <Button variant="outline">Import Template</Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="policy">
+            <Card>
+              <CardHeader>
+                <CardTitle>Privacy Policy Management</CardTitle>
+                <CardDescription>
+                  Review and update the school's privacy policies
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center p-4 border rounded-md">
+                    <div>
+                      <h3 className="font-medium">Student Privacy Policy</h3>
+                      <p className="text-sm text-muted-foreground">Last updated: January 15, 2023</p>
+                    </div>
+                    <div className="space-x-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to="/privacy-policy">View</Link>
+                      </Button>
+                      <Button variant="outline" size="sm">Edit</Button>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center p-4 border rounded-md">
+                    <div>
+                      <h3 className="font-medium">Staff Data Handling Guidelines</h3>
+                      <p className="text-sm text-muted-foreground">Last updated: March 3, 2023</p>
+                    </div>
+                    <div className="space-x-2">
+                      <Button variant="outline" size="sm">View</Button>
+                      <Button variant="outline" size="sm">Edit</Button>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center p-4 border rounded-md">
+                    <div>
+                      <h3 className="font-medium">Data Retention Schedule</h3>
+                      <p className="text-sm text-muted-foreground">Last updated: February 22, 2023</p>
+                    </div>
+                    <div className="space-x-2">
+                      <Button variant="outline" size="sm">View</Button>
+                      <Button variant="outline" size="sm">Edit</Button>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -9,22 +9,11 @@ import { UserRole } from "@/types/roles";
 import { Loader } from "@/components/ui/loader";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { DashboardLayout } from "@/components/Layout";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
-
-// First fix the DashboardLayout component to accept children
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-  return (
-    <div className="dashboard-layout">
-      {/* You can add common dashboard elements here (like a header or sidebar) */}
-      <div className="dashboard-content">
-        {children}
-      </div>
-    </div>
-  );
-};
 
 const DashboardManager: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -79,4 +68,3 @@ const DashboardManager: React.FC = () => {
 };
 
 export default DashboardManager;
-export { DashboardLayout };
