@@ -1,4 +1,3 @@
-
 import { lazy, Suspense } from "react";
 import { Navigate } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -9,6 +8,7 @@ import parentRoutes from "./parentRoutes";
 import { generalRoutes } from "./generalRoutes";
 import staffRoutes from "./staffRoutes";
 import { Loader } from "@/components/ui/loader";
+import { DashboardRouter } from "./ProtectedRoute";
 
 // Dynamic imports for base pages
 const Login = lazy(() => import("@/pages/Login"));
@@ -36,13 +36,16 @@ export const routes = [
     path: "/login",
     element: <SuspenseWrapper><Login /></SuspenseWrapper>,
   },
+  {
+    path: "/dashboard",
+    element: <SuspenseWrapper><DashboardRouter /></SuspenseWrapper>,
+  },
   ...generalRoutes,
   ...adminRoutes,
   ...teacherAdminRoutes,
   ...studentRoutes,
   ...parentRoutes,
   ...staffRoutes,
-  // Catch-all route for page not found
   {
     path: "*",
     element: <SuspenseWrapper><NotFound /></SuspenseWrapper>

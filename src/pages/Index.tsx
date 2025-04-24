@@ -1,21 +1,26 @@
+
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Loader } from "@/components/ui/loader";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const location = useLocation();
   
   useEffect(() => {
-    // Only redirect to dashboard if user is logged in
-    // Otherwise go to login page
-    if (user) {
-      navigate("/dashboard");
-    } else {
-      navigate("/login");
+    // Only redirect if we're on the root path "/"
+    // This prevents redirects from other pages
+    if (location.pathname === "/") {
+      if (user) {
+        // Just go to /dashboard without additional redirects
+        navigate("/dashboard");
+      } else {
+        navigate("/login");
+      }
     }
-  }, [navigate, user]);
+  }, [navigate, user, location.pathname]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
