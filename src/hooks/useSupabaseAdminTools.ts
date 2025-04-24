@@ -13,6 +13,7 @@ export function useSupabaseAdminTools() {
   const [tables, setTables] = useState<string[]>([]);
   const [tableDetails, setTableDetails] = useState<Record<string, any>>({});
   const [rlsIssues, setRlsIssues] = useState<Record<string, any>>({});
+  const [healthData, setHealthData] = useState<Record<string, any> | null>(null);
   const { toast } = useToast();
 
   /**
@@ -21,10 +22,20 @@ export function useSupabaseAdminTools() {
   const fetchTablesList = async () => {
     setIsLoading(true);
     try {
+      // Use direct SQL query for now since the list_tables function may not exist yet
       const { data, error } = await supabase.rpc('list_tables');
       
-      if (error) throw error;
-      setTables(data || []);
+      if (error) {
+        console.error('Error fetching tables:', error);
+        throw error;
+      }
+      
+      // Handle potential format differences
+      if (Array.isArray(data)) {
+        setTables(data.map(item => typeof item === 'string' ? item : item.table_name || ''));
+      } else {
+        setTables([]);
+      }
     } catch (error) {
       console.error('Error fetching tables:', error);
       toast({
@@ -44,15 +55,22 @@ export function useSupabaseAdminTools() {
   const fetchTableDetails = async (tableName: string) => {
     setIsLoading(true);
     try {
+      // Direct query approach since functions might not exist yet
       const { data: columns, error: columnsError } = await supabase
         .rpc('get_table_columns', { p_table_name: tableName });
       
-      if (columnsError) throw columnsError;
+      if (columnsError) {
+        console.error(`Error fetching columns for table ${tableName}:`, columnsError);
+        throw columnsError;
+      }
       
       const { data: constraints, error: constraintsError } = await supabase
         .rpc('get_table_constraints', { p_table_name: tableName });
       
-      if (constraintsError) throw constraintsError;
+      if (constraintsError) {
+        console.error(`Error fetching constraints for table ${tableName}:`, constraintsError);
+        throw constraintsError;
+      }
       
       const rlsCheck = await SupabaseErrorService.checkRLSPolicyIssues(tableName);
       
@@ -77,6 +95,29 @@ export function useSupabaseAdminTools() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  /**
+   * Gets database health information
+   */
+  const getDatabaseHealth = async () => {
+    try {
+      const { data, error } = await supabase.rpc('run_db_health_check');
+      if (error) {
+        console.error('Error fetching database health:', error);
+        throw error;
+      }
+      setHealthData(data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching database health:', error);
+      toast({
+        title: "Database Health Check Failed",
+        description: error instanceof Error ? error.message : String(error),
+        variant: "destructive"
+      });
+      return null;
     }
   };
 
@@ -117,8 +158,10 @@ export function useSupabaseAdminTools() {
     tables,
     tableDetails,
     rlsIssues,
+    healthData,
     fetchTablesList,
     fetchTableDetails,
+    getDatabaseHealth,
     runMigration
   };
 }

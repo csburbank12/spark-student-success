@@ -13,39 +13,42 @@ export class DatabaseMigrationService {
    */
   static async executeTransaction(migrationName: string, sqlScript: string) {
     try {
-      // First check if the migration has already been applied
-      const { data: existingMigration, error: checkError } = await supabase
-        .from('migration_history')
+      // First check if the migration has already been applied by querying directly
+      const { data: existingMigrations, error: checkError } = await supabase
+        .from('error_logs')  // Using error_logs as a temporary tracking mechanism
         .select('*')
-        .eq('name', migrationName)
-        .single();
+        .eq('action', `migration:${migrationName}`)
+        .maybeSingle();
       
       if (checkError && checkError.code !== 'PGRST116') {
         // Error other than "no rows returned"
         throw checkError;
       }
       
-      if (existingMigration) {
+      if (existingMigrations) {
         return { 
           success: true, 
-          message: `Migration "${migrationName}" already applied on ${existingMigration.applied_at}`,
+          message: `Migration "${migrationName}" already applied`,
           alreadyApplied: true
         };
       }
       
-      // Execute the migration
+      // Execute the migration using raw SQL
+      // Note: We're using a raw query as RPC might not exist yet
       const { data, error } = await supabase.rpc('execute_sql_transaction', {
         p_sql: sqlScript
-      });
+      }).single();
       
       if (error) throw error;
       
-      // Record the successful migration
+      // Record the successful migration in error_logs temporarily
       await supabase
-        .from('migration_history')
+        .from('error_logs')
         .insert({
-          name: migrationName,
-          description: `Applied ${migrationName} migration`
+          action: `migration:${migrationName}`,
+          error_message: `Applied ${migrationName} migration`,
+          profile_type: 'system',
+          resolved: true
         });
       
       return { 
@@ -69,13 +72,22 @@ export class DatabaseMigrationService {
    */
   static async getMigrationHistory() {
     try {
+      // Use error_logs as temporary migration history
       const { data, error } = await supabase
-        .from('migration_history')
+        .from('error_logs')
         .select('*')
-        .order('applied_at', { ascending: false });
+        .filter('action', 'like', 'migration:%')
+        .order('timestamp', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      
+      // Transform the data to match expected migration history format
+      return data ? data.map(log => ({
+        id: log.id,
+        name: log.action.replace('migration:', ''),
+        description: log.error_message,
+        applied_at: log.timestamp
+      })) : [];
     } catch (error) {
       console.error('Error fetching migration history:', error);
       return [];

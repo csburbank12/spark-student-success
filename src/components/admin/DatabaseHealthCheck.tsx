@@ -36,6 +36,7 @@ import {
   addMissingUpdatedAtTriggers,
   ensureStudentDataRlsPolicies
 } from '@/utils/dbMigrations';
+import { DatabaseValidationConfig } from '@/hooks/useAdminDatabaseTools';
 
 /**
  * Component for database health checking and administration
@@ -59,11 +60,14 @@ export default function DatabaseHealthCheck() {
   ];
   
   const { 
-    isValidating, 
-    validationResults, 
-    runMigration, 
-    validateDatabase,
-    getDatabaseHealth
+    isLoading, 
+    tables, 
+    tableDetails, 
+    rlsIssues,
+    fetchTablesList, 
+    fetchTableDetails, 
+    getDatabaseHealth,
+    runMigration
   } = useSupabaseAdminTools();
   
   const { 
@@ -80,32 +84,25 @@ export default function DatabaseHealthCheck() {
   }, []);
 
   const validateDatabaseStructure = async () => {
-    // Configuration for validating essential tables
-    const validationConfig = [
-      {
-        tableName: 'teacher_mood_check_ins',
-        requiredColumns: ['student_id', 'teacher_id', 'mood_type', 'energy_level', 'created_at']
-      },
-      {
-        tableName: 'micro_coach_logs',
-        requiredColumns: ['student_id', 'user_id', 'viewed_prompt', 'context', 'viewed_at']
-      },
-      {
-        tableName: 'intervention_impacts',
-        requiredColumns: ['student_id', 'staff_id', 'intervention_id', 'tier', 'applied_at']
-      },
-      {
-        tableName: 'tiered_support_recommendations',
-        requiredColumns: ['student_id', 'recommended_by', 'tier', 'status', 'created_at']
-      },
-      {
-        tableName: 'error_logs',
-        requiredColumns: ['error_message', 'action', 'timestamp', 'resolved']
-      }
-    ];
+    // Validate essential tables via direct table checks
+    await fetchTablesList();
     
-    const results = await validateDatabase(validationConfig);
-    setTableResults(results);
+    // For tables that exist, fetch their details
+    if (tables && tables.length > 0) {
+      const commonTables = [
+        'teacher_mood_check_ins',
+        'micro_coach_logs',
+        'intervention_impacts',
+        'tiered_support_recommendations',
+        'error_logs'
+      ];
+      
+      for (const tableName of commonTables) {
+        if (tables.includes(tableName)) {
+          await fetchTableDetails(tableName);
+        }
+      }
+    }
   };
 
   const fetchDatabaseHealth = async () => {
@@ -176,9 +173,9 @@ export default function DatabaseHealthCheck() {
               size="sm" 
               variant="outline" 
               onClick={validateDatabaseStructure}
-              disabled={isValidating}
+              disabled={isLoading}
             >
-              <RefreshCw className={`h-4 w-4 mr-1 ${isValidating ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
           </div>
@@ -188,7 +185,7 @@ export default function DatabaseHealthCheck() {
               <Card className="p-4 flex flex-col">
                 <p className="text-sm text-muted-foreground mb-2">Tables without timestamps</p>
                 <div className="flex items-center gap-2">
-                  <Badge variant={healthData.tables_without_timestamps?.length > 0 ? "destructive" : "default"}>
+                  <Badge variant={(healthData.tables_without_timestamps?.length > 0) ? "destructive" : "default"}>
                     {healthData.tables_without_timestamps?.length || 0}
                   </Badge>
                   <span className="font-medium">tables missing timestamps</span>
@@ -198,7 +195,7 @@ export default function DatabaseHealthCheck() {
               <Card className="p-4 flex flex-col">
                 <p className="text-sm text-muted-foreground mb-2">Tables without primary keys</p>
                 <div className="flex items-center gap-2">
-                  <Badge variant={healthData.tables_without_primary_keys?.length > 0 ? "destructive" : "default"}>
+                  <Badge variant={(healthData.tables_without_primary_keys?.length > 0) ? "destructive" : "default"}>
                     {healthData.tables_without_primary_keys?.length || 0}
                   </Badge>
                   <span className="font-medium">tables missing primary key</span>
@@ -207,48 +204,54 @@ export default function DatabaseHealthCheck() {
             </div>
           )}
           
-          {tableResults && tableResults.tables && (
+          {tableDetails && Object.keys(tableDetails).length > 0 && (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Table</TableHead>
-                  <TableHead>Valid</TableHead>
                   <TableHead>Has Primary Key</TableHead>
                   <TableHead>Has Timestamps</TableHead>
                   <TableHead>Issues</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {tableResults.tables.map((table: any) => (
-                  <TableRow key={table.tableName}>
-                    <TableCell className="font-medium">{table.tableName}</TableCell>
-                    <TableCell>
-                      {table.structure.valid ? 
-                        <CheckCircle className="h-5 w-5 text-green-500" /> : 
-                        <XCircle className="h-5 w-5 text-red-500" />
-                      }
-                    </TableCell>
-                    <TableCell>
-                      {table.structure.hasPrimaryKey ? 
-                        <CheckCircle className="h-5 w-5 text-green-500" /> : 
-                        <XCircle className="h-5 w-5 text-red-500" />
-                      }
-                    </TableCell>
-                    <TableCell>
-                      {table.structure.hasTimestamps ? 
-                        <CheckCircle className="h-5 w-5 text-green-500" /> : 
-                        <XCircle className="h-5 w-5 text-red-500" />
-                      }
-                    </TableCell>
-                    <TableCell>
-                      {table.structure.missingColumns && table.structure.missingColumns.length > 0 && (
-                        <span className="text-red-500 text-sm">
-                          Missing: {table.structure.missingColumns.join(', ')}
-                        </span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {Object.entries(tableDetails).map(([tableName, details]: [string, any]) => {
+                  // Extract primary key and timestamp info
+                  const hasPrimaryKey = details.columns?.some((col: any) => col.is_primary_key);
+                  const hasCreatedAt = details.columns?.some((col: any) => col.column_name === 'created_at');
+                  const hasUpdatedAt = details.columns?.some((col: any) => col.column_name === 'updated_at');
+                  const hasTimestamps = hasCreatedAt && hasUpdatedAt;
+                  
+                  return (
+                    <TableRow key={tableName}>
+                      <TableCell className="font-medium">{tableName}</TableCell>
+                      <TableCell>
+                        {hasPrimaryKey ? 
+                          <CheckCircle className="h-5 w-5 text-green-500" /> : 
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        }
+                      </TableCell>
+                      <TableCell>
+                        {hasTimestamps ? 
+                          <CheckCircle className="h-5 w-5 text-green-500" /> : 
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        }
+                      </TableCell>
+                      <TableCell>
+                        {!hasPrimaryKey && (
+                          <span className="text-red-500 text-sm block">
+                            Missing primary key
+                          </span>
+                        )}
+                        {!hasTimestamps && (
+                          <span className="text-red-500 text-sm block">
+                            Missing timestamps
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
@@ -257,14 +260,14 @@ export default function DatabaseHealthCheck() {
             <Button 
               variant="outline" 
               onClick={fixDatabaseAdmin}
-              disabled={isValidating}
+              disabled={isLoading}
             >
               Fix Admin Functions
             </Button>
             <Button 
               variant="default" 
               onClick={fixDatabaseStructure}
-              disabled={isValidating}
+              disabled={isLoading}
             >
               Fix Structure Issues
             </Button>
@@ -279,9 +282,9 @@ export default function DatabaseHealthCheck() {
               size="sm" 
               variant="outline" 
               onClick={validateDatabaseStructure}
-              disabled={isValidating}
+              disabled={isLoading}
             >
-              <RefreshCw className={`h-4 w-4 mr-1 ${isValidating ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
           </div>
@@ -300,7 +303,7 @@ export default function DatabaseHealthCheck() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {Object.entries(healthData.rls_status).map(([tableName, isEnabled]) => (
+                  {Object.entries(healthData.rls_status).map(([tableName, isEnabled]: [string, any]) => (
                     <TableRow key={tableName}>
                       <TableCell className="font-medium">{tableName}</TableCell>
                       <TableCell>
@@ -320,7 +323,7 @@ export default function DatabaseHealthCheck() {
             </div>
           )}
           
-          <Alert variant="warning" className="mb-4">
+          <Alert variant="destructive" className="mb-4">
             <AlertTitle className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4" />
               Security Warning
@@ -335,7 +338,7 @@ export default function DatabaseHealthCheck() {
             <Button 
               variant="default" 
               onClick={fixDatabaseSecurity}
-              disabled={isValidating}
+              disabled={isLoading}
             >
               Fix Security Issues
             </Button>

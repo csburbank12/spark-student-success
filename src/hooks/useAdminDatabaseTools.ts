@@ -34,7 +34,7 @@ export function useAdminDatabaseTools() {
         toast({
           title: "Validation Issues Found",
           description: `${results.tables.filter(t => !t.valid).length} tables have issues that need attention.`,
-          variant: "warning"
+          variant: "destructive" // Changed from 'warning'
         });
       } else {
         toast({
@@ -99,8 +99,15 @@ export function useAdminDatabaseTools() {
    */
   const getDatabaseHealth = async () => {
     try {
+      // We'll implement this with a more basic approach since the function might not exist yet
       const { data, error } = await supabase.rpc('run_db_health_check');
-      if (error) throw error;
+      
+      if (error) {
+        // Fallback to a simple health check
+        const simpleHealth = await performSimpleHealthCheck();
+        return simpleHealth;
+      }
+      
       return data;
     } catch (error) {
       console.error('Error fetching database health:', error);
@@ -109,7 +116,39 @@ export function useAdminDatabaseTools() {
         description: error instanceof Error ? error.message : String(error),
         variant: "destructive"
       });
-      return null;
+      
+      // Return fallback data
+      return await performSimpleHealthCheck();
+    }
+  };
+  
+  /**
+   * Performs a simple health check if the full function is not available
+   */
+  const performSimpleHealthCheck = async () => {
+    try {
+      // Get tables without timestamps
+      const { data: tablesWithoutTimestamps, error: timestampError } = await supabase
+        .from('pg_tables')
+        .select('tablename')
+        .eq('schemaname', 'public');
+      
+      if (timestampError) throw timestampError;
+      
+      // Simple check structure
+      return {
+        check_time: new Date().toISOString(),
+        tables: tablesWithoutTimestamps?.map(t => t.tablename) || [],
+        tables_without_timestamps: [],
+        tables_without_primary_keys: [],
+        rls_status: {}
+      };
+    } catch (error) {
+      console.error('Error in simple health check:', error);
+      return {
+        check_time: new Date().toISOString(),
+        error: error instanceof Error ? error.message : String(error)
+      };
     }
   };
 

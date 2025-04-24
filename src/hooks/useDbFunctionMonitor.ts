@@ -25,37 +25,35 @@ export function useDbFunctionMonitor(requiredFunctions: string[] = []) {
     setIsLoading(true);
     
     try {
-      // Query to check if functions exist
-      const { data, error } = await supabase.rpc('check_functions_exist', {
-        p_function_names: requiredFunctions
-      });
-      
-      if (error) throw error;
-      
-      // Process results
+      // Since check_functions_exist might not exist, we'll check each function individually
       const statusMap: Record<string, boolean> = {};
       const missing: string[] = [];
       
-      requiredFunctions.forEach(funcName => {
-        const exists = data[funcName] || false;
-        statusMap[funcName] = exists;
-        if (!exists) missing.push(funcName);
-      });
+      for (const funcName of requiredFunctions) {
+        try {
+          // Try to call each function with minimal parameters
+          const result = await testFunctionExistence(funcName);
+          statusMap[funcName] = result;
+          if (!result) missing.push(funcName);
+        } catch (err) {
+          statusMap[funcName] = false;
+          missing.push(funcName);
+        }
+      }
       
       setFunctionStatus(statusMap);
       setMissingFunctions(missing);
       
-      // Notify if there are missing functions
       if (missing.length > 0) {
         toast({
           title: "Missing Database Functions",
           description: `${missing.length} required functions are missing. Database operations may be affected.`,
-          variant: "warning"
+          variant: "destructive" // Changed from 'warning'
         });
       }
     } catch (error) {
       console.error('Error checking database functions:', error);
-      // Fallback to function calls to test individually
+      // Still attempt to check functions individually
       checkFunctionsIndividually();
     } finally {
       setIsLoading(false);
@@ -88,7 +86,7 @@ export function useDbFunctionMonitor(requiredFunctions: string[] = []) {
       toast({
         title: "Missing Database Functions",
         description: `${missing.length} required functions are missing. Database operations may be affected.`,
-        variant: "warning"
+        variant: "destructive" // Changed from 'warning'
       });
     }
   };
@@ -102,23 +100,41 @@ export function useDbFunctionMonitor(requiredFunctions: string[] = []) {
       let result;
       switch (functionName) {
         case 'get_teacher_mood_check_ins':
-          result = await supabase.rpc(functionName, { p_student_id: '00000000-0000-0000-0000-000000000000', p_days_back: 1 });
+          result = await supabase.rpc('get_teacher_mood_check_ins', { 
+            p_student_id: '00000000-0000-0000-0000-000000000000', 
+            p_days_back: 1 
+          });
           break;
         case 'get_teacher_mood_trends':
-          result = await supabase.rpc(functionName, { p_student_id: '00000000-0000-0000-0000-000000000000', p_days_back: 1 });
+          result = await supabase.rpc('get_teacher_mood_trends', { 
+            p_student_id: '00000000-0000-0000-0000-000000000000', 
+            p_days_back: 1 
+          });
           break;
         case 'get_micro_coach_logs':
-          result = await supabase.rpc(functionName, { p_student_id: null });
+          result = await supabase.rpc('get_micro_coach_logs', { 
+            p_student_id: null 
+          });
           break;
         case 'get_student_intervention_impacts':
-          result = await supabase.rpc(functionName, { p_student_id: '00000000-0000-0000-0000-000000000000' });
+          result = await supabase.rpc('get_student_intervention_impacts', { 
+            p_student_id: '00000000-0000-0000-0000-000000000000' 
+          });
           break;
         case 'get_tiered_support_recommendations':
-          result = await supabase.rpc(functionName, { p_student_id: '00000000-0000-0000-0000-000000000000' });
+          result = await supabase.rpc('get_tiered_support_recommendations', { 
+            p_student_id: '00000000-0000-0000-0000-000000000000' 
+          });
           break;
         default:
-          // For other functions, we'll just check if we get an error about the function not existing
-          result = await supabase.rpc(functionName, {});
+          // For unknown functions, we'll use a generic approach
+          // Just check if the function call results in an error about not existing
+          try {
+            await supabase.rpc(functionName, {});
+            return true;
+          } catch (error: any) {
+            return !error.message.includes('does not exist');
+          }
       }
       
       // If we get an error about invalid input parameters, the function likely exists

@@ -1,127 +1,138 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+export interface DatabaseValidationConfig {
+  tableName: string;
+  requiredColumns: string[];
+  foreignKeys?: Record<string, {table: string, column: string}>;
+}
+
 /**
- * Service for validating database structure and integrity
+ * Service for validating database structure and requirements
  */
 export class DbValidationService {
   /**
-   * Validates if a table has the expected structure
-   * @param tableName - Name of the table to validate
-   * @param requiredColumns - List of columns that should exist
-   * @returns Validation results with any issues found
+   * Validates database structure against configuration
+   * @param config - Array of validation configurations
+   * @returns Validation results
    */
-  static async validateTableStructure(tableName: string, requiredColumns: string[]) {
+  static async validateDatabase(config: DatabaseValidationConfig[]) {
     try {
-      const { data: columns, error } = await supabase
-        .rpc('get_table_columns', { p_table_name: tableName });
-      
-      if (error) throw error;
-      
-      const columnNames = columns?.map(col => col.column_name) || [];
-      const missingColumns = requiredColumns.filter(col => !columnNames.includes(col));
-      
-      return {
-        valid: missingColumns.length === 0,
-        tableName,
-        missingColumns,
-        hasTimestamps: columnNames.includes('created_at') && columnNames.includes('updated_at'),
-        hasPrimaryKey: columns?.some(col => col.is_primary_key) || false
+      const results = {
+        valid: true,
+        tables: [] as Array<{
+          tableName: string;
+          exists: boolean;
+          structure: {
+            valid: boolean;
+            hasPrimaryKey: boolean;
+            hasTimestamps: boolean;
+            missingColumns: string[];
+          }
+        }>
       };
-    } catch (error) {
-      console.error(`Error validating table ${tableName}:`, error);
-      return {
-        valid: false,
-        tableName,
-        error: error instanceof Error ? error.message : String(error)
-      };
-    }
-  }
-  
-  /**
-   * Validates foreign key constraints between tables
-   * @param tableName - Name of the table to validate
-   * @param foreignKeyChecks - Object mapping column names to referenced tables
-   * @returns Validation results with any missing foreign keys
-   */
-  static async validateForeignKeys(
-    tableName: string, 
-    foreignKeyChecks: Record<string, {table: string, column: string}>
-  ) {
-    try {
-      const { data: constraints, error } = await supabase
-        .rpc('get_table_constraints', { p_table_name: tableName });
-      
-      if (error) throw error;
-      
-      const foreignKeys = constraints?.filter(c => c.constraint_type === 'FOREIGN KEY') || [];
-      const missingForeignKeys: Record<string, string> = {};
-      
-      for (const [column, reference] of Object.entries(foreignKeyChecks)) {
-        const hasConstraint = foreignKeys.some(fk => 
-          fk.column_name === column && 
-          fk.foreign_table === reference.table &&
-          fk.foreign_column === reference.column
-        );
+
+      for (const tableConfig of config) {
+        const result = await this.validateTable(tableConfig);
+        results.tables.push(result);
         
-        if (!hasConstraint) {
-          missingForeignKeys[column] = `${reference.table}.${reference.column}`;
+        // If any table is invalid, the entire validation is invalid
+        if (!result.exists || !result.structure.valid) {
+          results.valid = false;
         }
       }
       
-      return {
-        valid: Object.keys(missingForeignKeys).length === 0,
-        tableName,
-        missingForeignKeys
-      };
+      return results;
     } catch (error) {
-      console.error(`Error validating foreign keys for ${tableName}:`, error);
+      console.error('Database validation failed:', error);
       return {
         valid: false,
-        tableName,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
+        tables: []
       };
     }
   }
   
   /**
-   * Performs full database validation on multiple tables
-   * @param validations - Array of validation configs for each table
-   * @returns Comprehensive validation results
+   * Validates a single database table
+   * @param config - Table validation configuration
+   * @returns Table validation result
    */
-  static async validateDatabase(validations: Array<{
-    tableName: string;
-    requiredColumns: string[];
-    foreignKeys?: Record<string, {table: string, column: string}>;
-  }>) {
-    const results = [];
-    
-    for (const validation of validations) {
-      const structureResult = await this.validateTableStructure(
-        validation.tableName, 
-        validation.requiredColumns
-      );
+  private static async validateTable(config: DatabaseValidationConfig) {
+    try {
+      // Check if table exists using information_schema
+      const { data: tableExists, error: tableError } = await supabase
+        .from('pg_tables')
+        .select('tablename')
+        .eq('schemaname', 'public')
+        .eq('tablename', config.tableName)
+        .maybeSingle();
       
-      let foreignKeyResult = { valid: true };
-      if (validation.foreignKeys) {
-        foreignKeyResult = await this.validateForeignKeys(
-          validation.tableName,
-          validation.foreignKeys
-        );
+      if (tableError) throw tableError;
+      
+      if (!tableExists) {
+        return {
+          tableName: config.tableName,
+          exists: false,
+          structure: {
+            valid: false,
+            hasPrimaryKey: false,
+            hasTimestamps: false,
+            missingColumns: config.requiredColumns
+          }
+        };
       }
       
-      results.push({
-        tableName: validation.tableName,
-        structure: structureResult,
-        foreignKeys: foreignKeyResult,
-        valid: structureResult.valid && foreignKeyResult.valid
-      });
+      // Check columns using information_schema
+      const { data: columns, error: columnsError } = await supabase
+        .from('information_schema.columns')
+        .select('column_name')
+        .eq('table_schema', 'public')
+        .eq('table_name', config.tableName);
+      
+      if (columnsError) throw columnsError;
+      
+      const columnNames = columns?.map(c => c.column_name) || [];
+      const missingColumns = config.requiredColumns.filter(col => !columnNames.includes(col));
+      
+      // Check for primary key
+      const { data: primaryKey, error: pkError } = await supabase
+        .from('information_schema.table_constraints')
+        .select('constraint_name')
+        .eq('table_schema', 'public')
+        .eq('table_name', config.tableName)
+        .eq('constraint_type', 'PRIMARY KEY')
+        .maybeSingle();
+      
+      if (pkError) throw pkError;
+      
+      // Check for timestamps
+      const hasCreatedAt = columnNames.includes('created_at');
+      const hasUpdatedAt = columnNames.includes('updated_at');
+      
+      return {
+        tableName: config.tableName,
+        exists: true,
+        structure: {
+          valid: missingColumns.length === 0,
+          hasPrimaryKey: !!primaryKey,
+          hasTimestamps: hasCreatedAt && hasUpdatedAt,
+          missingColumns
+        }
+      };
+    } catch (error) {
+      console.error(`Error validating table ${config.tableName}:`, error);
+      return {
+        tableName: config.tableName,
+        exists: false,
+        error: error instanceof Error ? error.message : String(error),
+        structure: {
+          valid: false,
+          hasPrimaryKey: false,
+          hasTimestamps: false,
+          missingColumns: config.requiredColumns
+        }
+      };
     }
-    
-    return {
-      valid: results.every(r => r.valid),
-      tables: results,
-      timestamp: new Date().toISOString()
-    };
   }
 }
