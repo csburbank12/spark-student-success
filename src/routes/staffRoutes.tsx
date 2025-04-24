@@ -20,7 +20,7 @@ const staffRoutes = [
     path: "/staff-profile",
     element: (
       <ProtectedRoute requiredRole={[UserRole.staff]}>
-        <StaffProfile />
+        <StaffProfile user={{}} />
       </ProtectedRoute>
     ),
   },

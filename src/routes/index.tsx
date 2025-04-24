@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import NotFound from "@/pages/NotFound";
 import Login from "@/pages/Login";
 import parentRoutes from "./parentRoutes";
-import teacherAdminRoutes from "./teacherAdminRoutes";
+import { teacherAdminRoutes } from "./teacherAdminRoutes";
 import staffRoutes from "./staffRoutes";
 import studentRoutes from "./studentRoutes";
 import adminRoutes from "./adminRoutes";

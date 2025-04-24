@@ -33,26 +33,29 @@ export function useSafeQuery<
     queryKey,
     queryFn,
     ...queryOptions,
-    onError: (error) => {
-      // Log the error
-      if (logErrors) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+    meta: {
+      ...queryOptions.meta,
+      onError: (error: any) => {
+        // Log the error
+        if (logErrors) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          
+          ErrorLoggingService.logError({
+            action: `query_error_${queryKey.join('_')}`,
+            error_message: errorMessage,
+            profile_type: (user?.role as ProfileType || 'unknown')
+          });
+        }
         
-        ErrorLoggingService.logError({
-          action: `query_error_${queryKey.join('_')}`,
-          error_message: errorMessage,
-          profile_type: (user?.role as ProfileType || 'unknown')
-        });
-      }
-      
-      // Show toast if enabled
-      if (showErrorToast) {
-        toast.error(errorMessage);
-      }
-      
-      // Call the original onError if provided
-      if (options?.onError) {
-        options.onError(error);
+        // Show toast if enabled
+        if (showErrorToast) {
+          toast.error(errorMessage);
+        }
+        
+        // Call the original onError if provided in meta
+        if (options?.meta?.onError) {
+          options.meta.onError(error);
+        }
       }
     },
   });
