@@ -30,7 +30,7 @@ const SchoolOnboarding = lazy(() => import("@/pages/admin/SchoolOnboarding"));
 const Integrations = lazy(() => import("@/pages/ConsentSettings"));
 
 // Teacher Routes
-const StudentManagement = lazy(() => import("@/pages/students/StudentList"));
+const StudentManagement = lazy(() => import("@/pages/StudentManagement"));
 const SELPathway = lazy(() => import("@/pages/SelfRegulationToolbox"));
 const StaffAssist = lazy(() => import("@/pages/ResetRoom"));
 const PredictiveSupport = lazy(() => import("@/pages/PredictiveSupport"));
@@ -42,13 +42,28 @@ const DigitalJournal = lazy(() => import("@/pages/DigitalJournal"));
 const ResetRoom = lazy(() => import("@/pages/ResetRoom"));
 const CheckIn = lazy(() => import("@/pages/students/MoodTrendsOverview"));
 const SELPathways = lazy(() => import("@/pages/students/StudentRiskDashboard"));
-const TrustedAdults = lazy(() => import("@/pages/students/RiskOverviewCard"));
+const TrustedAdults = lazy(() => import("@/components/dashboard/NotLoggedInView"));
 
 // Parent Routes
 const ChildActivity = lazy(() => import("@/pages/students/StudentsAtRisk"));
 const ChildWellness = lazy(() => import("@/pages/students/MoodTrendsOverview"));
 const Messages = lazy(() => import("@/pages/DataAccessRequests"));
 const ParentResources = lazy(() => import("@/pages/ConsentSettings"));
+
+// Create a wrapper for components that need empty props
+const StudentListWrapper = () => {
+  const emptyStudents = [];
+  return <StudentManagement />;
+};
+
+const StudentRiskDashboardWrapper = () => {
+  const emptyStudents = [];
+  return <SELPathways students={emptyStudents} />;
+};
+
+const RiskOverviewCardWrapper = () => {
+  return <TrustedAdults />;
+};
 
 export const routes = [
   {
@@ -177,7 +192,7 @@ export const routes = [
     path: "/teacher/students",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
-        <StudentManagement />
+        <StudentListWrapper />
       </ProtectedRoute>
     ),
   },
@@ -250,7 +265,7 @@ export const routes = [
     path: "/student/sel-pathways",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <SELPathways />
+        <StudentRiskDashboardWrapper />
       </ProtectedRoute>
     ),
   },
@@ -258,7 +273,7 @@ export const routes = [
     path: "/student/trusted-adults",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <TrustedAdults />
+        <RiskOverviewCardWrapper />
       </ProtectedRoute>
     ),
   },
