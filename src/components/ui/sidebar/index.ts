@@ -1,11 +1,20 @@
 
-export * from "./components/sidebar-base";
-export * from "./components/sidebar-trigger";
-export * from "./components/sidebar-rail";
-export * from "./components/sidebar-input";
-export * from "./components/sidebar-separator";
-export * from "./components/sidebar-inset";
-export * from "./components/menu";
-export * from "./sidebar-context";
-export * from "./sidebar-provider";
-export * from "./sidebar-utils";
+import { SidebarProvider } from "./sidebar-provider";
+import { Sidebar } from "./components/sidebar-base";
+import { SidebarContent, SidebarFooter, SidebarHeader } from "./components/sidebar-group";
+import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "./components/menu";
+import { SidebarRail } from "./components/sidebar-rail";
+import { SidebarInset } from "./components/sidebar-inset";
+
+export {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarRail,
+  SidebarInset,
+};

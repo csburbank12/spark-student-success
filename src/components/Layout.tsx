@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppShell } from './layout/AppShell';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -15,12 +15,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, isLoading } = useAuth();
   
   // Scroll to top on route change
-  React.useEffect(() => {
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
   // Redirect to login if not authenticated
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isLoading && !user && location.pathname !== '/login') {
       toast.error('Please log in to continue', {
         id: 'auth-redirect'

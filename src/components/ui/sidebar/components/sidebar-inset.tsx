@@ -1,44 +1,28 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSidebar } from "../sidebar-context";
 
-export const SidebarInset = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<"div"> & {
-    variant?: "inset";
-    enableScroll?: boolean;
-  }
->(
-  (
-    {
-      variant = "inset",
-      enableScroll = true,
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+export interface SidebarInsetProps extends React.HTMLAttributes<HTMLDivElement> {
+  enableScroll?: boolean;
+}
+
+export const SidebarInset = React.forwardRef<HTMLDivElement, SidebarInsetProps>(
+  ({ className, enableScroll = false, ...props }, ref) => {
+    const { open } = useSidebar();
+
     return (
       <div
         ref={ref}
-        data-sidebar="inset"
-        data-variant={variant}
+        data-variant="inset"
+        data-state={open ? "open" : "closed"}
         className={cn(
-          "flex-1",
-          // Only apply overflow-hidden if scrolling is not enabled
-          !enableScroll && "overflow-hidden",
+          "z-10 flex min-h-screen flex-1 flex-col transition-[margin,width] duration-300 data-[state=open]:ml-sidebar-width data-[state=closed]:ml-sidebar-width-icon",
+          enableScroll && "overflow-y-auto",
           className
         )}
         {...props}
-      >
-        {enableScroll ? (
-          <ScrollArea className="h-full">{children}</ScrollArea>
-        ) : (
-          children
-        )}
-      </div>
+      />
     );
   }
 );
