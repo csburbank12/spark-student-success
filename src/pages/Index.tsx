@@ -10,11 +10,9 @@ const Index = () => {
   const location = useLocation();
   
   useEffect(() => {
-    // Only redirect if we're on the root path "/"
-    // This prevents redirects from other pages
+    // Only redirect if we're exactly on the root path "/"
     if (location.pathname === "/") {
       if (user) {
-        // Just go to /dashboard without additional redirects
         navigate("/dashboard");
       } else {
         navigate("/login");

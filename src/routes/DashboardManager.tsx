@@ -22,7 +22,7 @@ const DashboardManager: React.FC = () => {
     return <NotLoggedInView />;
   }
 
-  // Return the dashboard selector without any additional redirects
+  // Simply render the dashboard selector without any redirects
   return <DashboardSelector userRole={user.role as UserRole} />;
 };
 

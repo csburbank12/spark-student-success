@@ -71,6 +71,6 @@ export const DashboardRouter: React.FC = () => {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
   
-  // Return DashboardManager without automatic redirection
+  // Return DashboardManager without any redirects
   return <DashboardManager />;
 };
