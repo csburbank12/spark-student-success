@@ -99,11 +99,11 @@ const TeacherDashboardEnhanced = () => {
     );
   }
 
-  // Wrap the conditional rendering in a React Fragment to ensure a single root element
+  // Fix: Don't pass data-lov-id prop to React.Fragment
   return (
     <div className="space-y-6">
       {!selectedStudent ? (
-        <React.Fragment>
+        <>
           <TeacherDashboardHeader onScheduleCheckIn={handleScheduleCheckIn} />
           <TeacherStatCardsRow />
           
@@ -122,7 +122,7 @@ const TeacherDashboardEnhanced = () => {
             students={students}
             onStudentClick={handleStudentClick}
           />
-        </React.Fragment>
+        </>
       ) : (
         <StudentInterventionView
           studentId={selectedStudent}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Bell, Search, Menu, HelpCircle, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,7 +25,6 @@ export const Navbar = () => {
     setRole(role);
   };
   
-  // Get the appropriate title based on current path
   const getPageTitle = () => {
     const path = location.pathname;
     
@@ -71,7 +69,8 @@ export const Navbar = () => {
       return 'Parent Portal';
     }
     
-    // Default titles for common paths
+    if (path.includes('qa-dashboard')) return 'QA Dashboard';
+    
     if (path.includes('profile')) return 'User Profile';
     if (path.includes('settings')) return 'Settings';
     if (path.includes('help')) return 'Help & Support';
@@ -121,6 +120,9 @@ export const Navbar = () => {
         <Button variant="ghost" size="icon" className="hidden md:flex">
           <HelpCircle className="h-5 w-5" />
         </Button>
+        <Link to="/qa-dashboard">
+          <Button variant="outline" size="sm">QA Dashboard</Button>
+        </Link>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" className="relative">

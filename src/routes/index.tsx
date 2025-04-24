@@ -15,6 +15,7 @@ import { Navigate } from "react-router-dom";
 const Login = lazy(() => import("@/pages/Login"));
 const Index = lazy(() => import("@/pages/Index"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
+const QADashboard = lazy(() => import("@/pages/QADashboard"));
 
 // Create a suspense wrapper for lazy loaded components
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -47,6 +48,16 @@ export const routes = [
       <SuspenseWrapper>
         <Layout>
           <DashboardManager />
+        </Layout>
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: "/qa-dashboard",
+    element: (
+      <SuspenseWrapper>
+        <Layout>
+          <QADashboard />
         </Layout>
       </SuspenseWrapper>
     ),
