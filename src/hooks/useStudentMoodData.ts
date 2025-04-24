@@ -45,6 +45,6 @@ export function useStudentMoodData(studentId?: string, daysBack: number = 90) {
     enabled: !!targetId && isValidUuid(targetId),
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
-    retry: 1, // Reduce retry attempts for failed queries
+    retry: 1 // Reduce retry attempts for failed queries
   });
 }

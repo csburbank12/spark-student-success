@@ -150,7 +150,7 @@ export function useEmotionTrendAnalysis({ moodData, studentId, enabled = true }:
     enabled: enabled && !!studentId && Array.isArray(moodData),
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
-    retry: 1,
-    suspense: false // Explicitly disable suspense mode for this query
+    retry: 1
+    // Removed the suspense property as it's not supported in the current version
   });
 }
