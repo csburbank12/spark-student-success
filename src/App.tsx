@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
 import { routes } from "./routes/index";
@@ -20,6 +20,16 @@ function App() {
   return (
     <GlobalErrorBoundary component="AppRoot">
       <Routes>
+        {/* Explicit home route */}
+        <Route 
+          path="/" 
+          element={
+            <GlobalErrorBoundary component="Route-home">
+              <Navigate to="/dashboard" replace />
+            </GlobalErrorBoundary>
+          } 
+        />
+        
         {routes.map((route) => (
           <Route
             key={route.path}

@@ -17,7 +17,8 @@ const Login = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+  // Always redirect to dashboard, which will now show role selection
+  const redirectTo = "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

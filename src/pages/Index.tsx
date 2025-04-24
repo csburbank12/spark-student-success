@@ -18,7 +18,9 @@ const Index = () => {
   
   useEffect(() => {
     if (shouldRedirect) {
-      if (!user) {
+      if (user) {
+        navigate("/dashboard");
+      } else {
         navigate("/login");
       }
     }
@@ -45,10 +47,10 @@ const Index = () => {
             <Link to="/dashboard">Go to Dashboard</Link>
           </Button>
           <Button asChild variant="outline" className="w-full">
-            <Link to="/help">Help & Support</Link>
+            <Link to="/profile">User Profile</Link>
           </Button>
           <Button asChild variant="outline" className="w-full">
-            <Link to="/profile">User Profile</Link>
+            <Link to="/help">Help & Support</Link>
           </Button>
           {!user && (
             <Button asChild variant="outline" className="w-full">

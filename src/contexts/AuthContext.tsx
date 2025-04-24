@@ -6,11 +6,13 @@ import { initializeDemoData } from '@/utils/demoDataManager';
 import { UserRole } from '@/types/roles';
 import { supabase } from '@/integrations/supabase/client';
 import { ErrorLoggingService } from '@/services/ErrorLoggingService';
+import { useToast } from '@/components/ui/use-toast';
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const auth = useAuthProvider();
+  const { toast } = useToast();
   
   useEffect(() => {
     // Set up auth state listener
@@ -39,9 +41,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       subscription?.unsubscribe();
     };
   }, [auth.user]);
+
+  // Add role switching toast notification
+  const enhancedAuth = {
+    ...auth,
+    setRole: (role: UserRole) => {
+      auth.setRole(role);
+      toast({
+        title: "Role Changed",
+        description: `You are now viewing as: ${role.charAt(0).toUpperCase() + role.slice(1)}`,
+      });
+    }
+  };
   
   return (
-    <AuthContext.Provider value={auth}>
+    <AuthContext.Provider value={enhancedAuth}>
       {children}
     </AuthContext.Provider>
   );
