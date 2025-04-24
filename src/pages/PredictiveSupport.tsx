@@ -1,3 +1,4 @@
+
 import React, { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +10,9 @@ import { ErrorBoundary } from "react-error-boundary";
 import RiskTrendChart from "@/components/predictive-support/RiskTrendChart";
 import InterventionRecommendations from "@/components/predictive-support/InterventionRecommendations";
 import SelDomainScoresCard from "@/components/predictive-support/dashboard/SelDomainScoresCard";
+import { UserCircle, Share2, Users } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 const stats = [
   { title: "Students at Risk", value: "12", trend: "up", change: "+2" },
@@ -19,6 +23,7 @@ const stats = [
 
 const PredictiveSupport = () => {
   const { reset } = useQueryErrorResetBoundary();
+  const { user } = useAuth();
 
   return (
     <ErrorBoundary
@@ -50,8 +55,41 @@ const PredictiveSupport = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-3xl font-bold">Predictive Support</h2>
-            <Badge variant="outline">AI-Powered Insights</Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline">AI-Powered Insights</Badge>
+              <Link to="/profiles">
+                <Button size="sm" variant="outline" className="flex items-center gap-1">
+                  <Users className="h-4 w-4" />
+                  <span>Profiles</span>
+                </Button>
+              </Link>
+              <Link to="/shared-resources">
+                <Button size="sm" variant="outline" className="flex items-center gap-1">
+                  <Share2 className="h-4 w-4" />
+                  <span>Share</span>
+                </Button>
+              </Link>
+            </div>
           </div>
+
+          {/* Profile integration card */}
+          <Card className="bg-primary/5">
+            <CardContent className="p-4 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <UserCircle className="h-10 w-10 text-primary" />
+                <div>
+                  <h3 className="font-medium">{user?.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    WellLens is providing insights based on your {user?.role} profile
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-sm text-muted-foreground block">Last updated</span>
+                <span className="font-medium">Today, 10:45 AM</span>
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat, i) => (

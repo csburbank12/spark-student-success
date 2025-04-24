@@ -4,14 +4,16 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, BarChart3, Download, Calendar, Users, BookOpen } from "lucide-react";
+import { Search, Filter, BarChart3, Download, Calendar, Users, BookOpen, UserCircle } from "lucide-react";
 import StudentRiskDashboard from "./students/StudentRiskDashboard";
 import { Link } from "react-router-dom";
 import RiskTrendsChart from "./students/RiskTrendsChart";
+import { useAuth } from "@/contexts/AuthContext";
 
 const WellLensDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
+  const { user } = useAuth();
   
   // Mock student data that would come from your database
   const students = Array(25).fill(null).map((_, idx) => ({
@@ -48,6 +50,26 @@ const WellLensDashboard = () => {
           </Button>
         </div>
       </div>
+      
+      {/* User context banner */}
+      <Card className="bg-primary/5 border-primary/20">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <UserCircle className="h-8 w-8 text-primary" />
+              <div>
+                <h3 className="font-medium">Welcome, {user?.name}</h3>
+                <p className="text-sm text-muted-foreground">
+                  Your WellLens insights are customized for your {user?.role} profile
+                </p>
+              </div>
+            </div>
+            <Link to="/profiles">
+              <Button variant="outline" size="sm">Manage Profile Access</Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>

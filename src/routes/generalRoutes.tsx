@@ -1,62 +1,71 @@
 
-import React from 'react';
-import Login from '@/pages/Login';
-import Help from "@/pages/Help";
-import Settings from "@/pages/Settings";
-import UserProfile from '@/pages/profile/UserProfile';
-import PrivacyPolicy from '@/pages/PrivacyPolicy';
-import ConsentSettings from '@/pages/ConsentSettings';
-import DataAccessRequests from '@/pages/DataAccessRequests';
-import { ProtectedRoute } from "./ProtectedRoute";
-import NotFound from '@/pages/NotFound';
+import { lazy } from "react";
+import Layout from "@/components/Layout";
+import { Navigate } from "react-router-dom";
+
+const Help = lazy(() => import("@/pages/Help"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const WellLensDashboard = lazy(() => import("@/pages/WellLensDashboard"));
+const PredictiveSupport = lazy(() => import("@/pages/PredictiveSupport"));
+const EmotionAwareScheduling = lazy(() => import("@/pages/EmotionAwareScheduling"));
+const Profiles = lazy(() => import("@/pages/Profiles"));
+const SharedResources = lazy(() => import("@/pages/SharedResources"));
 
 export const generalRoutes = [
   {
-    path: "help",
-    element: <Help />
+    path: "/help",
+    element: (
+      <Layout>
+        <Help />
+      </Layout>
+    ),
   },
   {
-    path: "settings",
+    path: "/settings",
     element: (
-      <ProtectedRoute>
+      <Layout>
         <Settings />
-      </ProtectedRoute>
-    )
+      </Layout>
+    ),
   },
   {
-    path: "profile",
+    path: "/welllens",
     element: (
-      <ProtectedRoute>
-        <UserProfile />
-      </ProtectedRoute>
-    )
+      <Layout>
+        <WellLensDashboard />
+      </Layout>
+    ),
   },
   {
-    path: "privacy-policy",
-    element: <PrivacyPolicy />
-  },
-  {
-    path: "consent-settings",
+    path: "/predictive-support",
     element: (
-      <ProtectedRoute>
-        <ConsentSettings />
-      </ProtectedRoute>
-    )
+      <Layout>
+        <PredictiveSupport />
+      </Layout>
+    ),
   },
   {
-    path: "data-access-requests",
+    path: "/emotion-scheduling",
     element: (
-      <ProtectedRoute>
-        <DataAccessRequests />
-      </ProtectedRoute>
-    )
+      <Layout>
+        <EmotionAwareScheduling />
+      </Layout>
+    ),
   },
   {
-    path: "404",
-    element: <NotFound />
+    path: "/profiles",
+    element: (
+      <Layout>
+        <Profiles />
+      </Layout>
+    ),
   },
   {
-    path: "*",
-    element: <NotFound />
-  }
+    path: "/shared-resources",
+    element: (
+      <Layout>
+        <SharedResources />
+      </Layout>
+    ),
+  },
 ];
