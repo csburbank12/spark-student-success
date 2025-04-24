@@ -9,7 +9,7 @@ import DataAnalytics from "@/pages/admin/DataAnalytics";
 import SchoolManagement from "@/pages/admin/SchoolManagement";
 import FERPACompliance from "@/pages/admin/FERPACompliance";
 import SystemSettings from "@/pages/admin/SystemSettings";
-import LoopbotLogs from "@/pages/admin/LoopbotLogs";
+import LoopBotLogs from "@/pages/admin/LoopBotLogs";
 import AuditDashboard from "@/pages/admin/AuditDashboard";
 import ErrorLogsDashboard from "@/pages/admin/ErrorLogsDashboard";
 
