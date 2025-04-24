@@ -5,7 +5,7 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarFooter,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar/components/sidebar-base";
 import SidebarNavLinks from "./SidebarNavLinks";
 import SidebarFooterActions from "./SidebarFooterActions";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,3 +36,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

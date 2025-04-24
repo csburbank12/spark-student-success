@@ -1,4 +1,3 @@
-
 import React from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { User, LogOut, Settings, HelpCircle } from "lucide-react";
@@ -6,8 +5,8 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  useSidebar,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar/components/menu";
+import { useSidebar } from "@/components/ui/sidebar/sidebar-context";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";

@@ -3,7 +3,7 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, HelpCircle, Home, UserCircle, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useSidebar } from '@/components/ui/sidebar';
+import { useSidebar } from '@/components/ui/sidebar/sidebar-context';
 import NavBreadcrumbs from './NavBreadcrumbs';
 import SearchBar from './navbar/SearchBar';
 import NotificationMenu from './navbar/NotificationMenu';
@@ -125,3 +125,4 @@ export const Navbar = () => {
     </header>
   );
 };
+
