@@ -1,19 +1,12 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Search, 
-  Activity,
-  Filter,
-  EyeOff
-} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
 import { Link } from "react-router-dom";
+import { ProfileSearch } from "@/components/profiles/ProfileSearch";
+import { ProfileFilters } from "@/components/profiles/ProfileFilters";
+import { ProfileList } from "@/components/profiles/ProfileList";
 
 const profilesData = [
   { 
@@ -90,79 +83,11 @@ const Profiles = () => {
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search profiles..."
-            className="pl-8"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <Select value={filterRole} onValueChange={setFilterRole}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Filter by role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="student">Students</SelectItem>
-              <SelectItem value="teacher">Teachers</SelectItem>
-              <SelectItem value="parent">Parents</SelectItem>
-              <SelectItem value="admin">Admins</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <ProfileSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <ProfileFilters filterRole={filterRole} setFilterRole={setFilterRole} />
       </div>
 
-      <div className="grid gap-4">
-        {filteredProfiles.map(profile => (
-          <Card key={profile.id} className="hover:bg-muted/50 transition-colors">
-            <CardContent className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-primary font-medium">{profile.avatar}</span>
-                </div>
-                <div>
-                  <h3 className="font-medium">{profile.name}</h3>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">{profile.role}</Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {profile.grade || profile.department || profile.children}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <div className="text-right text-sm">
-                  <div className={`flex items-center gap-1 ${profile.wellLensAccess ? 'text-green-600' : 'text-amber-600'}`}>
-                    {profile.wellLensAccess ? (
-                      <>
-                        <Activity className="h-4 w-4" />
-                        <span>WellLens Enabled</span>
-                      </>
-                    ) : (
-                      <>
-                        <EyeOff className="h-4 w-4" />
-                        <span>No WellLens Access</span>
-                      </>
-                    )}
-                  </div>
-                  <span className="text-xs text-muted-foreground mt-1">
-                    Last active: {profile.lastActive}
-                  </span>
-                </div>
-                <Button variant="outline" size="sm">
-                  View
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <ProfileList profiles={filteredProfiles} />
     </div>
   );
 };
