@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -410,10 +409,10 @@ const ParentChildrenManager = () => {
                     <div className="p-4 border rounded-lg">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-12 w-12">
-                          <AvatarFallback>JC</AvatarFallback>
+                          <AvatarFallback>SC</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">Dr. James Chen</p>
+                          <p className="font-medium">Ms. Sarah Collins</p>
                           <p className="text-sm text-muted-foreground">School Counselor</p>
                         </div>
                       </div>

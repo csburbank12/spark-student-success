@@ -20,8 +20,7 @@ export const useAuthProvider = () => {
         [UserRole.student]: '7f8d2a90-6495-4c41-8e86-86539e961324',
         [UserRole.teacher]: 'b2c5f5d7-3273-4515-b3c4-587d9fd697b4',
         [UserRole.admin]: '9e8c7a6b-5d4e-4f3c-2b1a-0i9o8u7y6t5r',
-        [UserRole.parent]: 'a1s2d3f4-g5h6-j7k8-l9z0-x1c2v3b4n5m6',
-        [UserRole.staff]: 'q1w2e3r4-t5y6-u7i8-o9p0-a1s2d3f4g5h6'
+        [UserRole.parent]: 'a1s2d3f4-g5h6-j7k8-l9z0-x1c2v3b4n5m6'
       }[user.role as UserRole] || '00000000-0000-0000-0000-000000000000';
       
       return { ...user, id: roleBasedId };

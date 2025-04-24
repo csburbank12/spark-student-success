@@ -62,13 +62,6 @@ export const DemoAccounts = ({
       email: demoUsers[UserRole.parent].email,
       description: "Monitor child activities, wellness, and communicate with staff",
       iconClass: "bg-amber-100 text-amber-600"
-    },
-    { 
-      role: UserRole.staff, 
-      name: demoUsers[UserRole.staff].name,
-      email: demoUsers[UserRole.staff].email,
-      description: "Support student wellness, track interventions, access resources",
-      iconClass: "bg-indigo-100 text-indigo-600"
     }
   ];
 

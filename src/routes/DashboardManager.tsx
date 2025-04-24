@@ -53,7 +53,6 @@ const DashboardManager: React.FC = () => {
     case UserRole.student:
       return <StudentDashboardEnhanced />;
     case UserRole.teacher:
-    case UserRole.staff:
       return <TeacherDashboardEnhanced />;
     case UserRole.admin:
       return <AdminDashboardEnhanced />;
