@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
 import { routes } from "./routes/index";
+import { Toaster } from "@/components/ui/toaster";
 
 function App() {
   const { isLoading } = useAuth();
@@ -31,6 +32,7 @@ function App() {
           />
         ))}
       </Routes>
+      <Toaster />
     </GlobalErrorBoundary>
   );
 }

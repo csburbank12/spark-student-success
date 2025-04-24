@@ -41,7 +41,7 @@ const SidebarNavLinks: React.FC<SidebarNavLinksProps> = ({
             isActive={location.pathname === route.href}
             tooltip={state === "collapsed" ? route.name : undefined}
           >
-            <NavLink to={route.href}>
+            <NavLink to={route.href} className="flex items-center">
               <route.icon className="h-5 w-5" />
               <span>{route.name}</span>
             </NavLink>
