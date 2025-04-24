@@ -74,7 +74,7 @@ const adminRoutes = [
     path: "/admin/loopbot-logs",
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <LoopbotLogs />
+        <LoopBotLogs />
       </ProtectedRoute>
     ),
   },
