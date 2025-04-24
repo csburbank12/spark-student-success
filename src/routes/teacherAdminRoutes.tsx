@@ -30,14 +30,6 @@ export const teacherAdminRoutes = [
     ),
   },
   {
-    path: "/student-management",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <StudentManagement />
-      </ProtectedRoute>
-    ),
-  },
-  {
     path: "/students",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>

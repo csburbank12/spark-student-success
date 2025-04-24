@@ -954,13 +954,6 @@ export type Database = {
             referencedRelation: "schools"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "school_admins_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
       school_wellness_scores: {
@@ -1262,6 +1255,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "student_badges_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_checkins: {
+        Row: {
+          checkin_time: string | null
+          id: number
+          notes: string | null
+          student_id: string | null
+        }
+        Insert: {
+          checkin_time?: string | null
+          id?: never
+          notes?: string | null
+          student_id?: string | null
+        }
+        Update: {
+          checkin_time?: string | null
+          id?: never
+          notes?: string | null
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_checkins_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
@@ -1967,6 +1989,10 @@ export type Database = {
       reset_demo_environment: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      safe_uuid_cast: {
+        Args: { text_id: string }
+        Returns: string
       }
       schedule_integration_sync: {
         Args: {
