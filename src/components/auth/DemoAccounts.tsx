@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { TermsAgreement } from "./TermsAgreement";
@@ -14,8 +13,7 @@ import {
   School, 
   User, 
   Users, 
-  UserPlus, 
-  Briefcase 
+  UserPlus 
 } from "lucide-react";
 
 interface DemoAccount {
@@ -78,14 +76,6 @@ export const DemoAccounts = ({
       description: "Monitor child activities, wellness, and communicate with staff",
       icon: <UserPlus className="h-5 w-5" />,
       iconClass: "bg-amber-100 text-amber-600"
-    },
-    { 
-      role: UserRole.staff, 
-      name: "Dr. James Chen",
-      email: "chen@school.edu",
-      description: "Access staff tools, provide support services, and manage resources",
-      icon: <Briefcase className="h-5 w-5" />,
-      iconClass: "bg-teal-100 text-teal-600"
     }
   ];
 
@@ -153,7 +143,7 @@ export const DemoAccounts = ({
       <Button 
         className="w-full"
         disabled={!email || !password || !agreedToTerms || isSubmitting}
-        onClick={handleFormSubmit}
+        onClick={handleSubmit}
         aria-busy={isSubmitting}
       >
         {isSubmitting ? "Logging in..." : "Log in with Selected Account"}

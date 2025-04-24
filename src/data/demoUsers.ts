@@ -57,4 +57,3 @@ export const demoUsers: Record<string, User> = {
     ]
   }
 };
-
