@@ -2,7 +2,11 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "../sidebar-context";
-import { SidebarHeader, SidebarContent, SidebarFooter } from "./sidebar-group";
+import { 
+  SidebarHeader, 
+  SidebarContent, 
+  SidebarFooter 
+} from "./sidebar-group";  // Updated import path
 
 export interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
