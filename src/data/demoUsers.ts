@@ -35,7 +35,10 @@ export const demoUsers: Record<string, User> = {
     avatarUrl: '/admin-avatar.png',
     schoolId: 'school1',
     position: 'Principal',
-    adminLevel: 'School'
+    adminLevel: 'District',
+    yearsExperience: 15,
+    department: 'Administration',
+    specialization: 'Educational Leadership'
   },
   [UserRole.parent]: {
     id: 'par1',
@@ -53,5 +56,5 @@ export const demoUsers: Record<string, User> = {
       }
     ]
   }
-  // Removed staff user entry for Dr. James Chen
 };
+
