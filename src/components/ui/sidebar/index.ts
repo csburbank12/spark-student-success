@@ -5,6 +5,7 @@ import { SidebarContent, SidebarFooter, SidebarHeader } from "./components/sideb
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "./components/menu";
 import { SidebarRail } from "./components/sidebar-rail";
 import { SidebarInset } from "./components/sidebar-inset";
+import { SidebarTrigger } from "./components/sidebar-trigger";
 
 export {
   SidebarProvider,
@@ -17,4 +18,5 @@ export {
   SidebarMenuButton,
   SidebarRail,
   SidebarInset,
+  SidebarTrigger,
 };
