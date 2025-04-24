@@ -6,14 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, BarChart3, Download, Calendar, Users, BookOpen, UserCircle } from "lucide-react";
 import StudentRiskDashboard from "./students/StudentRiskDashboard";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import RiskTrendsChart from "./students/RiskTrendsChart";
 import { useAuth } from "@/contexts/AuthContext";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UserRole } from "@/types/roles";
 
 const WellLensDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
-  const { user } = useAuth();
+  const { user, setRole } = useAuth();
+  const navigate = useNavigate();
   
   // Mock student data that would come from your database
   const students = Array(25).fill(null).map((_, idx) => ({
@@ -22,6 +25,16 @@ const WellLensDashboard = () => {
     email: `student${idx + 1}@example.com`,
     grade: Math.floor(Math.random() * 12) + 1,
   }));
+  
+  // Handler for profile role change
+  const handleRoleChange = (role: string) => {
+    setRole(role as UserRole);
+  };
+
+  // Handler for logout
+  const handleLogout = () => {
+    navigate("/dashboard");
+  };
 
   return (
     <div className="space-y-6">
@@ -51,10 +64,10 @@ const WellLensDashboard = () => {
         </div>
       </div>
       
-      {/* User context banner */}
+      {/* User context banner with explicit profile selection */}
       <Card className="bg-primary/5 border-primary/20">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <UserCircle className="h-8 w-8 text-primary" />
               <div>
@@ -64,9 +77,23 @@ const WellLensDashboard = () => {
                 </p>
               </div>
             </div>
-            <Link to="/profiles">
-              <Button variant="outline" size="sm">Manage Profile Access</Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Select onValueChange={handleRoleChange} defaultValue={user?.role}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Profile" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UserRole.student}>Student View</SelectItem>
+                  <SelectItem value={UserRole.teacher}>Teacher View</SelectItem>
+                  <SelectItem value={UserRole.parent}>Parent View</SelectItem>
+                  <SelectItem value={UserRole.admin}>Admin View</SelectItem>
+                  <SelectItem value={UserRole.staff}>Staff View</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button variant="outline" onClick={handleLogout}>
+                Back to Dashboard
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

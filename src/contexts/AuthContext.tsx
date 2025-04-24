@@ -7,12 +7,14 @@ import { UserRole } from '@/types/roles';
 import { supabase } from '@/integrations/supabase/client';
 import { ErrorLoggingService } from '@/services/ErrorLoggingService';
 import { useToast } from '@/components/ui/use-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const auth = useAuthProvider();
   const { toast } = useToast();
+  const location = useLocation();
   
   useEffect(() => {
     // Set up auth state listener
@@ -42,11 +44,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [auth.user]);
 
-  // Add role switching toast notification
+  // Add role switching toast notification and prevent auto-redirects
   const enhancedAuth = {
     ...auth,
     setRole: (role: UserRole) => {
-      auth.setRole(role);
+      // Don't auto-redirect when changing roles
+      const preventRedirect = true;
+      auth.setRole(role, preventRedirect);
       toast({
         title: "Role Changed",
         description: `You are now viewing as: ${role.charAt(0).toUpperCase() + role.slice(1)}`,

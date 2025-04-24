@@ -7,6 +7,6 @@ export interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<User | null>;
   logout: () => void;
-  setRole: (role: UserRole) => void;
+  setRole: (role: UserRole, preventRedirect?: boolean) => void;
   refreshSession: () => void;
 }

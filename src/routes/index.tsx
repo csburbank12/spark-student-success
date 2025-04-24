@@ -10,12 +10,15 @@ import staffRoutes from "./staffRoutes";
 import { Loader } from "@/components/ui/loader";
 import DashboardManager from "./DashboardManager";
 import { Navigate } from "react-router-dom";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 // Dynamic imports for base pages
 const Login = lazy(() => import("@/pages/Login"));
 const Index = lazy(() => import("@/pages/Index"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const QADashboard = lazy(() => import("@/pages/QADashboard"));
+const WellLensDashboard = lazy(() => import("@/pages/WellLensDashboard"));
+const Profiles = lazy(() => import("@/pages/Profiles"));
 
 // Create a suspense wrapper for lazy loaded components
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -58,6 +61,30 @@ export const routes = [
       <SuspenseWrapper>
         <Layout>
           <QADashboard />
+        </Layout>
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: "/welllens",
+    element: (
+      <SuspenseWrapper>
+        <Layout>
+          <ProtectedRoute>
+            <WellLensDashboard />
+          </ProtectedRoute>
+        </Layout>
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: "/profiles",
+    element: (
+      <SuspenseWrapper>
+        <Layout>
+          <ProtectedRoute>
+            <Profiles />
+          </ProtectedRoute>
         </Layout>
       </SuspenseWrapper>
     ),

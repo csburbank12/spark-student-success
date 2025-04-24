@@ -181,7 +181,7 @@ export const useAuthProvider = () => {
     }
   };
   
-  const setRole = (role: UserRole) => {
+  const setRole = (role: UserRole, preventRedirect: boolean = false) => {
     try {
       const newUser = demoUsers[role];
       if (!newUser) {
@@ -193,7 +193,10 @@ export const useAuthProvider = () => {
       
       setUser(userWithValidId);
       localStorage.setItem('sparkUser', JSON.stringify(userWithValidId));
-      toast.success(`Switched to ${role} account`);
+      
+      if (!preventRedirect) {
+        toast.success(`Switched to ${role} account`);
+      }
     } catch (error) {
       console.error('Error setting role:', error);
       ErrorLoggingService.logError({

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
 import {
@@ -12,12 +12,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const UserMenu = () => {
   const { user, logout, setRole } = useAuth();
+  const navigate = useNavigate();
 
   const handleRoleSwitch = (role: UserRole) => {
-    setRole(role);
+    setRole(role, true); // Pass true to prevent auto-redirect
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+    toast.success('Successfully logged out');
   };
 
   return (
@@ -62,7 +70,7 @@ const UserMenu = () => {
           Switch to Staff View
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer" onClick={() => logout()}>
+        <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
           Log Out
         </DropdownMenuItem>
       </DropdownMenuContent>
