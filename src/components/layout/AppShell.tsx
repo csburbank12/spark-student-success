@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
@@ -43,10 +44,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         <div className="flex h-screen w-full overflow-hidden">
           <Sidebar />
           <SidebarRail />
-          <SidebarInset>
-            <div className="flex flex-1 flex-col overflow-hidden">
+          <SidebarInset enableScroll={true}>
+            <div className="flex flex-1 flex-col h-full">
               <Navbar />
-              <main className="flex-1 overflow-auto bg-background p-4 md:p-6">
+              <main className="flex-1 bg-background p-4 md:p-6">
                 {children}
               </main>
               <footer className="border-t py-4 px-6 bg-card">
