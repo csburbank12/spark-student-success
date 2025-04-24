@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -50,8 +51,7 @@ const ResetContent: React.FC<ResetContentProps> = ({ sessionCount, setSessionCou
       setSessionCount(newCount);
       localStorage.setItem("resetRoomSessionCount", newCount.toString());
       
-      toast({
-        title: "Reset Complete",
+      toast("Reset Complete", {
         description: "Great job taking 5 minutes for yourself! How do you feel now?",
       });
       
@@ -61,7 +61,7 @@ const ResetContent: React.FC<ResetContentProps> = ({ sessionCount, setSessionCou
     return () => {
       if (timerId) clearInterval(timerId);
     };
-  }, [timerRunning, timeRemaining, toast, isCustomTime, customTime, sessionCount, setSessionCount]);
+  }, [timerRunning, timeRemaining, isCustomTime, customTime, sessionCount, setSessionCount]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -81,13 +81,11 @@ const ResetContent: React.FC<ResetContentProps> = ({ sessionCount, setSessionCou
     setShowMoodBefore(false);
     
     if (selectedGoal) {
-      toast({
-        title: "Reset Timer Started",
+      toast("Reset Timer Started", {
         description: `Goal: ${selectedGoal.charAt(0).toUpperCase() + selectedGoal.slice(1)}. Taking ${Math.floor(timeRemaining/60)} minutes to reset.`,
       });
     } else {
-      toast({
-        title: "Reset Timer Started",
+      toast("Reset Timer Started", {
         description: `Taking ${Math.floor(timeRemaining/60)} minutes to reset and recharge.`,
       });
     }
@@ -99,8 +97,7 @@ const ResetContent: React.FC<ResetContentProps> = ({ sessionCount, setSessionCou
     setProgress(100);
     setShowMoodBefore(true);
     setShowMoodAfter(false);
-    toast({
-      title: "Reset Timer Stopped",
+    toast("Reset Timer Stopped", {
       description: "You can restart the timer anytime you need.",
     });
   };
@@ -116,8 +113,7 @@ const ResetContent: React.FC<ResetContentProps> = ({ sessionCount, setSessionCou
     setSessionCount(newCount);
     localStorage.setItem("resetRoomSessionCount", newCount.toString());
     
-    toast({
-      title: "Reset Complete",
+    toast("Reset Complete", {
       description: "Great job taking time for yourself! How do you feel now?",
     });
   };
@@ -136,8 +132,7 @@ const ResetContent: React.FC<ResetContentProps> = ({ sessionCount, setSessionCou
       message = "If you're still feeling down, consider talking with a counselor.";
     }
     
-    toast({
-      title: "Session Completed",
+    toast("Session Completed", {
       description: message,
     });
     
@@ -149,6 +144,7 @@ const ResetContent: React.FC<ResetContentProps> = ({ sessionCount, setSessionCou
     <div className="space-y-6">
       {showMoodBefore && (
         <MoodAssessment
+          type="before"
           moodValue={moodBefore}
           onMoodChange={setMoodBefore}
           selectedGoal={selectedGoal}
@@ -160,8 +156,8 @@ const ResetContent: React.FC<ResetContentProps> = ({ sessionCount, setSessionCou
         <MoodAssessment
           type="after"
           moodValue={moodBefore}
-          onMoodChange={() => {}}
-          onSubmit={(newMood) => finishSession(newMood)}
+          onMoodChange={setMoodBefore}
+          onSubmit={finishSession}
         />
       )}
 
@@ -178,6 +174,7 @@ const ResetContent: React.FC<ResetContentProps> = ({ sessionCount, setSessionCou
       )}
 
       <TimerControls
+        progress={progress}
         timerRunning={timerRunning}
         timeRemaining={timeRemaining}
         isCustomTime={isCustomTime}
