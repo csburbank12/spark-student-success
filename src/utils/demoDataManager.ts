@@ -13,7 +13,7 @@ export const initializeDemoData = async (userId: string, role: UserRole) => {
       .eq('user_id', userId)
       .limit(1);
 
-    if (existingData?.length === 0) {
+    if (!existingData?.length) {
       // Create mood check-ins
       const moodTypes = ['happy', 'okay', 'sad', 'anxious', 'excited'];
       const dates = Array.from({ length: 30 }, (_, i) => {
@@ -42,6 +42,41 @@ export const initializeDemoData = async (userId: string, role: UserRole) => {
             completed: false
           }
         ]);
+        
+        // Create journal entries
+        const journalEntries = Array.from({ length: 5 }, (_, i) => {
+          const date = new Date();
+          date.setDate(date.getDate() - i * 3);
+          return {
+            student_id: userId,
+            text: `This is journal entry #${i+1} for demonstration purposes. Today I learned more about emotional regulation and practiced mindfulness techniques.`,
+            date: date.toISOString()
+          };
+        });
+        
+        await supabase.from('journal_entries').insert(journalEntries);
+      }
+      
+      // For teachers and staff, create behavior logs
+      if (role === UserRole.teacher || role === UserRole.staff) {
+        const situationTypes = ['classroom_disruption', 'conflict_resolution', 'emotional_support'];
+        const interventions = ['redirection', 'private_conversation', 'positive_reinforcement', 'parent_contact'];
+        
+        const behaviorLogs = Array.from({ length: 8 }, (_, i) => {
+          const date = new Date();
+          date.setDate(date.getDate() - i * 2);
+          return {
+            staff_id: userId,
+            student_id: 'std1', // Demo student ID
+            situation_type: situationTypes[i % situationTypes.length],
+            intervention_used: interventions[i % interventions.length],
+            notes: `Demo intervention log #${i+1}`,
+            effectiveness_rating: Math.floor(Math.random() * 5) + 1,
+            created_at: date.toISOString()
+          };
+        });
+        
+        await supabase.from('behavior_logs').insert(behaviorLogs);
       }
 
       toast.success('Demo data initialized successfully');

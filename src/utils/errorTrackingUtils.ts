@@ -1,137 +1,81 @@
 
 import { ErrorLoggingService } from '@/services/ErrorLoggingService';
 
-/**
- * Sets up global error tracking for uncaught JS errors
- */
-export const setupGlobalErrorTracking = () => {
-  const originalConsoleError = console.error;
-  
-  // Override console.error to track errors
-  console.error = (...args) => {
-    // Call original console.error
-    originalConsoleError.apply(console, args);
-    
-    // Extract error information
-    const errorInfo = args
-      .map(arg => {
-        if (arg instanceof Error) {
-          return `${arg.name}: ${arg.message}\n${arg.stack || ''}`;
-        }
-        if (typeof arg === 'object') {
-          try {
-            return JSON.stringify(arg);
-          } catch (e) {
-            return String(arg);
-          }
-        }
-        return String(arg);
-      })
-      .join('\n');
-      
-    // Log the error to our service
-    ErrorLoggingService.logError({
-      action: 'console_error',
-      error_message: errorInfo.slice(0, 10000), // Limit length
-      profile_type: 'system',
-    });
-  };
-  
-  // Add global error handler
+// Global error handler for uncaught exceptions
+export function setupGlobalErrorTracking() {
   window.addEventListener('error', (event) => {
+    // Log the error to our error logging service
     ErrorLoggingService.logError({
-      action: 'unhandled_error',
-      error_message: `${event.message}\nFile: ${event.filename}:${event.lineno}:${event.colno}\n${event.error?.stack || ''}`,
-      profile_type: 'system',
-      status_code: 'UNHANDLED_ERROR'
+      action: 'runtime_error',
+      error_message: `${event.message} at ${event.filename}:${event.lineno}:${event.colno}`,
+      profile_type: 'unknown', // We don't know the user type in global handler
     });
-  });
-  
-  // Add unhandled promise rejection handler
-  window.addEventListener('unhandledrejection', (event) => {
-    let errorMessage = 'Unhandled Promise Rejection';
-    if (event.reason instanceof Error) {
-      errorMessage = `${event.reason.name}: ${event.reason.message}\n${event.reason.stack || ''}`;
-    } else if (typeof event.reason === 'string') {
-      errorMessage = event.reason;
-    } else if (typeof event.reason === 'object') {
-      try {
-        errorMessage = JSON.stringify(event.reason);
-      } catch (e) {
-        errorMessage = String(event.reason);
-      }
-    }
     
+    // Don't prevent the default error handling
+    return false;
+  });
+
+  window.addEventListener('unhandledrejection', (event) => {
+    // Log the unhandled promise rejection
     ErrorLoggingService.logError({
       action: 'unhandled_promise_rejection',
-      error_message: errorMessage,
-      profile_type: 'system',
-      status_code: 'PROMISE_ERROR'
+      error_message: event.reason?.message || String(event.reason) || 'Unknown promise rejection',
+      profile_type: 'unknown',
     });
+    
+    // Don't prevent the default error handling
+    return false;
   });
-  
-  // Return a cleanup function
-  return () => {
-    console.error = originalConsoleError;
-    window.removeEventListener('error', () => {});
-    window.removeEventListener('unhandledrejection', () => {});
-  };
-};
+}
 
-/**
- * Safety wrapper for callback functions to prevent uncaught exceptions
- */
-export function safeFn<T extends (...args: any[]) => any>(fn: T, fallback?: ReturnType<T>): (...args: Parameters<T>) => ReturnType<T> | undefined {
+// Function to safely execute a callback with error handling
+export function safeFn<T extends (...args: any[]) => any>(
+  fn: T,
+  errorHandler?: (error: Error) => void,
+): (...args: Parameters<T>) => ReturnType<T> | undefined {
   return (...args: Parameters<T>): ReturnType<T> | undefined => {
     try {
       return fn(...args);
     } catch (error) {
-      console.error('Error in safeFn:', error);
-      ErrorLoggingService.logError({
-        action: 'safe_function_error',
-        error_message: error instanceof Error ? error.message : String(error),
-        profile_type: 'system',
-      });
-      return fallback as ReturnType<T>;
+      const err = error instanceof Error ? error : new Error(String(error));
+      console.error('Error in safeFn:', err);
+      
+      // Use provided error handler or log to service
+      if (errorHandler) {
+        errorHandler(err);
+      } else {
+        ErrorLoggingService.logError({
+          action: 'safe_function_error',
+          error_message: err.message,
+          profile_type: 'unknown',
+        });
+      }
+      
+      return undefined;
     }
   };
 }
 
-/**
- * Safety wrapper for async functions to prevent uncaught promise rejections
- */
-export function safeAsyncFn<T extends (...args: any[]) => Promise<any>>(
-  fn: T,
-  fallback?: Awaited<ReturnType<T>>
-): (...args: Parameters<T>) => Promise<Awaited<ReturnType<T>> | undefined> {
-  return async (...args: Parameters<T>): Promise<Awaited<ReturnType<T>> | undefined> => {
-    try {
-      return await fn(...args);
-    } catch (error) {
-      console.error('Error in safeAsyncFn:', error);
-      ErrorLoggingService.logError({
-        action: 'safe_async_function_error',
-        error_message: error instanceof Error ? error.message : String(error),
-        profile_type: 'system',
-      });
-      return fallback as Awaited<ReturnType<T>>;
-    }
-  };
-}
-
-/**
- * Safely parses JSON with error handling
- */
-export function safeJsonParse<T>(json: string, fallback: T): T {
-  try {
-    return JSON.parse(json);
-  } catch (error) {
-    console.error('Error parsing JSON:', error);
-    ErrorLoggingService.logError({
-      action: 'json_parse_error',
-      error_message: `Failed to parse JSON: ${error instanceof Error ? error.message : String(error)}`,
-      profile_type: 'system',
-    });
-    return fallback;
+// Function to validate form inputs
+export function validateInput(
+  value: any, 
+  rules: { required?: boolean; minLength?: number; pattern?: RegExp; email?: boolean }
+): { valid: boolean; error?: string } {
+  if (rules.required && (!value || value.trim() === '')) {
+    return { valid: false, error: 'This field is required' };
   }
+  
+  if (rules.minLength && value && value.length < rules.minLength) {
+    return { valid: false, error: `Must be at least ${rules.minLength} characters` };
+  }
+  
+  if (rules.email && !/\S+@\S+\.\S+/.test(value)) {
+    return { valid: false, error: 'Please enter a valid email address' };
+  }
+  
+  if (rules.pattern && !rules.pattern.test(value)) {
+    return { valid: false, error: 'Please enter a valid value' };
+  }
+  
+  return { valid: true };
 }

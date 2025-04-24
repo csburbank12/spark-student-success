@@ -31,6 +31,8 @@ function App() {
             }
           />
         ))}
+        {/* Fallback route for any undefined paths */}
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
     </GlobalErrorBoundary>
   );
