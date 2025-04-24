@@ -12,6 +12,7 @@ import TestRunner from '@/components/qa/TestRunner';
 import TestResults from '@/components/qa/TestResults';
 import TestProgress from '@/components/qa/TestProgress';
 import { getRandomErrorMessage } from '@/components/qa/errorMessageUtils';
+import { UserRole } from '@/types/roles';
 
 const QATestUtility = () => {
   const [isRunning, setIsRunning] = React.useState(false);
@@ -91,8 +92,10 @@ const QATestUtility = () => {
   };
 
   const handleRoleSwitch = (role: string) => {
+    // Convert the string role to UserRole enum type
+    const userRole = role as UserRole;
     toast.info(`Switched to ${role} view for testing`);
-    setRole(role);
+    setRole(userRole);
   };
 
   const markSiteReady = () => {
@@ -161,4 +164,3 @@ const QATestUtility = () => {
 };
 
 export default QATestUtility;
-
