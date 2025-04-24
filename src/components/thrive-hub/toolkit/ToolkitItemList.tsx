@@ -12,7 +12,7 @@ import {
   HeartHandshake,
   ExternalLink
 } from "lucide-react";
-import { ToolkitItem } from "../ToolkitTab";
+import type { ToolkitItem } from "@/types/toolkit";
 
 interface ToolkitItemListProps {
   itemsByType: Record<string, ToolkitItem[]>;

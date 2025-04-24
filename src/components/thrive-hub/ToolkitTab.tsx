@@ -5,22 +5,24 @@ import { useStudentToolkit } from "@/hooks/useStudentToolkit";
 import { AddToolkitItemDialog } from "./toolkit/AddToolkitItemDialog";
 import { ToolkitItemList } from "./toolkit/ToolkitItemList";
 import { EmptyToolkit } from "./toolkit/EmptyToolkit";
-
-// Define a type for toolkit items to ensure type safety
-export type ToolkitItem = {
-  id: string;
-  student_id: string;
-  item_type: string;
-  item_label: string;
-  item_url?: string;
-  item_content?: string;
-  added_on: string;
-};
+import type { ToolkitItem } from "@/types/toolkit";
 
 export function ToolkitTab() {
   const { user } = useAuth();
-  const { data: toolkitItems } = useStudentToolkit(user?.id);
+  const { data: toolkitItems, isLoading, isError } = useStudentToolkit(user?.id);
   const [open, setOpen] = useState(false);
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center p-8">Loading...</div>;
+  }
+  
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center p-8 text-destructive">
+        Failed to load toolkit items. Please try again.
+      </div>
+    );
+  }
   
   // Group toolkit items by type
   const itemsByType = toolkitItems?.reduce((acc, item) => {

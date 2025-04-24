@@ -1,18 +1,23 @@
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { ToolkitItem } from "@/types/toolkit";
 import { toast } from "sonner";
 
 export function useStudentToolkit(studentId?: string) {
   return useQuery({
     queryKey: ["student-toolkit", studentId],
-    queryFn: async () => {
+    queryFn: async (): Promise<ToolkitItem[]> => {
       const { data, error } = await supabase
         .from("student_toolkit")
         .select("*")
         .order("added_on", { ascending: false });
-      
-      if (error) throw error;
+
+      if (error) {
+        toast.error("Failed to load toolkit items");
+        throw error;
+      }
+
       return data || [];
     },
     enabled: !!studentId
@@ -20,8 +25,6 @@ export function useStudentToolkit(studentId?: string) {
 }
 
 export function useAddToolkitItem() {
-  const queryClient = useQueryClient();
-  
   return useMutation({
     mutationFn: async ({ 
       type, 
@@ -48,6 +51,10 @@ export function useAddToolkitItem() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["student-toolkit"] });
       toast.success("Added to your toolkit!");
+    },
+    onError: (error) => {
+      toast.error("Failed to add item to toolkit");
+      console.error("Toolkit error:", error);
     }
   });
 }
