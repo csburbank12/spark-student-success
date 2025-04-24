@@ -1,26 +1,22 @@
 
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, HelpCircle, Home, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar/sidebar-context';
-import NavBreadcrumbs from './NavBreadcrumbs';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { Logo } from '@/components/branding/Logo';
 import SearchBar from './navbar/SearchBar';
 import NotificationMenu from './navbar/NotificationMenu';
 import UserMenu from './navbar/UserMenu';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Logo } from '@/components/branding/Logo';
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
-import { cn } from '@/lib/utils';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export const Navbar = () => {
   const { toggleSidebar } = useSidebar();
-  const location = useLocation();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   
   const handleLogout = async () => {
     await logout();
@@ -29,59 +25,38 @@ export const Navbar = () => {
   };
   
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-card px-4 md:px-6">
-      <Button variant="outline" size="icon" className="md:hidden" onClick={toggleSidebar}>
+    <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-card px-4 md:px-6 shadow-sm">
+      <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleSidebar}>
         <Menu className="h-5 w-5" />
       </Button>
       
-      <div className="hidden md:flex md:flex-1 md:items-center md:gap-4">
-        <Logo />
+      <div className="flex items-center gap-4">
+        <Link to="/dashboard" className="flex items-center gap-2">
+          <Logo />
+          <span className="hidden font-semibold md:inline-block">ThriveTrackED</span>
+        </Link>
       </div>
 
-      <div className="flex items-center gap-4 ml-auto md:hidden">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')} aria-label="Home">
-          <Home className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={() => navigate('/help')} aria-label="Support">
-          <HelpCircle className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Log Out">
-          <LogOut className="h-5 w-5" />
-        </Button>
-      </div>
+      <div className="flex flex-1 items-center justify-end gap-4">
+        <div className="hidden md:flex items-center gap-4 mr-4">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Home className="h-4 w-4" />
+              Dashboard
+            </Button>
+          </Link>
+          <Link to="/help">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <HelpCircle className="h-4 w-4" />
+              Help
+            </Button>
+          </Link>
+        </div>
 
-      <div className="hidden md:flex items-center gap-4">
-        <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <Link to="/dashboard" className={navigationMenuTriggerStyle()}>
-                <Home className="h-4 w-4 mr-2" />
-                Home
-              </Link>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <Link to="/dashboard" className={navigationMenuTriggerStyle()}>
-                Dashboard
-              </Link>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <Link to="/help" className={navigationMenuTriggerStyle()}>
-                <HelpCircle className="h-4 w-4 mr-2" />
-                Support
-              </Link>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
-      </div>
-
-      <div className="hidden flex-1 items-center gap-4 md:flex">
-        <NavBreadcrumbs />
-      </div>
-
-      <div className="flex flex-1 items-center gap-4 justify-end">
         <SearchBar />
+        
         <Button 
-          variant="outline" 
+          variant="ghost" 
           size="icon"
           onClick={toggleTheme}
           title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
@@ -92,17 +67,21 @@ export const Navbar = () => {
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
           )}
         </Button>
+        
         <NotificationMenu />
         <UserMenu />
-        <Button 
-          variant="destructive" 
-          size="sm" 
-          className="hidden md:flex"
-          onClick={handleLogout}
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          Log Out
-        </Button>
+
+        <div className="hidden md:block">
+          <Button 
+            variant="destructive" 
+            size="sm"
+            onClick={handleLogout}
+            className="gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </Button>
+        </div>
       </div>
     </header>
   );
