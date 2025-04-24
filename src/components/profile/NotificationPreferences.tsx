@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/client';
 
 interface NotificationSetting {
   email_enabled: boolean;
@@ -17,18 +18,57 @@ const NotificationPreferences: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // For demonstration, we're using local state instead of actual API calls
-  // since the Supabase calls are failing in the environment
   useEffect(() => {
-    // Demo settings are loaded from local storage if available
-    try {
-      const savedSettings = localStorage.getItem(`notification_settings_${user?.id}`);
-      if (savedSettings) {
-        setSettings(JSON.parse(savedSettings));
+    if (!user?.id) return;
+    
+    const fetchSettings = async () => {
+      setIsLoading(true);
+      try {
+        // Try to get settings from Supabase
+        const { data, error } = await supabase
+          .from('user_notification_settings')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+          
+        if (error) {
+          console.error("Supabase error:", error);
+          throw error;
+        }
+        
+        if (data) {
+          setSettings({
+            email_enabled: data.email_enabled,
+            app_enabled: data.app_enabled
+          });
+        } else {
+          // No settings found, use default and create record
+          await supabase
+            .from('user_notification_settings')
+            .insert({
+              user_id: user.id,
+              email_enabled: true,
+              app_enabled: true
+            });
+        }
+      } catch (err) {
+        console.error("Failed to load notification settings:", err);
+        
+        // Fallback to localStorage if Supabase fails
+        try {
+          const savedSettings = localStorage.getItem(`notification_settings_${user.id}`);
+          if (savedSettings) {
+            setSettings(JSON.parse(savedSettings));
+          }
+        } catch (storageErr) {
+          console.error("localStorage fallback error:", storageErr);
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      console.error("Failed to load notification settings:", err);
-    }
+    };
+    
+    fetchSettings();
   }, [user?.id]);
 
   const updateNotificationSetting = async (type: keyof NotificationSetting, value: boolean) => {
@@ -37,11 +77,23 @@ const NotificationPreferences: React.FC = () => {
     setSettings(prev => ({ ...prev, [type]: value }));
     
     try {
-      // Store in local storage for demo purposes
-      localStorage.setItem(
-        `notification_settings_${user.id}`, 
-        JSON.stringify({ ...settings, [type]: value })
-      );
+      // Update in Supabase if possible
+      try {
+        const { error } = await supabase
+          .from('user_notification_settings')
+          .update({ [type]: value })
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+      } catch (supabaseErr) {
+        console.error(`Supabase update error for ${type}:`, supabaseErr);
+        
+        // Fallback to localStorage
+        localStorage.setItem(
+          `notification_settings_${user.id}`, 
+          JSON.stringify({ ...settings, [type]: value })
+        );
+      }
       
       const displayType = type === 'email_enabled' ? 'Email' : 'App';
       toast.success(`${displayType} notifications ${value ? 'enabled' : 'disabled'}`);

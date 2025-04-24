@@ -1,10 +1,11 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { User } from '@/types';
 import { UserRole } from '@/types/roles';
 import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
 import { toast } from 'sonner';
 import { demoUsers } from '@/data/demoUsers';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useAuthProvider = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -20,7 +21,8 @@ export const useAuthProvider = () => {
         [UserRole.student]: '7f8d2a90-6495-4c41-8e86-86539e961324',
         [UserRole.teacher]: 'b2c5f5d7-3273-4515-b3c4-587d9fd697b4',
         [UserRole.admin]: '9e8c7a6b-5d4e-4f3c-2b1a-0i9o8u7y6t5r',
-        [UserRole.parent]: 'a1s2d3f4-g5h6-j7k8-l9z0-x1c2v3b4n5m6'
+        [UserRole.parent]: 'a1s2d3f4-g5h6-j7k8-l9z0-x1c2v3b4n5m6',
+        [UserRole.staff]: 'd4e5f6g7-h8i9-j0k1-l2m3-n4o5p6q7r8s9'
       }[user.role as UserRole] || '00000000-0000-0000-0000-000000000000';
       
       return { ...user, id: roleBasedId };
@@ -28,17 +30,31 @@ export const useAuthProvider = () => {
     return user;
   };
 
+  // Initial auth check
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem('sparkUser');
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        // Ensure the user has a valid UUID before setting
-        setUser(ensureValidUUID(parsedUser));
-      }
-      setIsLoading(false);
+      // Check for active Supabase session first
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          // TODO: In a real app, we would fetch the user profile from Supabase here
+          // For now, use the demo user approach
+          const storedUser = localStorage.getItem('sparkUser');
+          if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            setUser(ensureValidUUID(parsedUser));
+          }
+        } else {
+          // No active Supabase session, check for stored user in localStorage as fallback
+          const storedUser = localStorage.getItem('sparkUser');
+          if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            setUser(ensureValidUUID(parsedUser));
+          }
+        }
+        setIsLoading(false);
+      });
     } catch (error) {
-      console.error('Error reading from localStorage:', error);
+      console.error('Error reading auth session:', error);
       ErrorLoggingService.logError({
         action: 'auth_session_load',
         error_message: `Failed to load user session: ${error instanceof Error ? error.message : String(error)}`,
@@ -48,6 +64,7 @@ export const useAuthProvider = () => {
     }
   }, []);
 
+  // Session refresh mechanism
   useEffect(() => {
     if (!user) return;
     
@@ -58,10 +75,12 @@ export const useAuthProvider = () => {
     return () => clearInterval(refreshInterval);
   }, [user]);
 
-  const refreshSession = () => {
+  const refreshSession = useCallback(() => {
     if (!user) return;
     
     try {
+      // In a real implementation, we would refresh the Supabase token here
+      // For demo purposes, we're just updating localStorage
       localStorage.setItem('sparkUser', JSON.stringify(user));
       console.log('Session refreshed successfully');
     } catch (error) {
@@ -72,7 +91,7 @@ export const useAuthProvider = () => {
         profile_type: user.role as ProfileType
       });
     }
-  };
+  }, [user]);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
@@ -80,7 +99,7 @@ export const useAuthProvider = () => {
     try {
       let role: UserRole | undefined;
       
-      // Find which demo user has this email
+      // For demo purposes, check if this is a demo user
       Object.entries(demoUsers).forEach(([userRole, userData]) => {
         if (userData.email.toLowerCase() === email.toLowerCase()) {
           role = userRole as UserRole;
@@ -88,30 +107,46 @@ export const useAuthProvider = () => {
       });
       
       if (!role) {
-        throw new Error("User not found");
+        // In a real app, we would sign in with Supabase here
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
+          
+          if (error) throw error;
+          
+          // In a real app, we would fetch user role and profile from Supabase
+          // For now, throw an error if not a demo user
+          throw new Error("User not found in demo data");
+        } catch (supabaseError) {
+          console.error("Supabase auth error:", supabaseError);
+          throw new Error("Invalid credentials");
+        }
+      } else {
+        // Demo user login
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        if (password !== "password") {
+          throw new Error("Invalid credentials");
+        }
+        
+        const loggedInUser = demoUsers[role];
+        
+        if (!loggedInUser) {
+          throw new Error("User not found");
+        }
+        
+        // Ensure the user has a valid UUID before setting
+        const userWithValidId = ensureValidUUID(loggedInUser);
+        
+        setUser(userWithValidId);
+        localStorage.setItem('sparkUser', JSON.stringify(userWithValidId));
+        
+        toast.success(`Welcome back, ${userWithValidId.name}!`);
+        
+        return userWithValidId;
       }
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (password !== "password") {
-        throw new Error("Invalid credentials");
-      }
-      
-      const loggedInUser = demoUsers[role];
-      
-      if (!loggedInUser) {
-        throw new Error("User not found");
-      }
-      
-      // Ensure the user has a valid UUID before setting
-      const userWithValidId = ensureValidUUID(loggedInUser);
-      
-      setUser(userWithValidId);
-      localStorage.setItem('sparkUser', JSON.stringify(userWithValidId));
-      
-      toast.success(`Welcome back, ${userWithValidId.name}!`);
-      
-      return userWithValidId;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown login error';
       
@@ -127,8 +162,12 @@ export const useAuthProvider = () => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     try {
+      // Attempt to sign out with Supabase first
+      await supabase.auth.signOut();
+      
+      // Then clear local state
       setUser(null);
       localStorage.removeItem('sparkUser');
       toast.info("You've been signed out");

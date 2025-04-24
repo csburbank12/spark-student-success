@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,7 +22,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (user) {
       refreshSession();
     }
-  }, [location.pathname]);
+  }, [location.pathname, refreshSession]);
 
   if (!user) {
     ErrorLoggingService.logError({
@@ -67,9 +66,8 @@ export const DashboardRouter: React.FC = () => {
   const { user } = useAuth();
   const location = useLocation();
   
-  // Only redirect to dashboard if user is authenticated
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
   
   return <DashboardManager />;

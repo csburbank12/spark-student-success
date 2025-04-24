@@ -1,8 +1,11 @@
 
 import React, { useEffect, ComponentType } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { FERPAComplianceService, FERPAAccessType, FERPARecordType } from '@/services/FERPAComplianceService';
-import { ProfileType } from '@/services/ErrorLoggingService';
+import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
+import { supabase } from '@/integrations/supabase/client';
+
+export type FERPARecordType = 'student_record' | 'academic_data' | 'attendance' | 'behavior' | 'health' | 'sel_data' | 'assessment';
+export type FERPAAccessType = 'view' | 'edit' | 'delete' | 'export';
 
 interface WithFERPAComplianceProps {
   recordType: FERPARecordType;
@@ -10,6 +13,53 @@ interface WithFERPAComplianceProps {
   studentId?: string;
   accessType: FERPAAccessType;
   accessReason?: string;
+}
+
+interface FERPAAccessLog {
+  user_id: string;
+  user_role: ProfileType;
+  record_type: FERPARecordType;
+  record_id?: string;
+  student_id?: string;
+  access_type: FERPAAccessType;
+  access_reason?: string;
+  successful: boolean;
+  ip_address?: string;
+}
+
+export class FERPAComplianceService {
+  static async logAccess(access: FERPAAccessLog) {
+    try {
+      // Try to log to Supabase
+      const { error } = await supabase
+        .from('ferpa_access_logs')
+        .insert({
+          user_id: access.user_id,
+          user_role: access.user_role,
+          record_type: access.record_type,
+          record_id: access.record_id,
+          student_id: access.student_id,
+          access_type: access.access_type,
+          access_reason: access.access_reason,
+          successful: access.successful,
+          ip_address: access.ip_address
+        });
+        
+      if (error) {
+        console.error('Failed to log FERPA access:', error);
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error logging FERPA access:', error);
+      
+      // Fallback to error logging service if database logging fails
+      ErrorLoggingService.logError({
+        action: 'ferpa_access_log',
+        error_message: `FERPA access: ${access.user_role} accessed ${access.record_type} (${access.access_type})`,
+        profile_type: access.user_role
+      });
+    }
+  }
 }
 
 // Higher-order component to wrap components that access FERPA-protected data
@@ -39,11 +89,6 @@ export function withFERPACompliance<P extends object>(
           ip_address: undefined // In a real implementation, you would capture this
         });
       }
-      
-      // Return cleanup function
-      return () => {
-        // Optionally log when component unmounts if needed
-      };
     }, [user, props.recordId, props.studentId]);
 
     return <WrappedComponent {...props} />;
@@ -55,9 +100,3 @@ export function withFERPACompliance<P extends object>(
 
   return WithFERPAComplianceComponent;
 }
-
-// Example usage:
-// const ProtectedStudentRecordComponent = withFERPACompliance(StudentRecord, {
-//   recordType: 'student_record',
-//   accessType: 'view'
-// });

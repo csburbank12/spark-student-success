@@ -9,7 +9,7 @@ import { DemoAccounts } from "@/components/auth/DemoAccounts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ErrorLoggingService, ProfileType } from "@/services/ErrorLoggingService";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { InfoIcon, Shield } from "lucide-react";
+import { InfoIcon, Shield, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Login = () => {
@@ -24,6 +24,7 @@ const Login = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("demo");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // Redirect to dashboard if already logged in
   useEffect(() => {
@@ -36,6 +37,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMessage("");
 
     try {
       await login(email, password);
@@ -43,6 +45,7 @@ const Login = () => {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to login";
       console.error(errorMessage);
+      setErrorMessage(errorMessage);
       
       ErrorLoggingService.logError({
         action: "login_failed",
@@ -89,6 +92,13 @@ const Login = () => {
                 </p>
               </div>
 
+              {errorMessage && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertTitle>Login Error</AlertTitle>
+                  <AlertDescription>{errorMessage}</AlertDescription>
+                </Alert>
+              )}
+
               <DemoAccounts
                 presetLogin={presetLogin}
                 email={email}
@@ -107,6 +117,13 @@ const Login = () => {
                   Sign in to continue to your account
                 </p>
               </div>
+
+              {errorMessage && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertTitle>Login Error</AlertTitle>
+                  <AlertDescription>{errorMessage}</AlertDescription>
+                </Alert>
+              )}
 
               <LoginForm
                 email={email}
@@ -133,8 +150,9 @@ const Login = () => {
                 the Family Educational Rights and Privacy Act. By logging in, you agree to handle student data
                 according to FERPA guidelines.
                 <div className="mt-2">
-                  <Link to="/privacy-policy" className="text-blue-600 hover:underline">
-                    View our Privacy Policy
+                  <Link to="/privacy-policy" className="text-blue-600 hover:underline flex items-center gap-1">
+                    View our Privacy Policy 
+                    <ExternalLink size={14} />
                   </Link>
                 </div>
               </AlertDescription>

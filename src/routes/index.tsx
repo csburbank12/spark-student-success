@@ -1,5 +1,5 @@
 
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Navigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import adminRoutes from "./adminRoutes";
@@ -8,29 +8,43 @@ import studentRoutes from "./studentRoutes";
 import parentRoutes from "./parentRoutes";
 import { generalRoutes } from "./generalRoutes";
 import staffRoutes from "./staffRoutes";
+import { Loader } from "@/components/ui/loader";
 
 // Dynamic imports for base pages
 const Login = lazy(() => import("@/pages/Login"));
 const Index = lazy(() => import("@/pages/Index"));
-const StudentDashboardEnhanced = lazy(() => import("@/pages/StudentDashboardEnhanced"));
-const TeacherDashboardEnhanced = lazy(() => import("@/pages/TeacherDashboardEnhanced"));
-const AdminDashboardEnhanced = lazy(() => import("@/pages/AdminDashboardEnhanced"));
-const ParentDashboardEnhanced = lazy(() => import("@/pages/ParentDashboardEnhanced"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+
+// Create a suspense wrapper for lazy loaded components
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={
+    <div className="flex h-screen w-screen items-center justify-center">
+      <Loader size="lg" />
+    </div>
+  }>
+    {children}
+  </Suspense>
+);
 
 // Combine all routes
 export const routes = [
   {
     path: "/",
-    element: <Index />,
+    element: <SuspenseWrapper><Index /></SuspenseWrapper>,
   },
   {
     path: "/login",
-    element: <Login />,
+    element: <SuspenseWrapper><Login /></SuspenseWrapper>,
   },
   ...generalRoutes,
   ...adminRoutes,
   ...teacherAdminRoutes,
   ...studentRoutes,
   ...parentRoutes,
-  ...staffRoutes
+  ...staffRoutes,
+  // Catch-all route for page not found
+  {
+    path: "*",
+    element: <SuspenseWrapper><NotFound /></SuspenseWrapper>
+  }
 ];

@@ -1931,6 +1931,10 @@ export type Database = {
           energy_level: number
         }[]
       }
+      get_user_role: {
+        Args: { user_uuid: string }
+        Returns: string
+      }
       has_role: {
         Args:
           | { role_name: string }
