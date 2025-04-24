@@ -4,8 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Loader } from "@/components/ui/loader";
 import { NotLoggedInView } from "@/components/dashboard/NotLoggedInView";
 import { DashboardSelector } from "@/components/dashboard/DashboardSelector";
-import Layout from "@/components/Layout";
 import { UserRole } from "@/types/roles";
+import Layout from "@/components/Layout";
 
 const DashboardManager: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -22,6 +22,7 @@ const DashboardManager: React.FC = () => {
     return <NotLoggedInView />;
   }
 
+  // Return the dashboard selector without any additional redirects
   return <DashboardSelector userRole={user.role as UserRole} />;
 };
 
