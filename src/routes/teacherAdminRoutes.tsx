@@ -38,6 +38,14 @@ export const teacherAdminRoutes = [
     ),
   },
   {
+    path: "/students",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
+        <StudentManagement />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: "/behavior-prediction",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
