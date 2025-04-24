@@ -11,7 +11,6 @@ import SidebarFooterActions from "./SidebarFooterActions";
 import { useAuth } from "@/contexts/AuthContext";
 import { getRoutesByRole } from "./sidebarRoutes";
 import { UserRole } from "@/types/roles";
-import { Logo } from "@/components/branding/Logo";
 
 const Sidebar = () => {
   const { user } = useAuth();
@@ -22,7 +21,7 @@ const Sidebar = () => {
     <SidebarContainer>
       <SidebarHeader>
         <div className="flex h-14 items-center px-4">
-          <Logo className="w-full" />
+          {/* Logo removed */}
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -36,4 +35,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

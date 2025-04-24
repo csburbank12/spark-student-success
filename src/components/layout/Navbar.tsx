@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, HelpCircle, Home, LogOut } from 'lucide-react';
@@ -6,10 +5,6 @@ import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar/sidebar-context';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Logo } from '@/components/branding/Logo';
-import SearchBar from './navbar/SearchBar';
-import NotificationMenu from './navbar/NotificationMenu';
-import UserMenu from './navbar/UserMenu';
 import { toast } from 'sonner';
 
 export const Navbar = () => {
@@ -32,7 +27,6 @@ export const Navbar = () => {
       
       <div className="flex items-center gap-4">
         <Link to="/dashboard" className="flex items-center gap-2">
-          <Logo />
           <span className="hidden font-semibold md:inline-block">ThriveTrackED</span>
         </Link>
       </div>
