@@ -1,20 +1,16 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 import { useResetSession } from "./hooks/useResetSession";
 import { useResetTimer } from "./hooks/useResetTimer";
 import ResetHeader from "./components/ResetHeader";
 import ResetBenefits from "./components/ResetBenefits";
 import ResetVisualizer from "./components/ResetVisualizer";
+import ActivityTabs from "./components/ActivityTabs";
 import MoodAssessment from "./components/MoodAssessment";
 import TimerControls from "./components/TimerControls";
 import TimerDurationSelector from "./components/TimerDurationSelector";
-import BoxBreathing from "./BoxBreathing";
-import GroundingExercise from "./GroundingExercise";
-import BodyScan from "./BodyScan";
-import PositiveAffirmations from "./PositiveAffirmations";
-import GuidedMeditation from "../wellness-tools/GuidedMeditation";
-import MusicPlayer from "../wellness-tools/MusicPlayer";
 
 const ANIMATION_URLS = [
   "/animations/breathing.mp4",
@@ -23,8 +19,8 @@ const ANIMATION_URLS = [
 ];
 
 const ResetRoom: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("breathing");
   const [animationUrl, setAnimationUrl] = useState<string>(ANIMATION_URLS[0]);
+  const { toast } = useToast();
   
   const {
     initialMood,
@@ -60,7 +56,7 @@ const ResetRoom: React.FC = () => {
         description: "Great job! How are you feeling now?",
       });
     }
-  }, [timerRunning, timeRemaining]);
+  }, [timerRunning, timeRemaining, completeReset, toast]);
 
   // Update animation when goal changes
   useEffect(() => {
@@ -159,40 +155,7 @@ const ResetRoom: React.FC = () => {
         />
       </div>
 
-      <Card>
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList>
-              <TabsTrigger value="breathing">Breathing</TabsTrigger>
-              <TabsTrigger value="grounding">Grounding</TabsTrigger>
-              <TabsTrigger value="body-scan">Body Scan</TabsTrigger>
-              <TabsTrigger value="affirmations">Affirmations</TabsTrigger>
-              <TabsTrigger value="meditation">Meditation</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="breathing">
-              <BoxBreathing />
-            </TabsContent>
-
-            <TabsContent value="grounding">
-              <GroundingExercise />
-            </TabsContent>
-
-            <TabsContent value="body-scan">
-              <BodyScan />
-            </TabsContent>
-
-            <TabsContent value="affirmations">
-              <PositiveAffirmations />
-            </TabsContent>
-
-            <TabsContent value="meditation">
-              <GuidedMeditation />
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-
+      <ActivityTabs />
       <ResetBenefits />
     </div>
   );

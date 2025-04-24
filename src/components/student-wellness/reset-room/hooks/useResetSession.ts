@@ -1,78 +1,60 @@
 
-import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
-
-export interface ResetSessionState {
-  initialMood: number;
-  finalMood: number;
-  selectedGoal: string;
-  completedReset: boolean;
-  sessionCount: number;
-}
+import { useState, useCallback } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
 export const useResetSession = () => {
-  const [state, setState] = useState<ResetSessionState>({
-    initialMood: 5,
-    finalMood: 5,
-    selectedGoal: '',
-    completedReset: false,
-    sessionCount: parseInt(localStorage.getItem('resetRoomSessionCount') || '0', 10)
+  const [initialMood, setInitialMood] = useState<number>(5);
+  const [finalMood, setFinalMood] = useState<number>(5);
+  const [selectedGoal, setSelectedGoal] = useState("");
+  const [completedReset, setCompletedReset] = useState(false);
+  const [sessionCount, setSessionCount] = useState(() => {
+    const saved = localStorage.getItem("resetRoomSessionCount");
+    return saved ? parseInt(saved, 10) : 0;
   });
 
-  const updateInitialMood = (value: number) => {
-    setState(prev => ({ ...prev, initialMood: value }));
-  };
+  const { toast } = useToast();
 
-  const updateFinalMood = (value: number) => {
-    setState(prev => ({ ...prev, finalMood: value }));
-  };
+  const updateInitialMood = useCallback((value: number) => {
+    setInitialMood(value);
+  }, []);
 
-  const setSelectedGoal = (goal: string) => {
-    setState(prev => ({ ...prev, selectedGoal: goal }));
-  };
+  const updateFinalMood = useCallback((value: number) => {
+    setFinalMood(value);
+  }, []);
 
-  const completeReset = () => {
-    const newCount = state.sessionCount + 1;
-    setState(prev => ({ 
-      ...prev, 
-      completedReset: true,
-      sessionCount: newCount 
-    }));
-    localStorage.setItem('resetRoomSessionCount', newCount.toString());
-  };
+  const completeReset = useCallback(() => {
+    setCompletedReset(true);
+  }, []);
 
-  const finishSession = (finalMoodValue: number) => {
-    const moodChange = finalMoodValue - state.initialMood;
-    let message = "";
+  const finishSession = useCallback(() => {
+    const moodChange = finalMood - initialMood;
+    const newCount = sessionCount + 1;
+    setSessionCount(newCount);
+    localStorage.setItem("resetRoomSessionCount", newCount.toString());
     
-    if (moodChange > 2) {
-      message = "Wow! That was really helpful for you.";
-    } else if (moodChange > 0) {
-      message = "Glad to see a positive change in your mood!";
-    } else if (moodChange === 0) {
-      message = "Your mood stayed the same. Try a different activity next time?";
-    } else {
-      message = "If you're still feeling down, consider talking with a counselor.";
-    }
-    
+    // Reset the session state
+    setCompletedReset(false);
+    setInitialMood(5);
+    setFinalMood(5);
+    setSelectedGoal("");
+
     toast({
-      title: "Session Completed",
-      description: message,
+      description: moodChange > 0 
+        ? "Great progress! Your mood has improved." 
+        : "Remember, it's okay to have ups and downs. Try another activity if needed."
     });
-
-    setState(prev => ({ 
-      ...prev, 
-      finalMood: finalMoodValue,
-      completedReset: false 
-    }));
-  };
+  }, [finalMood, initialMood, sessionCount, toast]);
 
   return {
-    ...state,
+    initialMood,
+    finalMood,
+    selectedGoal,
+    completedReset,
+    sessionCount,
     updateInitialMood,
     updateFinalMood,
     setSelectedGoal,
     completeReset,
-    finishSession
+    finishSession,
   };
 };

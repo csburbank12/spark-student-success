@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ResetHeader: React.FC = () => {
+interface ResetHeaderProps {
+  sessionCount: number;
+}
+
+const ResetHeader: React.FC<ResetHeaderProps> = ({ sessionCount }) => {
   const navigate = useNavigate();
 
   return (
