@@ -60,17 +60,21 @@ export class DbValidationService {
    */
   private static async validateTable(config: DatabaseValidationConfig) {
     try {
-      // Check if table exists using information_schema
-      const { data: tableData, error: tableError } = await supabase
-        .from('information_schema.tables')
-        .select('table_name')
-        .eq('table_schema', 'public')
-        .eq('table_name', config.tableName)
-        .maybeSingle();
+      // Check if table exists using a direct SQL query
+      const { data: tableData, error: tableError } = await supabase.sql(`
+        SELECT EXISTS (
+          SELECT 1
+          FROM information_schema.tables
+          WHERE table_schema = 'public'
+          AND table_name = '${config.tableName}'
+        ) as exists
+      `);
       
       if (tableError) throw tableError;
       
-      if (!tableData) {
+      const tableExists = tableData?.[0]?.exists === true;
+      
+      if (!tableExists) {
         return {
           tableName: config.tableName,
           exists: false,
@@ -83,26 +87,29 @@ export class DbValidationService {
         };
       }
       
-      // Check columns using information_schema
-      const { data: columnsData, error: columnsError } = await supabase
-        .from('information_schema.columns')
-        .select('column_name')
-        .eq('table_schema', 'public')
-        .eq('table_name', config.tableName);
+      // Check columns using direct SQL
+      const { data: columnsData, error: columnsError } = await supabase.sql(`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+        AND table_name = '${config.tableName}'
+      `);
       
       if (columnsError) throw columnsError;
       
-      const columnNames = columnsData ? columnsData.map(c => c.column_name) : [];
+      const columnNames = columnsData ? columnsData.map((c: any) => c.column_name) : [];
       const missingColumns = config.requiredColumns.filter(col => !columnNames.includes(col));
       
-      // Check for primary key
-      const { data: primaryKeyData, error: pkError } = await supabase
-        .from('information_schema.table_constraints')
-        .select('constraint_name')
-        .eq('table_schema', 'public')
-        .eq('table_name', config.tableName)
-        .eq('constraint_type', 'PRIMARY KEY')
-        .maybeSingle();
+      // Check for primary key using direct SQL
+      const { data: primaryKeyData, error: pkError } = await supabase.sql(`
+        SELECT EXISTS (
+          SELECT 1
+          FROM information_schema.table_constraints
+          WHERE table_schema = 'public'
+          AND table_name = '${config.tableName}'
+          AND constraint_type = 'PRIMARY KEY'
+        ) as has_pk
+      `);
       
       if (pkError) throw pkError;
       
@@ -115,7 +122,7 @@ export class DbValidationService {
         exists: true,
         structure: {
           valid: missingColumns.length === 0,
-          hasPrimaryKey: !!primaryKeyData,
+          hasPrimaryKey: primaryKeyData?.[0]?.has_pk === true,
           hasTimestamps: hasCreatedAt && hasUpdatedAt,
           missingColumns
         }

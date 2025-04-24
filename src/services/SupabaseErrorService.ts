@@ -34,28 +34,33 @@ export class SupabaseErrorService {
   static async checkRLSPolicyIssues(tableName: string) {
     try {
       // Check if table has RLS enabled using direct SQL query
-      const { data: rlsStatus, error: rlsError } = await supabase
-        .from('information_schema.tables')
-        .select('relrowsecurity')
-        .eq('table_name', tableName)
-        .eq('table_schema', 'public')
-        .maybeSingle();
+      const { data: rlsStatus, error: rlsError } = await supabase.sql(`
+        SELECT relrowsecurity
+        FROM pg_class
+        WHERE relname = '${tableName}'
+        AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
+        LIMIT 1
+      `);
       
       if (rlsError) throw rlsError;
       
       // Check for policies using direct SQL query
-      const { data: policies, error: policiesError } = await supabase
-        .from('pg_policies')
-        .select('*')
-        .eq('tablename', tableName)
-        .eq('schemaname', 'public');
+      const { data: policies, error: policiesError } = await supabase.sql(`
+        SELECT polname as name, polcmd as operation
+        FROM pg_policy
+        WHERE relname = '${tableName}'
+        AND polnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
+      `);
       
       if (policiesError) throw policiesError;
       
+      const hasRLS = rlsStatus && rlsStatus.length > 0 ? !!rlsStatus[0].relrowsecurity : false;
+      const policiesArray = Array.isArray(policies) ? policies : [];
+      
       return {
-        hasRLS: rlsStatus?.relrowsecurity || false,
-        policies: policies || [],
-        missingCrudPolicies: this.detectMissingCrudPolicies(policies || [])
+        hasRLS,
+        policies: policiesArray,
+        missingCrudPolicies: this.detectMissingCrudPolicies(policiesArray)
       };
     } catch (error) {
       console.error('Error checking RLS policy issues:', error);
@@ -72,9 +77,9 @@ export class SupabaseErrorService {
   private static detectMissingCrudPolicies(policies: any[]) {
     const operations = ['SELECT', 'INSERT', 'UPDATE', 'DELETE'];
     const existingOps = Array.isArray(policies) ? 
-      policies.map(p => p.cmd?.toUpperCase?.() || p.operation?.toUpperCase?.()) : [];
+      policies.map(p => (p.operation || p.cmd || '').toString().toUpperCase()) : [];
     
-    return operations.reduce((missing, op) => {
+    return operations.reduce<Record<string, boolean>>((missing, op) => {
       missing[op.toLowerCase()] = !existingOps.includes(op);
       return missing;
     }, {} as Record<string, boolean>);

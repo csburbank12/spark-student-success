@@ -95,18 +95,20 @@ export function useDbFunctionMonitor(requiredFunctions: string[] = []) {
    * Tests if a specific function exists by querying the information schema
    */
   const testFunctionExistence = async (functionName: string): Promise<boolean> => {
-    // First try checking if the function exists in the information schema
+    // First try checking if the function exists in the information schema using SQL
     try {
-      const { data, error } = await supabase
-        .from('information_schema.routines')
-        .select('routine_name')
-        .eq('routine_schema', 'public')
-        .eq('routine_name', functionName)
-        .maybeSingle();
+      const { data, error } = await supabase.sql(`
+        SELECT EXISTS (
+          SELECT 1
+          FROM information_schema.routines
+          WHERE routine_schema = 'public'
+          AND routine_name = '${functionName}'
+        ) as exists
+      `);
       
       if (error) throw error;
       
-      return !!data;
+      return data?.[0]?.exists === true;
     } catch (error) {
       console.error(`Error checking if function ${functionName} exists:`, error);
       
@@ -116,29 +118,29 @@ export function useDbFunctionMonitor(requiredFunctions: string[] = []) {
         let result;
         switch (functionName) {
           case 'get_teacher_mood_check_ins':
-            result = await supabase.rpc(functionName as any, { 
+            result = await supabase.rpc('get_teacher_mood_check_ins', { 
               p_teacher_id: '00000000-0000-0000-0000-000000000000', 
               p_days_back: 1 
             });
             break;
           case 'get_teacher_mood_trends':
-            result = await supabase.rpc(functionName as any, { 
+            result = await supabase.rpc('get_teacher_mood_trends', { 
               p_student_id: '00000000-0000-0000-0000-000000000000', 
               p_days_back: 1 
             });
             break;
           case 'get_micro_coach_logs':
-            result = await supabase.rpc(functionName as any, { 
+            result = await supabase.rpc('get_micro_coach_logs', { 
               p_student_id: null 
             });
             break;
           case 'get_student_intervention_impacts':
-            result = await supabase.rpc(functionName as any, { 
+            result = await supabase.rpc('get_student_intervention_impacts', { 
               p_student_id: '00000000-0000-0000-0000-000000000000' 
             });
             break;
           case 'get_tiered_support_recommendations':
-            result = await supabase.rpc(functionName as any, { 
+            result = await supabase.rpc('get_tiered_support_recommendations', { 
               p_student_id: '00000000-0000-0000-0000-000000000000' 
             });
             break;

@@ -13,7 +13,7 @@ export class DatabaseMigrationService {
    */
   static async executeTransaction(migrationName: string, sqlScript: string) {
     try {
-      // First check if the migration has already been applied by querying directly
+      // First check if the migration has already been applied
       const { data: existingMigrations, error: checkError } = await supabase
         .from('error_logs')  // Using error_logs as a temporary tracking mechanism
         .select('*')
@@ -33,19 +33,10 @@ export class DatabaseMigrationService {
         };
       }
       
-      // Execute the migration using raw SQL
-      // Note: We're using raw queries instead of RPC since function might not exist yet
-      const { data, error } = await supabase
-        .rpc('execute_sql', {
-          sql_query: sqlScript
-        })
-        .single();
+      // Execute the SQL script directly
+      const { error } = await supabase.sql(sqlScript);
       
-      if (error) {
-        // If function doesn't exist, use direct query instead
-        const { error: rawError } = await supabase.sql(sqlScript);
-        if (rawError) throw rawError;
-      }
+      if (error) throw error;
       
       // Record the successful migration in error_logs temporarily
       await supabase
@@ -59,8 +50,7 @@ export class DatabaseMigrationService {
       
       return { 
         success: true, 
-        message: `Migration "${migrationName}" successfully applied`,
-        details: data
+        message: `Migration "${migrationName}" successfully applied`
       };
     } catch (error) {
       console.error(`Migration "${migrationName}" failed:`, error);

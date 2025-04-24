@@ -22,12 +22,13 @@ export function useSupabaseAdminTools() {
   const fetchTablesList = async () => {
     setIsLoading(true);
     try {
-      // Use SQL query instead of RPC
-      const { data, error } = await supabase
-        .from('information_schema.tables')
-        .select('table_name')
-        .eq('table_schema', 'public')
-        .order('table_name', { ascending: true });
+      // Use SQL query instead of type-checked builder
+      const { data, error } = await supabase.sql(`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        ORDER BY table_name ASC
+      `);
       
       if (error) {
         console.error('Error fetching tables:', error);
@@ -60,23 +61,25 @@ export function useSupabaseAdminTools() {
   const fetchTableDetails = async (tableName: string) => {
     setIsLoading(true);
     try {
-      // Direct query approach since functions might not exist yet
-      const { data: columns, error: columnsError } = await supabase
-        .from('information_schema.columns')
-        .select('column_name, data_type, is_nullable, column_default')
-        .eq('table_schema', 'public')
-        .eq('table_name', tableName);
+      // Use direct SQL queries
+      const { data: columns, error: columnsError } = await supabase.sql(`
+        SELECT column_name, data_type, is_nullable, column_default
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+        AND table_name = '${tableName}'
+      `);
       
       if (columnsError) {
         console.error(`Error fetching columns for table ${tableName}:`, columnsError);
         throw columnsError;
       }
       
-      const { data: constraints, error: constraintsError } = await supabase
-        .from('information_schema.table_constraints')
-        .select('constraint_name, constraint_type')
-        .eq('table_schema', 'public')
-        .eq('table_name', tableName);
+      const { data: constraints, error: constraintsError } = await supabase.sql(`
+        SELECT constraint_name, constraint_type
+        FROM information_schema.table_constraints
+        WHERE table_schema = 'public'
+        AND table_name = '${tableName}'
+      `);
       
       if (constraintsError) {
         console.error(`Error fetching constraints for table ${tableName}:`, constraintsError);
@@ -114,44 +117,75 @@ export function useSupabaseAdminTools() {
    */
   const getDatabaseHealth = async () => {
     try {
-      // Use SQL query directly instead of RPC
-      const { data: tables, error: tablesError } = await supabase
-        .from('information_schema.tables')
-        .select('table_name')
-        .eq('table_schema', 'public');
+      // Use SQL query directly
+      const { data: tables, error: tablesError } = await supabase.sql(`
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+      `);
 
       if (tablesError) {
         throw tablesError;
       }
 
       // Get tables without timestamps
-      const { data: tablesWithoutTimestamps, error: timestampError } = await supabase
-        .from('information_schema.columns')
-        .select('table_name')
-        .eq('table_schema', 'public')
-        .eq('column_name', 'created_at');
+      const { data: tablesWithTimestamps, error: timestampError } = await supabase.sql(`
+        SELECT DISTINCT table_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+        AND column_name = 'created_at'
+      `);
 
       if (timestampError) {
         throw timestampError;
       }
 
-      // Get RLS status for tables
+      // Get tables without primary keys
+      const { data: tablesWithPK, error: pkError } = await supabase.sql(`
+        SELECT DISTINCT table_name
+        FROM information_schema.table_constraints
+        WHERE table_schema = 'public'
+        AND constraint_type = 'PRIMARY KEY'
+      `);
+
+      if (pkError) {
+        throw pkError;
+      }
+
+      // RLS status requires checking each table
       const rlsStatus: Record<string, boolean> = {};
       if (tables) {
         for (const table of tables) {
           const tableName = table.table_name;
-          const rlsCheck = await SupabaseErrorService.checkRLSPolicyIssues(tableName);
-          rlsStatus[tableName] = rlsCheck.hasRLS;
+          const { data: rlsData, error: rlsError } = await supabase.sql(`
+            SELECT relrowsecurity
+            FROM pg_class
+            WHERE relname = '${tableName}'
+            AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
+            LIMIT 1
+          `);
+          
+          if (!rlsError && rlsData && rlsData.length > 0) {
+            rlsStatus[tableName] = !!rlsData[0].relrowsecurity;
+          } else {
+            rlsStatus[tableName] = false;
+          }
         }
       }
 
+      // Build the health data object
+      const tableNames = tables?.map((t: any) => t.table_name) || [];
+      const tablesWithTimestampNames = tablesWithTimestamps?.map((t: any) => t.table_name) || [];
+      const tablesWithPKNames = tablesWithPK?.map((t: any) => t.table_name) || [];
+      
+      const tablesWithoutTimestamps = tableNames.filter(name => !tablesWithTimestampNames.includes(name));
+      const tablesWithoutPK = tableNames.filter(name => !tablesWithPKNames.includes(name));
+
       const healthData = {
         check_time: new Date().toISOString(),
-        tables: tables?.map(t => t.table_name) || [],
-        tables_without_timestamps: tables?.filter(t => 
-          !tablesWithoutTimestamps?.some(wt => wt.table_name === t.table_name)
-        ).map(t => t.table_name) || [],
-        tables_without_primary_keys: [],
+        tables: tableNames,
+        tables_without_timestamps: tablesWithoutTimestamps,
+        tables_without_primary_keys: tablesWithoutPK,
         rls_status: rlsStatus
       };
 

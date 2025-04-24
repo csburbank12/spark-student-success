@@ -99,37 +99,65 @@ export function useAdminDatabaseTools() {
    */
   const getDatabaseHealth = async () => {
     try {
-      // Use direct SQL query approach instead of RPC
-      // Get tables first
-      const { data: allTables, error: tablesError } = await supabase
-        .from('information_schema.tables')
-        .select('table_name')
-        .eq('table_schema', 'public');
+      // Use direct SQL query instead of typed query builder
+      const { data: tablesResult, error: tablesError } = await supabase
+        .from('error_logs') // Using error_logs as a base table just to run SQL
+        .select('*')
+        .limit(1)
+        .then(() => 
+          // This runs after the first query to ensure a connection is active
+          supabase.rpc('stored_procedure_dummy_call', {}, { 
+            head: false,
+            count: 'exact',
+          }).catch(() => {
+            // If RPC fails (which it will since it doesn't exist), run SQL directly
+            return supabase.sql(`
+              SELECT table_name 
+              FROM information_schema.tables 
+              WHERE table_schema = 'public'
+            `)
+          })
+        );
       
       if (tablesError) {
         throw tablesError;
       }
       
-      // Perform a simple health check and compile the results
-      const tableNames = allTables?.map(t => t.table_name) || [];
-      const healthData = {
+      // Extract table names
+      const tableNames = tablesResult?.map(row => row.table_name) || [];
+      
+      // Initialize health data structure
+      const healthData: {
+        check_time: string;
+        tables: string[];
+        tables_without_timestamps: string[];
+        tables_without_primary_keys: string[];
+        rls_status: Record<string, boolean>;
+        [key: string]: any;
+      } = {
         check_time: new Date().toISOString(),
         tables: tableNames,
         tables_without_timestamps: [],
         tables_without_primary_keys: [],
         rls_status: {}
       };
-      
-      // Check tables for timestamps
+
+      // Check tables for timestamps and primary keys
       for (const tableName of tableNames) {
-        const { data: columns, error: columnsError } = await supabase
-          .from('information_schema.columns')
-          .select('column_name')
-          .eq('table_schema', 'public')
-          .eq('table_name', tableName);
+        // Use a direct SQL query for columns
+        const { data: columnsData, error: columnsError } = await supabase.sql(`
+          SELECT column_name 
+          FROM information_schema.columns 
+          WHERE table_schema = 'public' AND table_name = '${tableName}'
+        `);
           
-        if (!columnsError && columns) {
-          const columnNames = columns.map(c => c.column_name);
+        if (columnsError) {
+          console.error(`Error fetching columns for table ${tableName}:`, columnsError);
+          continue;
+        }
+          
+        if (columnsData) {
+          const columnNames = columnsData.map((c: any) => c.column_name);
           const hasCreatedAt = columnNames.includes('created_at');
           const hasUpdatedAt = columnNames.includes('updated_at');
           
@@ -137,32 +165,43 @@ export function useAdminDatabaseTools() {
             (healthData.tables_without_timestamps as string[]).push(tableName);
           }
           
-          // Check for primary keys
-          const { data: primaryKeys, error: pkError } = await supabase
-            .from('information_schema.table_constraints')
-            .select('constraint_name')
-            .eq('table_schema', 'public')
-            .eq('table_name', tableName)
-            .eq('constraint_type', 'PRIMARY KEY')
-            .maybeSingle();
+          // Check for primary keys using direct SQL
+          const { data: pkData, error: pkError } = await supabase.sql(`
+            SELECT constraint_name 
+            FROM information_schema.table_constraints 
+            WHERE table_schema = 'public' 
+            AND table_name = '${tableName}' 
+            AND constraint_type = 'PRIMARY KEY'
+            LIMIT 1
+          `);
             
-          if (!pkError && !primaryKeys) {
+          if (pkError) {
+            console.error(`Error checking primary key for table ${tableName}:`, pkError);
+            continue;
+          }
+          
+          if (!pkData || pkData.length === 0) {
             (healthData.tables_without_primary_keys as string[]).push(tableName);
           }
           
-          // Check RLS status
+          // Check RLS status using direct SQL
           try {
-            const rlsCheck = await supabase
-              .from('pg_class')
-              .select('relrowsecurity')
-              .eq('relname', tableName)
-              .maybeSingle();
+            const { data: rlsData, error: rlsError } = await supabase.sql(`
+              SELECT relrowsecurity 
+              FROM pg_class 
+              WHERE relname = '${tableName}' 
+              AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
+              LIMIT 1
+            `);
               
-            if (!rlsCheck.error) {
-              (healthData.rls_status as any)[tableName] = !!rlsCheck.data?.relrowsecurity;
+            if (!rlsError && rlsData && rlsData.length > 0) {
+              healthData.rls_status[tableName] = !!rlsData[0].relrowsecurity;
+            } else {
+              healthData.rls_status[tableName] = false;
             }
           } catch (e) {
             console.error(`Error checking RLS for ${tableName}:`, e);
+            healthData.rls_status[tableName] = false;
           }
         }
       }
