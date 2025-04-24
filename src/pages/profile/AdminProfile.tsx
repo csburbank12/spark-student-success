@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -131,8 +132,8 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                     </div>
                   </div>
                   
-                  <Button variant="outline" className="w-full">
-                    View System Logs
+                  <Button variant="outline" className="w-full" asChild>
+                    <Link to="/admin/error-logs">View System Logs</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -145,21 +146,29 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <Button variant="outline" className="h-auto flex-col py-4 px-2">
-                  <Users className="h-5 w-5 mb-1" />
-                  <span className="text-xs">Manage Users</span>
+                <Button variant="outline" className="h-auto flex-col py-4 px-2" asChild>
+                  <Link to="/admin/user-management">
+                    <Users className="h-5 w-5 mb-1" />
+                    <span className="text-xs">Manage Users</span>
+                  </Link>
                 </Button>
-                <Button variant="outline" className="h-auto flex-col py-4 px-2">
-                  <Building className="h-5 w-5 mb-1" />
-                  <span className="text-xs">School Settings</span>
+                <Button variant="outline" className="h-auto flex-col py-4 px-2" asChild>
+                  <Link to="/admin/school-management">
+                    <Building className="h-5 w-5 mb-1" />
+                    <span className="text-xs">School Settings</span>
+                  </Link>
                 </Button>
-                <Button variant="outline" className="h-auto flex-col py-4 px-2">
-                  <BarChart className="h-5 w-5 mb-1" />
-                  <span className="text-xs">Analytics</span>
+                <Button variant="outline" className="h-auto flex-col py-4 px-2" asChild>
+                  <Link to="/admin/data-analytics">
+                    <BarChart className="h-5 w-5 mb-1" />
+                    <span className="text-xs">Analytics</span>
+                  </Link>
                 </Button>
-                <Button variant="outline" className="h-auto flex-col py-4 px-2">
-                  <Settings className="h-5 w-5 mb-1" />
-                  <span className="text-xs">System Config</span>
+                <Button variant="outline" className="h-auto flex-col py-4 px-2" asChild>
+                  <Link to="/admin/system-settings">
+                    <Settings className="h-5 w-5 mb-1" />
+                    <span className="text-xs">System Config</span>
+                  </Link>
                 </Button>
               </div>
             </CardContent>
@@ -188,8 +197,8 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                           1250 students • 85 staff members
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" className="ml-auto">
-                        Manage
+                      <Button variant="ghost" size="sm" className="ml-auto" asChild>
+                        <Link to="/admin/school-management">Manage</Link>
                       </Button>
                     </div>
                     <div className="p-3 flex items-center">
@@ -202,8 +211,8 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                           850 students • 62 staff members
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" className="ml-auto">
-                        Manage
+                      <Button variant="ghost" size="sm" className="ml-auto" asChild>
+                        <Link to="/admin/school-management">Manage</Link>
                       </Button>
                     </div>
                     <div className="p-3 flex items-center">
@@ -216,21 +225,25 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                           620 students • 45 staff members
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" className="ml-auto">
-                        Manage
+                      <Button variant="ghost" size="sm" className="ml-auto" asChild>
+                        <Link to="/admin/school-management">Manage</Link>
                       </Button>
                     </div>
                   </div>
                 </div>
                 
                 <div className="flex justify-between">
-                  <Button variant="outline">
-                    <School className="mr-2 h-4 w-4" />
-                    Add New School
+                  <Button variant="outline" asChild>
+                    <Link to="/admin/school-onboarding">
+                      <School className="mr-2 h-4 w-4" />
+                      Add New School
+                    </Link>
                   </Button>
-                  <Button variant="outline">
-                    <Settings className="mr-2 h-4 w-4" />
-                    District Settings
+                  <Button variant="outline" asChild>
+                    <Link to="/admin/system-settings">
+                      <Settings className="mr-2 h-4 w-4" />
+                      District Settings
+                    </Link>
                   </Button>
                 </div>
               </div>
@@ -253,7 +266,9 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                     Configure system-wide settings, branding, and defaults
                   </div>
                   <div className="pt-2">
-                    <Button size="sm" variant="outline">Configure</Button>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link to="/admin/system-settings">Configure</Link>
+                    </Button>
                   </div>
                 </div>
                 
@@ -266,7 +281,9 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                     Manage authentication, permissions, and data policies
                   </div>
                   <div className="pt-2">
-                    <Button size="sm" variant="outline">Configure</Button>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link to="/admin/ferpa-compliance">Configure</Link>
+                    </Button>
                   </div>
                 </div>
                 
@@ -279,7 +296,9 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                     Manage SEL resources, lessons, and educational content
                   </div>
                   <div className="pt-2">
-                    <Button size="sm" variant="outline">Manage Content</Button>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link to="/admin/data-analytics">Manage Content</Link>
+                    </Button>
                   </div>
                 </div>
                 
@@ -292,7 +311,9 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                     Configure system monitoring, alerts, and notifications
                   </div>
                   <div className="pt-2">
-                    <Button size="sm" variant="outline">Configure</Button>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link to="/admin/loopbot-logs">Configure</Link>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -311,7 +332,9 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="font-medium">User Overview</div>
-                  <Button variant="outline" size="sm">Add New User</Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/admin/user-management">Add New User</Link>
+                  </Button>
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -368,13 +391,17 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
               </div>
               
               <div className="flex justify-between pt-2">
-                <Button variant="outline">
-                  <Users className="mr-2 h-4 w-4" />
-                  User Directory
+                <Button variant="outline" asChild>
+                  <Link to="/admin/user-management">
+                    <Users className="mr-2 h-4 w-4" />
+                    User Directory
+                  </Link>
                 </Button>
-                <Button variant="outline">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Access Control
+                <Button variant="outline" asChild>
+                  <Link to="/admin/ferpa-compliance">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Access Control
+                  </Link>
                 </Button>
               </div>
             </CardContent>
@@ -392,8 +419,8 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                   <div className="text-sm text-muted-foreground">
                     Bulk import users from CSV files or via School Information System integration
                   </div>
-                  <Button variant="outline">
-                    Import Users
+                  <Button variant="outline" asChild>
+                    <Link to="/admin/user-management">Import Users</Link>
                   </Button>
                 </div>
                 
@@ -402,8 +429,8 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                   <div className="text-sm text-muted-foreground">
                     Export user data for reporting or backup purposes
                   </div>
-                  <Button variant="outline">
-                    Export Users
+                  <Button variant="outline" asChild>
+                    <Link to="/admin/user-management">Export Users</Link>
                   </Button>
                 </div>
                 
@@ -412,8 +439,8 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                   <div className="text-sm text-muted-foreground">
                     Perform actions on multiple user accounts at once
                   </div>
-                  <Button variant="outline">
-                    Batch Operations
+                  <Button variant="outline" asChild>
+                    <Link to="/admin/user-management">Batch Operations</Link>
                   </Button>
                 </div>
                 
@@ -422,8 +449,8 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                   <div className="text-sm text-muted-foreground">
                     Create templates for different user types and permissions
                   </div>
-                  <Button variant="outline">
-                    Manage Templates
+                  <Button variant="outline" asChild>
+                    <Link to="/admin/user-management">Manage Templates</Link>
                   </Button>
                 </div>
               </div>
@@ -501,9 +528,11 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                 </div>
               </div>
               
-              <Button variant="outline" className="w-full">
-                <BarChart className="mr-2 h-4 w-4" />
-                View Detailed Analytics
+              <Button variant="outline" className="w-full" asChild>
+                <Link to="/admin/data-analytics">
+                  <BarChart className="mr-2 h-4 w-4" />
+                  View Detailed Analytics
+                </Link>
               </Button>
             </CardContent>
           </Card>
@@ -587,8 +616,8 @@ const AdminProfile: React.FC<AdminProfileProps> = ({ user }) => {
                 </div>
                 
                 <div className="mt-4 pt-4 border-t">
-                  <Button variant="outline">
-                    View Detailed Wellness Report
+                  <Button variant="outline" asChild>
+                    <Link to="/admin/pulse-trends">View Detailed Wellness Report</Link>
                   </Button>
                 </div>
               </div>

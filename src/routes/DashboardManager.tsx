@@ -7,6 +7,8 @@ import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
 import ParentDashboardEnhanced from "@/pages/ParentDashboardEnhanced";
 import { UserRole } from "@/types/roles";
 import { Loader } from "@/components/ui/loader";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -40,7 +42,10 @@ const DashboardManager: React.FC = () => {
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
           <h2 className="text-lg font-medium mb-2">Not logged in</h2>
-          <p className="text-muted-foreground">Please log in to view your dashboard.</p>
+          <p className="text-muted-foreground mb-4">Please log in to view your dashboard.</p>
+          <Button asChild>
+            <Link to="/login">Go to Login</Link>
+          </Button>
         </div>
       </div>
     );
@@ -63,7 +68,10 @@ const DashboardManager: React.FC = () => {
         <div className="flex h-full items-center justify-center">
           <div className="text-center">
             <h2 className="text-lg font-medium mb-2">Unknown user role</h2>
-            <p className="text-muted-foreground">Please contact an administrator.</p>
+            <p className="text-muted-foreground mb-4">Please contact an administrator.</p>
+            <Button variant="outline" asChild>
+              <Link to="/login">Back to Login</Link>
+            </Button>
           </div>
         </div>
       );
