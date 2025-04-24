@@ -1,13 +1,12 @@
 
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useStudentToolkit } from "@/hooks/useStudentToolkit";
+import { useStudentToolkit, groupToolkitItemsByType } from "@/hooks/useStudentToolkit";
 import { AddToolkitItemDialog } from "./toolkit/AddToolkitItemDialog";
 import { ToolkitItemList } from "./toolkit/ToolkitItemList";
 import { EmptyToolkit } from "./toolkit/EmptyToolkit";
 import { Loader } from "@/components/ui/loader";
 import { AlertTriangle } from "lucide-react";
-import type { ToolkitItem, ToolkitItemsByType } from "@/types/toolkit";
 
 export function ToolkitTab() {
   const { user } = useAuth();
@@ -47,12 +46,7 @@ export function ToolkitTab() {
   }
   
   // Group toolkit items by type
-  const itemsByType: ToolkitItemsByType = toolkitItems?.reduce((acc, item) => {
-    const type = item.item_type || 'Other';
-    if (!acc[type]) acc[type] = [];
-    acc[type].push(item);
-    return acc;
-  }, {} as ToolkitItemsByType) || {};
+  const itemsByType = groupToolkitItemsByType(toolkitItems);
   
   return (
     <div className="space-y-6">

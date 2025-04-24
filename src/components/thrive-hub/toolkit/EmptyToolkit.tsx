@@ -1,8 +1,7 @@
 
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { HeartHandshake } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 
 interface EmptyToolkitProps {
   onAddClick: () => void;
@@ -10,15 +9,20 @@ interface EmptyToolkitProps {
 
 export function EmptyToolkit({ onAddClick }: EmptyToolkitProps) {
   return (
-    <Card>
-      <CardContent className="flex flex-col items-center py-12">
-        <HeartHandshake className="h-16 w-16 text-muted-foreground mb-4" />
-        <h3 className="text-xl font-medium mb-2">Your toolkit is empty</h3>
-        <p className="text-muted-foreground text-center max-w-md mb-6">
-          Add videos, music, articles, and strategies that help you feel better
+    <div className="border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center text-center space-y-4 border-muted">
+      <div className="bg-primary/10 p-3 rounded-full">
+        <Sparkles className="h-8 w-8 text-primary" />
+      </div>
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Your toolkit is empty</h3>
+        <p className="text-muted-foreground">
+          Add helpful resources, strategies, and activities to your personal wellness toolkit.
         </p>
-        <Button onClick={onAddClick}>Add Your First Tool</Button>
-      </CardContent>
-    </Card>
+      </div>
+      <Button onClick={onAddClick} className="mt-2">
+        <Plus className="mr-2 h-4 w-4" />
+        Add Your First Item
+      </Button>
+    </div>
   );
 }

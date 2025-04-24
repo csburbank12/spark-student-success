@@ -2,7 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { ToolkitItem, ToolkitItemInput } from "@/types/toolkit";
+import type { ToolkitItem, ToolkitItemInput, ToolkitItemsByType } from "@/types/toolkit";
 
 /**
  * Hook to fetch a student's toolkit items
@@ -44,15 +44,17 @@ export function useAddToolkitItem() {
       type, 
       label, 
       url, 
-      content 
-    }: ToolkitItemInput) => {
+      content,
+      studentId
+    }: ToolkitItemInput & { studentId: string }) => {
       const { error } = await supabase
         .from("student_toolkit")
         .insert([{ 
           item_type: type,
           item_label: label,
           item_url: url,
-          item_content: content
+          item_content: content,
+          student_id: studentId
         }]);
       
       if (error) throw error;
@@ -131,4 +133,18 @@ export function useUpdateToolkitItem() {
       console.error("Error updating toolkit item:", error);
     }
   });
+}
+
+/**
+ * Utility function to group toolkit items by type
+ */
+export function groupToolkitItemsByType(toolkitItems?: ToolkitItem[]): ToolkitItemsByType {
+  if (!toolkitItems || toolkitItems.length === 0) return {};
+  
+  return toolkitItems.reduce((acc, item) => {
+    const type = item.item_type || 'Other';
+    if (!acc[type]) acc[type] = [];
+    acc[type].push(item);
+    return acc;
+  }, {} as ToolkitItemsByType);
 }
