@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -251,7 +250,7 @@ const QATestUtility = () => {
           </Button>
           
           {overallStatus === 'passed' && (
-            <Button variant="success" onClick={markSiteReady}>
+            <Button variant="default" onClick={markSiteReady}>
               <Sparkles className="mr-2 h-4 w-4" />
               Mark Ready for Launch
             </Button>
@@ -433,7 +432,7 @@ const QATestUtility = () => {
                   </div>
                   
                   {overallStatus === 'passed' && (
-                    <Button variant="success" onClick={markSiteReady}>
+                    <Button variant="default" onClick={markSiteReady}>
                       <Sparkles className="mr-2 h-4 w-4" />
                       Mark Ready for Launch
                     </Button>
