@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, Clock, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 const demoRecommendations = [
   {
@@ -33,6 +34,12 @@ const demoRecommendations = [
 ];
 
 const InterventionRecommendations = () => {
+  const handleImplement = (recommendation: any) => {
+    toast.success(`Implementing: ${recommendation.type}`, {
+      description: "The recommendation has been added to your action plan."
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -73,7 +80,7 @@ const InterventionRecommendations = () => {
                     </span>
                   </div>
                 </div>
-                <Button size="sm">Implement</Button>
+                <Button size="sm" onClick={() => handleImplement(rec)}>Implement</Button>
               </div>
             </div>
           ))}

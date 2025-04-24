@@ -8,6 +8,7 @@ import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 import RiskTrendChart from "@/components/predictive-support/RiskTrendChart";
 import InterventionRecommendations from "@/components/predictive-support/InterventionRecommendations";
+import SelDomainScoresCard from "@/components/predictive-support/dashboard/SelDomainScoresCard";
 
 const stats = [
   { title: "Students at Risk", value: "12", trend: "up", change: "+2" },
@@ -81,7 +82,10 @@ const PredictiveSupport = () => {
             </TabsList>
 
             <TabsContent value="insights" className="space-y-4">
-              <RiskTrendChart />
+              <div className="grid gap-6 md:grid-cols-2">
+                <RiskTrendChart />
+                <SelDomainScoresCard />
+              </div>
               <InterventionRecommendations />
             </TabsContent>
 
@@ -94,9 +98,38 @@ const PredictiveSupport = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-center py-8">
-                    Intervention tracking view will be implemented here
-                  </p>
+                  <div className="space-y-4">
+                    {Array.from({length: 3}).map((_, i) => (
+                      <div key={i} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h4 className="font-medium">Student Support Plan #{i+1}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Alex Johnson • Grade 9 • Started 4/15/2025
+                            </p>
+                          </div>
+                          <Badge variant={
+                            i === 0 ? "default" : 
+                            i === 1 ? "secondary" : 
+                            "outline"
+                          }>
+                            {i === 0 ? "In Progress" : i === 1 ? "Completed" : "Scheduled"}
+                          </Badge>
+                        </div>
+                        <p className="text-sm mb-3">
+                          {i === 0 ? "Weekly check-ins with school counselor to address social anxiety" : 
+                           i === 1 ? "Math tutoring sessions with Ms. Garcia" :
+                           "Parent-teacher conference to discuss learning accommodations"}
+                        </p>
+                        <div className="flex justify-between">
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Owner:</span> {i === 0 ? "Sarah Chen (Counselor)" : i === 1 ? "Maria Garcia (Math)" : "You"}
+                          </div>
+                          <Button size="sm" variant="outline">View Details</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -110,9 +143,36 @@ const PredictiveSupport = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-center py-8">
-                    Analytics reporting view will be implemented here
-                  </p>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {["Intervention Outcomes", "Risk Factor Analysis", "Monthly Wellness Report"].map((report, i) => (
+                        <Card key={i}>
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-lg">{report}</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              {i === 0 ? "Effectiveness of completed interventions" : 
+                               i === 1 ? "Breakdown of risk factors across student population" :
+                               "Summary of wellness indicators for April 2025"}
+                            </p>
+                            <Button variant="outline" className="w-full">Generate Report</Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                    <Card className="bg-muted/20">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Custom Report Builder</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Create custom reports based on specific metrics, time periods, and student groups
+                        </p>
+                        <Button>Create Custom Report</Button>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
