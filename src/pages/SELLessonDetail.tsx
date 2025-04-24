@@ -1,3 +1,4 @@
+
 import React from "react";
 import { type SelLesson } from "@/components/sel-pathways/types";
 import { Button } from "@/components/ui/button";
@@ -12,19 +13,27 @@ interface Props {
 
 const SELLessonDetail: React.FC<Props> = ({ lesson, onBack }) => {
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-4">
-        {onBack && (
-          <Button variant="ghost" onClick={onBack}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
+    <div className="space-y-6">
+      <div className="flex items-center">
+        {onBack ? (
+          <Button variant="ghost" onClick={onBack} className="mr-2">
+            <ArrowLeft className="h-4 w-4 mr-1" />
             Back
           </Button>
+        ) : (
+          <Link to="/sel-pathways">
+            <Button variant="ghost" className="mr-2">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back to Pathways
+            </Button>
+          </Link>
         )}
+        <h2 className="text-3xl font-heading font-bold">{lesson.title}</h2>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{lesson.title}</CardTitle>
+          <CardTitle>Lesson Details</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">

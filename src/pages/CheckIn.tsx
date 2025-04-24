@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import MoodTabsChart from "./check-in/MoodTabsChart";
 import CheckInList from "./check-in/CheckInList";
 import MoodComparisonChart from "@/components/mood-tracking/MoodComparisonChart";
+import { Link } from "react-router-dom";
+import { ArrowLeft, History } from "lucide-react";
 
 const CheckIn = () => {
   const { user } = useAuth();
@@ -28,8 +30,19 @@ const CheckIn = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-heading font-bold">Daily Check-In</h2>
-        <Button variant="outline">Check-In History</Button>
+        <div className="flex items-center">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm" className="mr-2">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back
+            </Button>
+          </Link>
+          <h2 className="text-3xl font-heading font-bold">Daily Check-In</h2>
+        </div>
+        <Button variant="outline">
+          <History className="h-4 w-4 mr-2" />
+          Check-In History
+        </Button>
       </div>
       
       <Tabs defaultValue="student" className="space-y-6">

@@ -3,18 +3,29 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import TrustedAdultSelector from "@/components/student-relationships/TrustedAdultSelector";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const TrustedAdults: React.FC = () => {
   const { user } = useAuth();
   
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-heading font-bold">Trusted Adults</h2>
-        <p className="text-muted-foreground mt-1">
-          Choose school staff members you feel comfortable talking with when you need help.
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm" className="mr-2">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back
+            </Button>
+          </Link>
+          <h2 className="text-3xl font-heading font-bold">Trusted Adults</h2>
+        </div>
       </div>
+      <p className="text-muted-foreground mt-1">
+        Choose school staff members you feel comfortable talking with when you need help.
+      </p>
       
       <div className="grid md:grid-cols-2 gap-6">
         <TrustedAdultSelector 

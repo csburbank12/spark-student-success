@@ -6,12 +6,24 @@ import { GoalTracker } from "@/components/thrive-hub/GoalTracker";
 import { JournalTab } from "@/components/thrive-hub/JournalTab";
 import { BadgesTab } from "@/components/thrive-hub/BadgesTab";
 import { ToolkitTab } from "@/components/thrive-hub/ToolkitTab";
-import { TrendingUp, Target, Book, Award, Sparkles } from "lucide-react";
+import { TrendingUp, Target, Book, Award, Sparkles, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export default function ThriveHub() {
   return (
-    <div className="container mx-auto py-6">
-      <h1 className="text-3xl font-bold mb-6">My Thrive Hub</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm" className="mr-2">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-heading font-bold">My Thrive Hub</h1>
+        </div>
+      </div>
       
       <Tabs defaultValue="mood" className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">

@@ -8,6 +8,9 @@ import { SELLoadingState } from "@/components/sel-pathways/SELLoadingState";
 import { SELErrorState } from "@/components/sel-pathways/SELErrorState";
 import { SELEmptyState } from "@/components/sel-pathways/SELEmptyState";
 import { SELRecommendationsGrid } from "@/components/sel-pathways/SELRecommendationsGrid";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const PersonalizedSELPathways: React.FC = () => {
   const { user } = useAuth();
@@ -48,10 +51,24 @@ const PersonalizedSELPathways: React.FC = () => {
   }
   
   return (
-    <SELRecommendationsGrid 
-      lessons={recommendedLessons}
-      onSelectLesson={setSelectedLesson}
-    />
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm" className="mr-2">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back
+            </Button>
+          </Link>
+          <h2 className="text-3xl font-heading font-bold">Personalized SEL Pathways</h2>
+        </div>
+      </div>
+      
+      <SELRecommendationsGrid 
+        lessons={recommendedLessons}
+        onSelectLesson={setSelectedLesson}
+      />
+    </div>
   );
 };
 

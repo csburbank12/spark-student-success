@@ -5,6 +5,9 @@ import TrustedAdultSelector from "@/components/student-relationships/TrustedAdul
 import { Loader } from "@/components/ui/loader";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const TrustedAdultSelection: React.FC = () => {
   const { user } = useAuth();
@@ -30,10 +33,18 @@ const TrustedAdultSelection: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-heading font-bold">Your Support Network</h2>
-        <p className="text-muted-foreground">Choose trusted adults you feel comfortable talking to when you need help</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm" className="mr-2">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back
+            </Button>
+          </Link>
+          <h2 className="text-3xl font-heading font-bold">Your Support Network</h2>
+        </div>
       </div>
+      <p className="text-muted-foreground">Choose trusted adults you feel comfortable talking to when you need help</p>
       
       <TrustedAdultSelector 
         studentId={user?.id || ""}

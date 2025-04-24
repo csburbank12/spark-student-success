@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, ArrowLeft } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -57,9 +57,17 @@ const SELPathwayManagement = () => {
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-semibold">SEL Pathway Management</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm" className="mr-2">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back
+            </Button>
+          </Link>
+          <h2 className="text-3xl font-heading font-bold">SEL Pathway Management</h2>
+        </div>
         <Link to="/create-sel-lesson">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
