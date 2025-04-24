@@ -52,15 +52,6 @@ export const demoUsers: Record<string, User> = {
         status: 'Active'
       }
     ]
-  },
-  [UserRole.staff]: {
-    id: 'stf1',
-    name: 'Dr. James Chen',
-    email: 'chen@school.edu',
-    role: UserRole.staff,
-    avatarUrl: '/staff-avatar.png',
-    schoolId: 'school1',
-    department: 'Student Support Services',
-    specialization: 'School Counselor'
   }
+  // Removed staff user entry for Dr. James Chen
 };
