@@ -32,4 +32,3 @@ const LoopBotInput: React.FC<LoopBotInputProps> = ({
 );
 
 export default LoopBotInput;
-

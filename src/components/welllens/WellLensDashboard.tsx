@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import StudentMoodAnalysis from '../predictive-support/StudentMoodAnalysis';
 import RiskLevelChart from '../predictive-support/RiskLevelChart';
 import { TrendAlert, SchoolWellnessScore } from '../predictive-support/types';
+import { Badge } from "@/components/ui/badge";
 
 const WellLensDashboard: React.FC = () => {
   const { data: alerts } = useQuery({
@@ -18,7 +19,23 @@ const WellLensDashboard: React.FC = () => {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as TrendAlert[];
+      
+      // Map database fields to our type fields
+      return (data || []).map(alert => ({
+        id: alert.id,
+        studentId: alert.student_id,
+        severity: alert.severity,
+        primaryTrigger: alert.primary_trigger,
+        secondaryTriggers: alert.secondary_triggers,
+        details: alert.details,
+        recommendedAction: alert.recommended_action,
+        createdAt: alert.created_at,
+        updatedAt: alert.updated_at,
+        resolved: alert.resolved,
+        resolvedAt: alert.resolved_at,
+        resolvedBy: alert.resolved_by,
+        resolutionNotes: alert.resolution_notes
+      })) as TrendAlert[];
     }
   });
 
@@ -32,7 +49,22 @@ const WellLensDashboard: React.FC = () => {
         .limit(1);
       
       if (error) throw error;
-      return data[0] as SchoolWellnessScore;
+      
+      if (!data || data.length === 0) return null;
+      
+      // Map database fields to our type fields
+      return {
+        id: data[0].id,
+        schoolId: data[0].school_id,
+        date: data[0].date,
+        participationScore: data[0].participation_score,
+        moodScore: data[0].mood_score,
+        selCompletionScore: data[0].sel_completion_score,
+        alertResolutionScore: data[0].alert_resolution_score,
+        totalScore: data[0].total_score,
+        status: data[0].status as 'thriving' | 'stable' | 'at_risk',
+        createdAt: data[0].created_at
+      } as SchoolWellnessScore;
     }
   });
 
