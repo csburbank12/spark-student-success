@@ -38,7 +38,13 @@ export const routes = [
   },
   {
     path: "/dashboard",
-    element: <SuspenseWrapper><Layout><DashboardManager /></Layout></SuspenseWrapper>,
+    element: (
+      <SuspenseWrapper>
+        <Layout>
+          <DashboardManager />
+        </Layout>
+      </SuspenseWrapper>
+    ),
   },
   ...generalRoutes,
   ...adminRoutes,
