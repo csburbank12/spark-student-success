@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { LoginHeader } from "@/components/auth/LoginHeader";
@@ -13,9 +13,10 @@ import { InfoIcon, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const redirectTo = searchParams.get("redirectTo") || "/dashboard";
 
   const [email, setEmail] = useState("");
@@ -23,6 +24,14 @@ const Login = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("demo");
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (user) {
+      const from = location.state?.from || redirectTo;
+      navigate(from);
+    }
+  }, [user, navigate, location.state, redirectTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

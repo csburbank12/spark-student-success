@@ -65,7 +65,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
 export const DashboardRouter: React.FC = () => {
   const { user } = useAuth();
+  const location = useLocation();
   
+  // Only redirect to dashboard if user is authenticated
   if (!user) {
     return <Navigate to="/login" replace />;
   }
