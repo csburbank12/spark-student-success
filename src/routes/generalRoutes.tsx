@@ -8,9 +8,19 @@ import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import ConsentSettings from '@/pages/ConsentSettings';
 import DataAccessRequests from '@/pages/DataAccessRequests';
 import { ProtectedRoute } from "./ProtectedRoute";
+import { DashboardRouter } from "./ProtectedRoute";
+import NotFound from '@/pages/NotFound';
 
 export const GeneralRoutes = () => {
   return [
+    {
+      path: "/",
+      element: <DashboardRouter />
+    },
+    {
+      path: "dashboard",
+      element: <DashboardRouter />
+    },
     {
       path: "help",
       element: <Help />
@@ -50,6 +60,14 @@ export const GeneralRoutes = () => {
           <DataAccessRequests />
         </ProtectedRoute>
       )
+    },
+    {
+      path: "404",
+      element: <NotFound />
+    },
+    {
+      path: "*",
+      element: <NotFound />
     }
   ];
 };

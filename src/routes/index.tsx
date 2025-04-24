@@ -1,8 +1,5 @@
 
 import React from "react";
-import { Navigate } from "react-router-dom";
-import NotFound from "@/pages/NotFound";
-import Login from "@/pages/Login";
 import parentRoutes from "./parentRoutes";
 import { teacherAdminRoutes } from "./teacherAdminRoutes";
 import staffRoutes from "./staffRoutes";
@@ -16,7 +13,7 @@ const processRoutes = (routes: any[]) => {
   return routes.map(route => {
     // Skip wrapping login/public routes with AppShell
     const skipShell = 
-      (route.path === "/" || route.path === "/login" || route.path === "/404" || route.path === "*");
+      (route.path === "/" || route.path === "/login" || route.path === "/404" || route.path === "*" || route.path === "dashboard");
     
     return {
       ...route,
