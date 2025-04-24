@@ -11,8 +11,7 @@ import EmotionAwareScheduling from "@/pages/EmotionAwareScheduling";
 import WellLensDashboard from "@/pages/WellLensDashboard";
 import PredictiveSupport from "@/pages/PredictiveSupport";
 
-// Export the routes as both default and named export for backwards compatibility
-export const teacherAdminRoutes = [
+const teacherRoutes = [
   {
     path: "/teacher-dashboard",
     element: (
@@ -79,4 +78,4 @@ export const teacherAdminRoutes = [
   },
 ];
 
-export default teacherAdminRoutes;
+export default teacherRoutes;

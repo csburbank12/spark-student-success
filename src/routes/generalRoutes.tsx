@@ -11,67 +11,57 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { DashboardRouter } from "./ProtectedRoute";
 import NotFound from '@/pages/NotFound';
 
-export const GeneralRoutes = () => {
-  return [
-    {
-      path: "/",
-      element: <DashboardRouter />
-    },
-    {
-      path: "dashboard",
-      element: <DashboardRouter />
-    },
-    {
-      path: "help",
-      element: <Help />
-    },
-    {
-      path: "login",
-      element: <Login />
-    },
-    {
-      path: "settings",
-      element: (
-        <ProtectedRoute>
-          <Settings />
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: "profile",
-      element: (
-        <ProtectedRoute>
-          <UserProfile />
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: "privacy-policy",
-      element: <PrivacyPolicy />
-    },
-    {
-      path: "consent-settings",
-      element: (
-        <ProtectedRoute>
-          <ConsentSettings />
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: "data-access-requests",
-      element: (
-        <ProtectedRoute>
-          <DataAccessRequests />
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: "404",
-      element: <NotFound />
-    },
-    {
-      path: "*",
-      element: <NotFound />
-    }
-  ];
-};
+export const generalRoutes = [
+  {
+    path: "/dashboard",
+    element: <DashboardRouter />
+  },
+  {
+    path: "help",
+    element: <Help />
+  },
+  {
+    path: "settings",
+    element: (
+      <ProtectedRoute>
+        <Settings />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "profile",
+    element: (
+      <ProtectedRoute>
+        <UserProfile />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "privacy-policy",
+    element: <PrivacyPolicy />
+  },
+  {
+    path: "consent-settings",
+    element: (
+      <ProtectedRoute>
+        <ConsentSettings />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "data-access-requests",
+    element: (
+      <ProtectedRoute>
+        <DataAccessRequests />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "404",
+    element: <NotFound />
+  },
+  {
+    path: "*",
+    element: <NotFound />
+  }
+];

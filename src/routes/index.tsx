@@ -2,12 +2,12 @@
 import { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { adminRoutes } from "./adminRoutes";
-import { teacherRoutes } from "./teacherRoutes";
-import { studentRoutes } from "./studentRoutes";
-import { parentRoutes } from "./parentRoutes";
+import adminRoutes from "./adminRoutes";
+import teacherRoutes from "./teacherAdminRoutes";
+import studentRoutes from "./studentRoutes";
+import parentRoutes from "./parentRoutes";
 import { generalRoutes } from "./generalRoutes";
-import { staffRoutes } from "./staffRoutes";
+import staffRoutes from "./staffRoutes";
 
 // Dynamic imports for base pages
 const Login = lazy(() => import("@/pages/Login"));
