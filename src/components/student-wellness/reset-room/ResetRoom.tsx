@@ -1,14 +1,20 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useResetSession } from "./hooks/useResetSession";
 import { useResetTimer } from "./hooks/useResetTimer";
+import ResetHeader from "./components/ResetHeader";
+import ResetBenefits from "./components/ResetBenefits";
+import ResetVisualizer from "./components/ResetVisualizer";
 import MoodAssessment from "./components/MoodAssessment";
 import TimerControls from "./components/TimerControls";
 import TimerDurationSelector from "./components/TimerDurationSelector";
+import BoxBreathing from "./BoxBreathing";
+import GroundingExercise from "./GroundingExercise";
+import BodyScan from "./BodyScan";
+import PositiveAffirmations from "./PositiveAffirmations";
+import GuidedMeditation from "../wellness-tools/GuidedMeditation";
+import MusicPlayer from "../wellness-tools/MusicPlayer";
 
 const ANIMATION_URLS = [
   "/animations/breathing.mp4",
@@ -16,14 +22,23 @@ const ANIMATION_URLS = [
   "/animations/visualization.mp4",
 ];
 
-const ResetRoom = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [initialMood, setInitialMood] = useState<number>(5);
-  const [finalMood, setFinalMood] = useState<number>(5);
-  const [selectedGoal, setSelectedGoal] = useState<string>("calm");
+const ResetRoom: React.FC = () => {
+  const [activeTab, setActiveTab] = useState("breathing");
   const [animationUrl, setAnimationUrl] = useState<string>(ANIMATION_URLS[0]);
-  const [completedReset, setCompletedReset] = useState<boolean>(false);
+  
+  const {
+    initialMood,
+    finalMood,
+    selectedGoal,
+    completedReset,
+    sessionCount,
+    updateInitialMood,
+    updateFinalMood,
+    setSelectedGoal,
+    completeReset,
+    finishSession
+  } = useResetSession();
+
   const {
     timerRunning,
     progress,
@@ -36,47 +51,22 @@ const ResetRoom = () => {
     customTime,
   } = useResetTimer();
 
-  // When timer completes, prompt for final mood assessment
+  // Handle timer completion
   useEffect(() => {
     if (timerRunning && timeRemaining === 0) {
-      setCompletedReset(true);
+      completeReset();
       toast({
         title: "Reset Complete",
         description: "Great job! How are you feeling now?",
       });
     }
-  }, [timerRunning, timeRemaining, toast]);
+  }, [timerRunning, timeRemaining]);
 
-  // Randomly choose an animation when goal changes
+  // Update animation when goal changes
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * ANIMATION_URLS.length);
     setAnimationUrl(ANIMATION_URLS[randomIndex]);
   }, [selectedGoal]);
-
-  const handleSubmitFinalMood = (moodValue: number) => {
-    // In a real app, we would save the mood data to the database
-    toast({
-      title: "Recovery Recorded",
-      description: `Your mood improved from ${initialMood} to ${moodValue}. Great progress!`,
-    });
-    
-    // Reset the timer state
-    resetTimer();
-    setCompletedReset(false);
-    
-    // Navigate back after a short delay
-    setTimeout(() => {
-      navigate(-1);
-    }, 2000);
-  };
-
-  const handleGoalSelect = (goal: string) => {
-    setSelectedGoal(goal);
-  };
-
-  const handleDurationSelect = (minutes: number) => {
-    setCustomTime(minutes * 60);
-  };
 
   const handleStartTimer = () => {
     startTimer();
@@ -88,6 +78,7 @@ const ResetRoom = () => {
 
   const handleStopTimer = () => {
     stopTimer();
+    resetTimer();
     toast({
       description: "Reset paused. Take your time.",
     });
@@ -95,7 +86,7 @@ const ResetRoom = () => {
 
   const handleFinishEarly = () => {
     stopTimer();
-    setCompletedReset(true);
+    completeReset();
     toast({
       title: "Reset Completed Early",
       description: "How are you feeling now?",
@@ -104,17 +95,9 @@ const ResetRoom = () => {
 
   return (
     <div className="space-y-6">
-      <Button
-        variant="outline"
-        size="sm"
-        className="mb-4"
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back
-      </Button>
+      <ResetHeader sessionCount={sessionCount} />
 
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Left Column - Mood Assessment and Timer Controls */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -128,9 +111,9 @@ const ResetRoom = () => {
                 <MoodAssessment
                   type="before"
                   moodValue={initialMood}
-                  onMoodChange={setInitialMood}
+                  onMoodChange={updateInitialMood}
                   selectedGoal={selectedGoal}
-                  onGoalSelect={handleGoalSelect}
+                  onGoalSelect={setSelectedGoal}
                 />
               )}
 
@@ -140,7 +123,7 @@ const ResetRoom = () => {
                     <TimerDurationSelector
                       isCustomTime={isCustomTime}
                       customTime={customTime}
-                      onDurationSelect={handleDurationSelect}
+                      onDurationSelect={(minutes) => setCustomTime(minutes * 60)}
                     />
                   )}
 
@@ -161,80 +144,56 @@ const ResetRoom = () => {
                 <MoodAssessment
                   type="after"
                   moodValue={finalMood}
-                  onMoodChange={setFinalMood}
-                  onSubmit={handleSubmitFinalMood}
+                  onMoodChange={updateFinalMood}
+                  onSubmit={finishSession}
                 />
               )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Column - Visualization / Animation */}
-        <Card>
-          <CardContent className="p-0 overflow-hidden rounded-md">
-            {/* Placeholder for animation/video content */}
-            <div className="bg-muted aspect-video flex items-center justify-center">
-              <p className="text-muted-foreground">
-                {timerRunning
-                  ? `${selectedGoal.charAt(0).toUpperCase() + selectedGoal.slice(1)} exercise visualization would appear here`
-                  : "Start the timer to begin your reset exercise"}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <ResetVisualizer
+          animationUrl={animationUrl}
+          isTimerRunning={timerRunning}
+          selectedGoal={selectedGoal}
+        />
       </div>
 
-      {/* Guidance and Tips */}
       <Card>
-        <CardHeader>
-          <CardTitle>Guidance</CardTitle>
-        </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-medium">Tips for {selectedGoal}</h3>
-              <ul className="list-disc pl-5 pt-2 space-y-1">
-                {selectedGoal === "calm" && (
-                  <>
-                    <li>Take slow, deep breaths through your nose.</li>
-                    <li>Focus on each breath as it enters and leaves your body.</li>
-                    <li>
-                      When your mind wanders, gently bring it back to your breath.
-                    </li>
-                  </>
-                )}
-                {selectedGoal === "focus" && (
-                  <>
-                    <li>Find a comfortable position and sit upright.</li>
-                    <li>Focus on one specific object or thought.</li>
-                    <li>
-                      Notice when your mind wanders and return to your focal point.
-                    </li>
-                  </>
-                )}
-                {selectedGoal === "confidence" && (
-                  <>
-                    <li>Stand or sit in a confident posture.</li>
-                    <li>Recall a time when you felt capable and strong.</li>
-                    <li>
-                      Use positive self-talk and affirmations during this exercise.
-                    </li>
-                  </>
-                )}
-                {selectedGoal === "energy" && (
-                  <>
-                    <li>Take several energizing breaths.</li>
-                    <li>Gently stretch your arms, legs and shoulders.</li>
-                    <li>
-                      Visualize energy flowing through your body with each breath.
-                    </li>
-                  </>
-                )}
-              </ul>
-            </div>
-          </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList>
+              <TabsTrigger value="breathing">Breathing</TabsTrigger>
+              <TabsTrigger value="grounding">Grounding</TabsTrigger>
+              <TabsTrigger value="body-scan">Body Scan</TabsTrigger>
+              <TabsTrigger value="affirmations">Affirmations</TabsTrigger>
+              <TabsTrigger value="meditation">Meditation</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="breathing">
+              <BoxBreathing />
+            </TabsContent>
+
+            <TabsContent value="grounding">
+              <GroundingExercise />
+            </TabsContent>
+
+            <TabsContent value="body-scan">
+              <BodyScan />
+            </TabsContent>
+
+            <TabsContent value="affirmations">
+              <PositiveAffirmations />
+            </TabsContent>
+
+            <TabsContent value="meditation">
+              <GuidedMeditation />
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
+
+      <ResetBenefits />
     </div>
   );
 };
