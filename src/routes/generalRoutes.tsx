@@ -31,7 +31,11 @@ export const GeneralRoutes = () => {
     },
     {
       path: "settings",
-      element: <Settings />
+      element: (
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      )
     },
     {
       path: "profile",

@@ -13,7 +13,7 @@ const processRoutes = (routes: any[]) => {
   return routes.map(route => {
     // Skip wrapping login/public routes with AppShell
     const skipShell = 
-      (route.path === "/" || route.path === "/login" || route.path === "/404" || route.path === "*" || route.path === "dashboard");
+      (route.path === "/" || route.path === "/login" || route.path === "/404" || route.path === "*");
     
     return {
       ...route,

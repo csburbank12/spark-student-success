@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -63,5 +64,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 };
 
 export const DashboardRouter: React.FC = () => {
+  const { user } = useAuth();
+  
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
   return <DashboardManager />;
 };
