@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Loader } from "lucide-react";
 import { ScanSearch } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
+import { PlatformAuditService } from "@/services/PlatformAuditService";
 
 export function PlatformAuditButton() {
   const { user } = useAuth();
@@ -16,33 +16,20 @@ export function PlatformAuditButton() {
     setIsAuditing(true);
     
     try {
-      const checkResult = await supabase
-        .from('site_audit_logs')
-        .insert({
-          run_by_admin_id: user.id,
-          status: 'success',
-          summary: 'Platform audit completed successfully',
-          details: {
-            checkedRoutes: [
-              '/dashboard',
-              '/students',
-              '/settings',
-              '/analytics'
-            ],
-            featuresChecked: [
-              'Authentication',
-              'Navigation',
-              'User Roles',
-              'Demo Data'
-            ]
-          }
-        })
-        .select()
-        .single();
-
-      if (checkResult.error) throw checkResult.error;
+      const auditResult = await PlatformAuditService.performAudit({
+        checkAllRoles: true,
+        checkRoutes: true,
+        checkComponents: true,
+        logErrors: true
+      });
       
-      toast.success('Platform audit completed');
+      if (auditResult.success) {
+        toast.success("✅ Audit complete: No critical errors detected");
+      } else {
+        toast.error(`❌ Issues found: ${auditResult.errorCount} issues detected`, {
+          description: "See admin panel > Error Logs for details"
+        });
+      }
     } catch (error) {
       console.error('Audit error:', error);
       toast.error('Failed to complete platform audit');

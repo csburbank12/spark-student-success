@@ -3,23 +3,30 @@ import React from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
 import AdminDashboard from "@/pages/AdminDashboard";
+import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
 import UserManagement from "@/pages/admin/UserManagement";
 import DataAnalytics from "@/pages/admin/DataAnalytics";
 import SchoolManagement from "@/pages/admin/SchoolManagement";
-import SystemSettings from "@/pages/admin/SystemSettings";
-import LoopBotLogs from "@/pages/admin/LoopBotLogs";
 import FERPACompliance from "@/pages/admin/FERPACompliance";
+import SystemSettings from "@/pages/admin/SystemSettings";
+import LoopbotLogs from "@/pages/admin/LoopbotLogs";
+import AuditDashboard from "@/pages/admin/AuditDashboard";
 import ErrorLogsDashboard from "@/pages/admin/ErrorLogsDashboard";
-import AdminPulseTrends from "@/pages/AdminPulseTrends";
-import SchoolOnboarding from "@/pages/admin/SchoolOnboarding";
-import IntegrationsManager from "@/pages/admin/IntegrationsManager";
 
 const adminRoutes = [
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <AdminDashboard />
+      </ProtectedRoute>
+    ),
+  },
   {
     path: "/admin-dashboard",
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <AdminDashboard />
+        <AdminDashboardEnhanced />
       </ProtectedRoute>
     ),
   },
@@ -67,7 +74,15 @@ const adminRoutes = [
     path: "/admin/loopbot-logs",
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <LoopBotLogs />
+        <LoopbotLogs />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/audit-dashboard",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <AuditDashboard />
       </ProtectedRoute>
     ),
   },
@@ -76,30 +91,6 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <ErrorLogsDashboard />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/pulse-trends",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <AdminPulseTrends />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/onboarding",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <SchoolOnboarding />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/integrations",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <IntegrationsManager />
       </ProtectedRoute>
     ),
   },
