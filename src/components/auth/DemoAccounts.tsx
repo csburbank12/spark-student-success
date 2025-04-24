@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { TermsAgreement } from "./TermsAgreement";
 import { toast } from "sonner";
-import { ErrorLoggingService } from "@/services/ErrorLoggingService";
+import { ErrorLoggingService, ProfileType } from "@/services/ErrorLoggingService";
 import { UserRole } from "@/types/roles";
 import { demoUsers } from "@/data/demoUsers";
 
@@ -81,7 +81,7 @@ export const DemoAccounts = ({
       ErrorLoggingService.logError({
         action: "demo_account_selection",
         error_message: `Failed to select ${role} demo account: ${error instanceof Error ? error.message : String(error)}`,
-        profile_type: role
+        profile_type: role as ProfileType
       });
       toast.error(`Could not load ${role} demo account`);
     }
@@ -95,7 +95,7 @@ export const DemoAccounts = ({
       ErrorLoggingService.logError({
         action: "demo_login_submit",
         error_message: `Demo login form submission failed: ${error instanceof Error ? error.message : String(error)}`,
-        profile_type: email.includes("@") ? email.split("@")[0] : "unknown"
+        profile_type: email.includes("@") ? email.split("@")[0] as ProfileType : "unknown"
       });
       toast.error("Login failed. Please try again.");
     }

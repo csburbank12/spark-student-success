@@ -3,7 +3,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle } from 'lucide-react';
-import { ErrorLoggingService } from '@/services/ErrorLoggingService';
+import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface ErrorBoundaryProps {
@@ -38,13 +38,12 @@ class GlobalErrorBoundary extends Component<ErrorBoundaryProps & { user?: any },
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log the error to our error logging service
     const componentName = this.props.component || 'Unknown Component';
-    const profileType = this.props.user?.role || 'unauthenticated';
+    const profileType = this.props.user?.role as ProfileType || 'unauthenticated';
     
     ErrorLoggingService.logError({
       action: `component_error_${componentName}`,
       error_message: error.message,
-      profile_type: profileType,
-      status_code: 'FRONTEND_ERROR'
+      profile_type: profileType
     });
     
     console.error('Component error caught:', error, errorInfo);

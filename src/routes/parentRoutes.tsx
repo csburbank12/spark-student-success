@@ -1,3 +1,4 @@
+
 import React from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
@@ -6,6 +7,8 @@ import ParentDashboardEnhanced from "@/pages/ParentDashboardEnhanced";
 import ParentMessages from "@/pages/parent/ParentMessages";
 import ChildActivity from "@/pages/parent/ChildActivity";
 import ChildWellness from "@/pages/parent/ChildWellness";
+import ParentResources from "@/pages/parent-resources/ParentResources";
+import ParentChildrenManager from "@/pages/parent/ParentChildrenManager";
 
 const parentRoutes = [
   {
@@ -45,6 +48,22 @@ const parentRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
         <ParentMessages />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/parent-resources",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <ParentResources />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/my-children",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <ParentChildrenManager />
       </ProtectedRoute>
     ),
   },

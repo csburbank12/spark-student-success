@@ -1,40 +1,46 @@
 
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { demoUsers } from "@/data/demoUsers";
-import { ErrorLoggingService } from "@/services/ErrorLoggingService";
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { resetDemoData } from '@/utils/demoDataManager';
+import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
 
+/**
+ * Hook to handle demo data reset functionality
+ */
 export const useDemoReset = () => {
-  const resetDemoEnvironment = async () => {
+  const [isResetting, setIsResetting] = useState(false);
+  
+  const handleReset = async () => {
+    if (isResetting) return;
+    
+    setIsResetting(true);
+    toast.loading('Resetting demo environment...');
+    
     try {
-      // Call the database function to clear demo data
-      await supabase.rpc('reset_demo_environment');
+      await resetDemoData();
       
-      // Recreate demo data
-      // Note: In a real app, you'd want to do this server-side
-      // For demo purposes, we're using the mock data
-      Object.values(demoUsers).forEach(async (user) => {
-        // Recreate mood check-ins
-        if (user.lastCheckIn) {
-          await supabase.from('mood_check_ins').insert({
-            user_id: user.id,
-            mood_type: 'good',
-            energy_level: 7,
-            notes: 'Demo mood check-in'
-          });
-        }
-      });
-
-      toast.success('Demo environment has been reset successfully');
+      // Reload the page to show fresh data
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+      
     } catch (error) {
-      console.error('Error resetting demo environment:', error);
+      console.error('Failed to reset demo data:', error);
+      
       ErrorLoggingService.logError({
-        action: 'demo_environment_reset',
-        error_message: `Failed to reset demo environment: ${error instanceof Error ? error.message : String(error)}`,
+        action: 'demo_reset_failed',
+        error_message: `Failed to reset demo data: ${error instanceof Error ? error.message : String(error)}`,
+        profile_type: 'unknown'
       });
-      toast.error('Failed to reset demo environment');
+      
+      toast.error('Failed to reset demo data. Please try again.');
+    } finally {
+      setIsResetting(false);
     }
   };
-
-  return { resetDemoEnvironment };
+  
+  return { 
+    isResetting,
+    handleReset
+  };
 };

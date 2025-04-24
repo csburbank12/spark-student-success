@@ -1,86 +1,59 @@
 
-import { useState, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useQuery, QueryKey, UseQueryOptions, QueryFunction } from '@tanstack/react-query';
 import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
-type QueryFunction<T> = (...args: any[]) => Promise<T>;
-
-interface QueryOptions {
-  maxRetries?: number;
-  logErrors?: boolean;
-  showToast?: boolean;
-  errorMessage?: string;
-  action?: string;
-}
-
-export function useSafeQuery<T>() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+/**
+ * A safe version of useQuery that handles error logging and user feedback
+ */
+export function useSafeQuery<
+  TQueryFnData = unknown,
+  TError = Error,
+  TData = TQueryFnData,
+  TQueryKey extends QueryKey = QueryKey
+>(
+  queryKey: TQueryKey,
+  queryFn: QueryFunction<TQueryFnData, TQueryKey>,
+  options?: UseQueryOptions<TQueryFnData, TError, TData, TQueryKey> & {
+    showErrorToast?: boolean;
+    errorMessage?: string;
+    logErrors?: boolean;
+  }
+) {
   const { user } = useAuth();
+  const {
+    showErrorToast = true,
+    errorMessage = 'Failed to load data',
+    logErrors = true,
+    ...queryOptions
+  } = options || {};
 
-  const executeQuery = useCallback(
-    async (
-      queryFn: QueryFunction<T>,
-      options: QueryOptions = {}
-    ): Promise<T | null> => {
-      const {
-        maxRetries = 2,
-        logErrors = true,
-        showToast = true,
-        errorMessage = 'Something went wrong. Please try again.',
-        action = 'database_query',
-      } = options;
-
-      setIsLoading(true);
-      setError(null);
-
-      let attempts = 0;
-      let lastError: Error | null = null;
-
-      while (attempts <= maxRetries) {
-        try {
-          const result = await queryFn();
-          setIsLoading(false);
-          return result;
-        } catch (err) {
-          lastError = err instanceof Error ? err : new Error(String(err));
-          attempts++;
-
-          if (attempts <= maxRetries) {
-            console.log(`Retry attempt ${attempts} of ${maxRetries}`);
-            // Wait for increasing amounts of time between retries (exponential backoff)
-            await new Promise(resolve => setTimeout(resolve, 500 * attempts));
-          } else {
-            // Log error after all retries have failed
-            if (logErrors) {
-              const profileType: ProfileType = user?.role || 'unauthenticated';
-              
-              ErrorLoggingService.logError({
-                action,
-                error_message: lastError.message,
-                profile_type: profileType,
-              });
-            }
-
-            if (showToast) {
-              toast.error(errorMessage, {
-                description: "We've logged this issue and are working on it."
-              });
-            }
-
-            setError(lastError);
-            setIsLoading(false);
-            return null;
-          }
-        }
+  return useQuery({
+    queryKey,
+    queryFn,
+    ...queryOptions,
+    onError: (error) => {
+      // Log the error
+      if (logErrors) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        
+        ErrorLoggingService.logError({
+          action: `query_error_${queryKey.join('_')}`,
+          error_message: errorMessage,
+          profile_type: (user?.role as ProfileType || 'unknown')
+        });
       }
-
-      setIsLoading(false);
-      return null;
+      
+      // Show toast if enabled
+      if (showErrorToast) {
+        toast.error(errorMessage);
+      }
+      
+      // Call the original onError if provided
+      if (options?.onError) {
+        options.onError(error);
+      }
     },
-    [user]
-  );
-
-  return { executeQuery, isLoading, error };
+  });
 }

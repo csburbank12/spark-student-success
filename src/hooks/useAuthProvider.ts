@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { User } from '@/types';
 import { UserRole } from '@/types/roles';
-import { ErrorLoggingService } from '@/services/ErrorLoggingService';
+import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
 import { toast } from 'sonner';
 import { demoUsers } from '@/data/demoUsers';
 
@@ -42,7 +42,8 @@ export const useAuthProvider = () => {
       console.error('Error reading from localStorage:', error);
       ErrorLoggingService.logError({
         action: 'auth_session_load',
-        error_message: `Failed to load user session: ${error instanceof Error ? error.message : String(error)}`
+        error_message: `Failed to load user session: ${error instanceof Error ? error.message : String(error)}`,
+        profile_type: 'unknown'
       });
       setIsLoading(false);
     }
@@ -69,7 +70,7 @@ export const useAuthProvider = () => {
       ErrorLoggingService.logError({
         action: 'auth_session_refresh',
         error_message: `Failed to refresh session: ${error instanceof Error ? error.message : String(error)}`,
-        profile_type: user.role
+        profile_type: user.role as ProfileType
       });
     }
   };
@@ -118,7 +119,7 @@ export const useAuthProvider = () => {
       ErrorLoggingService.logError({
         action: 'auth_login',
         error_message: `Login failed: ${errorMessage}`,
-        profile_type: email.includes('@') ? email.split('@')[0] : 'unknown'
+        profile_type: email.includes('@') ? (email.split('@')[0] as ProfileType) : 'unknown'
       });
       
       throw error;
@@ -137,7 +138,7 @@ export const useAuthProvider = () => {
       ErrorLoggingService.logError({
         action: 'auth_logout',
         error_message: `Logout failed: ${error instanceof Error ? error.message : String(error)}`,
-        profile_type: user?.role
+        profile_type: user?.role as ProfileType || 'unknown'
       });
     }
   };
@@ -160,7 +161,7 @@ export const useAuthProvider = () => {
       ErrorLoggingService.logError({
         action: 'auth_role_switch',
         error_message: `Role switch failed: ${error instanceof Error ? error.message : String(error)}`,
-        profile_type: user?.role
+        profile_type: user?.role as ProfileType || 'unknown'
       });
       toast.error(`Failed to switch roles`);
     }

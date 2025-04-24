@@ -11,11 +11,13 @@ export const useErrorLogging = () => {
   const logError = useCallback(async ({ 
     action, 
     error_message, 
-    profile_type 
+    profile_type,
+    status_code 
   }: { 
     action: string;
     error_message: string;
     profile_type: ProfileType;
+    status_code?: string;
   }) => {
     try {
       await supabase.from('error_logs').insert({
@@ -23,6 +25,7 @@ export const useErrorLogging = () => {
         error_message,
         user_id: user?.id || 'anonymous',
         profile_type,
+        status_code
       });
     } catch (error) {
       console.error('Failed to log error:', error);
@@ -45,20 +48,49 @@ export class ErrorLoggingService {
   static async logError({ 
     action, 
     error_message, 
-    profile_type 
+    profile_type,
+    status_code 
   }: { 
     action: string;
     error_message: string;
     profile_type: ProfileType;
+    status_code?: string;
   }) {
     try {
       await supabase.from('error_logs').insert({
         action,
         error_message,
         profile_type,
+        status_code
       });
     } catch (error) {
       console.error('Failed to log error:', error);
+    }
+  }
+  
+  static async markErrorResolved(errorId: string) {
+    try {
+      await supabase.from('error_logs')
+        .update({ resolved: true })
+        .eq('id', errorId);
+    } catch (error) {
+      console.error('Failed to update error status:', error);
+    }
+  }
+
+  static async checkRecurringErrors(timeframe: string = '24h', minOccurrences: number = 3): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_recurring_errors', { 
+          p_timeframe: timeframe,
+          p_min_occurrences: minOccurrences
+        });
+        
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Failed to check recurring errors:', error);
+      return [];
     }
   }
 }

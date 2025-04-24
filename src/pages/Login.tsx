@@ -1,85 +1,41 @@
 
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { UserRole } from "@/types/roles";
+import { LoginForm } from "@/components/auth/LoginForm";
 import { LoginHeader } from "@/components/auth/LoginHeader";
 import { ConfidentialityNotice } from "@/components/auth/ConfidentialityNotice";
 import { DemoAccounts } from "@/components/auth/DemoAccounts";
-import { ErrorLoggingService } from "@/services/ErrorLoggingService";
-import { demoUsers } from "@/data/demoUsers";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ErrorLoggingService, ProfileType } from "@/services/ErrorLoggingService";
 
 const Login = () => {
-  const { login, user } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-
-  // Redirect if already logged in
-  useEffect(() => {
-    if (user) {
-      redirectBasedOnRole(user.role as UserRole);
-    }
-  }, [user]);
-
-  const redirectBasedOnRole = (role: UserRole) => {
-    switch (role) {
-      case UserRole.student:
-        navigate("/student-dashboard-enhanced");
-        break;
-      case UserRole.teacher:
-      case UserRole.staff:
-        navigate("/teacher-dashboard-enhanced");
-        break;
-      case UserRole.admin:
-        navigate("/admin-dashboard-enhanced");
-        break;
-      case UserRole.parent:
-        navigate("/parent-dashboard-enhanced");
-        break;
-      default:
-        navigate("/dashboard");
-    }
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("demo");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !password) {
-      toast.error("Please enter both email and password");
-      return;
-    }
-    
-    if (!agreedToTerms) {
-      toast.error("You must agree to the terms and conditions");
-      return;
-    }
-    
     setIsSubmitting(true);
 
     try {
-      const user = await login(email, password);
-      
-      if (user) {
-        // Success message is shown in the AuthContext
-        // Redirect based on role
-        redirectBasedOnRole(user.role as UserRole);
-      }
+      await login(email, password);
+      navigate(redirectTo);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : "Failed to log in. Please check your credentials.";
-      
-      toast.error(errorMessage);
+      const errorMsg = error instanceof Error ? error.message : "Failed to login";
+      console.error(errorMsg);
       
       ErrorLoggingService.logError({
-        action: "login_attempt",
-        error_message: `Login failure: ${errorMessage}`,
-        profile_type: email.includes("@") ? email.split("@")[0] : "unknown"
+        action: "login_failed",
+        error_message: errorMsg,
+        profile_type: email.includes("@") ? email.split("@")[0] as ProfileType : "unknown"
       });
     } finally {
       setIsSubmitting(false);
@@ -87,50 +43,75 @@ const Login = () => {
   };
 
   const presetLogin = (role: string) => {
-    if (demoUsers[role]) {
-      setEmail(demoUsers[role].email);
+    // Map roles to email addresses
+    const demoEmails: Record<string, string> = {
+      student: "jada@school.edu",
+      teacher: "nguyen@school.edu",
+      admin: "rodriguez@district.edu",
+      parent: "sarah@family.com",
+      staff: "chen@school.edu"
+    };
+
+    if (demoEmails[role]) {
+      setEmail(demoEmails[role]);
       setPassword("password");
-    } else {
-      toast.error("Demo user not found");
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-primary-50 to-background p-4">
-      <div className="w-full max-w-md space-y-8">
-        <LoginHeader />
-        <ConfidentialityNotice />
+    <div className="min-h-screen flex flex-col">
+      <LoginHeader />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="bg-background w-full max-w-md p-6 rounded-xl shadow-sm border">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid grid-cols-2">
+              <TabsTrigger value="demo">Demo Accounts</TabsTrigger>
+              <TabsTrigger value="login">Login</TabsTrigger>
+            </TabsList>
 
-        <Card className="border-2">
-          <CardHeader>
-            <CardTitle className="text-2xl">Welcome to ThriveTrackED</CardTitle>
-            <CardDescription>
-              Choose a demo account to explore the platform
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DemoAccounts 
-              presetLogin={presetLogin}
-              email={email}
-              password={password}
-              isSubmitting={isSubmitting}
-              agreedToTerms={agreedToTerms}
-              setAgreedToTerms={setAgreedToTerms}
-              handleSubmit={handleSubmit}
-            />
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-2">
-            <div className="text-center w-full text-sm text-muted-foreground">
-              Protected by ThriveTrackED's secure authentication
-            </div>
-          </CardFooter>
-        </Card>
+            <TabsContent value="demo" className="space-y-6">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-heading font-bold">Demo Accounts</h2>
+                <p className="text-muted-foreground">
+                  Select a role to experience the platform
+                </p>
+              </div>
 
-        <div className="text-center text-sm text-muted-foreground">
-          <p>
-            &copy; {new Date().getFullYear()} ThriveTrackED. All rights
-            reserved.
-          </p>
+              <DemoAccounts
+                presetLogin={presetLogin}
+                email={email}
+                password={password}
+                isSubmitting={isSubmitting}
+                agreedToTerms={agreedToTerms}
+                setAgreedToTerms={setAgreedToTerms}
+                handleSubmit={handleSubmit}
+              />
+            </TabsContent>
+
+            <TabsContent value="login" className="space-y-6">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-heading font-bold">Welcome Back</h2>
+                <p className="text-muted-foreground">
+                  Sign in to continue to your account
+                </p>
+              </div>
+
+              <LoginForm
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+                agreedToTerms={agreedToTerms}
+                setAgreedToTerms={setAgreedToTerms}
+                handleSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+              />
+            </TabsContent>
+          </Tabs>
+
+          <div className="mt-8">
+            <ConfidentialityNotice />
+          </div>
         </div>
       </div>
     </div>
