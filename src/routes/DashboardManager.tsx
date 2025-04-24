@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import StudentDashboardEnhanced from "@/pages/StudentDashboardEnhanced";
@@ -9,7 +8,7 @@ import { UserRole } from "@/types/roles";
 import { Loader } from "@/components/ui/loader";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { DashboardLayout } from "@/components/Layout";
+import Layout from "@/components/Layout";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
