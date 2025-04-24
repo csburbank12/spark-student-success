@@ -5,6 +5,7 @@ import { useAuth } from "./contexts/AuthContext";
 import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
 import { routes } from "./routes/index";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as SonnerToaster } from "sonner";
 
 function App() {
   const { isLoading, user } = useAuth();
@@ -42,8 +43,12 @@ function App() {
             }
           />
         ))}
+        
+        {/* Catch-all route for invalid paths */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster />
+      <SonnerToaster position="top-right" closeButton richColors />
     </GlobalErrorBoundary>
   );
 }
