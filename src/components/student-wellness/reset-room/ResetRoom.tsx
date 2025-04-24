@@ -1,9 +1,10 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useResetSession } from "./hooks/useResetSession";
 import { useResetTimer } from "./hooks/useResetTimer";
+import { useResetAnimation } from "./hooks/useResetAnimation";
 import ResetHeader from "./components/ResetHeader";
 import ResetBenefits from "./components/ResetBenefits";
 import ResetVisualizer from "./components/ResetVisualizer";
@@ -12,14 +13,7 @@ import TimerDurationSelector from "./components/TimerDurationSelector";
 import TimerControls from "./components/TimerControls";
 import MoodAssessment from "./components/MoodAssessment";
 
-const ANIMATION_URLS = [
-  "/animations/breathing.mp4",
-  "/animations/meditation.mp4",
-  "/animations/visualization.mp4",
-];
-
 const ResetRoom: React.FC = () => {
-  const [animationUrl, setAnimationUrl] = useState<string>(ANIMATION_URLS[0]);
   const { toast } = useToast();
   
   const {
@@ -47,6 +41,8 @@ const ResetRoom: React.FC = () => {
     customTime,
   } = useResetTimer();
 
+  const { animationUrl } = useResetAnimation(selectedGoal);
+
   useEffect(() => {
     if (timerRunning && timeRemaining === 0) {
       completeReset();
@@ -56,11 +52,6 @@ const ResetRoom: React.FC = () => {
       });
     }
   }, [timerRunning, timeRemaining, completeReset, toast]);
-
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * ANIMATION_URLS.length);
-    setAnimationUrl(ANIMATION_URLS[randomIndex]);
-  }, [selectedGoal]);
 
   const handleStartTimer = () => {
     startTimer();
