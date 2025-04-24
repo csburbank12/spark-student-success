@@ -29,12 +29,12 @@ export function useSafeQuery<
     ...queryOptions
   } = options || {};
 
-  return useQuery({
-    queryKey,
-    queryFn,
-    ...queryOptions,
-    onError: (error) => {
-      // Log the error
+  // Create a wrapper query function that will handle errors
+  const wrappedQueryFn = async (context: any): Promise<TQueryFnData> => {
+    try {
+      return await queryFn(context);
+    } catch (error) {
+      // Handle error logging here
       if (logErrors) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         
@@ -50,10 +50,14 @@ export function useSafeQuery<
         toast.error(errorMessage);
       }
       
-      // Call the original onError if provided
-      if (queryOptions.onError) {
-        queryOptions.onError(error);
-      }
+      // Re-throw the error for React Query to handle
+      throw error;
     }
+  };
+
+  return useQuery({
+    queryKey,
+    queryFn: wrappedQueryFn,
+    ...queryOptions
   });
 }
