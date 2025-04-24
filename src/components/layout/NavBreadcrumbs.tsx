@@ -1,60 +1,68 @@
 
-import React from "react";
-import { useLocation, Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { ChevronRight, Home } from 'lucide-react';
+import { 
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
-export const NavBreadcrumbs: React.FC = () => {
+const NavBreadcrumbs = () => {
   const location = useLocation();
-  const pathnames = location.pathname.split("/").filter(x => x);
+  const pathnames = location.pathname.split('/').filter(Boolean);
 
-  // Skip breadcrumbs on root path
-  if (pathnames.length === 0) {
-    return null;
-  }
-
-  // Format path segments to be more readable
-  const formatPathname = (pathname: string) => {
-    return pathname
-      .split("-")
+  const getDisplayName = (path: string, index: number) => {
+    // Handle special cases
+    if (path === 'dashboard') return 'Dashboard';
+    
+    // Create a readable name from path segments
+    return path.split('-')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+      .join(' ');
   };
-
+  
   return (
-    <nav className="flex" aria-label="Breadcrumb">
-      <ol className="inline-flex items-center space-x-1 md:space-x-3">
-        <li className="inline-flex items-center">
-          <Link
-            to="/"
-            className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground"
-          >
-            Home
-          </Link>
-        </li>
-        {pathnames.map((pathname, index) => {
-          const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`;
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <Link to="/">
+              <Home className="h-4 w-4 mr-1" />
+              <span>Home</span>
+            </Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+
+        {pathnames.map((name, index) => {
+          const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
           const isLast = index === pathnames.length - 1;
 
           return (
-            <li key={pathname} className="flex items-center">
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            <React.Fragment key={routeTo}>
+              <BreadcrumbSeparator>
+                <ChevronRight className="h-4 w-4" />
+              </BreadcrumbSeparator>
+              
               {isLast ? (
-                <span className="ml-1 text-sm font-medium text-primary">
-                  {formatPathname(pathname)}
-                </span>
+                <BreadcrumbPage>{getDisplayName(name, index)}</BreadcrumbPage>
               ) : (
-                <Link
-                  to={routeTo}
-                  className="ml-1 text-sm font-medium text-muted-foreground hover:text-foreground"
-                >
-                  {formatPathname(pathname)}
-                </Link>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={routeTo}>
+                      {getDisplayName(name, index)}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
               )}
-            </li>
+            </React.Fragment>
           );
         })}
-      </ol>
-    </nav>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 };
 

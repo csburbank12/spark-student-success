@@ -5,7 +5,6 @@ import { Loader } from "@/components/ui/loader";
 import { NotLoggedInView } from "@/components/dashboard/NotLoggedInView";
 import { DashboardSelector } from "@/components/dashboard/DashboardSelector";
 import { UserRole } from "@/types/roles";
-import Layout from "@/components/Layout";
 
 const DashboardManager: React.FC = () => {
   const { user, isLoading } = useAuth();

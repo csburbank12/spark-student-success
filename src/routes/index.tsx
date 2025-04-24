@@ -1,6 +1,5 @@
 
 import { lazy, Suspense } from "react";
-import { Navigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import adminRoutes from "./adminRoutes";
 import teacherAdminRoutes from "./teacherAdminRoutes";
@@ -39,7 +38,7 @@ export const routes = [
   },
   {
     path: "/dashboard",
-    element: <SuspenseWrapper><DashboardManager /></SuspenseWrapper>,
+    element: <SuspenseWrapper><Layout><DashboardManager /></Layout></SuspenseWrapper>,
   },
   ...generalRoutes,
   ...adminRoutes,

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bell, Search, Menu, HelpCircle } from 'lucide-react';
+import { Bell, Search, Menu, HelpCircle, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -75,6 +75,7 @@ export const Navbar = () => {
     if (path.includes('profile')) return 'User Profile';
     if (path.includes('settings')) return 'Settings';
     if (path.includes('help')) return 'Help & Support';
+    if (path === '/') return 'Home';
     
     return 'Dashboard';
   };
@@ -86,8 +87,21 @@ export const Navbar = () => {
       </Button>
       <div className="hidden md:flex md:flex-1 md:items-center md:gap-4">
         <h1 className="text-xl font-heading font-semibold">{getPageTitle()}</h1>
+        {location.pathname !== '/' && (
+          <Button variant="ghost" size="sm" asChild className="ml-2">
+            <Link to="/">
+              <Home className="h-4 w-4 mr-1" />
+              Home
+            </Link>
+          </Button>
+        )}
       </div>
       <div className="flex items-center gap-4 ml-auto md:hidden">
+        <Button variant="ghost" size="icon" asChild>
+          <Link to="/">
+            <Home className="h-5 w-5" />
+          </Link>
+        </Button>
         <Button variant="ghost" size="icon">
           <HelpCircle className="h-5 w-5" />
         </Button>

@@ -11,6 +11,7 @@ import SidebarFooterActions from "./SidebarFooterActions";
 import { useAuth } from "@/contexts/AuthContext";
 import { getRoutesByRole } from "./sidebarRoutes";
 import { UserRole } from "@/types/roles";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const { user } = useAuth();
@@ -23,8 +24,7 @@ const Sidebar = () => {
     <SidebarContainer>
       <SidebarHeader>
         <div className="flex h-14 items-center px-4">
-          {/* Removed "Beacon" text, leaving the space blank */}
-          <span className="font-semibold text-xl"></span>
+          <Link to="/" className="font-semibold text-xl hover:text-primary transition-colors">Home</Link>
         </div>
       </SidebarHeader>
       <SidebarContent>

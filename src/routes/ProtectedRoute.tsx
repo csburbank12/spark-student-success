@@ -5,7 +5,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
 import { toast } from 'sonner';
 import { ErrorLoggingService } from '@/services/ErrorLoggingService';
-import DashboardManager from './DashboardManager';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -23,7 +22,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (user) {
       refreshSession();
     }
-  }, [location.pathname, refreshSession]);
+  }, [location.pathname, refreshSession, user]);
 
   if (!user) {
     ErrorLoggingService.logError({
@@ -57,20 +56,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       id: 'role-redirect'
     });
     
-    return <Navigate to="/dashboard" replace />;
+    // Instead of forcing to dashboard, send to root with flag to prevent redirect loop
+    return <Navigate to="/" state={{ preventRedirect: true }} replace />;
   }
 
   return <>{children}</>;
-};
-
-export const DashboardRouter: React.FC = () => {
-  const { user } = useAuth();
-  const location = useLocation();
-  
-  if (!user) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
-  }
-  
-  // Return DashboardManager without any redirects
-  return <DashboardManager />;
 };
