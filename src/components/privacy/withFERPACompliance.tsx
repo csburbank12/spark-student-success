@@ -25,39 +25,36 @@ interface FERPAAccessLog {
   access_reason?: string;
   successful: boolean;
   ip_address?: string;
+  timestamp: string;
 }
 
 export class FERPAComplianceService {
-  static async logAccess(access: FERPAAccessLog) {
+  static async logAccess(access: Omit<FERPAAccessLog, 'timestamp'>) {
     try {
-      // Try to log to Supabase
-      const { error } = await supabase
-        .from('ferpa_access_logs')
-        .insert({
-          user_id: access.user_id,
-          user_role: access.user_role,
-          record_type: access.record_type,
-          record_id: access.record_id,
-          student_id: access.student_id,
-          access_type: access.access_type,
-          access_reason: access.access_reason,
-          successful: access.successful,
-          ip_address: access.ip_address
-        });
-        
-      if (error) {
-        console.error('Failed to log FERPA access:', error);
-        throw error;
+      // Log to error logging service as we don't have a dedicated FERPA table
+      await ErrorLoggingService.logError({
+        action: `ferpa_access_${access.access_type}`,
+        error_message: `FERPA ${access.access_type}: ${access.user_role} accessed ${access.record_type}${access.record_id ? ` (ID: ${access.record_id})` : ''}${access.student_id ? ` for student ${access.student_id}` : ''}`,
+        profile_type: access.user_role
+      });
+      
+      // Store locally for audit purposes
+      const logEntry = {
+        ...access,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Store in localStorage as backup
+      try {
+        const existingLogs = localStorage.getItem('ferpa_access_logs');
+        const logs = existingLogs ? JSON.parse(existingLogs) : [];
+        logs.push(logEntry);
+        localStorage.setItem('ferpa_access_logs', JSON.stringify(logs.slice(-100))); // Keep last 100 entries
+      } catch (storageErr) {
+        console.error('Failed to store FERPA log locally:', storageErr);
       }
     } catch (error) {
       console.error('Error logging FERPA access:', error);
-      
-      // Fallback to error logging service if database logging fails
-      ErrorLoggingService.logError({
-        action: 'ferpa_access_log',
-        error_message: `FERPA access: ${access.user_role} accessed ${access.record_type} (${access.access_type})`,
-        profile_type: access.user_role
-      });
     }
   }
 }
