@@ -2,7 +2,7 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, HelpCircle, Home } from "lucide-react";
 import { useErrorLogging } from "@/hooks/useErrorLogging";
 
 const NotFound = () => {
@@ -11,7 +11,7 @@ const NotFound = () => {
 
   useEffect(() => {
     log404Error(location.pathname);
-  }, [location.pathname]);
+  }, [location.pathname, log404Error]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
@@ -24,10 +24,16 @@ const NotFound = () => {
         </p>
         <div className="space-y-4">
           <Button asChild size="lg" className="w-full">
-            <Link to="/dashboard">Return to Dashboard</Link>
+            <Link to="/dashboard">
+              <Home className="mr-2 h-4 w-4" />
+              Return to Dashboard
+            </Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="w-full">
-            <Link to="/">Go to Homepage</Link>
+            <Link to="/help">
+              <HelpCircle className="mr-2 h-4 w-4" />
+              Get Help
+            </Link>
           </Button>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import Layout from "./components/Layout";
 import { routes } from "./routes";
+import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
 
 function App() {
   const { user, isLoading } = useAuth();
@@ -17,15 +18,21 @@ function App() {
   }
 
   return (
-    <Routes>
-      {routes.map((route) => (
-        <Route
-          key={route.path}
-          path={route.path}
-          element={route.element}
-        />
-      ))}
-    </Routes>
+    <GlobalErrorBoundary component="AppRoot">
+      <Routes>
+        {routes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={
+              <GlobalErrorBoundary component={`Route-${route.path}`}>
+                {route.element}
+              </GlobalErrorBoundary>
+            }
+          />
+        ))}
+      </Routes>
+    </GlobalErrorBoundary>
   );
 }
 

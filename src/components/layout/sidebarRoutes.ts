@@ -19,6 +19,7 @@ import {
   HelpCircle,
   Home,
   User,
+  AlertTriangle,
 } from "lucide-react";
 import { UserRole } from "@/types/roles";
 
@@ -162,6 +163,11 @@ export const adminRoutes = [
     name: "Data Analytics",
     href: "/data-analytics",
     icon: Activity,
+  },
+  {
+    name: "Error Logs",
+    href: "/error-logs",
+    icon: AlertTriangle,
   },
   {
     name: "System Settings",

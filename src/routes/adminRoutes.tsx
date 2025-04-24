@@ -11,6 +11,7 @@ import SchoolOnboarding from "@/pages/admin/SchoolOnboarding";
 import DataAnalytics from "@/pages/admin/DataAnalytics";
 import LoopBotLogs from "@/pages/admin/LoopBotLogs";
 import IntegrationsManager from "@/pages/admin/IntegrationsManager";
+import ErrorLogsDashboard from "@/pages/admin/ErrorLogsDashboard";
 
 // Admin-specific routes
 const adminRoutes = [
@@ -83,6 +84,14 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <IntegrationsManager />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/error-logs",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <ErrorLogsDashboard />
       </ProtectedRoute>
     ),
   },
