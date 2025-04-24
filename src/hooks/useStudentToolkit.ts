@@ -1,8 +1,8 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ToolkitItem } from "@/types/toolkit";
 import { toast } from "sonner";
+import type { ToolkitItem } from "@/types/toolkit";
 
 export function useStudentToolkit(studentId?: string) {
   return useQuery({
@@ -20,11 +20,13 @@ export function useStudentToolkit(studentId?: string) {
 
       return data || [];
     },
-    enabled: !!studentId
+    enabled: !!studentId,
   });
 }
 
 export function useAddToolkitItem() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async ({ 
       type, 
