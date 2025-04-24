@@ -15,6 +15,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const auth = useAuthProvider();
   const { toast } = useToast();
   const location = useLocation();
+  const navigate = useNavigate();
   
   useEffect(() => {
     // Set up auth state listener
@@ -27,6 +28,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             error_message: 'User signed out',
             profile_type: auth.user?.role as any || 'unknown'
           });
+          
+          // Navigate to login after signout
+          navigate('/login');
         } else if (event === 'TOKEN_REFRESHED') {
           // Log token refresh events
           console.log('Auth token refreshed');
@@ -42,24 +46,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       subscription?.unsubscribe();
     };
-  }, [auth.user]);
-
-  // Add role switching toast notification and prevent auto-redirects
-  const enhancedAuth = {
-    ...auth,
-    setRole: (role: UserRole) => {
-      // Don't auto-redirect when changing roles
-      const preventRedirect = true;
-      auth.setRole(role, preventRedirect);
-      toast({
-        title: "Role Changed",
-        description: `You are now viewing as: ${role.charAt(0).toUpperCase() + role.slice(1)}`,
-      });
-    }
+  }, [auth.user, navigate]);
+  
+  // Don't expose setRole in the main context anymore - users must log out to switch roles
+  const authContextValue = {
+    ...auth
   };
   
   return (
-    <AuthContext.Provider value={enhancedAuth}>
+    <AuthContext.Provider value={authContextValue}>
       {children}
     </AuthContext.Provider>
   );

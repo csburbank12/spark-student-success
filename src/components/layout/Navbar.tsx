@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, HelpCircle, Home, UserCircle, Settings } from 'lucide-react';
+import { Menu, HelpCircle, Home, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar/sidebar-context';
 import NavBreadcrumbs from './NavBreadcrumbs';
@@ -12,12 +11,21 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Logo } from '@/components/branding/Logo';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export const Navbar = () => {
   const { toggleSidebar } = useSidebar();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const { logout } = useAuth();
+  
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+    toast.success('Successfully logged out');
+  };
   
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-card px-4 md:px-6">
@@ -30,17 +38,14 @@ export const Navbar = () => {
       </div>
 
       <div className="flex items-center gap-4 ml-auto md:hidden">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+        <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')} aria-label="Home">
           <Home className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
-          <UserCircle className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
-          <Settings className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={() => navigate('/help')}>
+        <Button variant="ghost" size="icon" onClick={() => navigate('/help')} aria-label="Support">
           <HelpCircle className="h-5 w-5" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Log Out">
+          <LogOut className="h-5 w-5" />
         </Button>
       </div>
 
@@ -49,50 +54,20 @@ export const Navbar = () => {
           <NavigationMenuList>
             <NavigationMenuItem>
               <Link to="/dashboard" className={navigationMenuTriggerStyle()}>
+                <Home className="h-4 w-4 mr-2" />
+                Home
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link to="/dashboard" className={navigationMenuTriggerStyle()}>
                 Dashboard
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link to="/profile" className={navigationMenuTriggerStyle()}>
-                Profile
+              <Link to="/help" className={navigationMenuTriggerStyle()}>
+                <HelpCircle className="h-4 w-4 mr-2" />
+                Support
               </Link>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>More</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <ul className="grid w-[200px] gap-3 p-4">
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        to="/profiles"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        User Profiles
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        to="/settings"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        Settings
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        to="/help"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        Help & Support
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
-                </ul>
-              </NavigationMenuContent>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -104,9 +79,6 @@ export const Navbar = () => {
 
       <div className="flex flex-1 items-center gap-4 justify-end">
         <SearchBar />
-        <Link to="/qa-dashboard">
-          <Button variant="outline" size="sm">QA Dashboard</Button>
-        </Link>
         <Button 
           variant="outline" 
           size="icon"
@@ -121,8 +93,16 @@ export const Navbar = () => {
         </Button>
         <NotificationMenu />
         <UserMenu />
+        <Button 
+          variant="destructive" 
+          size="sm" 
+          className="hidden md:flex"
+          onClick={handleLogout}
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Log Out
+        </Button>
       </div>
     </header>
   );
 };
-

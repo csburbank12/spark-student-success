@@ -19,8 +19,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Only redirect if we're on the login page and already logged in
+  // Redirect to login if not authenticated
   React.useEffect(() => {
+    if (!isLoading && !user && location.pathname !== '/login') {
+      toast.error('Please log in to continue', {
+        id: 'auth-redirect'
+      });
+      navigate('/login');
+    }
+
+    // Redirect from login if already authenticated
     if (!isLoading && user && location.pathname === '/login') {
       navigate('/dashboard');
     }

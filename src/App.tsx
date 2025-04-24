@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
@@ -21,12 +21,12 @@ function App() {
   return (
     <GlobalErrorBoundary component="AppRoot">
       <Routes>
-        {/* Explicit home route */}
+        {/* Explicit home route with redirect to login if not authenticated */}
         <Route 
           path="/" 
           element={
             <GlobalErrorBoundary component="Route-home">
-              <Navigate to={user ? "/dashboard" : "/login"} replace />
+              {user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
             </GlobalErrorBoundary>
           } 
         />

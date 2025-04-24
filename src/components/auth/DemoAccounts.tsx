@@ -6,12 +6,24 @@ import { toast } from "sonner";
 import { ErrorLoggingService, ProfileType } from "@/services/ErrorLoggingService";
 import { UserRole } from "@/types/roles";
 import { demoUsers } from "@/data/demoUsers";
+import { 
+  Card, 
+  CardContent 
+} from "@/components/ui/card";
+import { 
+  School, 
+  User, 
+  Users, 
+  UserPlus, 
+  Briefcase 
+} from "lucide-react";
 
 interface DemoAccount {
   role: string;
   name: string;
   email: string;
   description: string;
+  icon: React.ReactNode;
   iconClass: string;
 }
 
@@ -40,6 +52,7 @@ export const DemoAccounts = ({
       name: demoUsers[UserRole.student].name,
       email: demoUsers[UserRole.student].email,
       description: "Access student dashboard, mood tracking, SEL resources, and digital journal",
+      icon: <User className="h-5 w-5" />,
       iconClass: "bg-emerald-100 text-emerald-600"
     },
     { 
@@ -47,6 +60,7 @@ export const DemoAccounts = ({
       name: demoUsers[UserRole.teacher].name,
       email: demoUsers[UserRole.teacher].email,
       description: "View student data, assign interventions, and track progress",
+      icon: <Users className="h-5 w-5" />,
       iconClass: "bg-blue-100 text-blue-600"
     },
     { 
@@ -54,6 +68,7 @@ export const DemoAccounts = ({
       name: demoUsers[UserRole.admin].name,
       email: demoUsers[UserRole.admin].email,
       description: "Manage school settings, users, and access analytics",
+      icon: <School className="h-5 w-5" />,
       iconClass: "bg-purple-100 text-purple-600"
     },
     { 
@@ -61,7 +76,16 @@ export const DemoAccounts = ({
       name: demoUsers[UserRole.parent].name,
       email: demoUsers[UserRole.parent].email,
       description: "Monitor child activities, wellness, and communicate with staff",
+      icon: <UserPlus className="h-5 w-5" />,
       iconClass: "bg-amber-100 text-amber-600"
+    },
+    { 
+      role: UserRole.staff, 
+      name: "Dr. James Chen",
+      email: "chen@school.edu",
+      description: "Access staff tools, provide support services, and manage resources",
+      icon: <Briefcase className="h-5 w-5" />,
+      iconClass: "bg-teal-100 text-teal-600"
     }
   ];
 
@@ -95,30 +119,28 @@ export const DemoAccounts = ({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-2">
+    <div className="space-y-6">
+      <div className="grid gap-3">
         {demoAccounts.map((account) => (
-          <Button 
+          <Card 
             key={account.role}
+            className="border border-primary-100 cursor-pointer hover:bg-primary-50 transition-all"
             onClick={() => handleAccountSelect(account.role)}
-            variant="outline" 
-            className="justify-start hover:bg-primary-50 border-primary-100 w-full transition-all"
-            aria-label={`Select ${account.name} account`}
           >
-            <div className="flex items-center w-full">
-              <div className={`mr-3 h-10 w-10 rounded-full ${account.iconClass} flex items-center justify-center`}>
-                <span className="text-sm font-medium">
-                  {account.name[0]}
-                </span>
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <div className={`mr-3 h-10 w-10 rounded-full ${account.iconClass} flex items-center justify-center`}>
+                  {account.icon}
+                </div>
+                <div className="text-left flex-1">
+                  <p className="font-medium">{account.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {account.description}
+                  </p>
+                </div>
               </div>
-              <div className="text-left flex-1">
-                <p className="font-medium">{account.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {account.description}
-                </p>
-              </div>
-            </div>
-          </Button>
+            </CardContent>
+          </Card>
         ))}
       </div>
       

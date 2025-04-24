@@ -3,13 +3,13 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   SidebarProvider,
-} from '@/components/ui/sidebar/sidebar-provider';
+} from '@/components/ui/sidebar/components/sidebar-provider';
 import { SidebarInset } from '@/components/ui/sidebar/components/sidebar-inset';
 import { SidebarRail } from '@/components/ui/sidebar/components/sidebar-rail';
 import Sidebar from './Sidebar';
 import { Navbar } from './Navbar';
 import { Loader } from '@/components/ui/loader';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
 interface AppShellProps {
@@ -17,7 +17,7 @@ interface AppShellProps {
 }
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
-  const { isLoading } = useAuth();
+  const { isLoading, user } = useAuth();
   const location = useLocation();
   
   // Determine if we're on a public page that doesn't need the full shell
@@ -31,6 +31,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         <Loader size="lg" />
       </div>
     );
+  }
+  
+  // Redirect to login if not authenticated and not on a public page
+  if (!user && !isPublicPage) {
+    return <Navigate to="/login" replace />;
   }
   
   // For public pages, render without the sidebar and navbar
