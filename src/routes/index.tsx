@@ -1,3 +1,4 @@
+
 import { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -7,8 +8,8 @@ import { UserRole } from "@/types/roles";
 // Dynamically import pages
 const Login = lazy(() => import("@/pages/Login"));
 const Index = lazy(() => import("@/pages/Index"));
-const Dashboard = lazy(() => import("@/pages/DashboardManager"));
-const Profile = lazy(() => import("@/pages/Profile"));
+const Dashboard = lazy(() => import("./DashboardManager"));
+const Profile = lazy(() => import("@/pages/profile/UserProfile"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const Help = lazy(() => import("@/pages/Help"));
 const StudentDashboardEnhanced = lazy(() => import("@/pages/StudentDashboardEnhanced"));
@@ -23,31 +24,31 @@ const SchoolManagement = lazy(() => import("@/pages/admin/SchoolManagement"));
 const FERPACompliance = lazy(() => import("@/pages/admin/FERPACompliance"));
 const SystemSettings = lazy(() => import("@/pages/admin/SystemSettings"));
 const LoopBotLogs = lazy(() => import("@/pages/admin/LoopBotLogs"));
-const ErrorLogs = lazy(() => import("@/pages/admin/ErrorLogs"));
-const PulseTrends = lazy(() => import("@/pages/admin/PulseTrends"));
+const ErrorLogs = lazy(() => import("@/pages/BehaviorPrediction"));
+const PulseTrends = lazy(() => import("@/pages/students/StudentsAtRisk"));
 const SchoolOnboarding = lazy(() => import("@/pages/admin/SchoolOnboarding"));
-const Integrations = lazy(() => import("@/pages/admin/Integrations"));
+const Integrations = lazy(() => import("@/pages/ConsentSettings"));
 
 // Teacher Routes
-const StudentManagement = lazy(() => import("@/pages/teacher/StudentManagement"));
-const SELPathway = lazy(() => import("@/pages/teacher/SELPathway"));
-const StaffAssist = lazy(() => import("@/pages/teacher/StaffAssist"));
-const PredictiveSupport = lazy(() => import("@/pages/teacher/PredictiveSupport"));
-const EmotionAwareScheduling = lazy(() => import("@/pages/teacher/EmotionAwareScheduling"));
+const StudentManagement = lazy(() => import("@/pages/students/StudentList"));
+const SELPathway = lazy(() => import("@/pages/SelfRegulationToolbox"));
+const StaffAssist = lazy(() => import("@/pages/ResetRoom"));
+const PredictiveSupport = lazy(() => import("@/pages/PredictiveSupport"));
+const EmotionAwareScheduling = lazy(() => import("@/pages/EmotionAwareScheduling"));
 
 // Student Routes
-const MentalHealthToolkit = lazy(() => import("@/pages/student/MentalHealthToolkit"));
-const DigitalJournal = lazy(() => import("@/pages/student/DigitalJournal"));
-const ResetRoom = lazy(() => import("@/pages/student/ResetRoom"));
-const CheckIn = lazy(() => import("@/pages/student/CheckIn"));
-const SELPathways = lazy(() => import("@/pages/student/SELPathways"));
-const TrustedAdults = lazy(() => import("@/pages/student/TrustedAdults"));
+const MentalHealthToolkit = lazy(() => import("@/pages/SelfRegulationToolbox"));
+const DigitalJournal = lazy(() => import("@/pages/DigitalJournal"));
+const ResetRoom = lazy(() => import("@/pages/ResetRoom"));
+const CheckIn = lazy(() => import("@/pages/students/MoodTrendsOverview"));
+const SELPathways = lazy(() => import("@/pages/students/StudentRiskDashboard"));
+const TrustedAdults = lazy(() => import("@/pages/students/RiskOverviewCard"));
 
 // Parent Routes
-const ChildActivity = lazy(() => import("@/pages/parent/ChildActivity"));
-const ChildWellness = lazy(() => import("@/pages/parent/ChildWellness"));
-const Messages = lazy(() => import("@/pages/parent/Messages"));
-const ParentResources = lazy(() => import("@/pages/parent/ParentResources"));
+const ChildActivity = lazy(() => import("@/pages/students/StudentsAtRisk"));
+const ChildWellness = lazy(() => import("@/pages/students/MoodTrendsOverview"));
+const Messages = lazy(() => import("@/pages/DataAccessRequests"));
+const ParentResources = lazy(() => import("@/pages/ConsentSettings"));
 
 export const routes = [
   {
