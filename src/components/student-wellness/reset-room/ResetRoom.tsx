@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useResetSession } from "./hooks/useResetSession";
 import { useResetTimer } from "./hooks/useResetTimer";
@@ -8,9 +8,9 @@ import ResetHeader from "./components/ResetHeader";
 import ResetBenefits from "./components/ResetBenefits";
 import ResetVisualizer from "./components/ResetVisualizer";
 import ActivityTabs from "./components/ActivityTabs";
-import MoodAssessment from "./components/MoodAssessment";
-import TimerControls from "./components/TimerControls";
 import TimerDurationSelector from "./components/TimerDurationSelector";
+import TimerControls from "./components/TimerControls";
+import MoodAssessment from "./components/MoodAssessment";
 
 const ANIMATION_URLS = [
   "/animations/breathing.mp4",
@@ -47,7 +47,6 @@ const ResetRoom: React.FC = () => {
     customTime,
   } = useResetTimer();
 
-  // Handle timer completion
   useEffect(() => {
     if (timerRunning && timeRemaining === 0) {
       completeReset();
@@ -58,7 +57,6 @@ const ResetRoom: React.FC = () => {
     }
   }, [timerRunning, timeRemaining, completeReset, toast]);
 
-  // Update animation when goal changes
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * ANIMATION_URLS.length);
     setAnimationUrl(ANIMATION_URLS[randomIndex]);
@@ -94,59 +92,51 @@ const ResetRoom: React.FC = () => {
       <ResetHeader sessionCount={sessionCount} />
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Reset Room</CardTitle>
-              <CardDescription>
-                Take a moment to reset and regain focus
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {!timerRunning && !completedReset && (
-                <MoodAssessment
-                  type="before"
-                  moodValue={initialMood}
-                  onMoodChange={updateInitialMood}
-                  selectedGoal={selectedGoal}
-                  onGoalSelect={setSelectedGoal}
-                />
-              )}
+        <Card>
+          <div className="space-y-6 p-6">
+            {!timerRunning && !completedReset && (
+              <MoodAssessment
+                type="before"
+                moodValue={initialMood}
+                onMoodChange={updateInitialMood}
+                selectedGoal={selectedGoal}
+                onGoalSelect={setSelectedGoal}
+              />
+            )}
 
-              {!completedReset && (
-                <>
-                  {!timerRunning && (
-                    <TimerDurationSelector
-                      isCustomTime={isCustomTime}
-                      customTime={customTime}
-                      onDurationSelect={(minutes) => setCustomTime(minutes * 60)}
-                    />
-                  )}
-
-                  <TimerControls
-                    progress={progress}
-                    timerRunning={timerRunning}
-                    timeRemaining={timeRemaining}
+            {!completedReset && (
+              <>
+                {!timerRunning && (
+                  <TimerDurationSelector
                     isCustomTime={isCustomTime}
                     customTime={customTime}
-                    onStart={handleStartTimer}
-                    onStop={handleStopTimer}
-                    onFinishEarly={handleFinishEarly}
+                    onDurationSelect={(minutes) => setCustomTime(minutes * 60)}
                   />
-                </>
-              )}
+                )}
 
-              {completedReset && (
-                <MoodAssessment
-                  type="after"
-                  moodValue={finalMood}
-                  onMoodChange={updateFinalMood}
-                  onSubmit={finishSession}
+                <TimerControls
+                  progress={progress}
+                  timerRunning={timerRunning}
+                  timeRemaining={timeRemaining}
+                  isCustomTime={isCustomTime}
+                  customTime={customTime}
+                  onStart={handleStartTimer}
+                  onStop={handleStopTimer}
+                  onFinishEarly={handleFinishEarly}
                 />
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              </>
+            )}
+
+            {completedReset && (
+              <MoodAssessment
+                type="after"
+                moodValue={finalMood}
+                onMoodChange={updateFinalMood}
+                onSubmit={finishSession}
+              />
+            )}
+          </div>
+        </Card>
 
         <ResetVisualizer
           animationUrl={animationUrl}
