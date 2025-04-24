@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,12 +10,12 @@ import { FERPAAccessType, FERPARecordType } from "@/services/FERPAComplianceServ
 const mockLogs = [
   {
     id: "log1",
-    user_name: "Ms. Nguyen",
+    user_name: "Ms. Sarah Thompson",
     user_role: "teacher",
     record_type: "student_record",
     access_type: "view",
     student_name: "Alex Johnson",
-    timestamp: "2023-04-23T08:15:00Z",
+    timestamp: "2024-04-23T08:15:00Z",
     successful: true
   },
   {
@@ -25,29 +24,40 @@ const mockLogs = [
     user_role: "admin",
     record_type: "mood_data",
     access_type: "export",
-    student_name: "Zoe Martin",
-    timestamp: "2023-04-22T14:30:00Z",
+    student_name: "Emma Wilson",
+    timestamp: "2024-04-22T14:30:00Z",
     successful: true
   },
   {
     id: "log3",
-    user_name: "Sarah Chen",
-    user_role: "staff",
+    user_name: "Mrs. Anderson",
+    user_role: "teacher",
     record_type: "intervention",
     access_type: "create",
-    student_name: "Ethan Brown",
-    timestamp: "2023-04-22T10:45:00Z",
+    student_name: "Michael Brown",
+    timestamp: "2024-04-22T10:45:00Z",
     successful: true
   },
   {
     id: "log4",
-    user_name: "Unknown User",
-    user_role: "unknown",
+    user_name: "Mr. Parker",
+    user_role: "teacher",
     record_type: "student_record",
     access_type: "view",
-    student_name: "Lily Chen",
-    timestamp: "2023-04-21T11:20:00Z",
-    successful: false
+    student_name: "Sophie Chen",
+    timestamp: "2024-04-21T11:20:00Z",
+    successful: false,
+    reason: "Missing required permissions"
+  },
+  {
+    id: "log5",
+    user_name: "Dr. Martinez",
+    user_role: "admin",
+    record_type: "sel_progress",
+    access_type: "export",
+    student_name: "Multiple Students",
+    timestamp: "2024-04-21T09:15:00Z",
+    successful: true
   }
 ];
 
@@ -62,20 +72,16 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
 
+  // Filter logic
   const filteredLogs = mockLogs.filter(log => {
-    // Filter by search query
     const matchesSearch = 
       searchQuery === "" || 
       log.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.student_name.toLowerCase().includes(searchQuery.toLowerCase());
     
-    // Filter by record type
     const matchesRecordType = recordType === "" || log.record_type === recordType;
-    
-    // Filter by access type
     const matchesAccessType = accessType === "" || log.access_type === accessType;
     
-    // Filter by date range
     const logDate = new Date(log.timestamp);
     const fromDate = dateFrom ? new Date(dateFrom) : null;
     const toDate = dateTo ? new Date(dateTo) : null;
@@ -87,9 +93,7 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
   });
 
   const handleExport = () => {
-    // In a real implementation, this would generate a CSV or PDF file
     console.log("Exporting filtered logs:", filteredLogs);
-    alert("FERPA access logs exported successfully");
   };
 
   return (
@@ -183,7 +187,7 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
         </div>
         
         {/* Results table */}
-        <div className="rounded-md border">
+        <div className="rounded-md border mt-4">
           <div className="w-full overflow-auto">
             <table className="w-full caption-bottom text-sm">
               <thead>
@@ -204,10 +208,10 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
                       {new Date(log.timestamp).toLocaleDateString()} {new Date(log.timestamp).toLocaleTimeString()}
                     </td>
                     <td className="p-4 align-middle font-medium">{log.user_name}</td>
-                    <td className="p-4 align-middle">{log.user_role}</td>
+                    <td className="p-4 align-middle capitalize">{log.user_role}</td>
                     <td className="p-4 align-middle">{log.student_name}</td>
-                    <td className="p-4 align-middle">{log.record_type}</td>
-                    <td className="p-4 align-middle">{log.access_type}</td>
+                    <td className="p-4 align-middle capitalize">{log.record_type.replace('_', ' ')}</td>
+                    <td className="p-4 align-middle capitalize">{log.access_type}</td>
                     <td className="p-4 align-middle">
                       <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                         log.successful ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
@@ -228,7 +232,7 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
           </div>
         </div>
         
-        <div className="text-xs text-muted-foreground">
+        <div className="text-xs text-muted-foreground mt-4">
           <p>This audit log is maintained in compliance with FERPA regulations and is used to monitor and track all access to student educational records.</p>
         </div>
       </CardContent>
