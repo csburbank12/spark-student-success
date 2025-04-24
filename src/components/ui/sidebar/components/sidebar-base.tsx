@@ -6,7 +6,7 @@ import {
   SidebarHeader, 
   SidebarContent, 
   SidebarFooter 
-} from "./sidebar-group";  // Updated import path
+} from "../components/sidebar-group";
 
 export interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
