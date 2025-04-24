@@ -8,7 +8,8 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend
+  Legend,
+  TooltipProps
 } from "recharts";
 
 // Mock data for the risk chart
@@ -20,6 +21,12 @@ const data = [
   { name: 'Week 5', high: 5, medium: 6, low: 3 },
   { name: 'Week 6', high: 4, medium: 5, low: 4 },
 ];
+
+// Custom formatter for tooltip
+const CustomTooltipFormatter = (value: number, name: string) => {
+  const formattedName = name.charAt(0).toUpperCase() + name.slice(1) + " Risk";
+  return [value, formattedName];
+};
 
 const RiskLevelChart: React.FC = () => {
   return (
@@ -37,7 +44,12 @@ const RiskLevelChart: React.FC = () => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
-        <Tooltip formatter={(value, name) => [value, name.charAt(0).toUpperCase() + name.slice(1) + " Risk"]} />
+        <Tooltip formatter={(value, name) => {
+          if (typeof name === 'string') {
+            return [value, name.charAt(0).toUpperCase() + name.slice(1) + " Risk"];
+          }
+          return [value, name];
+        }} />
         <Legend />
         <Bar dataKey="high" stackId="a" fill="#ef4444" name="High Risk" />
         <Bar dataKey="medium" stackId="a" fill="#f59e0b" name="Medium Risk" />

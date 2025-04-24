@@ -5,7 +5,7 @@ import { useAuth } from "./contexts/AuthContext";
 import Layout from "./components/Layout";
 
 // Pages
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./routes/DashboardManager";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentDashboardEnhanced from "./pages/StudentDashboardEnhanced";
 import TeacherDashboard from "./pages/TeacherDashboard";
@@ -15,11 +15,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminDashboardEnhanced from "./pages/AdminDashboardEnhanced";
 import CheckIn from "./pages/CheckIn";
 import Login from "./pages/Login";
-import SELPathways from "./pages/SELPathways";
-import SELLesson from "./pages/SELLesson";
-import Journal from "./pages/Journal";
-import StudentProgress from "./pages/StudentProgress";
-import DataAnalytics from "./pages/admin/DataAnalytics";
 import NotFound from "./pages/NotFound";
 import WellLensDashboard from "./pages/WellLensDashboard";
 import PredictiveSupport from "./pages/PredictiveSupport";
@@ -28,9 +23,9 @@ import PredictiveSupport from "./pages/PredictiveSupport";
 import ResetRoom from "./components/student-wellness/reset-room/ResetRoom";
 
 function App() {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  if (loading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
@@ -49,11 +44,6 @@ function App() {
         <Route path="admin-dashboard" element={<AdminDashboard />} />
         <Route path="admin-dashboard-enhanced" element={<AdminDashboardEnhanced />} />
         <Route path="check-in" element={<CheckIn />} />
-        <Route path="sel-pathways" element={<SELPathways />} />
-        <Route path="sel-pathways/:lessonId" element={<SELLesson />} />
-        <Route path="journal" element={<Journal />} />
-        <Route path="student-progress" element={<StudentProgress />} />
-        <Route path="admin/analytics" element={<DataAnalytics />} />
         
         {/* WellLens Pulse Routes */}
         <Route path="welllens" element={<WellLensDashboard />} />
