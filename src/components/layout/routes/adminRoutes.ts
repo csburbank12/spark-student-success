@@ -18,7 +18,7 @@ export const adminRoutes = [
     icon: School,
   },
   {
-    name: "FERPA Compliance", // Add FERPA Compliance link
+    name: "FERPA Compliance",
     href: "/admin/ferpa-compliance",
     icon: Shield,
   },

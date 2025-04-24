@@ -141,7 +141,6 @@ const Login = () => {
           <div className="mt-8 space-y-4">
             <ConfidentialityNotice />
             
-            {/* Add FERPA Compliance Notice */}
             <Alert className="bg-blue-50 border-blue-200 text-blue-900">
               <Shield className="h-5 w-5" />
               <AlertTitle className="font-medium">FERPA Compliance</AlertTitle>
