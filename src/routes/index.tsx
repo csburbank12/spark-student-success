@@ -9,6 +9,7 @@ import { generalRoutes } from "./generalRoutes";
 import staffRoutes from "./staffRoutes";
 import { Loader } from "@/components/ui/loader";
 import DashboardManager from "./DashboardManager";
+import { Navigate } from "react-router-dom";
 
 // Dynamic imports for base pages
 const Login = lazy(() => import("@/pages/Login"));
@@ -30,11 +31,15 @@ const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
 export const routes = [
   {
     path: "/",
-    element: <SuspenseWrapper><Index /></SuspenseWrapper>,
+    element: <Navigate to="/login" replace />
   },
   {
     path: "/login",
     element: <SuspenseWrapper><Login /></SuspenseWrapper>,
+  },
+  {
+    path: "/home",
+    element: <SuspenseWrapper><Index /></SuspenseWrapper>,
   },
   {
     path: "/dashboard",
