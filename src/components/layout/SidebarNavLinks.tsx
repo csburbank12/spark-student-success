@@ -7,7 +7,6 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { universalRoutes } from "./routes/universalRoutes";
 
 interface Route {
   name: string;
@@ -21,27 +20,27 @@ interface SidebarNavLinksProps {
 }
 
 const SidebarNavLinks: React.FC<SidebarNavLinksProps> = ({ 
-  routes, 
+  routes,
   includeUniversalRoutes = true 
 }) => {
   const location = useLocation();
   const { state } = useSidebar();
-  
-  // Combine role-specific routes with universal routes if needed
-  const displayRoutes = includeUniversalRoutes 
-    ? [...routes, ...universalRoutes.filter(route => !routes.some(r => r.href === route.href))] 
-    : routes;
 
   return (
     <SidebarMenu>
-      {displayRoutes.map((route) => (
+      {routes.map((route) => (
         <SidebarMenuItem key={route.href}>
           <SidebarMenuButton
             asChild
             isActive={location.pathname === route.href}
             tooltip={state === "collapsed" ? route.name : undefined}
           >
-            <NavLink to={route.href} className="flex items-center">
+            <NavLink 
+              to={route.href} 
+              className={({ isActive }) =>
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              }
+            >
               <route.icon className="h-5 w-5" />
               <span>{route.name}</span>
             </NavLink>
