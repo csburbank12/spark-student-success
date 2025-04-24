@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { type SelLesson } from "@/components/sel-pathways/types";
 import { useQuery } from "@tanstack/react-query";
@@ -55,7 +54,6 @@ const SELPathwayManagement: React.FC<Props> = () => {
   
   const handleDeleteLesson = async (id: string) => {
     try {
-      // Check if lesson has assignments before deleting
       const { count } = await supabase
         .from('sel_assignments')
         .select('*', { count: 'exact', head: true })
@@ -157,7 +155,7 @@ const SELPathwayManagement: React.FC<Props> = () => {
               {filteredLessons.map((lesson) => (
                 <TableRow key={lesson.id}>
                   <TableCell className="font-medium">{lesson.title}</TableCell>
-                  <TableCell>{lesson.competency_area || lesson.casel_competency || 'General'}</TableCell>
+                  <TableCell>{lesson.competency_area || 'General'}</TableCell>
                   <TableCell>{lesson.estimated_duration || lesson.duration || '--'} minutes</TableCell>
                   <TableCell>
                     <Badge variant="outline">
