@@ -1166,6 +1166,39 @@ export type Database = {
         }
         Relationships: []
       }
+      site_audit_logs: {
+        Row: {
+          completed_at: string | null
+          details: Json | null
+          id: string
+          issues_found: number
+          run_at: string
+          run_by_admin_id: string
+          status: Database["public"]["Enums"]["audit_status"]
+          summary: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          details?: Json | null
+          id?: string
+          issues_found?: number
+          run_at?: string
+          run_by_admin_id: string
+          status?: Database["public"]["Enums"]["audit_status"]
+          summary?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          details?: Json | null
+          id?: string
+          issues_found?: number
+          run_at?: string
+          run_by_admin_id?: string
+          status?: Database["public"]["Enums"]["audit_status"]
+          summary?: string | null
+        }
+        Relationships: []
+      }
       staff_members: {
         Row: {
           created_at: string | null
@@ -1951,6 +1984,7 @@ export type Database = {
     Enums: {
       alert_severity: "stable" | "at_risk" | "critical"
       app_role: "student" | "staff" | "admin" | "parent"
+      audit_status: "success" | "warning" | "error"
       integration_type: "classlink" | "skyward" | "other"
       loopbot_severity: "info" | "warning" | "critical"
       loopbot_status: "fixed" | "needs_review" | "ignored"
@@ -2074,6 +2108,7 @@ export const Constants = {
     Enums: {
       alert_severity: ["stable", "at_risk", "critical"],
       app_role: ["student", "staff", "admin", "parent"],
+      audit_status: ["success", "warning", "error"],
       integration_type: ["classlink", "skyward", "other"],
       loopbot_severity: ["info", "warning", "critical"],
       loopbot_status: ["fixed", "needs_review", "ignored"],
