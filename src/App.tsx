@@ -3,54 +3,28 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import Layout from "./components/Layout";
-
-// Pages
-import Dashboard from "./routes/DashboardManager";
-import StudentDashboard from "./pages/StudentDashboard";
-import StudentDashboardEnhanced from "./pages/StudentDashboardEnhanced";
-import TeacherDashboard from "./pages/TeacherDashboard";
-import TeacherDashboardEnhanced from "./pages/TeacherDashboardEnhanced";
-import ParentDashboard from "./pages/ParentDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminDashboardEnhanced from "./pages/AdminDashboardEnhanced";
-import CheckIn from "./pages/CheckIn";
-import Login from "./pages/Login";
-import NotFound from "./pages/NotFound";
-import WellLensDashboard from "./pages/WellLensDashboard";
-import PredictiveSupport from "./pages/PredictiveSupport";
-
-// Student Wellness Components
-import ResetRoom from "./components/student-wellness/reset-room/ResetRoom";
+import { routes } from "./routes";
 
 function App() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
   }
 
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/reset-room" element={<ResetRoom />} />
-
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="student-dashboard" element={<StudentDashboard />} />
-        <Route path="student-dashboard-enhanced" element={<StudentDashboardEnhanced />} />
-        <Route path="teacher-dashboard" element={<TeacherDashboard />} />
-        <Route path="teacher-dashboard-enhanced" element={<TeacherDashboardEnhanced />} />
-        <Route path="parent-dashboard" element={<ParentDashboard />} />
-        <Route path="admin-dashboard" element={<AdminDashboard />} />
-        <Route path="admin-dashboard-enhanced" element={<AdminDashboardEnhanced />} />
-        <Route path="check-in" element={<CheckIn />} />
-        
-        {/* WellLens Pulse Routes */}
-        <Route path="welllens" element={<WellLensDashboard />} />
-        <Route path="predictive-support" element={<PredictiveSupport />} />
-        
-        <Route path="*" element={<NotFound />} />
-      </Route>
+      {routes.map((route) => (
+        <Route
+          key={route.path}
+          path={route.path}
+          element={route.element}
+        />
+      ))}
     </Routes>
   );
 }
