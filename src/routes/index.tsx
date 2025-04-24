@@ -3,7 +3,7 @@ import { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import adminRoutes from "./adminRoutes";
-import teacherRoutes from "./teacherAdminRoutes";
+import teacherAdminRoutes from "./teacherAdminRoutes";
 import studentRoutes from "./studentRoutes";
 import parentRoutes from "./parentRoutes";
 import { generalRoutes } from "./generalRoutes";
@@ -29,7 +29,7 @@ export const routes = [
   },
   ...generalRoutes,
   ...adminRoutes,
-  ...teacherRoutes,
+  ...teacherAdminRoutes,
   ...studentRoutes,
   ...parentRoutes,
   ...staffRoutes

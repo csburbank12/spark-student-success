@@ -15,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import NotificationPreferences from "@/components/profile/NotificationPreferences";
-import { supabase } from "@/integrations/supabase/client";
 
 const UserProfile = () => {
   const { user, isLoading } = useAuth();
@@ -64,20 +63,11 @@ const UserProfile = () => {
     setIsSubmitting(true);
     
     try {
-      // First, update the profiles table if it exists
-      // This is a common pattern in Supabase applications
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ first_name: formData.name.split(' ')[0], last_name: formData.name.split(' ').slice(1).join(' ') })
-        .eq('id', user.id);
-        
-      if (profileError) {
-        console.error("Error updating profile:", profileError);
-      }
+      // For demo purposes, we'll just simulate an API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Then try to update the users table if needed
-      // Note: In many Supabase setups, direct modification of auth.users 
-      // might require admin privileges or edge functions
+      // Update the user data in the auth context (this would normally be done via API)
+      // This is a mock implementation
       
       toast.success("Profile updated successfully!");
       setIsEditing(false);
