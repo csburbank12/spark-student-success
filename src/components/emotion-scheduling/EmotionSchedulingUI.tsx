@@ -1,201 +1,90 @@
 
-import React, { useState, useTransition } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, Users, BrainCircuit } from "lucide-react";
+import React, { useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEmotionScheduler } from "@/hooks/useEmotionScheduler";
-import OptimalTimesCard from "@/components/emotion-scheduling/OptimalTimesCard";
-import MoodPatternsCard from "@/components/emotion-scheduling/MoodPatternsCard";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ErrorBoundary } from "react-error-boundary";
-import EmotionSchedulingErrorFallback from "./EmotionSchedulingErrorFallback";
+import OptimalTimesCard from "./OptimalTimesCard";
+import MoodPatternsCard from "./MoodPatternsCard";
+import { Loader } from "@/components/ui/loader";
+import { useStudentMoodData } from "@/hooks/useStudentMoodData";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-// Main Emotion Scheduling UI (contains all student selection, tabs, etc)
 const EmotionSchedulingUI: React.FC = () => {
-  const { user } = useAuth();
-  const [isPending, startTransition] = useTransition();
-  const [selectedStudentId, setSelectedStudentId] = useState<string>(user?.id || '');
-  const [activeTab, setActiveTab] = useState<string>("overview");
+  const [selectedStudentId, setSelectedStudentId] = useState<string | undefined>(undefined);
+  const { emotionAnalysis, isLoading, error } = useEmotionScheduler(selectedStudentId);
+  const { data: moodData, isLoading: isMoodLoading } = useStudentMoodData(selectedStudentId);
 
-  // Use the hook with proper error handling
-  const { emotionAnalysis, isLoading, isError, error } = useEmotionScheduler(selectedStudentId);
-
-  const handleStudentChange = (value: string) => {
-    startTransition(() => {
-      setSelectedStudentId(value);
-    });
-  };
-
-  const handleTabChange = (value: string) => {
-    startTransition(() => {
-      setActiveTab(value);
-    });
-  };
-
-  const handleScheduleEvent = () => {
-    toast.success("Event scheduled successfully!");
-  };
-
-  if (isError && error) {
-    console.error("Error in EmotionAwareScheduling:", error);
+  if (isLoading || isMoodLoading) {
     return (
-      <Card className="border-red-300">
-        <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-2">Error loading data</h3>
-          <p className="text-muted-foreground">
-            {error.message || "There was a problem loading the emotion scheduling data."}
-          </p>
-          <div className="mt-4">
-            <Button onClick={() => window.location.reload()}>Refresh page</Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Loader size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Error loading emotion scheduling data</AlertTitle>
+        <AlertDescription>
+          {error.message || "There was an error loading the emotion scheduling data. Please try again."}
+        </AlertDescription>
+      </Alert>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-heading font-bold">Emotion-Aware Scheduling</h2>
-          <p className="text-muted-foreground">
-            AI-powered timing recommendations based on mood patterns
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Select value={selectedStudentId} onValueChange={handleStudentChange}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select student" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={user?.id || ''}>Current User</SelectItem>
-              {/* Additional students would be populated here */}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold">Emotion-Aware Scheduling</h2>
       </div>
-      <ErrorBoundary
-        FallbackComponent={EmotionSchedulingErrorFallback as any}
-        onReset={() => {
-          startTransition(() => {
-            setSelectedStudentId(user?.id || '');
-            setActiveTab("overview");
-          });
-        }}
-      >
-        <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList>
-            <TabsTrigger value="overview" className="flex items-center gap-1">
-              <BrainCircuit className="h-4 w-4" />
-              <span>AI Recommendations</span>
-            </TabsTrigger>
-            <TabsTrigger value="schedule" className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
-              <span>Schedule</span>
-            </TabsTrigger>
-            <TabsTrigger value="students" className="flex items-center gap-1">
-              <Users className="h-4 w-4" />
-              <span>Student Groups</span>
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="space-y-6 pt-4">
-            <div className="grid md:grid-cols-2 gap-6">
-              <OptimalTimesCard
-                optimalTimes={emotionAnalysis?.optimalCheckInTimes}
-                stressPeriods={emotionAnalysis?.stressPeriods}
-                isLoading={isLoading || isPending}
-              />
-              <MoodPatternsCard
-                moodPatterns={emotionAnalysis?.moodPatterns}
-                isLoading={isLoading || isPending}
-              />
-            </div>
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle>Schedule Teacher Interventions</CardTitle>
-                <CardDescription>
-                  Use AI recommendations to schedule check-ins or interventions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {isLoading || isPending ? (
-                    <div className="space-y-4">
-                      <Skeleton className="h-16 w-full" />
-                      <Skeleton className="h-16 w-full" />
-                    </div>
-                  ) : emotionAnalysis?.optimalCheckInTimes && emotionAnalysis.optimalCheckInTimes.length > 0 ? (
-                    <div className="grid gap-4">
-                      {emotionAnalysis.optimalCheckInTimes.map((time, idx) => (
-                        <div key={idx} className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 border rounded">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-green-500" />
-                              <span className="font-medium">{time.day} • {time.timeRange}</span>
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-1">{time.reason}</p>
-                          </div>
-                          <div className="flex items-center gap-2 mt-3 md:mt-0">
-                            <Select>
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Intervention Type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="check-in">Mood Check-in</SelectItem>
-                                <SelectItem value="meeting">One-on-One Meeting</SelectItem>
-                                <SelectItem value="feedback">Feedback Session</SelectItem>
-                                <SelectItem value="skills">Skill Practice</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <Button size="sm" onClick={handleScheduleEvent}>Schedule</Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground">
-                        {isLoading ? "Loading recommendations..." : "Not enough data to make scheduling recommendations"}
-                      </p>
-                    </div>
-                  )}
+
+      <Tabs defaultValue="optimal-times">
+        <TabsList>
+          <TabsTrigger value="optimal-times">Optimal Check-in Times</TabsTrigger>
+          <TabsTrigger value="mood-patterns">Mood Patterns</TabsTrigger>
+          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="optimal-times" className="space-y-4">
+          <OptimalTimesCard
+            optimalTimes={emotionAnalysis.optimalTimes}
+            isLoading={isLoading}
+          />
+        </TabsContent>
+
+        <TabsContent value="mood-patterns" className="space-y-4">
+          <MoodPatternsCard
+            moodPatterns={emotionAnalysis.patterns}
+            isLoading={isLoading}
+          />
+        </TabsContent>
+
+        <TabsContent value="recommendations" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Suggested Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {emotionAnalysis.recommendations.map((recommendation, index) => (
+                <div key={index} className="p-3 border rounded bg-background">
+                  <p className="font-medium">{recommendation}</p>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="schedule" className="pt-4">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center p-6">
-                  <p>Calendar integration will be displayed here</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Connect your calendar to view and schedule events based on emotional patterns
+              ))}
+              
+              {emotionAnalysis.optimalTimes && emotionAnalysis.optimalTimes.length > 0 && (
+                <div className="mt-6 p-4 bg-green-50 dark:bg-green-950 rounded-md">
+                  <p className="font-medium text-green-800 dark:text-green-300">Pro Tip</p>
+                  <p className="text-green-700 dark:text-green-400 text-sm mt-1">
+                    Consider scheduling important tasks during {emotionAnalysis.optimalTimes[0].day} at {emotionAnalysis.optimalTimes[0].timeRange} when 
+                    emotional engagement is highest.
                   </p>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="students" className="pt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Student Group Analysis</CardTitle>
-                <CardDescription>View class-wide emotional patterns</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <p className="text-center text-muted-foreground py-6">
-                    Select student groups or classes to view aggregated mood patterns and optimal times for class activities
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </ErrorBoundary>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

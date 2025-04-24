@@ -1,93 +1,92 @@
 
-import React from "react";
+import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, TrendingUp, Clock } from "lucide-react";
-import { EarlyWarningIndicator } from "./PredictiveSupportEngine";
+import { TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
+import { EarlyWarningIndicator } from './PredictiveSupportEngine';
 
 interface EarlyWarningIndicatorsProps {
   indicators: EarlyWarningIndicator[];
 }
 
 const EarlyWarningIndicators: React.FC<EarlyWarningIndicatorsProps> = ({ indicators }) => {
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case "high":
-        return "bg-red-100 text-red-800";
-      case "medium":
-        return "bg-amber-100 text-amber-800";
-      case "low":
-        return "bg-blue-100 text-blue-800";
+  // Get severity class
+  const getSeverityClass = (severity: string) => {
+    switch (severity.toLowerCase()) {
+      case 'high':
+        return 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300';
+      case 'medium':
+        return 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300';
       default:
-        return "bg-gray-100 text-gray-800";
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300';
     }
   };
-
-  const getTrendIcon = (trend: string) => {
+  
+  // Get trend icon
+  const getTrendIcon = (trend?: string) => {
+    if (!trend) return null;
+    
     switch (trend) {
-      case "increasing":
+      case 'increasing':
         return <TrendingUp className="h-4 w-4 text-red-500" />;
-      case "decreasing":
-        return <TrendingUp className="h-4 w-4 text-green-500 transform rotate-180" />;
+      case 'decreasing':
+        return <TrendingDown className="h-4 w-4 text-green-500" />;
       default:
-        return null;
+        return <ArrowRight className="h-4 w-4 text-gray-400" />;
     }
   };
 
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-amber-500" />
-          Early Warning Indicators
-        </CardTitle>
+      <CardHeader>
+        <CardTitle>Early Warning Indicators</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {indicators.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">No current early warning indicators</p>
-          ) : (
-            indicators.map((indicator) => (
-              <div key={indicator.id} className="p-3 border rounded-lg space-y-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-medium">{indicator.type}</h3>
-                      <Badge className={getUrgencyColor(indicator.urgency)}>
-                        {indicator.urgency.charAt(0).toUpperCase() + indicator.urgency.slice(1)} Urgency
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">{indicator.description}</p>
+      <CardContent className="space-y-4">
+        {indicators.map(indicator => (
+          <div 
+            key={indicator.id} 
+            className="p-3 border rounded bg-background"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Badge className={getSeverityClass(indicator.severity)}>
+                    {indicator.urgency?.toUpperCase() || indicator.severity.toUpperCase()}
+                  </Badge>
+                  <h3 className="font-medium">{indicator.type}</h3>
+                  {getTrendIcon(indicator.trend)}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {indicator.description}
+                </p>
+                
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="text-xs px-2 py-0.5 bg-muted rounded-full">
+                    Detected: {indicator.detectedAt}
                   </div>
                   
-                  {indicator.trend !== "stable" && (
-                    <div className="flex items-center gap-1 text-sm">
-                      {getTrendIcon(indicator.trend)}
-                      <span>{indicator.trend === "increasing" ? "Increasing" : "Decreasing"}</span>
+                  {indicator.affectedStudents && (
+                    <div className="text-xs px-2 py-0.5 bg-muted rounded-full">
+                      Affects: {indicator.affectedStudents} students
+                    </div>
+                  )}
+                  
+                  {indicator.confidence && (
+                    <div className="text-xs px-2 py-0.5 bg-muted rounded-full">
+                      {indicator.confidence}% confidence
                     </div>
                   )}
                 </div>
-                
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3 text-muted-foreground" />
-                    <span>Detected: {indicator.detectedDate}</span>
-                  </div>
-                  <span>{indicator.affectedStudents} students affected</span>
-                </div>
-                
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Prediction Confidence</span>
-                    <span className="font-medium">{indicator.confidence}%</span>
-                  </div>
-                  <Progress value={indicator.confidence} className="h-1.5" />
-                </div>
               </div>
-            ))
-          )}
-        </div>
+            </div>
+          </div>
+        ))}
+        
+        {indicators.length === 0 && (
+          <div className="text-center text-muted-foreground p-4">
+            No early warning indicators detected
+          </div>
+        )}
       </CardContent>
     </Card>
   );

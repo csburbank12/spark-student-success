@@ -8,82 +8,98 @@ const students: Student[] = [
     id: "s1",
     name: "Alex Johnson",
     grade: "8",
+    gradeLevel: "8",
     riskScore: 82,
     riskTrend: "up",
     riskFactors: ["Declining grades", "Increased absences", "Negative journal sentiment", "Low engagement"],
     lastUpdated: "Today, 8:15 AM",
-    predictedRisk: 87,
-    confidenceLevel: 92
+    predictedRisk: "high",
+    confidenceLevel: 92,
+    riskLevel: "critical"
   },
   {
     id: "s2",
     name: "Maya Patel",
     grade: "7",
+    gradeLevel: "7",
     riskScore: 65,
     riskTrend: "stable",
     riskFactors: ["Peer conflict", "Recent mood decline"],
     lastUpdated: "Today, 9:30 AM",
-    predictedRisk: 68,
-    confidenceLevel: 78
+    predictedRisk: "medium",
+    confidenceLevel: 78,
+    riskLevel: "at_risk"
   },
   {
     id: "s3",
     name: "Ethan Brown",
     grade: "6",
+    gradeLevel: "6",
     riskScore: 45,
     riskTrend: "down",
     riskFactors: ["Moderate absences"],
     lastUpdated: "Yesterday, 2:45 PM",
-    predictedRisk: 38,
-    confidenceLevel: 85
+    predictedRisk: "low",
+    confidenceLevel: 85,
+    riskLevel: "stable"
   },
   {
     id: "s4",
     name: "Zoe Martinez",
     grade: "8",
+    gradeLevel: "8",
     riskScore: 78,
     riskTrend: "up",
     riskFactors: ["Behavioral incidents", "Declining grades", "Low check-in rate"],
     lastUpdated: "Today, 7:50 AM",
-    predictedRisk: 82,
-    confidenceLevel: 89
+    predictedRisk: "high",
+    confidenceLevel: 89,
+    riskLevel: "at_risk"
   }
 ];
 
 const interventions: Intervention[] = [
   {
     id: "i1",
+    studentId: "s1",
     type: "Counselor Check-in",
     description: "1:1 session to discuss recent peer conflicts and provide support strategies",
     assignedTo: "Dr. Lisa Wong",
     dueDate: "Apr 23, 2:30 PM",
     status: "pending",
+    startDate: "2025-04-15"
   },
   {
     id: "i2",
+    studentId: "s2",
     type: "Parent Conference",
     description: "Meeting with parents to discuss academic support options and home strategies",
     assignedTo: "Mr. James Harris",
     dueDate: "Apr 25, 3:15 PM",
     status: "in-progress",
+    startDate: "2025-04-18"
   },
   {
     id: "i3",
+    studentId: "s3",
     type: "Academic Support",
     description: "After-school math tutoring twice weekly for 3 weeks",
     assignedTo: "Ms. Sarah Miller",
     dueDate: "Ongoing through May 12",
     status: "in-progress",
-    impact: 15
+    impact: 15,
+    startDate: "2025-04-10"
   },
   {
     id: "i4",
+    studentId: "s4",
     type: "Mindfulness Exercise",
     description: "Daily breathing exercise and guided visualization",
     assignedTo: "Self-guided",
     dueDate: "Daily, 9:00 AM",
     status: "completed",
-    impact: 22
+    impact: 22,
+    startDate: "2025-04-05"
   }
 ];
 
@@ -108,33 +124,42 @@ const dataSources = [
 const earlyWarningIndicators: EarlyWarningIndicator[] = [
   {
     id: "ewi1",
+    studentId: "s1",
     type: "Attendance Pattern Change",
     description: "Multiple students showing unusual absences on Mondays and Fridays",
     urgency: "medium",
-    detectedDate: "Apr 18, 2025",
+    detectedAt: "Apr 18, 2025",
     confidence: 78,
     affectedStudents: 14,
-    trend: "increasing"
+    trend: "increasing",
+    indicator: "Attendance Pattern Change",
+    severity: "medium"
   },
   {
     id: "ewi2",
+    studentId: "s2",
     type: "Mood Score Decline",
     description: "8th grade students showing significant decrease in average mood scores",
     urgency: "high",
-    detectedDate: "Apr 20, 2025",
+    detectedAt: "Apr 20, 2025",
     confidence: 92,
     affectedStudents: 22,
-    trend: "increasing"
+    trend: "increasing",
+    indicator: "Mood Score Decline",
+    severity: "high"
   },
   {
     id: "ewi3",
+    studentId: "s3",
     type: "Academic Performance",
     description: "Sudden drop in math assessment results for 7th grade",
     urgency: "medium",
-    detectedDate: "Apr 15, 2025",
+    detectedAt: "Apr 15, 2025",
     confidence: 85,
     affectedStudents: 18,
-    trend: "stable"
+    trend: "stable",
+    indicator: "Academic Performance",
+    severity: "medium"
   }
 ];
 
@@ -152,10 +177,10 @@ export default function usePredictiveSupportState() {
 
     return students.filter((student) => {
       if (selectedFilter === "all") return matchesSearch(student);
-      if (selectedFilter === "high") return matchesSearch(student) && student.riskScore >= 75;
+      if (selectedFilter === "high") return matchesSearch(student) && (student.riskScore || 0) >= 75;
       if (selectedFilter === "medium")
-        return matchesSearch(student) && student.riskScore >= 50 && student.riskScore < 75;
-      if (selectedFilter === "low") return matchesSearch(student) && student.riskScore < 50;
+        return matchesSearch(student) && (student.riskScore || 0) >= 50 && (student.riskScore || 0) < 75;
+      if (selectedFilter === "low") return matchesSearch(student) && (student.riskScore || 0) < 50;
       return matchesSearch(student);
     });
   }, [searchQuery, selectedFilter]);

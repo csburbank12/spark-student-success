@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Calendar, Clock, AlertTriangle, Users } from "lucide-react";
+import { Clock, AlertTriangle, Users } from "lucide-react";
 import OptimalTimesCard from "@/components/emotion-scheduling/OptimalTimesCard";
 import MoodPatternsCard from "@/components/emotion-scheduling/MoodPatternsCard";
 import { Button } from "@/components/ui/button";

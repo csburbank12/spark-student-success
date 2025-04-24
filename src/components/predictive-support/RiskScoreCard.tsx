@@ -1,143 +1,83 @@
 
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Minus, AlertCircle, Info } from "lucide-react";
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { TrendingUp, TrendingDown, ArrowDown } from "lucide-react";
 import { Student } from "./PredictiveSupportEngine";
 
 interface RiskScoreCardProps {
   student: Student;
+  showDetails?: boolean;
 }
 
-const RiskScoreCard: React.FC<RiskScoreCardProps> = ({ student }) => {
-  const getRiskColor = (score: number) => {
-    if (score >= 75) return "text-red-500";
-    if (score >= 50) return "text-amber-500";
-    return "text-green-500";
+const RiskScoreCard: React.FC<RiskScoreCardProps> = ({ student, showDetails = true }) => {
+  // Helper to get color class based on risk score
+  const getScoreColorClass = (score: number) => {
+    if (score >= 75) return "text-red-600 dark:text-red-400";
+    if (score >= 50) return "text-amber-600 dark:text-amber-400";
+    return "text-green-600 dark:text-green-400";
   };
+
+  const getProgressColor = (score: number) => {
+    if (score >= 75) return "bg-red-600";
+    if (score >= 50) return "bg-amber-500";
+    return "bg-green-500";
+  };
+
+  const getTrendIcon = (trend?: string) => {
+    switch (trend) {
+      case "up":
+        return <TrendingUp className="h-4 w-4 text-red-500 ml-1" />;
+      case "down":
+        return <TrendingDown className="h-4 w-4 text-green-500 ml-1" />;
+      default:
+        return null;
+    }
+  };
+
+  const riskScore = student.riskScore || 0;
   
-  const getRiskBgColor = (score: number) => {
-    if (score >= 75) return "bg-red-100";
-    if (score >= 50) return "bg-amber-100";
-    return "bg-green-100";
-  };
-
-  const getRiskProgressColor = (score: number) => {
-    if (score >= 75) return "bg-red-200";
-    if (score >= 50) return "bg-amber-200";
-    return "bg-green-200";
-  };
-
-  const getRiskLabel = (score: number) => {
-    if (score >= 75) return "High Risk";
-    if (score >= 50) return "Medium Risk";
-    return "Low Risk";
-  };
-
-  const getTrendIcon = () => {
-    if (student.riskTrend === "up") {
-      return <TrendingUp className="h-5 w-5 text-red-500" />;
-    } else if (student.riskTrend === "down") {
-      return <TrendingDown className="h-5 w-5 text-green-500" />;
-    } else {
-      return <Minus className="h-5 w-5 text-gray-500" />;
-    }
-  };
-
-  const getTrendLabel = () => {
-    if (student.riskTrend === "up") {
-      return "Increasing Risk";
-    } else if (student.riskTrend === "down") {
-      return "Decreasing Risk";
-    } else {
-      return "Stable Risk";
-    }
-  };
-
   return (
     <Card>
-      <CardHeader>
-        <div className="flex justify-between">
-          <CardTitle>Risk Assessment</CardTitle>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Info className="h-4 w-4 text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent className="w-80">
-                <p>Risk scores are calculated using AI analysis of attendance, grades, behavior, 
-                check-ins, and journal entries. The confidence score indicates how certain the 
-                system is about this prediction.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-medium">Risk Assessment</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-5">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground">Current Risk Score</h3>
-              <div className="flex items-baseline gap-2">
-                <span className={`text-4xl font-bold ${getRiskColor(student.riskScore)}`}>
-                  {student.riskScore}
-                </span>
-                <Badge className="ml-2" variant={student.riskScore >= 75 ? "destructive" : (student.riskScore >= 50 ? "warning" : "outline")}>
-                  {getRiskLabel(student.riskScore)}
-                </Badge>
-              </div>
-            </div>
-            <div className={`h-20 w-20 rounded-full flex items-center justify-center ${getRiskBgColor(student.riskScore)}`}>
-              <AlertCircle className={`h-10 w-10 ${getRiskColor(student.riskScore)}`} />
-            </div>
+        <div className="flex justify-between items-center mb-2">
+          <div className={`text-2xl font-bold ${getScoreColorClass(riskScore)}`}>
+            {riskScore}
+            <span className="inline-flex items-center">
+              {getTrendIcon(student.riskTrend)}
+            </span>
           </div>
-          
-          <div>
-            <div className="mb-2">
-              <Progress value={student.riskScore} className={getRiskProgressColor(student.riskScore)} />
-            </div>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>0</span>
-              <span>50</span>
-              <span>100</span>
-            </div>
+          <div className="text-sm text-muted-foreground">
+            {student.confidenceLevel && (
+              <span>{student.confidenceLevel}% confidence</span>
+            )}
           </div>
+        </div>
 
-          <div className="grid grid-cols-2 gap-6 pt-4">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Risk Trend</p>
-              <div className="flex items-center gap-2">
-                {getTrendIcon()}
-                <span>{getTrendLabel()}</span>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Predicted in 2 Weeks</p>
-              <div className="flex items-center gap-2">
-                <span className={getRiskColor(student.predictedRisk)}>
-                  {student.predictedRisk}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  ({student.predictedRisk > student.riskScore ? "+" : ""}{student.predictedRisk - student.riskScore})
-                </span>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Last Updated</p>
-              <div>{student.lastUpdated}</div>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Confidence</p>
-              <div>{student.confidenceLevel}%</div>
-            </div>
-          </div>
+        <Progress 
+          value={riskScore} 
+          max={100} 
+          className="h-2" 
+          indicatorClassName={getProgressColor(riskScore)} 
+        />
+
+        <div className="mt-4 space-y-3">
+          {showDetails && student.riskFactors && student.riskFactors.length > 0 && (
+            <>
+              <div className="text-sm font-medium">Contributing Factors:</div>
+              <ul className="text-sm space-y-1">
+                {student.riskFactors.map((factor, index) => (
+                  <li key={index} className="flex items-center">
+                    <ArrowDown className="h-3 w-3 mr-2 text-muted-foreground" />
+                    {factor}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       </CardContent>
     </Card>

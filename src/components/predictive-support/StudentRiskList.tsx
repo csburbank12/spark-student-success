@@ -1,78 +1,84 @@
 
-import React from "react";
+import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ChevronRight, AlertTriangle } from "lucide-react";
-import { Student } from "./PredictiveSupportEngine";
+import { Student } from './PredictiveSupportEngine';
 
 interface StudentRiskListProps {
   students: Student[];
-  onAnalyze: (studentId: string) => void;
+  onStudentSelect: (student: Student) => void;
+  searchQuery?: string;
 }
 
-const StudentRiskList: React.FC<StudentRiskListProps> = ({ students, onAnalyze }) => {
-  const getRiskBadgeClasses = (riskLevel: string) => {
-    switch(riskLevel) {
-      case 'high':
-        return "bg-red-100 text-red-800";
-      case 'medium':
-        return "bg-amber-100 text-amber-800";
+const StudentRiskList: React.FC<StudentRiskListProps> = ({
+  students,
+  onStudentSelect,
+  searchQuery = "",
+}) => {
+  const filteredStudents = searchQuery 
+    ? students.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    : students;
+    
+  // Get risk severity class
+  const getRiskClass = (riskLevel?: string) => {
+    switch (riskLevel) {
+      case 'critical':
+        return 'bg-red-100 border-red-300 dark:bg-red-950 dark:border-red-800';
+      case 'at_risk':
+        return 'bg-amber-50 border-amber-200 dark:bg-amber-950 dark:border-amber-800';
       default:
-        return "bg-green-100 text-green-800";
+        return 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800';
     }
   };
-
+  
   return (
     <div className="space-y-4">
-      {students.length === 0 ? (
+      {filteredStudents.length === 0 && (
         <Card>
-          <CardContent className="flex items-center justify-center p-6">
-            <p className="text-muted-foreground">No students found matching the criteria.</p>
+          <CardContent className="p-6 text-center text-muted-foreground">
+            No students match your criteria
           </CardContent>
         </Card>
-      ) : (
-        students.map((student) => (
-          <Card key={student.id} className={student.riskLevel === 'high' ? "border-red-300" : ""}>
-            <CardContent className="p-5">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  {student.riskLevel === 'high' && (
-                    <AlertTriangle className="h-5 w-5 text-red-500" />
-                  )}
-                  <div>
-                    <h3 className="font-medium">{student.name}</h3>
-                    <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-muted-foreground">
-                      <span>Grade {student.grade}</span>
-                      <span>•</span>
-                      <span>Last Check-in: {student.lastCheckIn}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col md:flex-row md:items-center gap-2 md:ml-auto">
-                  <Badge className={getRiskBadgeClasses(student.riskLevel)}>
-                    {student.riskLevel.charAt(0).toUpperCase() + student.riskLevel.slice(1)} Risk ({student.riskScore})
-                  </Badge>
-                  
+      )}
+      
+      {filteredStudents.map(student => (
+        <Card 
+          key={student.id}
+          className={`transition-all hover:shadow cursor-pointer ${getRiskClass(student.riskLevel)}`}
+          onClick={() => onStudentSelect(student)}
+        >
+          <CardContent className="p-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-medium text-lg">{student.name}</h3>
+                <div className="text-sm text-muted-foreground">Grade {student.grade}</div>
+                <div className="mt-1.5 text-sm">
                   {student.primaryConcern && (
-                    <Badge variant="outline">
+                    <span className="bg-background px-2 py-0.5 rounded text-xs">
                       {student.primaryConcern}
-                    </Badge>
+                    </span>
                   )}
-                  
-                  <div className="flex gap-2 mt-2 md:mt-0">
-                    <Button size="sm" onClick={() => onAnalyze(student.id)}>Analyze</Button>
-                    <Button variant="outline" size="icon">
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        ))
-      )}
+              <div className="text-right">
+                <div className="text-sm">
+                  {student.riskLevel === 'critical' && (
+                    <span className="font-medium text-red-600 dark:text-red-400">Critical</span>
+                  )}
+                  {student.riskLevel === 'at_risk' && (
+                    <span className="font-medium text-amber-600 dark:text-amber-400">At Risk</span>
+                  )}
+                  {student.riskLevel === 'stable' && (
+                    <span className="font-medium text-green-600 dark:text-green-400">Stable</span>
+                  )}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Last updated: {student.lastUpdated || 'Unknown'}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 };
