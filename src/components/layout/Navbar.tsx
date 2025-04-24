@@ -46,7 +46,7 @@ export const Navbar = () => {
       </Button>
       
       <div className="hidden md:flex md:flex-1 md:items-center md:gap-4">
-        <Logo showTagline={false} />
+        <Logo />
       </div>
 
       <div className="flex items-center gap-4 ml-auto md:hidden">
