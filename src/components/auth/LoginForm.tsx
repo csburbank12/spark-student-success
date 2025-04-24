@@ -12,7 +12,7 @@ interface LoginFormProps {
   isSubmitting: boolean;
   agreedToTerms: boolean;
   setAgreedToTerms: (agreed: boolean) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  handleSubmit: (e: React.FormEvent) => void;
 }
 
 export const LoginForm = ({
@@ -23,10 +23,10 @@ export const LoginForm = ({
   isSubmitting,
   agreedToTerms,
   setAgreedToTerms,
-  onSubmit
+  handleSubmit
 }: LoginFormProps) => {
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input

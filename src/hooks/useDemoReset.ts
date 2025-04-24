@@ -39,8 +39,12 @@ export const useDemoReset = () => {
     }
   };
   
+  // Adding resetDemoEnvironment as alias for handleReset to maintain compatibility
+  const resetDemoEnvironment = handleReset;
+  
   return { 
     isResetting,
-    handleReset
+    handleReset,
+    resetDemoEnvironment
   };
 };

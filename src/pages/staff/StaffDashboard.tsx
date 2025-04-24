@@ -146,13 +146,17 @@ const StaffDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <Button component={Link} to="/staff-assist" variant="outline" className="h-auto py-4 flex flex-col">
-                  <Users className="h-5 w-5 mb-2" />
-                  <span>Staff Assist</span>
+                <Button variant="outline" className="h-auto py-4 flex flex-col" asChild>
+                  <Link to="/staff-assist">
+                    <Users className="h-5 w-5 mb-2" />
+                    <span>Staff Assist</span>
+                  </Link>
                 </Button>
-                <Button component={Link} to="/support-tools" variant="outline" className="h-auto py-4 flex flex-col">
-                  <Heart className="h-5 w-5 mb-2" />
-                  <span>Support Tools</span>
+                <Button variant="outline" className="h-auto py-4 flex flex-col" asChild>
+                  <Link to="/support-tools">
+                    <Heart className="h-5 w-5 mb-2" />
+                    <span>Support Tools</span>
+                  </Link>
                 </Button>
                 <Button variant="outline" className="h-auto py-4 flex flex-col">
                   <Brain className="h-5 w-5 mb-2" />

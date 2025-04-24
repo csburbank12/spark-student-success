@@ -26,8 +26,8 @@ export default function LoopBotLogs() {
         
         // Check each action for recurring issues
         for (const action of actions) {
-          const count = await ErrorLoggingService.checkRecurringErrors(action);
-          if (count >= 5) {
+          const recurringErrors = await ErrorLoggingService.checkRecurringErrors();
+          if (recurringErrors && recurringErrors.length >= 5) {
             setHasRecurringIssues(true);
             break;
           }
