@@ -2,7 +2,7 @@
 import { UserRole } from "@/types/roles";
 import { universalRoutes } from "./routes/universalRoutes";
 import { adminRoutes } from "./routes/adminRoutes";
-import studentRoutes from "./routes/studentRoutes";
+import { studentRoutes } from "./routes/studentRoutes";
 import { parentRoutes } from "./routes/parentRoutes";
 import { teacherAdminRoutes } from "./routes/teacherAdminRoutes";
 import { 

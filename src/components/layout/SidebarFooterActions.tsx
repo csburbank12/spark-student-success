@@ -9,7 +9,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
-import { universalRoutes } from "./sidebarRoutes";
+import { universalRoutes } from "./routes/universalRoutes";
 
 const SidebarFooterActions = () => {
   const { logout } = useAuth();

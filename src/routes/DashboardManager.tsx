@@ -1,12 +1,12 @@
 
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Loader } from "@/components/ui/loader";
-import { NotLoggedInView } from "@/components/dashboard/NotLoggedInView";
-import { DashboardSelector } from "@/components/dashboard/DashboardSelector";
 import { UserRole } from "@/types/roles";
+import { DashboardSelector } from "@/components/dashboard/DashboardSelector";
+import { Loader } from "@/components/ui/loader";
+import { Navigate } from "react-router-dom";
 
-const DashboardManager: React.FC = () => {
+const DashboardManager = () => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -18,10 +18,9 @@ const DashboardManager: React.FC = () => {
   }
 
   if (!user) {
-    return <NotLoggedInView />;
+    return <Navigate to="/login" replace />;
   }
 
-  // Simply render the dashboard selector without any redirects
   return <DashboardSelector userRole={user.role as UserRole} />;
 };
 
