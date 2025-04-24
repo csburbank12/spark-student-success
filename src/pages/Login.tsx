@@ -71,10 +71,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <LoginHeader />
       <div className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-background w-full max-w-md p-6 rounded-xl shadow-sm border">
+        <div className="bg-white w-full max-w-md p-6 rounded-xl shadow-sm border">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid grid-cols-2">
               <TabsTrigger value="demo">Demo Accounts</TabsTrigger>
