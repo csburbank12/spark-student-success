@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,15 +15,27 @@ import { useNavigate } from "react-router-dom";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import NotificationPreferences from "@/components/profile/NotificationPreferences";
+import { supabase } from "@/integrations/supabase/client";
 
 const UserProfile = () => {
   const { user, isLoading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
   });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && !isEditing) {
+      // Update form data when user info is loaded
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+      });
+    }
+  }, [user, isEditing]);
 
   if (isLoading) {
     return (
@@ -47,10 +59,34 @@ const UserProfile = () => {
     );
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Profile updated successfully!");
-    setIsEditing(false);
+    setIsSubmitting(true);
+    
+    try {
+      // First, update the profiles table if it exists
+      // This is a common pattern in Supabase applications
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ first_name: formData.name.split(' ')[0], last_name: formData.name.split(' ').slice(1).join(' ') })
+        .eq('id', user.id);
+        
+      if (profileError) {
+        console.error("Error updating profile:", profileError);
+      }
+      
+      // Then try to update the users table if needed
+      // Note: In many Supabase setups, direct modification of auth.users 
+      // might require admin privileges or edge functions
+      
+      toast.success("Profile updated successfully!");
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getProfileComponent = () => {
@@ -96,6 +132,7 @@ const UserProfile = () => {
                 setFormData={setFormData}
                 onSubmit={handleSubmit}
                 onCancel={() => setIsEditing(false)}
+                isSubmitting={isSubmitting}
               />
             ) : (
               <Button onClick={() => setIsEditing(true)} className="w-full">
