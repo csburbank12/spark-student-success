@@ -1,12 +1,15 @@
 
 import React from 'react';
-import { Outlet } from 'react-router-dom';
 import { AppShell } from './layout/AppShell';
 
-const Layout: React.FC = () => {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <AppShell>
-      <Outlet />
+      {children}
     </AppShell>
   );
 };
