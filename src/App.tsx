@@ -1,13 +1,14 @@
 
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
 import { routes } from "./routes/index";
 import { Toaster } from "@/components/ui/toaster";
 
 function App() {
-  const { isLoading } = useAuth();
+  const { isLoading, user } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -25,7 +26,7 @@ function App() {
           path="/" 
           element={
             <GlobalErrorBoundary component="Route-home">
-              <Navigate to="/dashboard" replace />
+              <Navigate to={user ? "/dashboard" : "/login"} replace />
             </GlobalErrorBoundary>
           } 
         />

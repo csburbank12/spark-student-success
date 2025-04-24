@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { AppShell } from './layout/AppShell';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,6 +10,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
+  const { user } = useAuth();
   
   // Scroll to top on route change
   useEffect(() => {

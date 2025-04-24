@@ -33,7 +33,7 @@ const Sidebar = () => {
             {user?.role ? `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} View` : "Navigation"}
           </div>
         </div>
-        <SidebarNavLinks routes={routes} includeUniversalRoutes={false} />
+        <SidebarNavLinks routes={routes} includeUniversalRoutes={true} />
         <SidebarSeparator />
       </SidebarContent>
       <SidebarFooter>

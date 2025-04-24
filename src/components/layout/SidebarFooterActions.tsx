@@ -1,6 +1,6 @@
 
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { User, LogOut, Settings, HelpCircle } from "lucide-react";
 import {
   SidebarMenu,
@@ -10,12 +10,20 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { toast } from "sonner";
 
 const SidebarFooterActions = () => {
   const { logout, user } = useAuth();
   const location = useLocation();
   const { state } = useSidebar();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+    toast.success('Successfully logged out');
+  };
 
   return (
     <SidebarMenu>
@@ -79,7 +87,7 @@ const SidebarFooterActions = () => {
       
       <SidebarMenuItem>
         <SidebarMenuButton
-          onClick={logout}
+          onClick={handleLogout}
           tooltip={state === "collapsed" ? "Sign Out" : undefined}
         >
           <LogOut className="h-5 w-5" />

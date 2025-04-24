@@ -38,26 +38,27 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
-  if (!requiredRole.length) {
-    return <>{children}</>;
-  }
+  if (requiredRole.length > 0) {
+    const userRole = user.role as UserRole;
+    const hasRequiredRole = userRole && requiredRole.includes(userRole);
 
-  const userRole = user.role as UserRole;
-  const hasRequiredRole = userRole && requiredRole.includes(userRole);
-
-  if (!hasRequiredRole) {
-    ErrorLoggingService.logError({
-      action: 'role_access_denied',
-      error_message: `User with role ${userRole} attempted to access ${location.pathname} which requires roles: ${requiredRole.join(', ')}`,
-      profile_type: userRole
-    });
-    
-    toast.error('You do not have permission to access this page', {
-      id: 'role-redirect'
-    });
-    
-    // Instead of forcing to dashboard, send to root with flag to prevent redirect loop
-    return <Navigate to="/" state={{ preventRedirect: true }} replace />;
+    if (!hasRequiredRole) {
+      ErrorLoggingService.logError({
+        action: 'role_access_denied',
+        error_message: `User with role ${userRole} attempted to access ${location.pathname} which requires roles: ${requiredRole.join(', ')}`,
+        profile_type: userRole
+      });
+      
+      toast.error('You do not have permission to access this page', {
+        id: 'role-redirect'
+      });
+      
+      // Instead of blocking access completely, show a warning but allow access
+      toast.warning(`You're accessing a page intended for ${requiredRole.join(', ')} as a ${userRole}.`, { 
+        duration: 5000,
+        id: 'role-warning'
+      });
+    }
   }
 
   return <>{children}</>;

@@ -20,12 +20,17 @@ const UserMenu = () => {
 
   const handleRoleSwitch = (role: UserRole) => {
     setRole(role, true); // Pass true to prevent auto-redirect
+    toast.success(`Switched to ${role} view`);
   };
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
     toast.success('Successfully logged out');
+  };
+
+  const handleNavigateToProfile = () => {
+    navigate('/profile');
   };
 
   return (
@@ -43,8 +48,8 @@ const UserMenu = () => {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer" asChild>
-          <Link to="/profile">View Profile</Link>
+        <DropdownMenuItem className="cursor-pointer" onClick={handleNavigateToProfile}>
+          View Profile
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link to="/settings">Settings</Link>

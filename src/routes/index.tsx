@@ -19,6 +19,7 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const QADashboard = lazy(() => import("@/pages/QADashboard"));
 const WellLensDashboard = lazy(() => import("@/pages/WellLensDashboard"));
 const Profiles = lazy(() => import("@/pages/Profiles"));
+const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
 
 // Create a suspense wrapper for lazy loaded components
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -70,9 +71,7 @@ export const routes = [
     element: (
       <SuspenseWrapper>
         <Layout>
-          <ProtectedRoute>
-            <WellLensDashboard />
-          </ProtectedRoute>
+          <WellLensDashboard />
         </Layout>
       </SuspenseWrapper>
     ),
@@ -82,9 +81,17 @@ export const routes = [
     element: (
       <SuspenseWrapper>
         <Layout>
-          <ProtectedRoute>
-            <Profiles />
-          </ProtectedRoute>
+          <Profiles />
+        </Layout>
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <SuspenseWrapper>
+        <Layout>
+          <UserProfile />
         </Layout>
       </SuspenseWrapper>
     ),

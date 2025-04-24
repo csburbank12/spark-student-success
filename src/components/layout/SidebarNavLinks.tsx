@@ -22,14 +22,14 @@ interface SidebarNavLinksProps {
 
 const SidebarNavLinks: React.FC<SidebarNavLinksProps> = ({ 
   routes, 
-  includeUniversalRoutes = false 
+  includeUniversalRoutes = true 
 }) => {
   const location = useLocation();
   const { state } = useSidebar();
   
   // Combine role-specific routes with universal routes if needed
   const displayRoutes = includeUniversalRoutes 
-    ? [...routes, ...universalRoutes.filter(route => route.href !== "/dashboard")] 
+    ? [...routes, ...universalRoutes.filter(route => !routes.some(r => r.href === route.href))] 
     : routes;
 
   return (
