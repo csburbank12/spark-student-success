@@ -1,4 +1,3 @@
-
 import {
   LayoutDashboard,
   BarChartBig,
@@ -52,3 +51,5 @@ export const adminRoutes = [
     icon: User,
   },
 ];
+
+export default adminRoutes;

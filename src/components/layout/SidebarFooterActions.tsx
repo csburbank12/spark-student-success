@@ -1,7 +1,7 @@
 
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { User, Settings, HelpCircle, LogOut } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 import {
   SidebarMenu,
   SidebarMenuItem,
