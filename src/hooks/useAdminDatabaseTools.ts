@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -107,16 +108,16 @@ export function useAdminDatabaseTools() {
         .then(async () => {
           // This runs after the first query to ensure a connection is active
           try {
-            // Try using rpc first, but with a function that likely doesn't exist
-            // just to keep the promise chain
-            return await supabase.rpc('list_tables');
-          } catch (e) {
-            // If RPC fails, run SQL directly using our utility function
+            // Instead of attempting to use "list_tables" RPC which doesn't exist,
+            // use executeSql directly
             return await executeSql(`
               SELECT table_name 
               FROM information_schema.tables 
               WHERE table_schema = 'public'
             `);
+          } catch (e) {
+            console.error('Error executing SQL to get tables:', e);
+            return { data: [], error: e };
           }
         });
       
