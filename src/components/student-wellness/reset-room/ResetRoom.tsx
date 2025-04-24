@@ -1,208 +1,236 @@
 
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CloudSun, Heart, Moon, Star, Music, BookOpen } from "lucide-react";
-import BoxBreathing from "./BoxBreathing";
-import GroundingExercise from "./GroundingExercise";
-import BodyScan from "./BodyScan";
-import PositiveAffirmations from "./PositiveAffirmations";
-import GuidedMeditation from "../wellness-tools/GuidedMeditation";
-import MusicPlayer from "../wellness-tools/MusicPlayer";
+import React, { useState, useEffect } from "react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import { useResetTimer } from "./hooks/useResetTimer";
-import TimerControls from "./components/TimerControls";
 import MoodAssessment from "./components/MoodAssessment";
+import TimerControls from "./components/TimerControls";
 import TimerDurationSelector from "./components/TimerDurationSelector";
 
-const ResetRoom: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("breathing");
-  const [customTime, setCustomTime] = useState(300);
-  const [isCustomTime, setIsCustomTime] = useState(false);
-  const [selectedGoal, setSelectedGoal] = useState("");
-  const [moodBefore, setMoodBefore] = useState(5);
-  const [showMoodBefore, setShowMoodBefore] = useState(true);
-  const [showMoodAfter, setShowMoodAfter] = useState(false);
-  const [sessionCount, setSessionCount] = useState(() => {
-    const saved = localStorage.getItem("resetRoomSessionCount");
-    return saved ? parseInt(saved, 10) : 0;
-  });
+const ANIMATION_URLS = [
+  "/animations/breathing.mp4",
+  "/animations/meditation.mp4",
+  "/animations/visualization.mp4",
+];
 
+const ResetRoom = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [initialMood, setInitialMood] = useState<number>(5);
+  const [finalMood, setFinalMood] = useState<number>(5);
+  const [selectedGoal, setSelectedGoal] = useState<string>("calm");
+  const [animationUrl, setAnimationUrl] = useState<string>(ANIMATION_URLS[0]);
+  const [completedReset, setCompletedReset] = useState<boolean>(false);
   const {
     timerRunning,
-    timeRemaining,
     progress,
+    timeRemaining,
     startTimer,
     stopTimer,
-    finishEarly
-  } = useResetTimer(customTime, isCustomTime);
+    resetTimer,
+    setCustomTime,
+    isCustomTime,
+    customTime,
+  } = useResetTimer();
 
-  const handleDurationSelect = (minutes: number) => {
-    const seconds = minutes * 60;
-    setCustomTime(seconds);
-    setIsCustomTime(minutes !== 5);
-  };
-
-  const handleFinishSession = (newMood: number) => {
-    const moodChange = newMood - moodBefore;
-    let message = "";
-    
-    if (moodChange > 2) {
-      message = "Wow! That was really helpful for you.";
-    } else if (moodChange > 0) {
-      message = "Glad to see a positive change in your mood!";
-    } else if (moodChange === 0) {
-      message = "Your mood stayed the same. Try a different activity next time?";
-    } else {
-      message = "If you're still feeling down, consider talking with a counselor.";
+  // When timer completes, prompt for final mood assessment
+  useEffect(() => {
+    if (timerRunning && timeRemaining === 0) {
+      setCompletedReset(true);
+      toast({
+        title: "Reset Complete",
+        description: "Great job! How are you feeling now?",
+      });
     }
-    
+  }, [timerRunning, timeRemaining, toast]);
+
+  // Randomly choose an animation when goal changes
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * ANIMATION_URLS.length);
+    setAnimationUrl(ANIMATION_URLS[randomIndex]);
+  }, [selectedGoal]);
+
+  const handleSubmitFinalMood = (moodValue: number) => {
+    // In a real app, we would save the mood data to the database
     toast({
-      title: "Session Completed",
-      description: message,
+      title: "Recovery Recorded",
+      description: `Your mood improved from ${initialMood} to ${moodValue}. Great progress!`,
     });
     
-    setShowMoodAfter(false);
-    setShowMoodBefore(true);
+    // Reset the timer state
+    resetTimer();
+    setCompletedReset(false);
+    
+    // Navigate back after a short delay
+    setTimeout(() => {
+      navigate(-1);
+    }, 2000);
+  };
+
+  const handleGoalSelect = (goal: string) => {
+    setSelectedGoal(goal);
+  };
+
+  const handleDurationSelect = (minutes: number) => {
+    setCustomTime(minutes * 60);
   };
 
   const handleStartTimer = () => {
-    setShowMoodBefore(false);
     startTimer();
+    toast({
+      title: "Reset Started",
+      description: `Taking ${isCustomTime ? customTime / 60 : 5} minutes to ${selectedGoal}.`,
+    });
+  };
+
+  const handleStopTimer = () => {
+    stopTimer();
+    toast({
+      description: "Reset paused. Take your time.",
+    });
   };
 
   const handleFinishEarly = () => {
-    finishEarly();
-    setShowMoodBefore(false);
-    setShowMoodAfter(true);
-    
-    // Increment and save session count
-    const newCount = sessionCount + 1;
-    setSessionCount(newCount);
-    localStorage.setItem("resetRoomSessionCount", newCount.toString());
+    stopTimer();
+    setCompletedReset(true);
+    toast({
+      title: "Reset Completed Early",
+      description: "How are you feeling now?",
+    });
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-heading font-bold">5-Minute Reset Room</h2>
-          <p className="text-muted-foreground">Take a moment to pause, breathe, and reset</p>
+      <Button
+        variant="outline"
+        size="sm"
+        className="mb-4"
+        onClick={() => navigate(-1)}
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+      </Button>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Left Column - Mood Assessment and Timer Controls */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Reset Room</CardTitle>
+              <CardDescription>
+                Take a moment to reset and regain focus
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {!timerRunning && !completedReset && (
+                <MoodAssessment
+                  type="before"
+                  moodValue={initialMood}
+                  onMoodChange={setInitialMood}
+                  selectedGoal={selectedGoal}
+                  onGoalSelect={handleGoalSelect}
+                />
+              )}
+
+              {!completedReset && (
+                <>
+                  {!timerRunning && (
+                    <TimerDurationSelector
+                      isCustomTime={isCustomTime}
+                      customTime={customTime}
+                      onDurationSelect={handleDurationSelect}
+                    />
+                  )}
+
+                  <TimerControls
+                    progress={progress}
+                    timerRunning={timerRunning}
+                    timeRemaining={timeRemaining}
+                    isCustomTime={isCustomTime}
+                    customTime={customTime}
+                    onStart={handleStartTimer}
+                    onStop={handleStopTimer}
+                    onFinishEarly={handleFinishEarly}
+                  />
+                </>
+              )}
+
+              {completedReset && (
+                <MoodAssessment
+                  type="after"
+                  moodValue={finalMood}
+                  onMoodChange={setFinalMood}
+                  onSubmit={handleSubmitFinalMood}
+                />
+              )}
+            </CardContent>
+          </Card>
         </div>
-        <div className="text-sm text-muted-foreground font-medium">
-          Total resets: {sessionCount}
-        </div>
+
+        {/* Right Column - Visualization / Animation */}
+        <Card>
+          <CardContent className="p-0 overflow-hidden rounded-md">
+            {/* Placeholder for animation/video content */}
+            <div className="bg-muted aspect-video flex items-center justify-center">
+              <p className="text-muted-foreground">
+                {timerRunning
+                  ? `${selectedGoal.charAt(0).toUpperCase() + selectedGoal.slice(1)} exercise visualization would appear here`
+                  : "Start the timer to begin your reset exercise"}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card className="border-2 border-primary/20">
-        <CardHeader className="bg-muted/30 pb-0">
-          <CardTitle>Take a moment to reset</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
-          {showMoodBefore && (
-            <div className="mb-6">
-              <MoodAssessment
-                type="before"
-                moodValue={moodBefore}
-                onMoodChange={setMoodBefore}
-                selectedGoal={selectedGoal}
-                onGoalSelect={setSelectedGoal}
-              />
-              <TimerDurationSelector
-                isCustomTime={isCustomTime}
-                customTime={customTime}
-                onDurationSelect={handleDurationSelect}
-              />
-            </div>
-          )}
-          
-          {showMoodAfter && (
-            <div className="mb-6">
-              <MoodAssessment
-                type="after"
-                moodValue={moodBefore}
-                onMoodChange={setMoodBefore}
-                onSubmit={handleFinishSession}
-              />
-            </div>
-          )}
-          
-          <TimerControls
-            progress={progress}
-            timerRunning={timerRunning}
-            timeRemaining={timeRemaining}
-            isCustomTime={isCustomTime}
-            customTime={customTime}
-            onStart={handleStartTimer}
-            onStop={stopTimer}
-            onFinishEarly={handleFinishEarly}
-          />
-
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-            <TabsList className="grid grid-cols-6 mb-6">
-              <TabsTrigger value="breathing" className="flex flex-col items-center gap-1 py-2">
-                <CloudSun className="h-4 w-4" />
-                <span className="text-xs">Breathing</span>
-              </TabsTrigger>
-              <TabsTrigger value="grounding" className="flex flex-col items-center gap-1 py-2">
-                <Star className="h-4 w-4" />
-                <span className="text-xs">Grounding</span>
-              </TabsTrigger>
-              <TabsTrigger value="mindfulness" className="flex flex-col items-center gap-1 py-2">
-                <Moon className="h-4 w-4" />
-                <span className="text-xs">Mindfulness</span>
-              </TabsTrigger>
-              <TabsTrigger value="positivity" className="flex flex-col items-center gap-1 py-2">
-                <Heart className="h-4 w-4" />
-                <span className="text-xs">Positivity</span>
-              </TabsTrigger>
-              <TabsTrigger value="guided" className="flex flex-col items-center gap-1 py-2">
-                <BookOpen className="h-4 w-4" />
-                <span className="text-xs">Guided</span>
-              </TabsTrigger>
-              <TabsTrigger value="music" className="flex flex-col items-center gap-1 py-2">
-                <Music className="h-4 w-4" />
-                <span className="text-xs">Music</span>
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="breathing">
-              <BoxBreathing />
-            </TabsContent>
-            <TabsContent value="grounding">
-              <GroundingExercise />
-            </TabsContent>
-            <TabsContent value="mindfulness">
-              <BodyScan />
-            </TabsContent>
-            <TabsContent value="positivity">
-              <PositiveAffirmations />
-            </TabsContent>
-            <TabsContent value="guided">
-              <GuidedMeditation />
-            </TabsContent>
-            <TabsContent value="music">
-              <MusicPlayer />
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-      
-      <Card className="border border-muted">
+      {/* Guidance and Tips */}
+      <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Reset Room Benefits</CardTitle>
+          <CardTitle>Guidance</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div className="space-y-1">
-              <h4 className="font-medium">Emotional Regulation</h4>
-              <p className="text-muted-foreground">Help manage strong emotions through mindful practices</p>
-            </div>
-            <div className="space-y-1">
-              <h4 className="font-medium">Improved Focus</h4>
-              <p className="text-muted-foreground">Reset your attention to better engage in learning</p>
-            </div>
-            <div className="space-y-1">
-              <h4 className="font-medium">Stress Reduction</h4>
-              <p className="text-muted-foreground">Decrease stress hormones and promote calm</p>
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-medium">Tips for {selectedGoal}</h3>
+              <ul className="list-disc pl-5 pt-2 space-y-1">
+                {selectedGoal === "calm" && (
+                  <>
+                    <li>Take slow, deep breaths through your nose.</li>
+                    <li>Focus on each breath as it enters and leaves your body.</li>
+                    <li>
+                      When your mind wanders, gently bring it back to your breath.
+                    </li>
+                  </>
+                )}
+                {selectedGoal === "focus" && (
+                  <>
+                    <li>Find a comfortable position and sit upright.</li>
+                    <li>Focus on one specific object or thought.</li>
+                    <li>
+                      Notice when your mind wanders and return to your focal point.
+                    </li>
+                  </>
+                )}
+                {selectedGoal === "confidence" && (
+                  <>
+                    <li>Stand or sit in a confident posture.</li>
+                    <li>Recall a time when you felt capable and strong.</li>
+                    <li>
+                      Use positive self-talk and affirmations during this exercise.
+                    </li>
+                  </>
+                )}
+                {selectedGoal === "energy" && (
+                  <>
+                    <li>Take several energizing breaths.</li>
+                    <li>Gently stretch your arms, legs and shoulders.</li>
+                    <li>
+                      Visualize energy flowing through your body with each breath.
+                    </li>
+                  </>
+                )}
+              </ul>
             </div>
           </div>
         </CardContent>

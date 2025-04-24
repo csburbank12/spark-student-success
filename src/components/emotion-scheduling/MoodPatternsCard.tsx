@@ -1,144 +1,91 @@
 
 import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { SunMoon, Sun, Moon, Calendar, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 
-interface MoodPatterns {
-  morningTrend: string;
-  afternoonTrend: string;
-  eveningTrend: string;
-  weekdayTrend: string;
-  weekendTrend: string;
+interface MoodPattern {
+  pattern: string;
+  description: string;
+  confidence: number;
+  trend: 'improving' | 'declining' | 'stable';
 }
 
 interface MoodPatternsCardProps {
-  moodPatterns?: MoodPatterns;
-  isLoading?: boolean;
+  moodPatterns?: MoodPattern[];
+  isLoading: boolean;
 }
 
 const MoodPatternsCard: React.FC<MoodPatternsCardProps> = ({
-  moodPatterns,
-  isLoading = false,
+  moodPatterns = [],
+  isLoading
 }) => {
-  const getTrendColor = (trend: string) => {
-    switch(trend) {
-      case "Very positive": return "text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400";
-      case "Positive": return "text-green-500 bg-green-50 dark:bg-green-900/20 dark:text-green-300";
-      case "Neutral": return "text-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-300";
-      case "Negative": return "text-orange-500 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-300";
-      case "Very negative": return "text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-300";
-      default: return "text-gray-500 bg-gray-50 dark:bg-gray-900/20 dark:text-gray-300";
-    }
-  };
-
   if (isLoading) {
     return (
-      <Card className="w-full">
+      <Card>
         <CardHeader>
-          <CardTitle>Mood Pattern Analysis</CardTitle>
-          <CardDescription>Loading mood patterns...</CardDescription>
+          <CardTitle><Skeleton className="h-6 w-40" /></CardTitle>
+          <CardDescription><Skeleton className="h-4 w-56" /></CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center justify-center min-h-[200px]">
-          <div className="animate-pulse space-y-4 w-full">
-            <div className="h-4 bg-muted rounded w-3/4"></div>
-            <div className="h-4 bg-muted rounded w-1/2"></div>
-            <div className="h-4 bg-muted rounded w-5/6"></div>
-          </div>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
         </CardContent>
       </Card>
     );
   }
-
-  if (!moodPatterns) {
-    return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Mood Pattern Analysis</CardTitle>
-          <CardDescription>Not enough data available</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground text-center py-6">
-            More mood check-ins are needed to analyze mood patterns.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
+  
+  const getTrendIcon = (trend: string) => {
+    if (trend === 'improving') {
+      return <TrendingUp className="h-4 w-4 text-green-500" />;
+    } else if (trend === 'declining') {
+      return <TrendingDown className="h-4 w-4 text-red-500" />;
+    }
+    return null;
+  };
 
   return (
-    <Card className="w-full">
+    <Card>
       <CardHeader>
-        <CardTitle>Mood Pattern Analysis</CardTitle>
-        <CardDescription>Emotional trends by time of day and week</CardDescription>
+        <CardTitle>Mood Patterns & Triggers</CardTitle>
+        <CardDescription>
+          Detected emotional patterns and potential triggers
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium flex items-center gap-1 mb-3">
-            <Clock className="h-4 w-4" />
-            <span>Time of Day Patterns</span>
-          </h3>
-          
-          <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-md p-3 border">
-              <div className="flex items-center gap-1 mb-2">
-                <Sun className="h-4 w-4 text-amber-500" />
-                <span className="text-xs font-medium">Morning</span>
+      <CardContent className="space-y-4">
+        {moodPatterns && moodPatterns.length > 0 ? (
+          moodPatterns.map((pattern, index) => (
+            <div key={index} className="p-3 border rounded">
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium">{pattern.pattern}</h4>
+                <div className="flex items-center text-sm">
+                  {getTrendIcon(pattern.trend)}
+                  <span className="ml-1">
+                    {pattern.trend.charAt(0).toUpperCase() + pattern.trend.slice(1)}
+                  </span>
+                </div>
               </div>
-              <div className={`text-sm font-medium rounded-full px-2 py-1 text-center ${getTrendColor(moodPatterns.morningTrend)}`}>
-                {moodPatterns.morningTrend}
-              </div>
-            </div>
-            
-            <div className="rounded-md p-3 border">
-              <div className="flex items-center gap-1 mb-2">
-                <SunMoon className="h-4 w-4 text-blue-500" />
-                <span className="text-xs font-medium">Afternoon</span>
-              </div>
-              <div className={`text-sm font-medium rounded-full px-2 py-1 text-center ${getTrendColor(moodPatterns.afternoonTrend)}`}>
-                {moodPatterns.afternoonTrend}
+              <p className="mt-1 text-sm text-muted-foreground">{pattern.description}</p>
+              <div className="mt-2">
+                <div className="flex justify-between text-xs mb-1">
+                  <span>Pattern confidence</span>
+                  <span>{pattern.confidence}%</span>
+                </div>
+                <Progress value={pattern.confidence} className="h-1" />
               </div>
             </div>
-            
-            <div className="rounded-md p-3 border">
-              <div className="flex items-center gap-1 mb-2">
-                <Moon className="h-4 w-4 text-purple-500" />
-                <span className="text-xs font-medium">Evening</span>
-              </div>
-              <div className={`text-sm font-medium rounded-full px-2 py-1 text-center ${getTrendColor(moodPatterns.eveningTrend)}`}>
-                {moodPatterns.eveningTrend}
-              </div>
-            </div>
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <p className="text-muted-foreground">
+              Not enough data to identify significant mood patterns yet.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Continue collecting mood check-ins to improve pattern detection.
+            </p>
           </div>
-        </div>
-        
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium flex items-center gap-1 mb-3">
-            <Calendar className="h-4 w-4" />
-            <span>Weekly Patterns</span>
-          </h3>
-          
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-md p-3 border">
-              <div className="flex items-center gap-1 mb-2">
-                <Calendar className="h-4 w-4 text-blue-500" />
-                <span className="text-xs font-medium">Weekdays</span>
-              </div>
-              <div className={`text-sm font-medium rounded-full px-2 py-1 text-center ${getTrendColor(moodPatterns.weekdayTrend)}`}>
-                {moodPatterns.weekdayTrend}
-              </div>
-            </div>
-            
-            <div className="rounded-md p-3 border">
-              <div className="flex items-center gap-1 mb-2">
-                <Calendar className="h-4 w-4 text-green-500" />
-                <span className="text-xs font-medium">Weekends</span>
-              </div>
-              <div className={`text-sm font-medium rounded-full px-2 py-1 text-center ${getTrendColor(moodPatterns.weekendTrend)}`}>
-                {moodPatterns.weekendTrend}
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

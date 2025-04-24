@@ -1,104 +1,68 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import { MicroCoachProvider } from "./contexts/MicroCoachContext";
-import { LoopBotProvider } from "./contexts/LoopBotContext";
-import { Suspense, lazy, useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-// Reuse route configs from refactored routes file
-import { routes } from "./routes";
-import { Loader } from "./components/ui/loader";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext";
+import Layout from "./components/Layout";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      meta: {
-        useErrorBoundary: true,
-      },
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 3,
-      refetchOnWindowFocus: true,
-    },
-    mutations: {
-      retry: 2,
-      onError: (error) => {
-        console.error('Mutation error:', error);
-      }
-    }
-  },
-});
+// Pages
+import Dashboard from "./pages/Dashboard";
+import StudentDashboard from "./pages/StudentDashboard";
+import StudentDashboardEnhanced from "./pages/StudentDashboardEnhanced";
+import TeacherDashboard from "./pages/TeacherDashboard";
+import TeacherDashboardEnhanced from "./pages/TeacherDashboardEnhanced";
+import ParentDashboard from "./pages/ParentDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboardEnhanced from "./pages/AdminDashboardEnhanced";
+import CheckIn from "./pages/CheckIn";
+import Login from "./pages/Login";
+import SELPathways from "./pages/SELPathways";
+import SELLesson from "./pages/SELLesson";
+import Journal from "./pages/Journal";
+import StudentProgress from "./pages/StudentProgress";
+import DataAnalytics from "./pages/admin/DataAnalytics";
+import NotFound from "./pages/NotFound";
+import WellLensDashboard from "./pages/WellLensDashboard";
+import PredictiveSupport from "./pages/PredictiveSupport";
 
-// Fallback component for lazy-loaded routes
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center h-screen">
-    <Loader size="lg" />
-  </div>
-);
+// Student Wellness Components
+import ResetRoom from "./components/student-wellness/reset-room/ResetRoom";
 
-// Error fallback for error boundaries
-const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error, resetErrorBoundary: () => void }) => (
-  <div className="flex flex-col items-center justify-center h-screen p-4 space-y-4">
-    <h2 className="text-xl font-semibold text-red-600">Something went wrong</h2>
-    <p className="text-center text-gray-600 max-w-md">
-      {error.message || "An unexpected error occurred"}
-    </p>
-    <button 
-      onClick={resetErrorBoundary}
-      className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors"
-    >
-      Try again
-    </button>
-  </div>
-);
+function App() {
+  const { user, loading } = useAuth();
 
-const App = () => {
-  const [errorKey, setErrorKey] = useState<number>(0);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <ErrorBoundary 
-      FallbackComponent={ErrorFallback} 
-      key={errorKey}
-      onReset={() => setErrorKey(prev => prev + 1)}
-    >
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <MicroCoachProvider>
-            <LoopBotProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner position="top-right" closeButton />
-                <BrowserRouter>
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Routes>
-                      {routes.map((route) => (
-                        <Route 
-                          key={route.path || 'index'} 
-                          path={route.path} 
-                          element={
-                            <ErrorBoundary 
-                              FallbackComponent={ErrorFallback} 
-                              onReset={() => window.location.reload()}
-                            >
-                              {route.element}
-                            </ErrorBoundary>
-                          } 
-                        />
-                      ))}
-                    </Routes>
-                  </Suspense>
-                </BrowserRouter>
-              </TooltipProvider>
-            </LoopBotProvider>
-          </MicroCoachProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/reset-room" element={<ResetRoom />} />
+
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="student-dashboard" element={<StudentDashboard />} />
+        <Route path="student-dashboard-enhanced" element={<StudentDashboardEnhanced />} />
+        <Route path="teacher-dashboard" element={<TeacherDashboard />} />
+        <Route path="teacher-dashboard-enhanced" element={<TeacherDashboardEnhanced />} />
+        <Route path="parent-dashboard" element={<ParentDashboard />} />
+        <Route path="admin-dashboard" element={<AdminDashboard />} />
+        <Route path="admin-dashboard-enhanced" element={<AdminDashboardEnhanced />} />
+        <Route path="check-in" element={<CheckIn />} />
+        <Route path="sel-pathways" element={<SELPathways />} />
+        <Route path="sel-pathways/:lessonId" element={<SELLesson />} />
+        <Route path="journal" element={<Journal />} />
+        <Route path="student-progress" element={<StudentProgress />} />
+        <Route path="admin/analytics" element={<DataAnalytics />} />
+        
+        {/* WellLens Pulse Routes */}
+        <Route path="welllens" element={<WellLensDashboard />} />
+        <Route path="predictive-support" element={<PredictiveSupport />} />
+        
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
   );
-};
+}
 
 export default App;

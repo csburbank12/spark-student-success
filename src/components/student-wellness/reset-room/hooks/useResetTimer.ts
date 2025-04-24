@@ -1,68 +1,89 @@
 
-import { useState, useEffect } from 'react';
-import { useToast } from "@/components/ui/use-toast";
+import { useState, useEffect, useRef } from "react";
 
-export const useResetTimer = (customTime: number, isCustomTime: boolean) => {
+export const useResetTimer = (defaultTime = 5 * 60) => {
   const [timerRunning, setTimerRunning] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(300);
-  const [progress, setProgress] = useState(100);
-  const { toast } = useToast();
+  const [timeRemaining, setTimeRemaining] = useState(defaultTime);
+  const [totalTime, setTotalTime] = useState(defaultTime);
+  const [isCustomTime, setIsCustomTime] = useState(false);
+  const [customTime, setCustomTime] = useState(defaultTime);
+  const timerRef = useRef<number | null>(null);
+
+  // Calculate progress as a percentage
+  const progress = ((totalTime - timeRemaining) / totalTime) * 100;
 
   useEffect(() => {
-    let timerId: number | undefined;
+    // If the timer is running, decrement the time
     if (timerRunning && timeRemaining > 0) {
-      timerId = window.setInterval(() => {
-        setTimeRemaining(prev => {
-          const newTime = prev - 1;
-          const newProgress = (newTime / (isCustomTime ? customTime : 300)) * 100;
-          setProgress(newProgress);
-          return newTime;
-        });
+      // Set up the interval to decrement the time
+      timerRef.current = window.setInterval(() => {
+        setTimeRemaining((prevTime) => prevTime - 1);
       }, 1000);
     } else if (timerRunning && timeRemaining === 0) {
+      // If time is up, stop the timer
       setTimerRunning(false);
-      setTimeRemaining(isCustomTime ? customTime : 300);
-      setProgress(100);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     }
-    return () => {
-      if (timerId) clearInterval(timerId);
-    };
-  }, [timerRunning, timeRemaining, isCustomTime, customTime]);
 
+    // Clean up the interval when component unmounts or timer stops
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [timerRunning, timeRemaining]);
+
+  // Start the timer
   const startTimer = () => {
+    // If custom time is set, use it
+    if (isCustomTime) {
+      setTimeRemaining(customTime);
+      setTotalTime(customTime);
+    } else {
+      setTimeRemaining(defaultTime);
+      setTotalTime(defaultTime);
+    }
     setTimerRunning(true);
-    toast({
-      title: "Reset Timer Started",
-      description: `Taking ${Math.floor(timeRemaining/60)} minutes to reset and recharge.`,
-    });
   };
 
+  // Stop the timer
   const stopTimer = () => {
     setTimerRunning(false);
-    setTimeRemaining(isCustomTime ? customTime : 300);
-    setProgress(100);
-    toast({
-      title: "Reset Timer Stopped",
-      description: "You can restart the timer anytime you need.",
-    });
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
   };
 
-  const finishEarly = () => {
-    setTimerRunning(false);
-    setTimeRemaining(isCustomTime ? customTime : 300);
-    setProgress(100);
-    toast({
-      title: "Reset Complete",
-      description: "Great job taking time for yourself! How do you feel now?",
-    });
+  // Reset the timer to initial values
+  const resetTimer = () => {
+    stopTimer();
+    setTimeRemaining(isCustomTime ? customTime : defaultTime);
+    setTotalTime(isCustomTime ? customTime : defaultTime);
+  };
+
+  // Set custom timer duration
+  const handleSetCustomTime = (minutes: number) => {
+    const seconds = minutes * 60;
+    setCustomTime(seconds);
+    setTotalTime(seconds);
+    setTimeRemaining(seconds);
+    setIsCustomTime(true);
   };
 
   return {
     timerRunning,
-    timeRemaining,
     progress,
+    timeRemaining,
+    isCustomTime,
+    customTime,
     startTimer,
     stopTimer,
-    finishEarly
+    resetTimer,
+    setCustomTime: handleSetCustomTime
   };
 };

@@ -104,6 +104,48 @@ export type Database = {
         }
         Relationships: []
       }
+      class_wellness_scores: {
+        Row: {
+          alert_resolution_score: number
+          class_id: string | null
+          created_at: string
+          date: string
+          id: string
+          mood_score: number
+          participation_score: number
+          sel_completion_score: number
+          status: string
+          teacher_id: string | null
+          total_score: number
+        }
+        Insert: {
+          alert_resolution_score?: number
+          class_id?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          mood_score?: number
+          participation_score?: number
+          sel_completion_score?: number
+          status?: string
+          teacher_id?: string | null
+          total_score?: number
+        }
+        Update: {
+          alert_resolution_score?: number
+          class_id?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          mood_score?: number
+          participation_score?: number
+          sel_completion_score?: number
+          status?: string
+          teacher_id?: string | null
+          total_score?: number
+        }
+        Relationships: []
+      }
       culture_pulse_surveys: {
         Row: {
           belonging_score: number | null
@@ -921,6 +963,53 @@ export type Database = {
           },
         ]
       }
+      school_wellness_scores: {
+        Row: {
+          alert_resolution_score: number
+          created_at: string
+          date: string
+          id: string
+          mood_score: number
+          participation_score: number
+          school_id: string | null
+          sel_completion_score: number
+          status: string
+          total_score: number
+        }
+        Insert: {
+          alert_resolution_score?: number
+          created_at?: string
+          date?: string
+          id?: string
+          mood_score?: number
+          participation_score?: number
+          school_id?: string | null
+          sel_completion_score?: number
+          status?: string
+          total_score?: number
+        }
+        Update: {
+          alert_resolution_score?: number
+          created_at?: string
+          date?: string
+          id?: string
+          mood_score?: number
+          participation_score?: number
+          school_id?: string | null
+          sel_completion_score?: number
+          status?: string
+          total_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "school_wellness_scores_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       schools: {
         Row: {
           address: string | null
@@ -1288,6 +1377,54 @@ export type Database = {
         }
         Relationships: []
       }
+      trend_alerts: {
+        Row: {
+          created_at: string
+          details: Json | null
+          id: string
+          primary_trigger: string
+          recommended_action: string | null
+          resolution_notes: string | null
+          resolved: boolean
+          resolved_at: string | null
+          resolved_by: string | null
+          secondary_triggers: Json | null
+          severity: Database["public"]["Enums"]["alert_severity"]
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          id?: string
+          primary_trigger: string
+          recommended_action?: string | null
+          resolution_notes?: string | null
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          secondary_triggers?: Json | null
+          severity?: Database["public"]["Enums"]["alert_severity"]
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          id?: string
+          primary_trigger?: string
+          recommended_action?: string | null
+          resolution_notes?: string | null
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          secondary_triggers?: Json | null
+          severity?: Database["public"]["Enums"]["alert_severity"]
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       trusted_adults: {
         Row: {
           created_at: string
@@ -1427,6 +1564,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      analyze_student_mood: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      calculate_school_wellness_scores: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       create_tiered_support_recommendation: {
         Args: {
           p_student_id: string
@@ -1642,6 +1787,7 @@ export type Database = {
       }
     }
     Enums: {
+      alert_severity: "stable" | "at_risk" | "critical"
       app_role: "student" | "staff" | "admin" | "parent"
       integration_type: "classlink" | "skyward" | "other"
       loopbot_severity: "info" | "warning" | "critical"
@@ -1764,6 +1910,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      alert_severity: ["stable", "at_risk", "critical"],
       app_role: ["student", "staff", "admin", "parent"],
       integration_type: ["classlink", "skyward", "other"],
       loopbot_severity: ["info", "warning", "critical"],
