@@ -1,76 +1,75 @@
 
 import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { School, BookOpen } from "lucide-react";
-import { Child } from "./ChildSelector";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface WellnessSummaryCardProps {
   childData: any;
-  getWellnessSummary: () => { title: string; description: string; statusColor: string; };
-  getTrendIcon: (trend: string) => React.ReactNode;
+  getWellnessSummary: () => { title: string; description: string; statusColor: string };
+  getTrendIcon: (trend: string) => React.ReactNode | null;
 }
 
-const WellnessSummaryCard: React.FC<WellnessSummaryCardProps> = ({ childData, getWellnessSummary, getTrendIcon }) => {
+const WellnessSummaryCard: React.FC<WellnessSummaryCardProps> = ({ 
+  childData, 
+  getWellnessSummary, 
+  getTrendIcon 
+}) => {
+  const navigate = useNavigate();
   const wellnessSummary = getWellnessSummary();
 
   return (
-    <Card className="border-l-4" style={{
-      borderLeftColor:
-        childData.behaviorRiskLevel === "low" ? "rgb(34 197 94)" :
-        childData.behaviorRiskLevel === "medium" ? "rgb(245 158 11)" :
-        "rgb(239 68 68)" }}>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
+    <Card className="border-t-4" style={{ borderTopColor: wellnessSummary.statusColor.replace('text-', '') }}>
+      <CardHeader>
+        <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg">{childData.name}'s Wellness Summary</CardTitle>
-            <CardDescription>
-              <span className={wellnessSummary.statusColor + " font-medium"}>{wellnessSummary.title}</span> - {wellnessSummary.description}
-            </CardDescription>
+            <CardTitle>
+              <span className={wellnessSummary.statusColor}>{wellnessSummary.title}</span>
+              {childData.behaviorTrend && (
+                <sup className="ml-1">{getTrendIcon(childData.behaviorTrend)}</sup>
+              )}
+            </CardTitle>
+            <CardDescription>{wellnessSummary.description}</CardDescription>
           </div>
-          {childData.alerts > 0 && (
-            <Badge className="bg-red-100 text-red-800">
-              {childData.alerts} Alert
-            </Badge>
-          )}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-1"
+            onClick={() => navigate(`/child-wellness?child=${childData.id}`)}
+          >
+            <span>Full Report</span>
+            <ExternalLink className="h-4 w-4" />
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="space-y-2">
-            <div className="text-sm text-muted-foreground">School</div>
-            <div className="flex items-center gap-1">
-              <School className="h-4 w-4 text-primary" />
-              <span>{childData.school}</span>
+        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="text-center">
+              <p className="font-semibold">{childData.attendance}%</p>
+              <p className="text-xs text-muted-foreground">Attendance</p>
             </div>
-            <div className="text-sm text-muted-foreground mt-2">Grade</div>
-            <div className="flex items-center gap-1">
-              <BookOpen className="h-4 w-4 text-primary" />
-              <span>{childData.grade}</span>
+            <div className="text-center">
+              <p className="font-semibold">{childData.checkIns}</p>
+              <p className="text-xs text-muted-foreground">Check-ins</p>
             </div>
-          </div>
-          <div className="space-y-2">
-            <div className="text-sm text-muted-foreground">Recent Mood</div>
-            <div className="flex items-center gap-1">
-              <span className="h-4 w-4 text-primary">💖</span>
-              <span>{childData.recentMood}</span>
-              {getTrendIcon(childData.moodTrend)}
-            </div>
-            <div className="text-sm text-muted-foreground mt-2">Academic Standing</div>
-            <div className="flex items-center gap-1">
-              <Badge className={childData.academicStanding === "On Track" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}>
-                {childData.academicStanding}
-              </Badge>
+            <div className="text-center">
+              <p className="font-semibold">{childData.alerts}</p>
+              <p className="text-xs text-muted-foreground">Alerts</p>
             </div>
           </div>
-          <div className="space-y-2">
-            <div className="text-sm text-muted-foreground">Attendance</div>
-            <div className="flex items-center gap-1">
-              <span>{childData.attendance}%</span>
-              {getTrendIcon(childData.attendanceTrend)}
-            </div>
-            <div className="text-sm text-muted-foreground mt-2">Check-ins</div>
-            <div>{childData.checkIns} in the last 2 weeks</div>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={() => navigate(`/messages?child=${childData.id}`)}>
+              Message Teacher
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={() => navigate(`/my-children?child=${childData.id}`)}
+            >
+              View Detail
+            </Button>
           </div>
         </div>
       </CardContent>

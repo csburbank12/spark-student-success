@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import ChildSelector from "./parent-dashboard-enhanced/ChildSelector";
 import WellnessSummaryCard from "./parent-dashboard-enhanced/WellnessSummaryCard";
 import ParentStatCardsRow from "./parent-dashboard-enhanced/ParentStatCardsRow";
@@ -10,12 +11,30 @@ import ResourcesTab from "./parent-dashboard-enhanced/ResourcesTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 const ParentDashboardEnhanced = () => {
   const { user } = useAuth();
-  const [selectedChild, setSelectedChild] = useState<string>("child1");
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const childParam = searchParams.get('child');
+  
+  const [selectedChild, setSelectedChild] = useState<string>(
+    childParam || (user?.children?.[0]?.id || "child1")
+  );
+  const [activeTab, setActiveTab] = useState<string>("overview");
 
-  // Mock data for children
+  useEffect(() => {
+    if (childParam !== selectedChild && selectedChild) {
+      navigate(`/parent-dashboard-enhanced?child=${selectedChild}`, { replace: true });
+    }
+  }, [selectedChild, childParam, navigate]);
+
+  const handleChildChange = (childId: string) => {
+    setSelectedChild(childId);
+    toast.success(`Viewing ${children.find(child => child.id === childId)?.name}'s information`);
+  };
+
   const children = [
     {
       id: "child1",
@@ -61,7 +80,6 @@ const ParentDashboardEnhanced = () => {
 
   const selectedChildData = children.find(child => child.id === selectedChild) || children[0];
 
-  // Home strategies based on behavior risk level
   const getHomeStrategies = () => {
     if (selectedChildData.behaviorRiskLevel === "medium" || selectedChildData.behaviorRiskLevel === "high") {
       return [
@@ -80,7 +98,6 @@ const ParentDashboardEnhanced = () => {
     ];
   };
 
-  // Determine risk indicator color
   const getRiskColor = (level: string) => {
     switch (level) {
       case "high": return "bg-red-100 text-red-800";
@@ -90,14 +107,12 @@ const ParentDashboardEnhanced = () => {
     }
   };
 
-  // Trend icon
   const getTrendIcon = (trend: string) => {
     if (trend === "up") return <span className="text-green-500">↑</span>;
     if (trend === "down") return <span className="text-red-500">↓</span>;
     return null;
   };
 
-  // Format with parent-friendly language
   const getWellnessSummary = () => {
     if (selectedChildData.behaviorRiskLevel === "high") {
       return {
@@ -120,13 +135,21 @@ const ParentDashboardEnhanced = () => {
     };
   };
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-heading font-bold">
           Welcome, {user?.name?.split(" ")[0]}!
         </h2>
-        <ChildSelector childrenList={children} selectedChild={selectedChild} onChange={setSelectedChild} />
+        <ChildSelector 
+          childrenList={children} 
+          selectedChild={selectedChild} 
+          onChange={handleChildChange} 
+        />
       </div>
 
       <WellnessSummaryCard
@@ -137,7 +160,7 @@ const ParentDashboardEnhanced = () => {
 
       <ParentStatCardsRow selectedChildData={selectedChildData} />
 
-      <Tabs defaultValue="overview">
+      <Tabs defaultValue="overview" value={activeTab} onValueChange={handleTabChange}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="wellness">Mood & Wellness</TabsTrigger>
