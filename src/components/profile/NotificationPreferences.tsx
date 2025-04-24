@@ -6,15 +6,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface NotificationSetting {
-  email: boolean;
-  app: boolean;
+  email_enabled: boolean;
+  app_enabled: boolean;
 }
 
 const NotificationPreferences: React.FC = () => {
   const { user } = useAuth();
   const [settings, setSettings] = useState<NotificationSetting>({
-    email: true,
-    app: true
+    email_enabled: true,
+    app_enabled: true
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,17 +31,20 @@ const NotificationPreferences: React.FC = () => {
       setIsLoading(true);
       const { data, error } = await supabase
         .from('user_notification_settings')
-        .select('*')
+        .select('email_enabled, app_enabled')
         .eq('user_id', user.id)
         .single();
 
-      if (error && error.code !== 'PGRST200') {
+      if (error) {
         console.error("Error fetching notification settings:", error);
         // Don't show error to user, just use defaults
-      } else if (data) {
+        return;
+      }
+
+      if (data) {
         setSettings({
-          email: data.email_enabled,
-          app: data.app_enabled
+          email_enabled: data.email_enabled,
+          app_enabled: data.app_enabled
         });
       }
     } catch (err) {
@@ -51,22 +54,20 @@ const NotificationPreferences: React.FC = () => {
     }
   };
 
-  const updateNotificationSetting = async (type: 'email' | 'app', value: boolean) => {
+  const updateNotificationSetting = async (type: keyof NotificationSetting, value: boolean) => {
     if (!user?.id) return;
     
     setSettings(prev => ({ ...prev, [type]: value }));
     
     try {
-      const column = type === 'email' ? 'email_enabled' : 'app_enabled';
-      
       const { error } = await supabase
         .from('user_notification_settings')
         .upsert({ 
           user_id: user.id,
-          [column]: value,
+          [type]: value,
           updated_at: new Date().toISOString()
         }, { 
-          onConflict: 'user_id' 
+          onConflict: 'user_id'
         });
 
       if (error) {
@@ -75,7 +76,8 @@ const NotificationPreferences: React.FC = () => {
         // Revert the local state on error
         setSettings(prev => ({ ...prev, [type]: !value }));
       } else {
-        toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} notifications ${value ? 'enabled' : 'disabled'}`);
+        const displayType = type === 'email_enabled' ? 'Email' : 'App';
+        toast.success(`${displayType} notifications ${value ? 'enabled' : 'disabled'}`);
       }
     } catch (err) {
       console.error(`Failed to update ${type} notification setting:`, err);
@@ -95,9 +97,9 @@ const NotificationPreferences: React.FC = () => {
           </p>
         </div>
         <Switch 
-          checked={settings.email} 
+          checked={settings.email_enabled}
           disabled={isLoading}
-          onCheckedChange={(value) => updateNotificationSetting('email', value)} 
+          onCheckedChange={(value) => updateNotificationSetting('email_enabled', value)}
         />
       </div>
       <div className="flex items-center justify-between">
@@ -108,9 +110,9 @@ const NotificationPreferences: React.FC = () => {
           </p>
         </div>
         <Switch 
-          checked={settings.app} 
+          checked={settings.app_enabled}
           disabled={isLoading}
-          onCheckedChange={(value) => updateNotificationSetting('app', value)} 
+          onCheckedChange={(value) => updateNotificationSetting('app_enabled', value)}
         />
       </div>
     </div>
