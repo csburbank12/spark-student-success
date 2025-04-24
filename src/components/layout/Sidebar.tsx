@@ -23,7 +23,8 @@ const Sidebar = () => {
     <SidebarContainer>
       <SidebarHeader>
         <div className="flex h-14 items-center px-4">
-          <span className="font-semibold text-xl">Beacon</span>
+          {/* Removed "Beacon" text, leaving the space blank */}
+          <span className="font-semibold text-xl"></span>
         </div>
       </SidebarHeader>
       <SidebarContent>
