@@ -17,7 +17,7 @@ export function MoodHistory() {
   const { data: moodData } = useMoodCheckIns(user?.id, 30);
 
   const chartData = moodData?.map((entry) => ({
-    date: new Date(entry.created_at).toLocaleDateString(),
+    date: new Date(entry.date).toLocaleDateString(),
     value: ["happy", "good", "okay", "sad", "stressed"].indexOf(entry.mood_type) + 1
   })) || [];
 
