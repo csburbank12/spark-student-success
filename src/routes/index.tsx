@@ -1,27 +1,22 @@
 
-import type { User } from "@/types";
-import { AppShell } from "@/components/layout/AppShell";
-import { generalRoutes } from "./generalRoutes";
-import studentRoutes from "./studentRoutes";
-import { teacherAdminRoutes } from "./teacherAdminRoutes";
-import parentRoutes from "./parentRoutes";
-import adminRoutes from "./adminRoutes";
-import { RouteObject } from "react-router-dom";
 import React from "react";
-
-// RouteConfig interface extends RouteObject with additional properties
-export type RouteConfig = RouteObject & { 
-  path: string; 
-  requiredRole?: string[]; 
-  element: React.ReactNode; 
-};
+import { Navigate } from "react-router-dom";
+import NotFound from "@/pages/NotFound";
+import Login from "@/pages/Login";
+import parentRoutes from "./parentRoutes";
+import teacherAdminRoutes from "./teacherAdminRoutes";
+import staffRoutes from "./staffRoutes";
+import studentRoutes from "./studentRoutes";
+import adminRoutes from "./adminRoutes";
+import { generalRoutes } from "./generalRoutes";
+import { AppShell } from "@/components/layout/AppShell";
 
 // Process routes to add AppShell wrapper
-const processRoutes = (routes: RouteObject[]): RouteObject[] => {
+const processRoutes = (routes: any[]) => {
   return routes.map(route => {
     // Skip wrapping login/public routes with AppShell
     const skipShell = 
-      (route.path === "/" || route.path === "/login" || route.path === "*");
+      (route.path === "/" || route.path === "/login" || route.path === "/404" || route.path === "*");
     
     return {
       ...route,
@@ -30,20 +25,12 @@ const processRoutes = (routes: RouteObject[]): RouteObject[] => {
   });
 };
 
-// Make sure all routes in arrays meet the RouteConfig type requirements
-const ensureRouteConfig = (routes: RouteObject[]): RouteConfig[] => {
-  return routes.map(route => {
-    // Ensure path is always defined (use empty string for index routes if needed)
-    const path = route.path || "";
-    return { ...route, path } as RouteConfig;
-  });
-};
-
-// Combine and export all routes as a single array for <Routes>
-export const routes: RouteObject[] = [
-  ...processRoutes(ensureRouteConfig(generalRoutes)),
-  ...processRoutes(ensureRouteConfig(studentRoutes)),
-  ...processRoutes(ensureRouteConfig(teacherAdminRoutes)),
-  ...processRoutes(ensureRouteConfig(parentRoutes)),
-  ...processRoutes(ensureRouteConfig(adminRoutes)),
+// All the routes in the application
+export const routes = [
+  ...processRoutes(generalRoutes),
+  ...processRoutes(studentRoutes),
+  ...processRoutes(teacherAdminRoutes),
+  ...processRoutes(parentRoutes),
+  ...processRoutes(staffRoutes),
+  ...processRoutes(adminRoutes),
 ];
