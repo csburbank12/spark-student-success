@@ -6,10 +6,8 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { LoginHeader } from "@/components/auth/LoginHeader";
 import { ConfidentialityNotice } from "@/components/auth/ConfidentialityNotice";
 import { DemoAccounts } from "@/components/auth/DemoAccounts";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ErrorLoggingService, ProfileType } from "@/services/ErrorLoggingService";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { InfoIcon, Shield, ExternalLink } from "lucide-react";
+import { Shield, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Login = () => {
@@ -23,7 +21,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>("demo");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   // Redirect to dashboard if already logged in
@@ -46,12 +43,6 @@ const Login = () => {
       const errorMessage = error instanceof Error ? error.message : "Failed to login";
       console.error(errorMessage);
       setErrorMessage(errorMessage);
-      
-      ErrorLoggingService.logError({
-        action: "login_failed",
-        error_message: errorMessage,
-        profile_type: email.includes("@") ? email.split("@")[0] as ProfileType : "unknown"
-      });
     } finally {
       setIsSubmitting(false);
     }
@@ -78,65 +69,29 @@ const Login = () => {
       <LoginHeader />
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="bg-white w-full max-w-md p-6 rounded-xl shadow-sm border">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid grid-cols-2">
-              <TabsTrigger value="demo">Demo Accounts</TabsTrigger>
-              <TabsTrigger value="login">Login</TabsTrigger>
-            </TabsList>
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-heading font-bold">Welcome Back</h2>
+            <p className="text-muted-foreground">
+              Sign in to continue to your account
+            </p>
+          </div>
 
-            <TabsContent value="demo" className="space-y-6">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-heading font-bold">Demo Accounts</h2>
-                <p className="text-muted-foreground">
-                  Select a role to experience the platform
-                </p>
-              </div>
+          {errorMessage && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertTitle>Login Error</AlertTitle>
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          )}
 
-              {errorMessage && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertTitle>Login Error</AlertTitle>
-                  <AlertDescription>{errorMessage}</AlertDescription>
-                </Alert>
-              )}
-
-              <DemoAccounts
-                presetLogin={presetLogin}
-                email={email}
-                password={password}
-                isSubmitting={isSubmitting}
-                agreedToTerms={agreedToTerms}
-                setAgreedToTerms={setAgreedToTerms}
-                handleSubmit={handleSubmit}
-              />
-            </TabsContent>
-
-            <TabsContent value="login" className="space-y-6">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-heading font-bold">Welcome Back</h2>
-                <p className="text-muted-foreground">
-                  Sign in to continue to your account
-                </p>
-              </div>
-
-              {errorMessage && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertTitle>Login Error</AlertTitle>
-                  <AlertDescription>{errorMessage}</AlertDescription>
-                </Alert>
-              )}
-
-              <LoginForm
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                agreedToTerms={agreedToTerms}
-                setAgreedToTerms={setAgreedToTerms}
-                handleSubmit={handleSubmit}
-                isSubmitting={isSubmitting}
-              />
-            </TabsContent>
-          </Tabs>
+          <DemoAccounts
+            presetLogin={presetLogin}
+            email={email}
+            password={password}
+            isSubmitting={isSubmitting}
+            agreedToTerms={agreedToTerms}
+            setAgreedToTerms={setAgreedToTerms}
+            handleSubmit={handleSubmit}
+          />
 
           <div className="mt-8 space-y-4">
             <ConfidentialityNotice />
