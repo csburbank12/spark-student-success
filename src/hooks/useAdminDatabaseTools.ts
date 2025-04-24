@@ -134,7 +134,7 @@ export function useAdminDatabaseTools() {
           const hasUpdatedAt = columnNames.includes('updated_at');
           
           if (!hasCreatedAt || !hasUpdatedAt) {
-            healthData.tables_without_timestamps.push(tableName);
+            (healthData.tables_without_timestamps as string[]).push(tableName);
           }
           
           // Check for primary keys
@@ -147,7 +147,7 @@ export function useAdminDatabaseTools() {
             .maybeSingle();
             
           if (!pkError && !primaryKeys) {
-            healthData.tables_without_primary_keys.push(tableName);
+            (healthData.tables_without_primary_keys as string[]).push(tableName);
           }
           
           // Check RLS status
@@ -156,7 +156,6 @@ export function useAdminDatabaseTools() {
               .from('pg_class')
               .select('relrowsecurity')
               .eq('relname', tableName)
-              .eq('relnamespace', 'public'::any)
               .maybeSingle();
               
             if (!rlsCheck.error) {
