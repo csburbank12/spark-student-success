@@ -1,12 +1,9 @@
-
 import { UserRole } from "@/types/roles";
-import { 
-  universalRoutes, 
-  teacherAdminRoutes, 
-  studentRoutes, 
-  adminRoutes, 
-  parentRoutes 
-} from "./routes/universalRoutes";
+import { universalRoutes } from "./routes/universalRoutes";
+import teacherAdminRoutes from "../layout/routes/teacherAdminRoutes";
+import studentRoutes from "../layout/routes/studentRoutes";
+import adminRoutes from "../layout/routes/adminRoutes";
+import parentRoutes from "../layout/routes/parentRoutes";
 import { 
   BarChart3,
   Activity,
