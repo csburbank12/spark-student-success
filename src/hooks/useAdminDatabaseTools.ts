@@ -1,9 +1,9 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { DbValidationService } from '@/services/dbValidationService';
 import { DatabaseMigrationService } from '@/services/DatabaseMigrationService';
+import { executeSql } from '@/utils/supabaseUtils';
 
 export interface DatabaseValidationConfig {
   tableName: string;
@@ -104,27 +104,28 @@ export function useAdminDatabaseTools() {
         .from('error_logs') // Using error_logs as a base table just to run SQL
         .select('*')
         .limit(1)
-        .then(() => 
+        .then(async () => {
           // This runs after the first query to ensure a connection is active
-          supabase.rpc('stored_procedure_dummy_call', {}, { 
-            head: false,
-            count: 'exact',
-          }).catch(() => {
-            // If RPC fails (which it will since it doesn't exist), run SQL directly
-            return supabase.sql(`
+          try {
+            // Try using rpc first, but with a function that likely doesn't exist
+            // just to keep the promise chain
+            return await supabase.rpc('list_tables');
+          } catch (e) {
+            // If RPC fails, run SQL directly using our utility function
+            return await executeSql(`
               SELECT table_name 
               FROM information_schema.tables 
               WHERE table_schema = 'public'
-            `)
-          })
-        );
+            `);
+          }
+        });
       
       if (tablesError) {
         throw tablesError;
       }
       
       // Extract table names
-      const tableNames = tablesResult?.map(row => row.table_name) || [];
+      const tableNames = tablesResult?.map((row: any) => row.table_name) || [];
       
       // Initialize health data structure
       const healthData: {
@@ -145,7 +146,7 @@ export function useAdminDatabaseTools() {
       // Check tables for timestamps and primary keys
       for (const tableName of tableNames) {
         // Use a direct SQL query for columns
-        const { data: columnsData, error: columnsError } = await supabase.sql(`
+        const { data: columnsData, error: columnsError } = await executeSql(`
           SELECT column_name 
           FROM information_schema.columns 
           WHERE table_schema = 'public' AND table_name = '${tableName}'
@@ -166,7 +167,7 @@ export function useAdminDatabaseTools() {
           }
           
           // Check for primary keys using direct SQL
-          const { data: pkData, error: pkError } = await supabase.sql(`
+          const { data: pkData, error: pkError } = await executeSql(`
             SELECT constraint_name 
             FROM information_schema.table_constraints 
             WHERE table_schema = 'public' 
@@ -186,7 +187,7 @@ export function useAdminDatabaseTools() {
           
           // Check RLS status using direct SQL
           try {
-            const { data: rlsData, error: rlsError } = await supabase.sql(`
+            const { data: rlsData, error: rlsError } = await executeSql(`
               SELECT relrowsecurity 
               FROM pg_class 
               WHERE relname = '${tableName}' 

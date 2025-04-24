@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { executeSql } from '@/utils/supabaseUtils';
 
 export interface DatabaseValidationConfig {
   tableName: string;
@@ -61,7 +62,7 @@ export class DbValidationService {
   private static async validateTable(config: DatabaseValidationConfig) {
     try {
       // Check if table exists using a direct SQL query
-      const { data: tableData, error: tableError } = await supabase.sql(`
+      const { data: tableData, error: tableError } = await executeSql(`
         SELECT EXISTS (
           SELECT 1
           FROM information_schema.tables
@@ -88,7 +89,7 @@ export class DbValidationService {
       }
       
       // Check columns using direct SQL
-      const { data: columnsData, error: columnsError } = await supabase.sql(`
+      const { data: columnsData, error: columnsError } = await executeSql(`
         SELECT column_name
         FROM information_schema.columns
         WHERE table_schema = 'public'
@@ -101,7 +102,7 @@ export class DbValidationService {
       const missingColumns = config.requiredColumns.filter(col => !columnNames.includes(col));
       
       // Check for primary key using direct SQL
-      const { data: primaryKeyData, error: pkError } = await supabase.sql(`
+      const { data: primaryKeyData, error: pkError } = await executeSql(`
         SELECT EXISTS (
           SELECT 1
           FROM information_schema.table_constraints

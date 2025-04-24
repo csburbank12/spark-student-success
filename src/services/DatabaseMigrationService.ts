@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { executeSql } from '@/utils/supabaseUtils';
 
 /**
  * Service to handle database migration operations
@@ -34,7 +35,7 @@ export class DatabaseMigrationService {
       }
       
       // Execute the SQL script directly
-      const { error } = await supabase.sql(sqlScript);
+      const { data, error } = await executeSql(sqlScript);
       
       if (error) throw error;
       

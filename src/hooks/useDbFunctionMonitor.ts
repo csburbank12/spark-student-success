@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { executeSql } from '@/utils/supabaseUtils';
 
 /**
  * Hook to monitor and validate required database functions
@@ -97,7 +97,7 @@ export function useDbFunctionMonitor(requiredFunctions: string[] = []) {
   const testFunctionExistence = async (functionName: string): Promise<boolean> => {
     // First try checking if the function exists in the information schema using SQL
     try {
-      const { data, error } = await supabase.sql(`
+      const { data, error } = await executeSql(`
         SELECT EXISTS (
           SELECT 1
           FROM information_schema.routines

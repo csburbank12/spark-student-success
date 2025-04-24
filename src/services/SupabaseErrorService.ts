@@ -2,6 +2,7 @@
 import { PostgrestError } from '@supabase/supabase-js';
 import { ErrorLoggingService, ProfileType } from '@/hooks/useErrorLogging';
 import { supabase } from '@/integrations/supabase/client';
+import { executeSql } from '@/utils/supabaseUtils';
 
 /**
  * Service to handle Supabase error reporting and analysis
@@ -34,7 +35,7 @@ export class SupabaseErrorService {
   static async checkRLSPolicyIssues(tableName: string) {
     try {
       // Check if table has RLS enabled using direct SQL query
-      const { data: rlsStatus, error: rlsError } = await supabase.sql(`
+      const { data: rlsStatus, error: rlsError } = await executeSql(`
         SELECT relrowsecurity
         FROM pg_class
         WHERE relname = '${tableName}'
@@ -45,7 +46,7 @@ export class SupabaseErrorService {
       if (rlsError) throw rlsError;
       
       // Check for policies using direct SQL query
-      const { data: policies, error: policiesError } = await supabase.sql(`
+      const { data: policies, error: policiesError } = await executeSql(`
         SELECT polname as name, polcmd as operation
         FROM pg_policy
         WHERE relname = '${tableName}'

@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { SupabaseErrorService } from '@/services/SupabaseErrorService';
 import { DatabaseMigrationService } from '@/services/DatabaseMigrationService';
+import { executeSql } from '@/utils/supabaseUtils';
 
 /**
  * Hook providing administrative tools for Supabase management
@@ -23,7 +24,7 @@ export function useSupabaseAdminTools() {
     setIsLoading(true);
     try {
       // Use SQL query instead of type-checked builder
-      const { data, error } = await supabase.sql(`
+      const { data, error } = await executeSql(`
         SELECT table_name 
         FROM information_schema.tables 
         WHERE table_schema = 'public' 
@@ -62,7 +63,7 @@ export function useSupabaseAdminTools() {
     setIsLoading(true);
     try {
       // Use direct SQL queries
-      const { data: columns, error: columnsError } = await supabase.sql(`
+      const { data: columns, error: columnsError } = await executeSql(`
         SELECT column_name, data_type, is_nullable, column_default
         FROM information_schema.columns
         WHERE table_schema = 'public'
@@ -74,7 +75,7 @@ export function useSupabaseAdminTools() {
         throw columnsError;
       }
       
-      const { data: constraints, error: constraintsError } = await supabase.sql(`
+      const { data: constraints, error: constraintsError } = await executeSql(`
         SELECT constraint_name, constraint_type
         FROM information_schema.table_constraints
         WHERE table_schema = 'public'
@@ -118,7 +119,7 @@ export function useSupabaseAdminTools() {
   const getDatabaseHealth = async () => {
     try {
       // Use SQL query directly
-      const { data: tables, error: tablesError } = await supabase.sql(`
+      const { data: tables, error: tablesError } = await executeSql(`
         SELECT table_name
         FROM information_schema.tables
         WHERE table_schema = 'public'
@@ -129,7 +130,7 @@ export function useSupabaseAdminTools() {
       }
 
       // Get tables without timestamps
-      const { data: tablesWithTimestamps, error: timestampError } = await supabase.sql(`
+      const { data: tablesWithTimestamps, error: timestampError } = await executeSql(`
         SELECT DISTINCT table_name
         FROM information_schema.columns
         WHERE table_schema = 'public'
@@ -141,7 +142,7 @@ export function useSupabaseAdminTools() {
       }
 
       // Get tables without primary keys
-      const { data: tablesWithPK, error: pkError } = await supabase.sql(`
+      const { data: tablesWithPK, error: pkError } = await executeSql(`
         SELECT DISTINCT table_name
         FROM information_schema.table_constraints
         WHERE table_schema = 'public'
@@ -157,7 +158,7 @@ export function useSupabaseAdminTools() {
       if (tables) {
         for (const table of tables) {
           const tableName = table.table_name;
-          const { data: rlsData, error: rlsError } = await supabase.sql(`
+          const { data: rlsData, error: rlsError } = await executeSql(`
             SELECT relrowsecurity
             FROM pg_class
             WHERE relname = '${tableName}'
