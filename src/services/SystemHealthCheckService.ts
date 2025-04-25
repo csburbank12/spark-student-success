@@ -1,492 +1,579 @@
+
 import { supabase } from '@/integrations/supabase/client';
-import { ErrorLoggingService, ProfileType } from './ErrorLoggingService';
+import { ErrorLoggingService } from './ErrorLoggingService';
 import { toast } from 'sonner';
 
 interface HealthCheckResult {
-  component: string;
-  status: 'healthy' | 'degraded' | 'failing';
-  responseTime?: number;
-  details?: any;
-  timestamp: string;
-}
-
-export interface SystemHealthCheckResponse {
   success: boolean;
   errorCount: number;
-  checks: Array<{
-    name: string;
-    status: 'passed' | 'warning' | 'failed';
-    details?: any;
-  }>;
-  warnings?: string[];
+  checks: HealthCheck[];
   timestamp: string;
-  duration: number;
 }
 
-export interface SystemDiagnostics {
-  navigation: {
-    status: 'passed' | 'warning' | 'failed';
-    message?: string;
-    lastChecked?: string;
-    details?: Record<string, any>;
-  };
-  selModule: {
-    status: 'passed' | 'warning' | 'failed';
-    message?: string;
-    lastChecked?: string;
-    details?: Record<string, any>;
-  };
-  profileLayouts: {
-    status: 'passed' | 'warning' | 'failed';
-    message?: string;
-    lastChecked?: string;
-    details?: Record<string, any>;
-  };
-  database: {
-    status: 'passed' | 'warning' | 'failed';
-    message?: string;
-    lastChecked?: string;
-    details?: Record<string, any>;
-  };
-  wellLensAI: {
-    status: 'passed' | 'warning' | 'failed';
-    message?: string;
-    lastChecked?: string;
-    details?: Record<string, any>;
-  };
-  skywardSync: {
-    status: 'passed' | 'warning' | 'failed';
-    message?: string;
-    lastChecked?: string;
-    details?: Record<string, any>;
-  };
-  [key: string]: {
-    status: 'passed' | 'warning' | 'failed';
-    message?: string;
-    lastChecked?: string;
-    details?: Record<string, any>;
-  };
+interface HealthCheck {
+  name: string;
+  status: 'passed' | 'warning' | 'failed';
+  message?: string;
+  details?: any;
 }
 
 export class SystemHealthCheckService {
-  static async checkSystemHealth(): Promise<{
-    overallStatus: 'healthy' | 'degraded' | 'failing';
-    results: HealthCheckResult[];
-  }> {
-    try {
-      const checkPromises = [
-        this.checkDatabase(),
-        this.checkFrontend(),
-        this.checkAPI(),
-        this.checkStorage()
-      ];
-      
-      const results = await Promise.all(checkPromises);
-      
-      // Determine overall status
-      let overallStatus: 'healthy' | 'degraded' | 'failing' = 'healthy';
-      if (results.some(r => r.status === 'failing')) {
-        overallStatus = 'failing';
-      } else if (results.some(r => r.status === 'degraded')) {
-        overallStatus = 'degraded';
-      }
-      
-      return {
-        overallStatus,
-        results
-      };
-    } catch (error) {
-      console.error('Health check failed:', error);
-      return {
-        overallStatus: 'failing',
-        results: [{
-          component: 'health_check_system',
-          status: 'failing',
-          details: {
-            error: error instanceof Error ? error.message : String(error)
-          },
-          timestamp: new Date().toISOString()
-        }]
-      };
-    }
-  }
-  
-  static async checkDatabase(): Promise<HealthCheckResult> {
-    const start = Date.now();
-    try {
-      // Simple query to check database connectivity
-      const { data, error } = await supabase
-        .from('system_settings')
-        .select('setting_key')
-        .limit(1);
-        
-      const responseTime = Date.now() - start;
-      
-      if (error) {
-        ErrorLoggingService.logError({
-          action: 'health_check_database',
-          error_message: error.message,
-          profile_type: 'system' as ProfileType
-        });
-        
-        return {
-          component: 'database',
-          status: 'failing',
-          responseTime,
-          details: { error: error.message },
-          timestamp: new Date().toISOString()
-        };
-      }
-      
-      // If response time is too high, mark as degraded
-      const status = responseTime > 1000 ? 'degraded' : 'healthy';
-      
-      return {
-        component: 'database',
-        status,
-        responseTime,
-        details: { querySuccess: true },
-        timestamp: new Date().toISOString()
-      };
-    } catch (error) {
-      ErrorLoggingService.logError({
-        action: 'health_check_database',
-        error_message: error instanceof Error ? error.message : String(error),
-        profile_type: 'system' as ProfileType
-      });
-      
-      return {
-        component: 'database',
-        status: 'failing',
-        responseTime: Date.now() - start,
-        details: { error: error instanceof Error ? error.message : String(error) },
-        timestamp: new Date().toISOString()
-      };
-    }
-  }
-  
-  static async checkFrontend(): Promise<HealthCheckResult> {
-    // Check browser APIs and frontend performance
-    try {
-      // Simple memory check
-      const memory = (performance as any).memory?.usedJSHeapSize;
-      const memoryLimit = (performance as any).memory?.jsHeapSizeLimit;
-      
-      let status: 'healthy' | 'degraded' | 'failing' = 'healthy';
-      let memoryUsagePercentage = 0;
-      
-      if (memory && memoryLimit) {
-        memoryUsagePercentage = (memory / memoryLimit) * 100;
-        if (memoryUsagePercentage > 90) {
-          status = 'failing';
-        } else if (memoryUsagePercentage > 70) {
-          status = 'degraded';
-        }
-      }
-      
-      return {
-        component: 'frontend',
-        status,
-        details: {
-          memory: memory ? `${Math.round(memory / (1024 * 1024))} MB` : 'Not available',
-          memoryUsagePercentage: memoryUsagePercentage ? `${Math.round(memoryUsagePercentage)}%` : 'Not available'
-        },
-        timestamp: new Date().toISOString()
-      };
-    } catch (error) {
-      return {
-        component: 'frontend',
-        status: 'degraded',
-        details: { error: error instanceof Error ? error.message : String(error) },
-        timestamp: new Date().toISOString()
-      };
-    }
-  }
-  
-  static async checkAPI(): Promise<HealthCheckResult> {
-    // For demo purposes, we'll simulate an API check
-    return {
-      component: 'api',
-      status: 'healthy',
-      responseTime: 120,
-      details: { apiVersion: '1.0.0' },
-      timestamp: new Date().toISOString()
-    };
-  }
-  
-  static async checkStorage(): Promise<HealthCheckResult> {
-    try {
-      // Check browser storage availability
-      const localStorageAvailable = this.isLocalStorageAvailable();
-      const sessionStorageAvailable = this.isSessionStorageAvailable();
-      const indexedDBAvailable = this.isIndexedDBAvailable();
-      
-      const status: 'healthy' | 'degraded' | 'failing' = 
-        (!localStorageAvailable || !sessionStorageAvailable) ? 'degraded' : 'healthy';
-      
-      return {
-        component: 'storage',
-        status,
-        details: {
-          localStorage: localStorageAvailable ? 'available' : 'unavailable',
-          sessionStorage: sessionStorageAvailable ? 'available' : 'unavailable',
-          indexedDB: indexedDBAvailable ? 'available' : 'unavailable'
-        },
-        timestamp: new Date().toISOString()
-      };
-    } catch (error) {
-      return {
-        component: 'storage',
-        status: 'failing',
-        details: { error: error instanceof Error ? error.message : String(error) },
-        timestamp: new Date().toISOString()
-      };
-    }
-  }
-  
-  private static isLocalStorageAvailable(): boolean {
-    try {
-      localStorage.setItem('test', 'test');
-      localStorage.removeItem('test');
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-  
-  private static isSessionStorageAvailable(): boolean {
-    try {
-      sessionStorage.setItem('test', 'test');
-      sessionStorage.removeItem('test');
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-  
-  private static isIndexedDBAvailable(): boolean {
-    try {
-      return !!window.indexedDB;
-    } catch (e) {
-      return false;
-    }
+  static async initialize() {
+    console.log('System Health Check Service initialized');
+    // Run a quick health check on initialization
+    this.runQuickHealthCheck();
   }
 
-  static async runFullHealthCheck(): Promise<SystemHealthCheckResponse> {
-    const startTime = Date.now();
+  static async runQuickHealthCheck(): Promise<HealthCheckResult> {
+    console.log('Running quick health check...');
     
+    const checks: HealthCheck[] = [];
+    
+    // Check Supabase connection
     try {
-      // Perform various checks
-      const { overallStatus, results } = await this.checkSystemHealth();
-      
-      // Convert results to the expected format with proper type for status
-      const checks = results.map(result => ({
-        name: result.component,
-        status: result.status === 'healthy' 
-          ? 'passed' as const
-          : result.status === 'degraded' 
-            ? 'warning' as const
-            : 'failed' as const,
-        details: result.details
-      }));
-      
-      // Generate any warnings
-      const warnings = results
-        .filter(r => r.status === 'degraded')
-        .map(r => `${r.component}: ${r.details?.error || 'Degraded performance'}`);
-        
-      const errorCount = results.filter(r => r.status === 'failing').length;
-      
-      return {
-        success: overallStatus !== 'failing',
-        errorCount,
-        checks,
-        warnings: warnings.length ? warnings : undefined,
-        timestamp: new Date().toISOString(),
-        duration: Date.now() - startTime
-      };
+      const { data, error } = await supabase.from('system_settings').select('setting_key').limit(1);
+      if (error) {
+        checks.push({
+          name: 'database_connection',
+          status: 'failed',
+          message: 'Failed to connect to database',
+          details: error
+        });
+      } else {
+        checks.push({
+          name: 'database_connection',
+          status: 'passed',
+          message: 'Database connection successful'
+        });
+      }
     } catch (error) {
-      console.error('Full health check failed:', error);
-      return {
-        success: false,
-        errorCount: 1,
-        checks: [{
-          name: 'system_check',
-          status: 'failed' as const,
-          details: { error: error instanceof Error ? error.message : String(error) }
-        }],
-        timestamp: new Date().toISOString(),
-        duration: Date.now() - startTime
-      };
-    }
-  }
-  
-  static displayHealthCheckResult(result: SystemHealthCheckResponse): void {
-    if (result.success && result.errorCount === 0) {
-      toast.success('All systems operational', {
-        description: `${result.checks.length} checks completed successfully`
+      checks.push({
+        name: 'database_connection',
+        status: 'failed',
+        message: 'Failed to connect to database',
+        details: error
       });
-    } else if (result.warnings?.length && result.errorCount === 0) {
-      toast.warning(`${result.warnings.length} warnings detected`, {
-        description: result.warnings[0]
+    }
+    
+    // Check authentication status
+    try {
+      const { data } = await supabase.auth.getSession();
+      checks.push({
+        name: 'auth_service',
+        status: data.session ? 'passed' : 'warning',
+        message: data.session ? 'Authentication service is working' : 'No active session found'
+      });
+    } catch (error) {
+      checks.push({
+        name: 'auth_service',
+        status: 'failed',
+        message: 'Authentication service error',
+        details: error
+      });
+    }
+    
+    // Check for dead links
+    try {
+      const links = document.querySelectorAll('a');
+      let brokenLinks = 0;
+      links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && href !== '#' && !href.startsWith('http') && !document.querySelector(`[id="${href.replace('#', '')}"]`)) {
+          brokenLinks++;
+        }
+      });
+      
+      checks.push({
+        name: 'dead_links',
+        status: brokenLinks > 0 ? 'warning' : 'passed',
+        message: brokenLinks > 0 ? `${brokenLinks} potentially broken internal links found` : 'No broken internal links found'
+      });
+    } catch (error) {
+      checks.push({
+        name: 'dead_links',
+        status: 'warning',
+        message: 'Unable to check for dead links',
+        details: error
+      });
+    }
+    
+    const errorCount = checks.filter(check => check.status === 'failed').length;
+    const warningCount = checks.filter(check => check.status === 'warning').length;
+    
+    const result: HealthCheckResult = {
+      success: errorCount === 0,
+      errorCount: errorCount + warningCount,
+      checks,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Quick health check results:', result);
+    
+    return result;
+  }
+
+  static async runFullHealthCheck(): Promise<HealthCheckResult> {
+    console.log('Running full health check...');
+    
+    // Start with the quick check
+    const quickCheck = await this.runQuickHealthCheck();
+    const checks = [...quickCheck.checks];
+    
+    // Check RLS policies
+    try {
+      const { data: rlsData, error: rlsError } = await supabase.rpc('check_rls_enabled_all_tables');
+      
+      if (rlsError) {
+        checks.push({
+          name: 'row_level_security',
+          status: 'failed',
+          message: 'Failed to check row level security',
+          details: rlsError
+        });
+      } else {
+        const tablesWithoutRLS = Array.isArray(rlsData) ? rlsData.filter(table => !table.has_rls) : [];
+        
+        checks.push({
+          name: 'row_level_security',
+          status: tablesWithoutRLS.length > 0 ? 'warning' : 'passed',
+          message: tablesWithoutRLS.length > 0 
+            ? `${tablesWithoutRLS.length} tables found without RLS enabled` 
+            : 'All tables have RLS enabled',
+          details: tablesWithoutRLS
+        });
+      }
+    } catch (error) {
+      checks.push({
+        name: 'row_level_security',
+        status: 'warning',
+        message: 'Failed to check row level security',
+        details: error
+      });
+    }
+    
+    // Check for recurring errors
+    try {
+      const recurringErrors = await ErrorLoggingService.checkRecurringErrors('24h', 3);
+      
+      checks.push({
+        name: 'recurring_errors',
+        status: recurringErrors.length > 0 ? 'warning' : 'passed',
+        message: recurringErrors.length > 0 
+          ? `${recurringErrors.length} types of recurring errors found` 
+          : 'No recurring errors found',
+        details: recurringErrors
+      });
+    } catch (error) {
+      checks.push({
+        name: 'recurring_errors',
+        status: 'warning',
+        message: 'Failed to check for recurring errors',
+        details: error
+      });
+    }
+    
+    // Check client performance
+    try {
+      const performanceMetrics = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      const loadTime = performanceMetrics.loadEventEnd - performanceMetrics.navigationStart;
+      
+      checks.push({
+        name: 'page_load_time',
+        status: loadTime > 3000 ? 'warning' : 'passed',
+        message: `Page load time: ${Math.round(loadTime)}ms`,
+        details: {
+          loadTime,
+          domContentLoaded: performanceMetrics.domContentLoadedEventEnd - performanceMetrics.navigationStart,
+          firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime || 'N/A'
+        }
+      });
+    } catch (error) {
+      checks.push({
+        name: 'page_load_time',
+        status: 'warning',
+        message: 'Failed to check page load time',
+        details: error
+      });
+    }
+    
+    // Calculate final results
+    const errorCount = checks.filter(check => check.status === 'failed').length;
+    const warningCount = checks.filter(check => check.status === 'warning').length;
+    
+    const result: HealthCheckResult = {
+      success: errorCount === 0,
+      errorCount: errorCount + warningCount,
+      checks,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Full health check results:', result);
+    
+    // Save the results to error logs
+    try {
+      await ErrorLoggingService.logError({
+        action: 'system_health_check',
+        error_message: `Health check completed with ${errorCount} errors and ${warningCount} warnings`,
+        profile_type: 'system'
+      });
+    } catch (error) {
+      console.error('Failed to log health check results:', error);
+    }
+    
+    return result;
+  }
+
+  static async checkSecurity(): Promise<HealthCheckResult> {
+    console.log('Running security check...');
+    
+    const checks: HealthCheck[] = [];
+    
+    // Check for tables without RLS
+    try {
+      const { data: rlsData, error: rlsError } = await supabase.rpc('check_rls_enabled_all_tables');
+      
+      if (rlsError) {
+        checks.push({
+          name: 'rls_security',
+          status: 'failed',
+          message: 'Failed to check RLS security',
+          details: rlsError
+        });
+      } else {
+        const tablesWithoutRLS = Array.isArray(rlsData) ? rlsData.filter(table => !table.has_rls) : [];
+        
+        checks.push({
+          name: 'rls_security',
+          status: tablesWithoutRLS.length > 0 ? 'failed' : 'passed',
+          message: tablesWithoutRLS.length > 0 
+            ? `${tablesWithoutRLS.length} tables found without RLS enabled` 
+            : 'All tables have RLS enabled',
+          details: tablesWithoutRLS
+        });
+      }
+    } catch (error) {
+      checks.push({
+        name: 'rls_security',
+        status: 'failed',
+        message: 'Failed to check RLS security',
+        details: error
+      });
+    }
+    
+    // Check for public data exposure
+    try {
+      const { data: publicData, error: publicError } = await supabase
+        .from('user_roles')
+        .select('*')
+        .limit(1)
+        .single();
+      
+      checks.push({
+        name: 'public_data_exposure',
+        status: publicError ? 'passed' : 'failed',
+        message: publicError 
+          ? 'Protected data is properly secured' 
+          : 'Protected data might be publicly accessible',
+        details: publicError || publicData
+      });
+    } catch (error) {
+      checks.push({
+        name: 'public_data_exposure',
+        status: 'warning',
+        message: 'Failed to check for public data exposure',
+        details: error
+      });
+    }
+    
+    // Check for auth configuration
+    try {
+      const { data: authSettings, error: authError } = await supabase
+        .from('system_settings')
+        .select('*')
+        .eq('setting_key', 'auth_settings')
+        .single();
+      
+      checks.push({
+        name: 'auth_configuration',
+        status: authError ? 'warning' : 'passed',
+        message: authError 
+          ? 'Cannot verify auth configuration settings' 
+          : 'Auth configuration settings found',
+        details: authError || authSettings
+      });
+    } catch (error) {
+      checks.push({
+        name: 'auth_configuration',
+        status: 'warning',
+        message: 'Failed to check auth configuration',
+        details: error
+      });
+    }
+    
+    // Calculate final results
+    const errorCount = checks.filter(check => check.status === 'failed').length;
+    const warningCount = checks.filter(check => check.status === 'warning').length;
+    
+    const result: HealthCheckResult = {
+      success: errorCount === 0,
+      errorCount: errorCount + warningCount,
+      checks,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Security check results:', result);
+    
+    return result;
+  }
+
+  static async checkFerpaCompliance(): Promise<HealthCheckResult> {
+    console.log('Running FERPA compliance check...');
+    
+    const checks: HealthCheck[] = [];
+    
+    // Check for audit logging settings
+    try {
+      const { data: auditSettings, error: auditError } = await supabase
+        .from('system_settings')
+        .select('*')
+        .eq('setting_key', 'audit_logs_enabled')
+        .single();
+      
+      checks.push({
+        name: 'ferpa_audit_logging',
+        status: (auditError || !auditSettings || !auditSettings.setting_value) ? 'warning' : 'passed',
+        message: (auditError || !auditSettings || !auditSettings.setting_value)
+          ? 'FERPA audit logging may not be properly configured' 
+          : 'FERPA audit logging is enabled',
+        details: auditError || auditSettings
+      });
+    } catch (error) {
+      checks.push({
+        name: 'ferpa_audit_logging',
+        status: 'warning',
+        message: 'Failed to check FERPA audit logging configuration',
+        details: error
+      });
+    }
+    
+    // Check for data encryption
+    try {
+      const { data: encryptionSettings, error: encryptionError } = await supabase
+        .from('system_settings')
+        .select('*')
+        .eq('setting_key', 'encryption_enabled')
+        .single();
+      
+      checks.push({
+        name: 'data_encryption',
+        status: (encryptionError || !encryptionSettings || !encryptionSettings.setting_value) ? 'warning' : 'passed',
+        message: (encryptionError || !encryptionSettings || !encryptionSettings.setting_value)
+          ? 'Data encryption may not be properly configured' 
+          : 'Data encryption is enabled',
+        details: encryptionError || encryptionSettings
+      });
+    } catch (error) {
+      checks.push({
+        name: 'data_encryption',
+        status: 'warning',
+        message: 'Failed to check data encryption configuration',
+        details: error
+      });
+    }
+    
+    // Check access control policies
+    try {
+      const { data: policies, error: policiesError } = await supabase
+        .from('access_control_policies')
+        .select('*')
+        .limit(1);
+      
+      checks.push({
+        name: 'access_control_policies',
+        status: (policiesError || !policies || policies.length === 0) ? 'warning' : 'passed',
+        message: (policiesError || !policies || policies.length === 0)
+          ? 'Access control policies may not be properly configured' 
+          : 'Access control policies are configured',
+        details: policiesError || { policyCount: policies?.length }
+      });
+    } catch (error) {
+      // This table might not exist, which is fine
+      checks.push({
+        name: 'access_control_policies',
+        status: 'warning',
+        message: 'Could not verify access control policies',
+        details: error
+      });
+    }
+    
+    // Calculate final results
+    const errorCount = checks.filter(check => check.status === 'failed').length;
+    const warningCount = checks.filter(check => check.status === 'warning').length;
+    
+    const result: HealthCheckResult = {
+      success: errorCount === 0,
+      errorCount: errorCount + warningCount,
+      checks,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('FERPA compliance check results:', result);
+    
+    return result;
+  }
+
+  static async checkPermissions(): Promise<HealthCheckResult> {
+    console.log('Running permissions check...');
+    
+    const checks: HealthCheck[] = [];
+    
+    // Check for role assignments
+    try {
+      const { data: roles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('role, count(*)')
+        .group('role');
+      
+      if (rolesError) {
+        checks.push({
+          name: 'role_assignments',
+          status: 'failed',
+          message: 'Failed to check role assignments',
+          details: rolesError
+        });
+      } else {
+        checks.push({
+          name: 'role_assignments',
+          status: 'passed',
+          message: `Found ${roles?.length || 0} role types in the system`,
+          details: roles
+        });
+      }
+    } catch (error) {
+      checks.push({
+        name: 'role_assignments',
+        status: 'warning',
+        message: 'Failed to check role assignments',
+        details: error
+      });
+    }
+    
+    // Check admin access
+    try {
+      const { data: admins, error: adminsError } = await supabase
+        .from('user_roles')
+        .select('count(*)')
+        .eq('role', 'admin')
+        .single();
+      
+      if (adminsError) {
+        checks.push({
+          name: 'admin_access',
+          status: 'warning',
+          message: 'Failed to check admin access',
+          details: adminsError
+        });
+      } else {
+        const adminCount = admins?.count || 0;
+        checks.push({
+          name: 'admin_access',
+          status: adminCount > 0 ? 'passed' : 'warning',
+          message: adminCount > 0 
+            ? `${adminCount} admin users found` 
+            : 'No admin users found',
+          details: { adminCount }
+        });
+      }
+    } catch (error) {
+      checks.push({
+        name: 'admin_access',
+        status: 'warning',
+        message: 'Failed to check admin access',
+        details: error
+      });
+    }
+    
+    // Calculate final results
+    const errorCount = checks.filter(check => check.status === 'failed').length;
+    const warningCount = checks.filter(check => check.status === 'warning').length;
+    
+    const result: HealthCheckResult = {
+      success: errorCount === 0,
+      errorCount: errorCount + warningCount,
+      checks,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Permissions check results:', result);
+    
+    return result;
+  }
+
+  static async runPreDeployChecklist(): Promise<HealthCheckResult> {
+    console.log('Running pre-deploy checklist...');
+    
+    // Run all checks
+    const [securityCheck, ferpaCheck, permissionsCheck, fullHealthCheck] = await Promise.all([
+      this.checkSecurity(),
+      this.checkFerpaCompliance(),
+      this.checkPermissions(),
+      this.runFullHealthCheck()
+    ]);
+    
+    // Combine all checks
+    const allChecks = [
+      ...securityCheck.checks,
+      ...ferpaCheck.checks,
+      ...permissionsCheck.checks,
+      ...fullHealthCheck.checks
+    ];
+    
+    // Remove duplicate checks
+    const uniqueChecks = allChecks.filter((check, index, self) => 
+      index === self.findIndex(c => c.name === check.name)
+    );
+    
+    // Calculate final results
+    const errorCount = uniqueChecks.filter(check => check.status === 'failed').length;
+    const warningCount = uniqueChecks.filter(check => check.status === 'warning').length;
+    
+    const result: HealthCheckResult = {
+      success: errorCount === 0,
+      errorCount: errorCount + warningCount,
+      checks: uniqueChecks,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Pre-deploy checklist results:', result);
+    
+    // Log results for auditing
+    await ErrorLoggingService.logError({
+      action: 'pre_deploy_checklist',
+      error_message: `Pre-deploy checklist completed with ${errorCount} errors and ${warningCount} warnings`,
+      profile_type: 'system'
+    });
+    
+    return result;
+  }
+
+  static displayHealthCheckResult(result: HealthCheckResult) {
+    if (result.success) {
+      toast.success("✅ All systems operational", {
+        description: "No critical issues detected in health check"
       });
     } else {
-      toast.error(`${result.errorCount} critical issues detected`, {
-        description: `See monitoring dashboard for details`
-      });
-    }
-  }
-  
-  static async runPreDeployChecklist(): Promise<SystemHealthCheckResponse> {
-    const startTime = Date.now();
-    
-    try {
-      // For a pre-deploy check, we'll do more thorough testing
-      // In a real app, this would include testing routes, components, etc.
+      const errorCount = result.checks.filter(check => check.status === 'failed').length;
+      const warningCount = result.checks.filter(check => check.status === 'warning').length;
       
-      const { overallStatus, results } = await this.checkSystemHealth();
-      
-      // Additional pre-deploy specific checks
-      const additionalChecks = [
-        {
-          name: 'build_verification',
-          status: 'passed' as const,
-          details: { message: 'Build verification completed' }
-        },
-        {
-          name: 'dead_links',
-          status: 'passed' as const,
-          details: { message: 'No dead links detected' }
-        },
-        {
-          name: 'performance_metrics',
-          status: 'passed' as const,
-          details: { message: 'Performance metrics within acceptable range' }
-        }
-      ];
-      
-      // Convert health check results to the expected format
-      const healthChecks = results.map(result => ({
-        name: result.component,
-        status: result.status === 'healthy' 
-          ? 'passed' as const
-          : result.status === 'degraded' 
-            ? 'warning' as const
-            : 'failed' as const,
-        details: result.details
-      }));
-      
-      const allChecks = [...healthChecks, ...additionalChecks];
-      
-      const warnings = allChecks
-        .filter(check => check.status === 'warning')
-        .map(check => `${check.name}: ${check.details?.message || 'Warning detected'}`);
-        
-      const errorCount = allChecks.filter(check => check.status === 'failed').length;
-      
-      return {
-        success: errorCount === 0,
-        errorCount,
-        checks: allChecks,
-        warnings: warnings.length ? warnings : undefined,
-        timestamp: new Date().toISOString(),
-        duration: Date.now() - startTime
-      };
-    } catch (error) {
-      console.error('Pre-deploy checklist failed:', error);
-      return {
-        success: false,
-        errorCount: 1,
-        checks: [{
-          name: 'pre_deploy_check',
-          status: 'failed' as const,
-          details: { error: error instanceof Error ? error.message : String(error) }
-        }],
-        timestamp: new Date().toISOString(),
-        duration: Date.now() - startTime
-      };
-    }
-  }
-  
-  static async getLatestDiagnosticResults(): Promise<SystemDiagnostics> {
-    try {
-      // In a real application, this would fetch the latest diagnostic results from a database
-      // For demo purposes, we'll generate sample diagnostics
-      
-      return {
-        navigation: {
-          status: Math.random() > 0.8 ? 'warning' : 'passed',
-          message: 'Navigation system operational',
-          lastChecked: new Date().toISOString(),
-          details: { routesChecked: 42, componentsVerified: 18 }
-        },
-        selModule: {
-          status: Math.random() > 0.9 ? 'failed' : 'passed',
-          message: 'SEL module operational',
-          lastChecked: new Date().toISOString(),
-          details: { lessonsChecked: 124, connectionsVerified: 56 }
-        },
-        profileLayouts: {
-          status: 'passed',
-          message: 'Profile layouts verified',
-          lastChecked: new Date().toISOString(),
-          details: { layoutsChecked: 8, templatesVerified: 4 }
-        },
-        database: {
-          status: Math.random() > 0.7 ? 'warning' : 'passed',
-          message: 'Database connections stable',
-          lastChecked: new Date().toISOString(),
-          details: { tablesChecked: 28, queriesVerified: 15 }
-        },
-        wellLensAI: {
-          status: Math.random() > 0.85 ? 'failed' : 'passed',
-          message: 'AI systems operational',
-          lastChecked: new Date().toISOString(),
-          details: { modelsChecked: 3, predictionAccuracy: '94%' }
-        },
-        skywardSync: {
-          status: 'passed',
-          message: 'Skyward sync verified',
-          lastChecked: new Date().toISOString(),
-          details: { lastSyncTime: new Date(Date.now() - 3600000).toISOString(), recordsSynced: 1458 }
-        }
-      };
-    } catch (error) {
-      console.error('Failed to get diagnostic results:', error);
-      
-      // Return a default object with all systems in warning state
-      return {
-        navigation: {
-          status: 'warning',
-          message: 'Could not retrieve diagnostic data',
-          lastChecked: new Date().toISOString()
-        },
-        selModule: {
-          status: 'warning',
-          message: 'Could not retrieve diagnostic data',
-          lastChecked: new Date().toISOString()
-        },
-        profileLayouts: {
-          status: 'warning',
-          message: 'Could not retrieve diagnostic data',
-          lastChecked: new Date().toISOString()
-        },
-        database: {
-          status: 'warning',
-          message: 'Could not retrieve diagnostic data',
-          lastChecked: new Date().toISOString()
-        },
-        wellLensAI: {
-          status: 'warning',
-          message: 'Could not retrieve diagnostic data',
-          lastChecked: new Date().toISOString()
-        },
-        skywardSync: {
-          status: 'warning',
-          message: 'Could not retrieve diagnostic data',
-          lastChecked: new Date().toISOString()
-        }
-      };
+      if (errorCount > 0) {
+        toast.error("❌ Critical issues detected", {
+          description: `${errorCount} critical issues and ${warningCount} warnings found`
+        });
+      } else if (warningCount > 0) {
+        toast.warning("⚠️ Potential issues detected", {
+          description: `${warningCount} warnings found in health check`
+        });
+      }
     }
   }
 }

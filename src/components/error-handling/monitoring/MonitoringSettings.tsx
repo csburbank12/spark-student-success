@@ -1,54 +1,59 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Settings } from "lucide-react";
+import { Save } from "lucide-react";
 
 interface MonitoringSettingsProps {
-  configValues: any;
-  setConfigValues: (values: any) => void;
-  handleSaveConfig: () => void;
+  configValues: {
+    autoRepairEnabled: boolean;
+    notificationMethod: 'popup' | 'email' | 'both';
+    minSeverityToNotify: 'warning' | 'error' | 'critical';
+    heartbeatIntervalMinutes: number;
+  };
+  setConfigValues: React.Dispatch<React.SetStateAction<{
+    autoRepairEnabled: boolean;
+    notificationMethod: 'popup' | 'email' | 'both';
+    minSeverityToNotify: 'warning' | 'error' | 'critical';
+    heartbeatIntervalMinutes: number;
+  }>>;
+  handleSaveConfig: () => Promise<void>;
 }
 
-export const MonitoringSettings = ({ 
-  configValues, 
-  setConfigValues, 
-  handleSaveConfig 
-}: MonitoringSettingsProps) => {
+export const MonitoringSettings: React.FC<MonitoringSettingsProps> = ({
+  configValues,
+  setConfigValues,
+  handleSaveConfig
+}) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>System Monitoring Settings</CardTitle>
-        <CardDescription>
-          Configure how the monitoring system operates
-        </CardDescription>
+        <CardTitle>Monitoring Configuration</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
+      <CardContent className="space-y-6">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="auto-repair">Auto-Repair System</Label>
+            <div>
+              <h3 className="font-medium">Auto-Repair</h3>
               <p className="text-sm text-muted-foreground">
-                Automatically attempt to fix common errors
+                Automatically attempt to fix common system issues
               </p>
             </div>
             <Switch 
-              id="auto-repair" 
               checked={configValues.autoRepairEnabled}
-              onCheckedChange={(checked) => 
-                setConfigValues({...configValues, autoRepairEnabled: checked})
-              }
+              onCheckedChange={(checked) => setConfigValues({...configValues, autoRepairEnabled: checked})}
             />
           </div>
           
-          <div className="space-y-3">
-            <Label htmlFor="notification-method">Notification Method</Label>
+          <div className="space-y-2">
+            <Label>Notification Method</Label>
             <Select 
               value={configValues.notificationMethod}
-              onValueChange={(value: 'popup' | 'email' | 'slack' | 'all') => 
+              onValueChange={(value: 'popup' | 'email' | 'both') => 
                 setConfigValues({...configValues, notificationMethod: value})
               }
             >
@@ -56,19 +61,18 @@ export const MonitoringSettings = ({
                 <SelectValue placeholder="Select notification method" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="popup">In-app Popup</SelectItem>
+                <SelectItem value="popup">Browser Popup</SelectItem>
                 <SelectItem value="email">Email</SelectItem>
-                <SelectItem value="slack">Slack</SelectItem>
-                <SelectItem value="all">All Methods</SelectItem>
+                <SelectItem value="both">Both</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
-          <div className="space-y-3">
-            <Label htmlFor="min-severity">Minimum Severity to Notify</Label>
+          <div className="space-y-2">
+            <Label>Minimum Severity to Notify</Label>
             <Select 
               value={configValues.minSeverityToNotify}
-              onValueChange={(value: 'info' | 'warning' | 'error' | 'critical') => 
+              onValueChange={(value: 'warning' | 'error' | 'critical') => 
                 setConfigValues({...configValues, minSeverityToNotify: value})
               }
             >
@@ -76,42 +80,37 @@ export const MonitoringSettings = ({
                 <SelectValue placeholder="Select minimum severity" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="info">Info (All Messages)</SelectItem>
                 <SelectItem value="warning">Warning</SelectItem>
                 <SelectItem value="error">Error</SelectItem>
-                <SelectItem value="critical">Critical Only</SelectItem>
+                <SelectItem value="critical">Critical</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
-          <div className="space-y-3">
-            <Label htmlFor="heartbeat-interval">Heartbeat Check Interval (minutes)</Label>
-            <Select 
-              value={configValues.heartbeatIntervalMinutes.toString()}
-              onValueChange={(value) => 
-                setConfigValues({...configValues, heartbeatIntervalMinutes: parseInt(value)})
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select heartbeat interval" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0">Disabled</SelectItem>
-                <SelectItem value="5">Every 5 minutes</SelectItem>
-                <SelectItem value="10">Every 10 minutes</SelectItem>
-                <SelectItem value="15">Every 15 minutes</SelectItem>
-                <SelectItem value="30">Every 30 minutes</SelectItem>
-                <SelectItem value="60">Every hour</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="space-y-2">
+            <Label>Heartbeat Interval (minutes)</Label>
+            <Input 
+              type="number" 
+              min="1" 
+              max="60"
+              value={configValues.heartbeatIntervalMinutes}
+              onChange={(e) => setConfigValues({
+                ...configValues, 
+                heartbeatIntervalMinutes: parseInt(e.target.value) || 5
+              })}
+            />
+            <p className="text-xs text-muted-foreground">
+              How often the system performs a health check (1-60 minutes)
+            </p>
           </div>
-          
-          <Button onClick={handleSaveConfig}>
-            <Settings className="mr-2 h-4 w-4" />
-            Save Settings
-          </Button>
         </div>
       </CardContent>
+      <CardFooter>
+        <Button className="ml-auto" onClick={handleSaveConfig}>
+          <Save className="mr-2 h-4 w-4" />
+          Save Settings
+        </Button>
+      </CardFooter>
     </Card>
   );
 };

@@ -1,59 +1,110 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, AlertTriangle, XCircle } from "lucide-react";
 
 interface HealthCheckResultsProps {
-  healthCheckResult: any;
+  healthCheckResult: {
+    success: boolean;
+    errorCount: number;
+    checks: Array<{
+      name: string;
+      status: 'passed' | 'warning' | 'failed';
+      message?: string;
+    }>;
+    timestamp: string;
+  };
 }
 
-export const HealthCheckResults = ({ healthCheckResult }: HealthCheckResultsProps) => {
-  if (!healthCheckResult) return null;
+export const HealthCheckResults: React.FC<HealthCheckResultsProps> = ({
+  healthCheckResult
+}) => {
+  // Group checks by status
+  const passedChecks = healthCheckResult.checks.filter(check => check.status === 'passed');
+  const warningChecks = healthCheckResult.checks.filter(check => check.status === 'warning');
+  const failedChecks = healthCheckResult.checks.filter(check => check.status === 'failed');
+
+  const StatusIcon = ({ status }: { status: 'passed' | 'warning' | 'failed' }) => {
+    if (status === 'passed') {
+      return <CheckCircle className="h-5 w-5 text-green-500" />;
+    } else if (status === 'warning') {
+      return <AlertTriangle className="h-5 w-5 text-amber-500" />;
+    } else {
+      return <XCircle className="h-5 w-5 text-red-500" />;
+    }
+  };
+
+  const formatName = (name: string) => {
+    return name
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
   return (
-    <Card className="border-2 border-primary/10">
+    <Card>
       <CardHeader>
         <CardTitle>Health Check Results</CardTitle>
-        <CardDescription>
-          Completed in {healthCheckResult.duration}ms at {new Date(healthCheckResult.timestamp).toLocaleString()}
-        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          {healthCheckResult.checks && healthCheckResult.checks.map((check: any, index: number) => (
+      <CardContent className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-3 mb-4">
+          <div className="flex items-center space-x-2 bg-green-50 p-3 rounded-md">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            <div>
+              <p className="font-medium">Passed</p>
+              <p className="text-sm text-muted-foreground">{passedChecks.length} checks</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2 bg-amber-50 p-3 rounded-md">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <div>
+              <p className="font-medium">Warnings</p>
+              <p className="text-sm text-muted-foreground">{warningChecks.length} checks</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2 bg-red-50 p-3 rounded-md">
+            <XCircle className="h-5 w-5 text-red-500" />
+            <div>
+              <p className="font-medium">Failed</p>
+              <p className="text-sm text-muted-foreground">{failedChecks.length} checks</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Display all checks */}
+        <div className="space-y-4">
+          {healthCheckResult.checks.map((check, index) => (
             <div 
               key={index} 
-              className={`flex items-center justify-between p-2 rounded-md ${
-                check.status === 'passed' ? 'bg-green-500/10' : 
-                check.status === 'warning' ? 'bg-amber-500/10' : 
-                'bg-destructive/10'
+              className={`p-3 rounded-md ${
+                check.status === 'passed' ? 'bg-green-50' : 
+                check.status === 'warning' ? 'bg-amber-50' : 'bg-red-50'
               }`}
             >
-              <div className="flex items-center">
-                {check.status === 'passed' ? (
-                  <CheckCircle className="text-green-500 mr-2 h-4 w-4" />
-                ) : check.status === 'warning' ? (
-                  <AlertCircle className="text-amber-500 mr-2 h-4 w-4" />
-                ) : (
-                  <XCircle className="text-destructive mr-2 h-4 w-4" />
-                )}
-                <span className="font-medium">{check.name.replace(/_/g, ' ')}</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <StatusIcon status={check.status} />
+                  <p className="font-medium">{formatName(check.name)}</p>
+                </div>
+                <span className={`text-sm ${
+                  check.status === 'passed' ? 'text-green-700' : 
+                  check.status === 'warning' ? 'text-amber-700' : 'text-red-700'
+                }`}>
+                  {check.status.toUpperCase()}
+                </span>
               </div>
-              <span className="text-sm capitalize">{check.status}</span>
+              {check.message && (
+                <p className="text-sm mt-2 ml-7">{check.message}</p>
+              )}
             </div>
           ))}
         </div>
-        {'warnings' in healthCheckResult && healthCheckResult.warnings?.length > 0 && (
-          <div className="mt-4 p-3 bg-amber-500/10 rounded-md">
-            <h3 className="font-medium mb-1">Warnings</h3>
-            <ul className="text-sm space-y-1">
-              {healthCheckResult.warnings.map((warning: string, index: number) => (
-                <li key={index}>{warning}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+        
+        <div className="pt-4 text-sm text-center text-muted-foreground">
+          Health check performed at: {new Date(healthCheckResult.timestamp).toLocaleString()}
+        </div>
       </CardContent>
     </Card>
   );

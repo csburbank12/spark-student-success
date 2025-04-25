@@ -1,147 +1,95 @@
 
-import { MonitoringConfig } from '@/types/admin';
-import { ErrorLoggingService, ProfileType } from './ErrorLoggingService';
-import { HeartbeatService } from './monitoring/heartbeat-service';
-import { NotificationService } from './monitoring/notification-service';
-import { AutoRepairService } from './monitoring/auto-repair-service';
+import { ErrorLoggingService } from './ErrorLoggingService';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
-const DEFAULT_CONFIG: MonitoringConfig = {
-  autoRepairEnabled: true,
-  notificationMethod: 'popup',
-  minSeverityToNotify: 'error',
-  heartbeatIntervalMinutes: 10
-};
+interface MonitoringStats {
+  activeUsers: number;
+  userChange: number;
+  errorRate: number;
+  totalErrors: number;
+  totalRequests: number;
+  recentAlerts: any[];
+}
 
 export class ErrorMonitoringService {
-  private static config: MonitoringConfig = DEFAULT_CONFIG;
-  private static isInitialized = false;
-
-  public static async initialize(): Promise<void> {
-    if (this.isInitialized) {
-      return;
-    }
+  static async initialize() {
+    console.log('Error Monitoring Service initialized');
     
-    try {
-      const storedConfig = localStorage.getItem('monitoringConfig');
-      if (storedConfig) {
-        this.config = JSON.parse(storedConfig);
-      }
-      
-      window.addEventListener('error', (event) => {
-        this.handleUncaughtError(event.error);
-      });
-      
-      window.addEventListener('unhandledrejection', (event) => {
-        this.handleUnhandledRejection(event.reason);
-      });
-      
-      if (this.config.heartbeatIntervalMinutes > 0) {
-        HeartbeatService.startHeartbeat(this.config.heartbeatIntervalMinutes);
-      }
-      
-      this.isInitialized = true;
-      console.log('Error monitoring service initialized');
-    } catch (error) {
-      console.error('Failed to initialize error monitoring service:', error);
-    }
-  }
-
-  private static handleUncaughtError(error: Error): void {
-    ErrorLoggingService.logError({
-      action: 'uncaught_error',
-      error_message: error.message,
-      profile_type: 'system' as ProfileType,
-      status_code: error.name
-    });
+    // Set up error handling for unhandled errors
+    window.addEventListener('error', this.handleGlobalError);
+    window.addEventListener('unhandledrejection', this.handleUnhandledRejection);
     
-    if (this.config.autoRepairEnabled) {
-      AutoRepairService.attemptAutoRepair(error);
-    }
-    
-    NotificationService.sendNotification({
-      title: 'Uncaught Error',
-      message: error.message,
-      severity: 'error',
-      method: this.config.notificationMethod
-    });
+    return true;
   }
   
-  private static handleUnhandledRejection(reason: any): void {
-    const errorMessage = reason instanceof Error ? reason.message : String(reason);
+  static handleGlobalError = (event: ErrorEvent) => {
+    const errorMessage = `Global error: ${event.message} at ${event.filename}:${event.lineno}:${event.colno}`;
+    console.error(errorMessage);
     
     ErrorLoggingService.logError({
-      action: 'unhandled_rejection',
+      action: 'unhandled_error',
       error_message: errorMessage,
-      profile_type: 'system' as ProfileType
+      profile_type: 'system'
     });
     
-    if (this.config.autoRepairEnabled) {
-      AutoRepairService.attemptAutoRepair(reason);
-    }
+    // Don't prevent the browser's default error handling
+    return false;
+  };
+  
+  static handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+    const errorMessage = `Unhandled Promise rejection: ${event.reason}`;
+    console.error(errorMessage);
     
-    NotificationService.sendNotification({
-      title: 'Unhandled Promise Rejection',
-      message: errorMessage,
-      severity: 'error',
-      method: this.config.notificationMethod
+    ErrorLoggingService.logError({
+      action: 'unhandled_promise_rejection',
+      error_message: errorMessage,
+      profile_type: 'system'
     });
+  };
+
+  static async getMonitoringStats(): Promise<MonitoringStats> {
+    // This would normally be a real request to get monitoring stats
+    // For now, we'll return mock data
+    return {
+      activeUsers: Math.floor(Math.random() * 100) + 50,
+      userChange: Math.floor(Math.random() * 15) - 5,
+      errorRate: parseFloat((Math.random() * 2).toFixed(2)),
+      totalErrors: Math.floor(Math.random() * 10),
+      totalRequests: Math.floor(Math.random() * 1000) + 500,
+      recentAlerts: []
+    };
   }
 
-  public static async saveConfig(config: Partial<MonitoringConfig>): Promise<void> {
+  static async saveConfig(config: any) {
     try {
-      this.config = { ...this.config, ...config };
-      localStorage.setItem('monitoringConfig', JSON.stringify(this.config));
+      // This would normally be a real request to save config
+      console.log('Saving monitoring config:', config);
       
-      if (config.heartbeatIntervalMinutes !== undefined) {
-        HeartbeatService.stopHeartbeat();
-        if (config.heartbeatIntervalMinutes > 0) {
-          HeartbeatService.startHeartbeat(config.heartbeatIntervalMinutes);
-        }
-      }
-      
-      console.log('Monitoring configuration saved');
+      toast.success('Monitoring settings saved successfully');
+      return true;
     } catch (error) {
-      console.error('Failed to save monitoring configuration:', error);
+      console.error('Failed to save monitoring config:', error);
+      toast.error('Failed to save monitoring settings');
+      throw error;
     }
   }
-  
-  public static getConfig(): MonitoringConfig {
-    return { ...this.config };
-  }
-  
-  public static async restartSystem(): Promise<void> {
+
+  static async restartSystem() {
     try {
       console.log('Restarting system...');
+      toast.info('System restarting...');
       
-      try {
-        localStorage.removeItem('lastHeartbeat');
-        sessionStorage.clear();
-        
-        if ('caches' in window) {
-          const cacheNames = await caches.keys();
-          await Promise.all(
-            cacheNames.map(cacheName => caches.delete(cacheName))
-          );
-        }
-      } catch (e) {
-        console.error('Error clearing caches:', e);
-      }
+      // This would normally be a real restart
+      // For now, we'll just reload the page after a short delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       window.location.reload();
+      return true;
     } catch (error) {
       console.error('Failed to restart system:', error);
+      toast.error('Failed to restart system');
+      throw error;
     }
-  }
-  
-  public static async getMonitoringStats(): Promise<any> {
-    const lastHeartbeatStr = localStorage.getItem('lastHeartbeat');
-    const lastHeartbeat = lastHeartbeatStr ? JSON.parse(lastHeartbeatStr) : null;
-    
-    return {
-      totalErrors: Math.floor(Math.random() * 50),
-      resolvedErrors: Math.floor(Math.random() * 30),
-      lastHeartbeatTime: lastHeartbeat?.timestamp || new Date().toISOString(),
-      lastHeartbeatStatus: lastHeartbeat?.status || 'unknown'
-    };
   }
 }

@@ -1,110 +1,118 @@
 
 import React from 'react';
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle } from "lucide-react";
-import { ErrorLog } from '@/hooks/useErrorLogs';
-import { LogsPagination } from './LogsPagination';
+import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/ui/loader";
+import { CheckCircle, AlertCircle, HelpCircle } from "lucide-react";
 
-interface ErrorLogsSectionProps {
+interface ErrorLogsProps {
   isLoading: boolean;
-  filteredLogs: ErrorLog[];
+  filteredLogs: any[];
   toggleResolution: (id: string, resolved: boolean) => void;
   currentPage: number;
   currentLimit: number;
   onPageChange: (page: number) => void;
 }
 
-export const ErrorLogsSection = ({
+export const ErrorLogsSection: React.FC<ErrorLogsProps> = ({
   isLoading,
   filteredLogs,
   toggleResolution,
   currentPage,
   currentLimit,
   onPageChange
-}: ErrorLogsSectionProps) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
-  };
-
-  const getSeverityBadge = (message: string) => {
-    if (message.includes('critical') || message.includes('exception')) {
-      return <Badge variant="destructive">Critical</Badge>;
-    } else if (message.includes('warning')) {
-      return <Badge variant="warning">Warning</Badge>;
-    } else {
-      return <Badge>Info</Badge>;
-    }
-  };
-
+}) => {
   return (
-    <>
-      <div className="rounded-md border">
+    <Card>
+      <CardHeader>
+        <CardTitle>Error Logs</CardTitle>
+      </CardHeader>
+      <CardContent>
         {isLoading ? (
-          <div className="flex justify-center p-8">Loading error logs...</div>
-        ) : filteredLogs.length > 0 ? (
-          <div className="divide-y">
-            {filteredLogs.map((log) => (
-              <div key={log.id} className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
-                      {formatDate(log.timestamp)}
-                    </span>
-                    {getSeverityBadge(log.error_message)}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleResolution(log.id, !log.resolved)}
-                  >
-                    {log.resolved ? (
-                      <XCircle className="h-4 w-4 mr-2" />
-                    ) : (
-                      <CheckCircle2 className="h-4 w-4 mr-2" />
-                    )}
-                    {log.resolved ? 'Reopen' : 'Resolve'}
-                  </Button>
-                </div>
-                
-                <h3 className="font-medium mb-1">{log.action}</h3>
-                
-                <div className="space-y-2">
-                  <div className="text-sm">
-                    <span className="font-medium">Profile Type:</span>{' '}
-                    {log.profile_type || 'Unknown'}
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-medium">Error Message:</span>{' '}
-                    <div className="p-2 bg-muted/50 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap">
-                      {log.error_message}
-                    </div>
-                  </div>
-                  {log.status_code && (
-                    <div className="text-sm">
-                      <span className="font-medium">Status Code:</span>{' '}
-                      {log.status_code}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+          <div className="flex justify-center items-center h-64">
+            <Loader size="lg" />
           </div>
+        ) : filteredLogs && filteredLogs.length > 0 ? (
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Timestamp</TableHead>
+                  <TableHead>Profile Type</TableHead>
+                  <TableHead>Action</TableHead>
+                  <TableHead>Message</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredLogs.map((log) => (
+                  <TableRow key={log.id}>
+                    <TableCell className="font-mono text-xs">
+                      {new Date(log.timestamp).toLocaleString()}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{log.profile_type || 'unknown'}</Badge>
+                    </TableCell>
+                    <TableCell>{log.action}</TableCell>
+                    <TableCell className="max-w-md truncate">{log.error_message}</TableCell>
+                    <TableCell>
+                      {log.resolved ? (
+                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                          <CheckCircle className="mr-1 h-3 w-3" /> Resolved
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                          <AlertCircle className="mr-1 h-3 w-3" /> Open
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleResolution(log.id, !log.resolved)}
+                      >
+                        {log.resolved ? 'Reopen' : 'Resolve'}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            
+            <div className="flex items-center justify-between space-x-2 py-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onPageChange(Math.max(0, currentPage - 1))}
+                disabled={currentPage === 0}
+              >
+                Previous
+              </Button>
+              <div className="text-sm text-muted-foreground">
+                Page {currentPage + 1} of {Math.ceil(filteredLogs.length / currentLimit)}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={(currentPage + 1) * currentLimit >= filteredLogs.length}
+              >
+                Next
+              </Button>
+            </div>
+          </>
         ) : (
-          <div className="p-8 text-center text-muted-foreground">
-            No error logs found matching the current filters.
+          <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+            <HelpCircle className="h-8 w-8 mb-2" />
+            <h3 className="text-lg font-medium">No errors found</h3>
+            <p className="text-sm">The system looks healthy with no recorded errors.</p>
           </div>
         )}
-      </div>
-      {filteredLogs.length > 0 && (
-        <LogsPagination
-          currentPage={currentPage}
-          currentLimit={currentLimit}
-          totalItems={filteredLogs.length}
-          onPageChange={onPageChange}
-        />
-      )}
-    </>
+      </CardContent>
+    </Card>
   );
 };

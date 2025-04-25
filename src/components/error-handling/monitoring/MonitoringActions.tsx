@@ -1,38 +1,58 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { 
+  RefreshCcw, 
+  AlertTriangle, 
+  Database, 
+  RotateCcw,
+  DownloadCloud
+} from "lucide-react";
 
 interface MonitoringActionsProps {
-  handleRestartSystem: () => void;
+  handleRestartSystem: () => Promise<void>;
 }
 
-export const MonitoringActions = ({ handleRestartSystem }: MonitoringActionsProps) => {
+export const MonitoringActions: React.FC<MonitoringActionsProps> = ({
+  handleRestartSystem
+}) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Manual System Actions</CardTitle>
-        <CardDescription>
-          Perform manual maintenance and repair actions
-        </CardDescription>
+        <CardTitle>System Actions</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="p-4 border rounded-md">
-            <h3 className="font-medium mb-2">System Restart</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Completely restart the system. This will reload the application, clear caches,
-              and reestablish all connections.
-            </p>
-            <Button 
-              variant="destructive" 
-              onClick={handleRestartSystem}
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Restart System
-            </Button>
-          </div>
+      <CardContent className="space-y-6">
+        <Alert variant="warning">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Warning</AlertTitle>
+          <AlertDescription>
+            These actions can affect system performance and availability. 
+            Use with caution and only when necessary.
+          </AlertDescription>
+        </Alert>
+        
+        <div className="grid gap-4 md:grid-cols-2">
+          <Button variant="outline" onClick={handleRestartSystem} className="flex items-center">
+            <RefreshCcw className="mr-2 h-4 w-4" />
+            Restart System
+          </Button>
+          
+          <Button variant="outline" className="flex items-center">
+            <Database className="mr-2 h-4 w-4" />
+            Clear Cache
+          </Button>
+          
+          <Button variant="outline" className="flex items-center">
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Restore Defaults
+          </Button>
+          
+          <Button variant="outline" className="flex items-center">
+            <DownloadCloud className="mr-2 h-4 w-4" />
+            Export System Logs
+          </Button>
         </div>
       </CardContent>
     </Card>
