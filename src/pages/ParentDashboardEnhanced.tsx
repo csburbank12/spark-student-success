@@ -42,7 +42,7 @@ const ParentDashboardEnhanced = () => {
   return (
     <div className="space-y-6">
       <PageHeader 
-        title={`Welcome, ${user?.name?.split(" ")[0]}!`} 
+        title={`Welcome, ${user?.name?.split(" ")[0] || "Parent"}!`} 
         showBackButton={false}
       />
       

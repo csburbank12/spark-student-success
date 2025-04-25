@@ -1,90 +1,86 @@
 
-import React from "react";
+import React, { lazy } from "react";
+import { Routes, Route } from "react-router-dom";
+import Layout from "@/components/Layout";
 import { ProtectedRoute } from "./ProtectedRoute";
-import { UserRole } from "@/types/roles";
-import StudentDashboard from "@/pages/StudentDashboard";
-import StudentDashboardEnhanced from "@/pages/StudentDashboardEnhanced";
-import MentalHealthToolkit from "@/pages/MentalHealthToolkit";
-import DigitalJournal from "@/pages/DigitalJournal";
-import ResetRoom from "@/pages/ResetRoom";
-import CheckIn from "@/pages/CheckIn";
-import TrustedAdults from "@/pages/TrustedAdults";
-import PersonalizedSELPathways from "@/pages/PersonalizedSELPathways";
-import ThriveHub from "@/pages/ThriveHub";
 
-const studentRoutes = [
-  {
-    path: "/student-dashboard",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <StudentDashboard />
+// Lazy load student pages to improve initial load performance
+const StudentDashboard = lazy(() => import("@/pages/StudentDashboard"));
+const StudentDashboardEnhanced = lazy(() => import("@/pages/StudentDashboardEnhanced"));
+const SELPathways = lazy(() => import("@/pages/PersonalizedSELPathways"));
+const CheckIn = lazy(() => import("@/pages/CheckIn"));
+const MentalHealthToolkit = lazy(() => import("@/pages/MentalHealthToolkit"));
+const DigitalJournal = lazy(() => import("@/pages/DigitalJournal"));
+const ResetRoom = lazy(() => import("@/pages/ResetRoom"));
+const TrustedAdults = lazy(() => import("@/pages/TrustedAdults"));
+const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
+
+const studentRoutes = (
+  <Routes>
+    <Route path="/student-dashboard" element={
+      <ProtectedRoute allowedRoles={["student"]}>
+        <Layout>
+          <StudentDashboard />
+        </Layout>
       </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/student-dashboard-enhanced",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <StudentDashboardEnhanced />
+    } />
+    <Route path="/student-dashboard-enhanced" element={
+      <ProtectedRoute allowedRoles={["student"]}>
+        <Layout>
+          <StudentDashboardEnhanced />
+        </Layout>
       </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/mental-health-toolkit",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <MentalHealthToolkit />
+    } />
+    <Route path="/sel-pathways" element={
+      <ProtectedRoute allowedRoles={["student"]}>
+        <Layout>
+          <SELPathways />
+        </Layout>
       </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/digital-journal",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <DigitalJournal />
+    } />
+    <Route path="/check-in" element={
+      <ProtectedRoute allowedRoles={["student"]}>
+        <Layout>
+          <CheckIn />
+        </Layout>
       </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/reset-room",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <ResetRoom />
+    } />
+    <Route path="/mental-health-toolkit" element={
+      <ProtectedRoute allowedRoles={["student"]}>
+        <Layout>
+          <MentalHealthToolkit />
+        </Layout>
       </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/check-in",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <CheckIn />
+    } />
+    <Route path="/digital-journal" element={
+      <ProtectedRoute allowedRoles={["student"]}>
+        <Layout>
+          <DigitalJournal />
+        </Layout>
       </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/trusted-adults",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <TrustedAdults />
+    } />
+    <Route path="/reset-room" element={
+      <ProtectedRoute allowedRoles={["student"]}>
+        <Layout>
+          <ResetRoom />
+        </Layout>
       </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/sel-pathways",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <PersonalizedSELPathways />
+    } />
+    <Route path="/trusted-adults" element={
+      <ProtectedRoute allowedRoles={["student"]}>
+        <Layout>
+          <TrustedAdults />
+        </Layout>
       </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/thrive-hub",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <ThriveHub />
+    } />
+    <Route path="/profile" element={
+      <ProtectedRoute allowedRoles={["student"]}>
+        <Layout>
+          <UserProfile />
+        </Layout>
       </ProtectedRoute>
-    ),
-  },
-];
+    } />
+  </Routes>
+);
 
 export default studentRoutes;

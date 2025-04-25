@@ -34,9 +34,9 @@ export const useChildManagement = () => {
   const handleChildChange = (childId: string) => {
     setIsLoading(true);
     setSelectedChild(childId);
-    const selectedChild = mockParentDashboardData.children.find(child => child.id === childId);
-    if (selectedChild) {
-      toast.success(`Viewing ${selectedChild.name}'s information`);
+    const selectedChildData = mockParentDashboardData.children.find(child => child.id === childId);
+    if (selectedChildData) {
+      toast.success(`Viewing ${selectedChildData.name}'s information`);
     }
   };
 
