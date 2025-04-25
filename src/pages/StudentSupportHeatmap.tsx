@@ -1,20 +1,14 @@
-
 import React, { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { HeatmapGrid } from "@/components/student-support/HeatmapGrid";
-import { HeatmapFilters } from "@/components/student-support/HeatmapFilters";
-import { HeatmapStats } from "@/components/student-support/HeatmapStats";
-import { SelectView } from "@/components/student-support/SelectView";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
-import { Search, Filter } from "lucide-react";
 import { toast } from "sonner";
+import { HeatmapHeader } from "@/components/student-support/HeatmapHeader";
+import { HeatmapSearchAndFilter } from "@/components/student-support/HeatmapSearchAndFilter";
+import { HeatmapContent } from "@/components/student-support/HeatmapContent";
+import { HeatmapFilters } from "@/components/student-support/HeatmapFilters";
+import { HeatmapStats } from "@/components/student-support/HeatmapStats";
 
-// Define the Student type for the heatmap
+// Define the Student type
 type StudentStatus = "at_risk" | "concerning" | "stable";
 
 interface Student {
@@ -33,7 +27,6 @@ interface Student {
   currentInterventions: string[];
 }
 
-// We'll expand this with real data from Supabase
 const StudentSupportHeatmap = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,7 +36,7 @@ const StudentSupportHeatmap = () => {
   const [selectedRiskLevel, setSelectedRiskLevel] = useState<string>("all");
   const [isRealTimeEnabled, setIsRealTimeEnabled] = useState(true);
   
-  // Mock data - this would come from Supabase in a real implementation
+  // Mock data - this would come from your data source
   const mockData = useMemo<Student[]>(() => {
     return [
       {
@@ -226,27 +219,15 @@ const StudentSupportHeatmap = () => {
 
   const handleExportData = () => {
     toast.success("Exporting data...");
-    // Implementation would connect to a real export service
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-heading font-bold">Student Support Heatmap</h2>
-          <p className="text-muted-foreground">
-            Monitor student wellness across classes and grade levels
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={toggleRealTime}>
-            {isRealTimeEnabled ? "Disable" : "Enable"} Real-time
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleExportData}>
-            Export Data
-          </Button>
-        </div>
-      </div>
+      <HeatmapHeader 
+        isRealTimeEnabled={isRealTimeEnabled}
+        toggleRealTime={toggleRealTime}
+        handleExportData={handleExportData}
+      />
 
       <HeatmapStats 
         atRiskCount={statusCounts.at_risk}
@@ -255,105 +236,29 @@ const StudentSupportHeatmap = () => {
         totalCount={statusCounts.total}
       />
       
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search students..."
-            className="pl-8"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <SelectView 
-            view={selectedView} 
-            onViewChange={setSelectedView} 
-            availableGrades={availableGrades}
-            availableClasses={availableClasses}
-            selectedGrade={selectedGrade}
-            selectedClass={selectedClass}
-            onGradeChange={setSelectedGrade}
-            onClassChange={setSelectedClass}
-            userRole={user?.role as UserRole}
-          />
-        </div>
-      </div>
+      <HeatmapSearchAndFilter 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedView={selectedView}
+        setSelectedView={setSelectedView}
+        availableGrades={availableGrades}
+        availableClasses={availableClasses}
+        selectedGrade={selectedGrade}
+        selectedClass={selectedClass}
+        setSelectedGrade={setSelectedGrade}
+        setSelectedClass={setSelectedClass}
+        userRole={user?.role as UserRole}
+      />
 
       <HeatmapFilters 
         selectedRiskLevel={selectedRiskLevel}
         onRiskLevelChange={setSelectedRiskLevel}
       />
 
-      <Tabs defaultValue="grid">
-        <TabsList>
-          <TabsTrigger value="grid">Grid View</TabsTrigger>
-          <TabsTrigger value="list">List View</TabsTrigger>
-          <TabsTrigger value="insights">Insights</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="grid" className="pt-4">
-          <HeatmapGrid 
-            students={filteredData}
-            view={selectedView}
-          />
-        </TabsContent>
-        
-        <TabsContent value="list" className="pt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Student List</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {filteredData.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-4">No students match your search criteria</p>
-                ) : (
-                  filteredData.map((student) => (
-                    <div 
-                      key={student.id}
-                      className="flex items-center justify-between p-3 border rounded hover:bg-muted/30 cursor-pointer transition-all"
-                    >
-                      <div>
-                        <div className="font-medium">{student.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          Grade {student.grade}, {student.class}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={
-                          student.status === "at_risk" ? "bg-red-100 text-red-800 border-red-300" :
-                          student.status === "concerning" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
-                          "bg-green-100 text-green-800 border-green-300"
-                        }>
-                          {student.status === "at_risk" ? "At Risk" :
-                           student.status === "concerning" ? "Concerning" : "Stable"}
-                        </Badge>
-                        <Button size="sm">View</Button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="insights" className="pt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Insights & Analytics</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="py-8 text-center">
-                <p className="text-muted-foreground">
-                  AI-powered insights coming soon...
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <HeatmapContent 
+        filteredData={filteredData}
+        selectedView={selectedView}
+      />
     </div>
   );
 };
