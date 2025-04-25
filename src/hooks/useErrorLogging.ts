@@ -1,6 +1,6 @@
 
 import { useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
 import { ProfileType } from '@/services/ErrorLoggingService';

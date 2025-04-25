@@ -1,57 +1,63 @@
 
-export type ProfileType = 'student' | 'teacher' | 'admin' | 'parent' | 'staff' | 'unauthenticated' | 'unknown' | 'system' | 'counselor';
+import { supabase } from '@/integrations/supabase/client';
 
-export interface ErrorLogPayload {
-  action: string;
-  error_message: string;
-  profile_type: ProfileType;
-  status_code?: string;
-}
+export type ProfileType = 
+  | 'student' 
+  | 'teacher' 
+  | 'admin' 
+  | 'parent' 
+  | 'staff' 
+  | 'counselor' 
+  | 'unknown' 
+  | 'unauthenticated';
 
-// For now, this service just logs to console in development
-// In production, it would send to Supabase or another backend
 export class ErrorLoggingService {
-  static logError({ 
+  static async logError({ 
     action, 
     error_message, 
     profile_type,
     status_code 
-  }: ErrorLogPayload): void {
-    console.error(`[${profile_type}] ${action}: ${error_message}${status_code ? ` (${status_code})` : ''}`);
-    
-    // In a real application, this would send to a backend service
+  }: { 
+    action: string;
+    error_message: string;
+    profile_type: ProfileType;
+    status_code?: string;
+  }) {
     try {
-      // Mock implementation - would actually send to database in production
-      const logData = {
+      await supabase.from('error_logs').insert({
         action,
         error_message,
         profile_type,
-        status_code,
-        timestamp: new Date().toISOString()
-      };
-      
-      // Store in local storage for development purposes
-      const currentLogs = JSON.parse(localStorage.getItem('errorLogs') || '[]');
-      currentLogs.push(logData);
-      localStorage.setItem('errorLogs', JSON.stringify(currentLogs));
+        status_code
+      });
     } catch (error) {
       console.error('Failed to log error:', error);
     }
   }
   
-  static async markErrorResolved(errorId: string): Promise<void> {
-    console.log(`Marking error ${errorId} as resolved`);
-    // Implementation would update database record in production
+  static async markErrorResolved(errorId: string) {
+    try {
+      await supabase.from('error_logs')
+        .update({ resolved: true })
+        .eq('id', errorId);
+    } catch (error) {
+      console.error('Failed to update error status:', error);
+    }
   }
 
   static async checkRecurringErrors(timeframe: string = '24h', minOccurrences: number = 3): Promise<any[]> {
-    console.log(`Checking for recurring errors in last ${timeframe} with min ${minOccurrences} occurrences`);
-    // Implementation would query database in production
-    return [];
-  }
-
-  static initialize(): Promise<void> {
-    console.log("Error monitoring service initialized");
-    return Promise.resolve();
+    try {
+      const { data, error } = await supabase
+        .rpc('get_recurring_errors' as any, { 
+          p_timeframe: timeframe,
+          p_min_occurrences: minOccurrences
+        });
+        
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Failed to check recurring errors:', error);
+      return [];
+    }
   }
 }

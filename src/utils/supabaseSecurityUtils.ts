@@ -13,7 +13,8 @@ export async function callSecureFunction<T = any>(
   params: Record<string, any>
 ): Promise<T | null> {
   try {
-    const { data, error } = await supabase.rpc(functionName, params);
+    // Using any to bypass TypeScript strict checking for dynamic function calls
+    const { data, error } = await supabase.rpc(functionName as any, params);
     
     if (error) {
       console.error(`Error calling ${functionName}:`, error);
@@ -41,7 +42,7 @@ export async function verifyUserRole(role: string): Promise<boolean> {
     }
     
     const { data: roleData, error } = await supabase.rpc(
-      'has_role', 
+      'has_role' as any, 
       { 
         user_id: userData.user.id, 
         required_role: role 
@@ -67,7 +68,8 @@ export async function verifyUserRole(role: string): Promise<boolean> {
 export async function checkDatabaseSecurity() {
   try {
     // Check for tables missing RLS
-    const { data, error } = await supabase.rpc('check_rls_enabled_all_tables');
+    // Using any type to bypass TypeScript strict checking for RPC functions
+    const { data, error } = await supabase.rpc('check_rls_enabled_all_tables' as any);
     
     if (error) {
       console.error('Error checking RLS status:', error);

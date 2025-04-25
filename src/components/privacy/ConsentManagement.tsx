@@ -1,149 +1,168 @@
 
-import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
+import { Label } from "@/components/ui/label";
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
-type ConsentItem = {
+interface ConsentOption {
   id: string;
-  title: string;
+  label: string;
   description: string;
-  required: boolean;
-  checked: boolean;
-};
+  value: boolean;
+}
 
-export const ConsentManagement = () => {
+interface ConsentManagementProps {
+  studentId?: string;
+}
+
+export const ConsentManagement: React.FC<ConsentManagementProps> = ({ studentId }) => {
   const { user } = useAuth();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [consents, setConsents] = useState<ConsentItem[]>([
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [consentOptions, setConsentOptions] = useState<ConsentOption[]>([
     {
-      id: "data-collection",
-      title: "Educational Data Collection",
-      description: "Consent to collect academic performance, attendance, and behavioral data to provide educational services.",
-      required: true,
-      checked: true,
+      id: 'data_collection',
+      label: 'Data Collection',
+      description: 'Allow collection of mood data, academic progress, and behavioral metrics to improve student support',
+      value: true
     },
     {
-      id: "mental-health",
-      title: "Mental Health Monitoring",
-      description: "Allow monitoring of mood check-ins and emotional wellness data to provide support services.",
-      required: true,
-      checked: true,
+      id: 'third_party_sharing',
+      label: 'Third-party Sharing',
+      description: 'Allow limited data sharing with authorized educational service providers',
+      value: false
     },
     {
-      id: "parent-communication",
-      title: "Parent/Guardian Communication",
-      description: "Permission to share relevant educational data with authorized parents/guardians.",
-      required: true,
-      checked: true,
+      id: 'ai_processing',
+      label: 'AI Processing',
+      description: 'Allow AI analysis of student data to identify patterns and personalize support',
+      value: true
     },
     {
-      id: "intervention-sharing",
-      title: "Intervention Sharing",
-      description: "Allow sharing intervention data with relevant staff members who provide direct support.",
-      required: true,
-      checked: true,
-    },
-    {
-      id: "research",
-      title: "Anonymized Research",
-      description: "Permission to use anonymized data for educational research to improve services (no personally identifiable information will be shared).",
-      required: false,
-      checked: false,
-    },
-    {
-      id: "photos",
-      title: "Photo Usage",
-      description: "Allow photos/videos to be used within the platform for student recognition.",
-      required: false,
-      checked: false,
-    },
+      id: 'research',
+      label: 'Research Use',
+      description: 'Allow anonymized data to be used for educational research purposes',
+      value: false
+    }
   ]);
 
-  const handleConsentChange = (id: string, checked: boolean) => {
-    setConsents(consents.map(consent => 
-      consent.id === id ? { ...consent, checked } : consent
-    ));
-  };
-
-  const handleSubmit = async () => {
-    // Validate that all required consents are checked
-    const missingRequired = consents.filter(c => c.required && !c.checked);
+  useEffect(() => {
+    const fetchConsentSettings = async () => {
+      if (!user) return;
+      
+      try {
+        setIsLoading(true);
+        const targetId = studentId || user.id;
+        
+        const { data, error } = await supabase
+          .from('user_consent_settings')
+          .select('*')
+          .eq('user_id', targetId)
+          .maybeSingle();
+        
+        if (error) throw error;
+        
+        if (data) {
+          // Update consent options with saved values
+          setConsentOptions(prev => 
+            prev.map(option => ({
+              ...option,
+              value: data[option.id] ?? option.value
+            }))
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching consent settings:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    if (missingRequired.length > 0) {
-      toast.error("You must agree to all required consent items");
-      return;
-    }
+    fetchConsentSettings();
+  }, [user, studentId]);
 
-    setIsSubmitting(true);
+  const handleConsentChange = (id: string, checked: boolean) => {
+    setConsentOptions(options => 
+      options.map(option => 
+        option.id === id ? { ...option, value: checked } : option
+      )
+    );
+  };
 
+  const saveConsentSettings = async () => {
+    if (!user) return;
+    
     try {
-      // In a real implementation, this would save to a consents table in Supabase
-      // For now, we'll simulate this with a console log
-      console.log("Saving consents for user:", user?.id, consents);
+      setIsSaving(true);
+      const targetId = studentId || user.id;
       
-      // This would be the actual implementation:
-      // const { error } = await supabase
-      //   .from('user_consents')
-      //   .upsert(
-      //     consents.map(c => ({
-      //       user_id: user?.id,
-      //       consent_id: c.id,
-      //       consented: c.checked,
-      //       consented_at: new Date().toISOString()
-      //     }))
-      //   );
+      // Convert options array to object format for database
+      const settingsObject = consentOptions.reduce((acc, option) => {
+        return { ...acc, [option.id]: option.value };
+      }, { user_id: targetId });
       
-      // if (error) throw error;
-
-      toast.success("Your consent preferences have been saved");
+      const { error } = await supabase
+        .from('user_consent_settings')
+        .upsert(settingsObject, { onConflict: 'user_id' });
+      
+      if (error) throw error;
+      
+      toast.success('Consent settings saved successfully');
     } catch (error) {
-      console.error("Error saving consents:", error);
-      toast.error("Failed to save consent preferences");
+      console.error('Error saving consent settings:', error);
+      toast.error('Failed to save consent settings');
     } finally {
-      setIsSubmitting(false);
+      setIsSaving(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-6">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>FERPA Consent Management</CardTitle>
-        <CardDescription>
-          Manage how your educational data is collected and shared according to FERPA guidelines
-        </CardDescription>
+        <CardTitle>Data Consent Management</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {consents.map((consent) => (
-          <div key={consent.id} className="space-y-2">
-            <div className="flex items-center space-x-2">
+      <CardContent>
+        <div className="space-y-6">
+          {consentOptions.map(option => (
+            <div key={option.id} className="flex items-start space-x-3">
               <Checkbox 
-                id={`consent-${consent.id}`}
-                checked={consent.checked}
-                onCheckedChange={(checked) => handleConsentChange(consent.id, checked === true)}
-                disabled={consent.required}
+                id={option.id}
+                checked={option.value} 
+                onCheckedChange={(checked) => handleConsentChange(option.id, !!checked)}
               />
-              <label htmlFor={`consent-${consent.id}`} className="font-medium cursor-pointer">
-                {consent.title} {consent.required && <span className="text-destructive">*</span>}
-              </label>
+              <div>
+                <Label 
+                  htmlFor={option.id} 
+                  className="font-medium cursor-pointer"
+                >
+                  {option.label}
+                </Label>
+                <p className="text-sm text-muted-foreground mt-1">{option.description}</p>
+              </div>
             </div>
-            <p className="text-muted-foreground text-sm pl-6">{consent.description}</p>
-            <Separator className="my-2" />
+          ))}
+          
+          <div className="pt-4 flex justify-end">
+            <Button onClick={saveConsentSettings} disabled={isSaving}>
+              {isSaving ? 'Saving...' : 'Save Consent Settings'}
+            </Button>
           </div>
-        ))}
-        <p className="text-sm text-muted-foreground">
-          <span className="text-destructive">*</span> Required consents are necessary for providing essential educational services in compliance with FERPA.
-        </p>
+        </div>
       </CardContent>
-      <CardFooter>
-        <Button onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Save Consent Preferences"}
-        </Button>
-      </CardFooter>
     </Card>
   );
 };
+
+export default ConsentManagement;

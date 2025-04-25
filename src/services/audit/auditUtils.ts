@@ -1,5 +1,5 @@
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { RouteCheckResult, ComponentCheckResult } from './types';
 
 export async function checkRouteExists(route: string): Promise<{exists: boolean, status?: number}> {

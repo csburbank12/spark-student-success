@@ -1,111 +1,152 @@
 
-import { supabase } from '@/lib/supabase';
-import { ErrorLoggingService } from './ErrorLoggingService';
-import { AuditOptions, AuditResult } from './audit/types';
-import { RouteAuditService } from './audit/RouteAuditService';
-import { ComponentAuditService } from './audit/ComponentAuditService';
-import { logAuditCompletion } from './audit/auditUtils';
-import type { ProfileType } from '@/services/ErrorLoggingService';
+import { supabase } from '@/integrations/supabase/client';
+import { checkRouteExists, checkComponentExists, logAuditCompletion } from './audit/auditUtils';
+
+interface AuditOptions {
+  checkAllRoles: boolean;
+  checkRoutes: boolean;
+  checkComponents: boolean;
+  logErrors: boolean;
+  currentUserOnly: boolean;
+}
+
+interface AuditResult {
+  success: boolean;
+  errorCount: number;
+  routeResults?: any[];
+  componentResults?: any[];
+  databaseResults?: any;
+  date: string;
+}
 
 export class PlatformAuditService {
-  static isAuditInProgress = false;
+  static async initialize() {
+    console.log('Platform Audit Service initialized');
+    // Any initialization code would go here
+  }
 
-  static async performAudit(options: AuditOptions = {}): Promise<AuditResult> {
-    const {
-      checkAllRoles = true,
-      checkRoutes = true,
-      checkComponents = true,
-      logErrors = true,
-      currentUserOnly = false
-    } = options;
-
-    if (this.isAuditInProgress) {
-      throw new Error('An audit is already in progress');
-    }
-
-    this.isAuditInProgress = true;
-
-    const auditResult: AuditResult = {
+  static async performAudit(options: AuditOptions): Promise<AuditResult> {
+    const startTime = Date.now();
+    const results: AuditResult = {
       success: true,
-      totalChecked: 0,
       errorCount: 0,
-      details: {
-        roleChecks: [],
-        routeChecks: [],
-        componentChecks: []
-      }
+      date: new Date().toISOString(),
     };
 
     try {
-      // Get the current user
-      const { data: sessionData } = await supabase.auth.getSession();
-      const user = sessionData.session?.user;
-
-      if (!user) {
-        throw new Error('No authenticated user found');
+      // Audit routes if requested
+      if (options.checkRoutes) {
+        const routes = await this.getRoutes();
+        const routeResults = [];
+        
+        for (const route of routes) {
+          try {
+            const checkResult = await checkRouteExists(route);
+            if (!checkResult.exists) {
+              results.errorCount++;
+              results.success = false;
+            }
+            routeResults.push({
+              route,
+              ...checkResult
+            });
+          } catch (error) {
+            results.errorCount++;
+            results.success = false;
+            routeResults.push({
+              route,
+              exists: false,
+              error: error instanceof Error ? error.message : String(error)
+            });
+          }
+        }
+        
+        results.routeResults = routeResults;
       }
-
-      // Get user role
-      const { data: userData } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .single();
-
-      const currentRole = userData?.role as string;
-      const currentRoleAsProfileType = currentRole.toLowerCase() as ProfileType;
-
-      // Perform route audits if requested
-      if (checkRoutes) {
-        const routeResults = await RouteAuditService.auditRoutes(
-          currentRole,
-          logErrors,
-          currentUserOnly,
-          currentRoleAsProfileType
-        );
-        auditResult.details.routeChecks = routeResults;
-        auditResult.totalChecked += routeResults.length;
-        auditResult.errorCount += routeResults.filter(r => r.status === 'error').length;
+      
+      // Audit components if requested
+      if (options.checkComponents) {
+        const components = await this.getComponents();
+        const componentResults = [];
+        
+        for (const component of components) {
+          try {
+            const exists = await checkComponentExists(component);
+            if (!exists) {
+              results.errorCount++;
+              results.success = false;
+            }
+            componentResults.push({
+              componentName: component,
+              exists
+            });
+          } catch (error) {
+            results.errorCount++;
+            results.success = false;
+            componentResults.push({
+              componentName: component,
+              exists: false,
+              error: error instanceof Error ? error.message : String(error)
+            });
+          }
+        }
+        
+        results.componentResults = componentResults;
       }
-
-      // Perform component audits if requested
-      if (checkComponents) {
-        const componentResults = await ComponentAuditService.auditComponents(
-          logErrors,
-          currentRoleAsProfileType
-        );
-        auditResult.details.componentChecks = componentResults;
-        auditResult.totalChecked += componentResults.length;
-        auditResult.errorCount += componentResults.filter(c => c.status === 'error').length;
+      
+      // Log audit completion if requested
+      if (options.logErrors) {
+        const { data: user } = await supabase.auth.getUser();
+        if (user?.user?.id) {
+          await logAuditCompletion(
+            user.user.id,
+            results.success,
+            results.errorCount,
+            {
+              routeResults: results.routeResults,
+              componentResults: results.componentResults,
+              databaseResults: results.databaseResults,
+              duration: Date.now() - startTime
+            }
+          );
+        }
       }
-
-      // Log audit completion
-      await logAuditCompletion(
-        user.id,
-        auditResult.success,
-        auditResult.errorCount,
-        auditResult.details
-      );
-
-      return auditResult;
-
+      
+      return results;
     } catch (error) {
       console.error('Audit failed:', error);
-      auditResult.success = false;
-      auditResult.errorCount++;
-      
-      await ErrorLoggingService.logError({
-        action: 'platform_audit',
-        error_message: error instanceof Error 
-          ? error.message 
-          : 'Unknown error during platform audit',
-        profile_type: 'system'
-      });
-      
-      return auditResult;
-
-    } finally {
-      this.isAuditInProgress = false;
+      results.success = false;
+      results.errorCount++;
+      return results;
     }
+  }
+
+  private static async getRoutes(): Promise<string[]> {
+    // In a real implementation, this would dynamically get routes from the app
+    return [
+      '/',
+      '/login',
+      '/dashboard',
+      '/admin-dashboard',
+      '/teacher-dashboard-enhanced',
+      '/student-dashboard-enhanced',
+      '/parent-dashboard-enhanced',
+      '/onboarding/teacher',
+      '/onboarding/student',
+      '/onboarding/parent',
+    ];
+  }
+
+  private static async getComponents(): Promise<string[]> {
+    // In a real implementation, this would dynamically get components from the app
+    return [
+      'Layout',
+      'AppShell',
+      'Navbar',
+      'Sidebar',
+      'DashboardSelector',
+      'LoginForm',
+      'OnboardingFlow',
+    ];
   }
 }
