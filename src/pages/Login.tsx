@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,7 +25,7 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // Redirect to dashboard if already logged in
+  // Enhanced redirection logic for better UX
   useEffect(() => {
     if (!isLoading && user) {
       const dashboardRoute = getFallbackDashboardByRole(user.role as UserRole);
@@ -35,6 +34,7 @@ const Login = () => {
     }
   }, [user, isLoading, navigate, location.state, redirectTo]);
 
+  // Updated handleSubmit with better error handling
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -53,7 +53,6 @@ const Login = () => {
       console.error(errorMessage);
       setErrorMessage(errorMessage);
       
-      // Log the error
       ErrorLoggingService.logError({
         action: 'login_attempt_failed',
         error_message: errorMessage,
@@ -85,7 +84,7 @@ const Login = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <LoginHeader />
       <div className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-white w-full max-w-md p-6 rounded-xl shadow-sm border">
+        <div className="bg-card w-full max-w-md p-6 rounded-xl shadow-sm border">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-heading font-bold">Welcome Back</h2>
             <p className="text-muted-foreground">

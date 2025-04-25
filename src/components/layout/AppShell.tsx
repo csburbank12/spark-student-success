@@ -8,35 +8,23 @@ import Sidebar from './Sidebar';
 import { Navbar } from './Navbar';
 import { useLocation, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
-import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
+import { isPublicPath } from '@/utils/navigationUtils';
 
-interface AppShellProps {
-  children: React.ReactNode;
-}
-
-// Use memo to prevent unnecessary re-renders
 const MemoizedSidebar = memo(Sidebar);
 
-export const AppShell: React.FC<AppShellProps> = ({ children }) => {
+export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const { isLoading, user } = useAuth();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
-  // Determine if we're on a public page that doesn't need the full shell
-  const isPublicPage = location.pathname === '/login' || 
-                      location.pathname === '/signup' ||
-                      location.pathname === '/404' ||
-                      location.pathname === '/privacy-policy' ||
-                      location.pathname === '/terms' ||
-                      location.pathname === '/help' ||
-                      location.pathname.includes('/auth/');
+  const isPublicPage = isPublicPath(location.pathname);
 
-  // Public pages use simplified layout
+  // Use simplified layout for public pages
   if (isPublicPage) {
     return <ThemeProvider>{children}</ThemeProvider>;
   }
   
-  // For authenticated pages, ensure the user is logged in - immediate redirect
+  // Handle auth redirection
   if (!isLoading && !user) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
@@ -56,11 +44,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               <footer className="border-t py-4 px-6 bg-card">
                 <div className="container flex flex-col md:flex-row justify-between items-center gap-2">
                   <div className="text-sm text-muted-foreground">
-                    © {new Date().getFullYear()} Student Success Platform. All rights reserved.
+                    © {new Date().getFullYear()} Student Success Platform
                   </div>
                   <div className="flex gap-4 text-sm">
                     <a href="/help" className="text-muted-foreground hover:text-foreground">Help</a>
-                    <a href="/privacy-policy" className="text-muted-foreground hover:text-foreground">Privacy Policy</a>
+                    <a href="/privacy-policy" className="text-muted-foreground hover:text-foreground">Privacy</a>
                     <a href="/terms" className="text-muted-foreground hover:text-foreground">Terms</a>
                   </div>
                 </div>
