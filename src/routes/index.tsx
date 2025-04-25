@@ -1,3 +1,4 @@
+
 import { lazy, Suspense, ReactNode } from "react";
 import Layout from "@/components/Layout";
 import adminRoutes from "./adminRoutes";
@@ -37,7 +38,7 @@ const SuspenseWrapper = ({ children }: { children: ReactNode }) => (
   </Suspense>
 );
 
-// Create wrapped component with error boundary
+// Create wrapped component with error boundary AND consistent layout for all routes
 const createProtectedRoute = (Component: React.ComponentType, name: string) => (
   <GlobalErrorBoundary component={name} fallback={<FallbackErrorPage />}>
     <SuspenseWrapper>
@@ -123,10 +124,13 @@ export const routes = [
   ...privacyRoutes
 ];
 
-// Add all the remaining routes
+// Make sure ALL routes use the protected route wrapper with layout
 export const allRoutes = [
   ...routes,
-  ...generalRoutes,
+  ...generalRoutes.map(route => ({
+    ...route,
+    element: typeof route.element === 'object' ? route.element : createProtectedRoute(() => route.element, route.path)
+  })),
   ...adminRoutes,
   ...teacherAdminRoutes,
   ...studentRoutes,

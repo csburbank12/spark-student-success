@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { UserCheck, Sparkles, CheckCircle, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -286,5 +286,18 @@ const TestStatusBadge = ({ status }: { status: string }) => {
     </Badge>
   );
 };
+
+export function renderTestStatus(status: string) {
+  switch (status) {
+    case 'pass':
+      return <Badge variant="success">Pass</Badge>;
+    case 'fail':
+      return <Badge variant="destructive">Fail</Badge>;
+    case 'skip':
+      return <Badge variant="outline">Skip</Badge>;
+    default:
+      return <Badge variant="secondary">Unknown</Badge>;
+  }
+}
 
 export default QATestUtility;

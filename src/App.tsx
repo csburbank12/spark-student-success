@@ -66,6 +66,7 @@ function App() {
   return (
     <GlobalErrorBoundary component="AppRoot">
       <Routes>
+        {/* Use the allRoutes array which has consistent layout applied */}
         {allRoutes.map((route) => (
           <Route
             key={route.path}

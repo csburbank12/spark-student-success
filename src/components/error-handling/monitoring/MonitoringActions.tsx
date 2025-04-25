@@ -24,7 +24,7 @@ export const MonitoringActions: React.FC<MonitoringActionsProps> = ({
         <CardTitle>System Actions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <Alert>
+        <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Warning</AlertTitle>
           <AlertDescription>
