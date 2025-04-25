@@ -17,11 +17,6 @@ export const studentRoutes = [
     icon: LayoutDashboard,
   },
   {
-    name: "Enhanced Dashboard",
-    href: "/student-dashboard-enhanced",
-    icon: BarChartBig,
-  },
-  {
     name: "SEL Pathways",
     href: "/sel-pathways",
     icon: Target,

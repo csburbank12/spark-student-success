@@ -1,4 +1,3 @@
-
 import React, { lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -7,7 +6,6 @@ import { UserRole } from "@/types/roles";
 
 // Lazy load student pages to improve initial load performance
 const StudentDashboard = lazy(() => import("@/pages/StudentDashboard"));
-const StudentDashboardEnhanced = lazy(() => import("@/pages/StudentDashboardEnhanced"));
 const SELPathways = lazy(() => import("@/pages/PersonalizedSELPathways"));
 const CheckIn = lazy(() => import("@/pages/CheckIn"));
 const MentalHealthToolkit = lazy(() => import("@/pages/MentalHealthToolkit"));
@@ -33,7 +31,7 @@ const studentRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
-          <StudentDashboardEnhanced />
+          <StudentDashboard />
         </Layout>
       </ProtectedRoute>
     )

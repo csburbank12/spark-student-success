@@ -1,7 +1,6 @@
 
 import {
   LayoutDashboard,
-  BarChartBig,
   Activity,
   Heart,
   MessageSquare,
@@ -17,11 +16,6 @@ export const parentRoutes = [
     name: "Dashboard",
     href: "/parent-dashboard",
     icon: LayoutDashboard,
-  },
-  {
-    name: "Enhanced Dashboard",
-    href: "/parent-dashboard-enhanced",
-    icon: BarChartBig,
   },
   {
     name: "Child Activity",

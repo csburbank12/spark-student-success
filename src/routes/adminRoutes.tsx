@@ -1,9 +1,7 @@
-
 import React from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
 import AdminDashboard from "@/pages/AdminDashboard";
-import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
 import UserManagement from "@/pages/admin/UserManagement";
 import DataAnalytics from "@/pages/admin/DataAnalytics";
 import SchoolManagement from "@/pages/admin/SchoolManagement";
@@ -31,7 +29,7 @@ const adminRoutes = [
     path: "/admin-dashboard",
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <AdminDashboardEnhanced />
+        <AdminDashboard />
       </ProtectedRoute>
     ),
   },
