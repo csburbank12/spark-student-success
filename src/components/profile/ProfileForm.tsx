@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,9 +28,17 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   onCancel,
   isSubmitting = false
 }) => {
-  const handleAvatarUpload = (url: string) => {
+  const handleAvatarUpload = useCallback((url: string) => {
     setFormData(prev => ({ ...prev, avatarUrl: url }));
-  };
+  }, [setFormData]);
+
+  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, name: e.target.value }));
+  }, [setFormData]);
+
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, email: e.target.value }));
+  }, [setFormData]);
 
   return (
     <form onSubmit={onSubmit} className="space-y-6 max-w-2xl mx-auto">
@@ -45,7 +53,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
         <Input
           id="name"
           value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          onChange={handleNameChange}
           disabled={isSubmitting}
         />
       </div>
@@ -56,7 +64,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           id="email"
           type="email"
           value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          onChange={handleEmailChange}
           disabled={isSubmitting || true}
         />
       </div>

@@ -1,27 +1,30 @@
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import PageHeader from "@/components/layout/PageHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import NotificationPreferences from "@/components/profile/NotificationPreferences";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const UserProfile: React.FC = () => {
+  const { user } = useAuth();
+  
   const [formData, setFormData] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatarUrl: "",
+    name: user?.name || "John Doe",
+    email: user?.email || "john.doe@example.com",
+    avatarUrl: user?.avatar_url || "",
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) throw new Error('No user found');
 
       const { error } = await supabase
         .from('profiles')
@@ -30,7 +33,7 @@ const UserProfile: React.FC = () => {
           last_name: formData.name.split(' ').slice(1).join(' '),
           avatar_url: formData.avatarUrl
         })
-        .eq('id', user.id);
+        .eq('id', currentUser.id);
 
       if (error) throw error;
       
@@ -41,16 +44,16 @@ const UserProfile: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [formData]);
   
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setFormData({
-      name: "John Doe",
-      email: "john.doe@example.com",
-      avatarUrl: "",
+      name: user?.name || "John Doe",
+      email: user?.email || "john.doe@example.com",
+      avatarUrl: user?.avatar_url || "",
     });
     toast.info("Changes cancelled");
-  };
+  }, [user]);
 
   return (
     <div className="space-y-8">

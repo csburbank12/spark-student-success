@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,10 +31,10 @@ export const MoodTracker = ({ onSubmit }: MoodTrackerProps) => {
   const addMoodCheckIn = useAddMoodCheckIn();
   const [activeSelector, setActiveSelector] = useState<"color"|"emoji"|"musicGif">("emoji");
 
-  // Unified handler
-  const handleMoodSelect = (value: string, tag: string) => {
+  // Unified handler with useCallback to prevent unnecessary recreations
+  const handleMoodSelect = useCallback((value: string, tag: string) => {
     setMoodSelection({ type: activeSelector, value, tag });
-  };
+  }, [activeSelector]);
 
   // Helper to map tags to valid mood type
   const validMoodTypes = ["happy", "good", "okay", "sad", "stressed"] as const;
@@ -52,6 +52,7 @@ export const MoodTracker = ({ onSubmit }: MoodTrackerProps) => {
       toast.error("User not authenticated");
       return;
     }
+    
     addMoodCheckIn.mutate(
       {
         userId: user.id,
@@ -162,3 +163,5 @@ export const MoodTracker = ({ onSubmit }: MoodTrackerProps) => {
     </Card>
   );
 };
+
+export default MoodTracker;

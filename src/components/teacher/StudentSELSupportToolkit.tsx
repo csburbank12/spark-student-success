@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, MessageCircle, Calendar, UserPlus } from "lucide-react";
+import { BookOpen, MessageCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
@@ -136,7 +136,7 @@ export const StudentSELSupportToolkit: React.FC<StudentSELSupportToolkitProps> =
             className="justify-start"
             onClick={handleScheduleCheckIn}
           >
-            <Calendar className="h-4 w-4 mr-2" />
+            <MessageCircle className="h-4 w-4 mr-2" />
             Schedule Check-In
           </Button>
           <Button 
@@ -153,3 +153,5 @@ export const StudentSELSupportToolkit: React.FC<StudentSELSupportToolkitProps> =
     </Card>
   );
 };
+
+export default StudentSELSupportToolkit;

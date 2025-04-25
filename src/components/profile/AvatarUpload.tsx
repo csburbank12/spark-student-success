@@ -23,11 +23,11 @@ export const AvatarUpload = ({ currentUrl, onUploadComplete, fallback }: AvatarU
         return;
       }
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const fileExt = file.name.split('.').pop() || '';
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = fileName;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('profile-pictures')
         .upload(filePath, file);
 
@@ -50,7 +50,7 @@ export const AvatarUpload = ({ currentUrl, onUploadComplete, fallback }: AvatarU
   return (
     <div className="flex flex-col items-center gap-4">
       <Avatar className="h-24 w-24">
-        <AvatarImage src={currentUrl || undefined} />
+        <AvatarImage src={currentUrl || undefined} alt="Profile" />
         <AvatarFallback>{fallback}</AvatarFallback>
       </Avatar>
       
@@ -63,6 +63,7 @@ export const AvatarUpload = ({ currentUrl, onUploadComplete, fallback }: AvatarU
             className="hidden"
             accept="image/*"
             onChange={handleUpload}
+            aria-label="Upload profile picture"
           />
         </label>
       </Button>

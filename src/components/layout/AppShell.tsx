@@ -65,4 +65,3 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
     </ThemeProvider>
   );
 };
-

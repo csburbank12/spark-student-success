@@ -1,10 +1,10 @@
 
 import React from 'react';
-import Layout from './components/Layout';
+import { AppShell } from './components/layout/AppShell';
 
-// This is a wrapper component to ensure all pages use the Layout component
+// This is a wrapper component to ensure all pages use the AppShell component
 const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <Layout>{children}</Layout>;
+  return <AppShell>{children}</AppShell>;
 };
 
 export default LayoutWrapper;

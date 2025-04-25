@@ -1,6 +1,6 @@
 
 import React, { useEffect, Suspense, lazy } from "react";
-import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
 import { allRoutes } from "./routes/index";
@@ -24,7 +24,6 @@ const Login = lazy(() => import("./pages/Login"));
 function App() {
   const { isLoading, user } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const { log404Error } = useErrorLogging();
   
   // Initialize error monitoring on app load
@@ -34,19 +33,6 @@ function App() {
     );
   }, []);
 
-  // Redirect to login if not authenticated (except for public routes)
-  useEffect(() => {
-    if (!isLoading && !user) {
-      // Check if current path is public
-      const isCurrentPathPublic = isPublicPath(location.pathname);
-      
-      // Only redirect to login if not on a public path
-      if (!isCurrentPathPublic && location.pathname !== '/login') {
-        navigate('/login', { replace: true, state: { from: location.pathname } });
-      }
-    }
-  }, [isLoading, user, location.pathname, navigate]);
-  
   // Log 404 errors
   useEffect(() => {
     const timeout = setTimeout(() => {
