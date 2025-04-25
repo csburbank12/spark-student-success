@@ -1,71 +1,70 @@
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Award, Star, Clock } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Award, Star, Check } from "lucide-react";
 
 interface Achievement {
   id: string;
   title: string;
   description: string;
   progress: number;
-  icon: "check" | "award" | "star" | "clock";
+  icon: "check" | "star" | "award";
   completed: boolean;
 }
 
 interface AchievementCardProps {
   achievement: Achievement;
-  className?: string;
 }
 
-export const AchievementCard = ({ achievement, className }: AchievementCardProps) => {
+export const AchievementCard = ({ achievement }: AchievementCardProps) => {
   const getIcon = () => {
     switch (achievement.icon) {
       case "check":
-        return <CheckCircle className="h-6 w-6" />;
-      case "award":
-        return <Award className="h-6 w-6" />;
+        return <Check className="h-5 w-5 text-green-600" />;
       case "star":
-        return <Star className="h-6 w-6" />;
-      case "clock":
-        return <Clock className="h-6 w-6" />;
+        return <Star className="h-5 w-5 text-amber-600" />;
+      case "award":
       default:
-        return <Star className="h-6 w-6" />;
+        return <Award className="h-5 w-5 text-blue-600" />;
     }
   };
 
   return (
-    <Card
-      className={cn(
-        "overflow-hidden transition-all hover:shadow-md",
-        achievement.completed ? "border-2 border-primary" : "",
-        className
-      )}
-    >
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-base font-medium">
-            {achievement.title}
-          </CardTitle>
-          <div
-            className={cn(
-              "p-1 rounded-full",
-              achievement.completed ? "text-primary" : "text-muted-foreground"
-            )}
-          >
+    <Card className={`hover-transform transition-all duration-300 ${achievement.completed ? "border-primary/50" : ""}`}>
+      <CardContent className="p-5">
+        <div className="flex items-start">
+          <div className={`p-2 rounded-full mr-3 ${
+            achievement.completed 
+              ? "bg-primary/10" 
+              : "bg-muted"
+          }`}>
             {getIcon()}
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">{achievement.description}</p>
-        <div className="space-y-1">
-          <div className="flex justify-between text-xs">
-            <span>{achievement.progress}%</span>
-            <span>{achievement.completed ? "Completed!" : "In Progress"}</span>
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="font-medium">{achievement.title}</h3>
+              {achievement.completed && (
+                <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
+                  Completed!
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">
+              {achievement.description}
+            </p>
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span>Progress</span>
+                <span className="font-medium">{achievement.progress}%</span>
+              </div>
+              <Progress 
+                value={achievement.progress} 
+                className={`h-2 ${achievement.progress > 0 ? "progress-animate" : ""}`}
+                style={{ "--progress-width": `${achievement.progress}%` } as React.CSSProperties}
+              />
+            </div>
           </div>
-          <Progress value={achievement.progress} className="h-2" />
         </div>
       </CardContent>
     </Card>
