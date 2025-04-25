@@ -9,7 +9,7 @@ import { Navbar } from './Navbar';
 import { Loader } from '@/components/ui/loader';
 import { useLocation, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
-import { ErrorMonitoringService } from '@/services/ErrorMonitoringService';
+import { ErrorLoggingService } from '@/services/ErrorLoggingService';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -20,14 +20,18 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
-  // Log page navigation for monitoring
+  // Log page navigation for monitoring - Fixed by removing logNavigation which doesn't exist
   React.useEffect(() => {
     if (user && location.pathname) {
-      ErrorMonitoringService.logNavigation({
-        path: location.pathname,
-        userRole: user?.role || 'unauthenticated',
-        timestamp: new Date().toISOString()
-      }).catch(console.error);
+      try {
+        ErrorLoggingService.logError({
+          action: 'page_navigation',
+          error_message: `User navigated to: ${location.pathname}`,
+          profile_type: user?.role as any || 'unauthenticated'
+        });
+      } catch (error) {
+        console.error('Failed to log navigation:', error);
+      }
     }
   }, [location.pathname, user]);
   

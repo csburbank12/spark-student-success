@@ -43,12 +43,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         location.pathname === '/404';
     
     if (!isKnownRoute && user && location.pathname) {
-      ErrorLoggingService.logError({
-        action: 'navigation_error',
-        error_message: `User attempted to access non-existent route: ${location.pathname}`,
-        status_code: 404,
-        profile_type: user?.role || 'unknown'
-      }).catch(console.error);
+      try {
+        ErrorLoggingService.logError({
+          action: 'navigation_error',
+          error_message: `User attempted to access non-existent route: ${location.pathname}`,
+          status_code: '404', // Convert to string to fix Type 'number' is not assignable to type 'string'
+          profile_type: user?.role as any || 'unknown' // Fix type error by using type assertion
+        });
+      } catch (error) {
+        console.error('Error logging navigation error:', error);
+      }
     }
   }, [location.pathname, user]);
 
