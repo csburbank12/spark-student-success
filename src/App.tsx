@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
 import { ErrorMonitoringService } from "./services/ErrorMonitoringService";
 import { useErrorLogging } from "@/hooks/useErrorLogging";
+import { isPublicPath } from "./utils/navigationUtils";
 
 // Optimized loader component
 const AppLoader = () => (
@@ -36,14 +37,12 @@ function App() {
   // Redirect to login if not authenticated (except for public routes)
   useEffect(() => {
     if (!isLoading && !user) {
-      const publicPaths = ['/login', '/signup', '/404', '/privacy-policy', '/terms', '/help'];
-      const isPublicPath = publicPaths.some(path => 
-        location.pathname === path || 
-        location.pathname.startsWith('/auth/') ||
-        location.pathname.startsWith('/onboarding/')
-      );
+      // Check if current path is public or an onboarding path
+      const isCurrentPathPublic = isPublicPath(location.pathname);
+      const isOnboardingPath = location.pathname.includes('/onboarding/');
       
-      if (!isPublicPath) {
+      // Only redirect to login if not on a public path or onboarding path
+      if (!isCurrentPathPublic && !isOnboardingPath) {
         navigate('/login', { replace: true, state: { from: location.pathname } });
       }
     }
@@ -84,6 +83,18 @@ function App() {
               <Login />
             </Suspense>
           } 
+        />
+        
+        {/* Route for root path - redirect to login if not authenticated */}
+        <Route
+          path="/"
+          element={
+            !isLoading && user ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
         />
         
         {/* Catch-all route for invalid paths - redirect to 404 page */}

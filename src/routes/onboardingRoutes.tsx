@@ -5,10 +5,10 @@ import TeacherOnboarding from "@/pages/onboarding/TeacherOnboarding";
 import StudentOnboarding from "@/pages/onboarding/StudentOnboarding";
 import ParentOnboarding from "@/pages/onboarding/ParentOnboarding";
 import { UserRole } from "@/types/roles";
-import { ProtectedRoute } from "./ProtectedRoute";
 import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
 import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
 
+// Onboarding routes should be public routes not requiring authentication
 const onboardingRoutes = [
   {
     path: "/onboarding/teacher",
