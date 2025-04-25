@@ -5,6 +5,7 @@ import { Calendar, Users, BellRing, BookOpen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
 import { useNavigate } from "react-router-dom";
+import SystemStatusIndicator from "@/components/error-handling/SystemStatusIndicator";
 
 interface TeacherDashboardHeaderProps {
   onScheduleCheckIn?: () => void;
@@ -19,9 +20,12 @@ export const TeacherDashboardHeader: React.FC<TeacherDashboardHeaderProps> = ({
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h2 className="text-3xl font-heading font-bold">
-          Welcome, {user?.name?.split(" ")[0] || "Teacher"}!
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-3xl font-heading font-bold">
+            Welcome, {user?.name?.split(" ")[0] || "Teacher"}!
+          </h2>
+          <SystemStatusIndicator />
+        </div>
         <p className="text-muted-foreground">
           Your dashboard shows classroom insights and student wellbeing data
         </p>

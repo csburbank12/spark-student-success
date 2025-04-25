@@ -1,15 +1,37 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
 import { routes } from "./routes/index";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
+import { ErrorMonitoringService } from "./services/ErrorMonitoringService";
+import { useErrorLogging } from "@/hooks/useErrorLogging";
 
 function App() {
   const { isLoading, user } = useAuth();
   const location = useLocation();
+  const { log404Error } = useErrorLogging();
+  
+  // Initialize error monitoring on app load
+  useEffect(() => {
+    ErrorMonitoringService.initialize().catch(err => 
+      console.error("Failed to initialize error monitoring:", err)
+    );
+  }, []);
+  
+  // Log 404 errors
+  useEffect(() => {
+    const isKnownRoute = routes.some(route => 
+      route.path === location.pathname || 
+      (route.path.includes(':') && location.pathname.startsWith(route.path.split(':')[0]))
+    );
+    
+    if (!isKnownRoute && location.pathname !== "/") {
+      log404Error(location.pathname);
+    }
+  }, [location.pathname, log404Error]);
 
   if (isLoading) {
     return (

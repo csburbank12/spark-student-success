@@ -1,165 +1,103 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useQuery } from '@tanstack/react-query';
-import { Badge } from '@/components/ui/badge';
-import { Clock, BookOpen, Award } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
+import React, { useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { SELLoadingState } from "@/components/sel-pathways/SELLoadingState";
+import { SELErrorState } from "@/components/sel-pathways/SELErrorState";
+import { SELRecommendationsGrid } from "@/components/sel-pathways/SELRecommendationsGrid";
+import { Sparkles } from "lucide-react";
+import { useErrorLogging } from "@/hooks/useErrorLogging";
 
-export const SELRecommendedSection: React.FC = () => {
-  const { user } = useAuth();
-  const [viewAll, setViewAll] = useState(false);
-  
-  const { data: selActivities, isLoading } = useQuery({
-    queryKey: ['sel-recommendations', user?.id],
+export const SELRecommendedSection = () => {
+  const { logError } = useErrorLogging();
+
+  // Query to fetch recommended SEL lessons
+  const { data: recommendations, isLoading, error } = useQuery({
+    queryKey: ["sel-recommendations"],
     queryFn: async () => {
-      // In a real app, this would fetch from Supabase
-      // For demo purposes, returning mock data
-      return [
-        {
-          id: '1',
-          title: 'Emotional Awareness Check-In',
-          description: 'A quick exercise to identify and name your current emotions',
-          duration: 5,
-          tags: ['Self-Awareness', 'Emotional Literacy'],
-          isAssigned: true,
-          dueDate: '2025-05-01'
-        },
-        {
-          id: '2',
-          title: 'Stress-Busting Breathing Technique',
-          description: 'Learn a simple breathing technique to reduce stress',
-          duration: 3,
-          tags: ['Self-Management', 'Stress Reduction'],
-          isAssigned: false
-        },
-        {
-          id: '3',
-          title: 'Active Listening Practice',
-          description: 'Improve your social relationships through better listening',
-          duration: 10,
-          tags: ['Social Awareness', 'Communication'],
-          isAssigned: false
-        },
-        {
-          id: '4',
-          title: 'Gratitude Journal Entry',
-          description: 'Strengthen positive thinking by noting what you're grateful for',
-          duration: 5,
-          tags: ['Positive Mindset', 'Well-being'],
-          isAssigned: true,
-          dueDate: '2025-04-30'
-        },
-        {
-          id: '5',
-          title: 'Conflict Resolution Strategies',
-          description: 'Practice resolving disagreements in a healthy way',
-          duration: 15,
-          tags: ['Relationship Skills', 'Problem Solving'],
-          isAssigned: false
-        }
-      ];
+      try {
+        // In a real app, this would fetch from Supabase
+        // For demo purposes, returning mock data
+        return [
+          {
+            id: "sel1",
+            title: "Managing Big Emotions",
+            description: "Learn strategies to handle overwhelming feelings",
+            casel_competency: "Self-Management",
+            recommended_moods: ["stressed", "sad"],
+            duration: "15 min",
+            difficulty: "Beginner",
+            thumbnail: "/img/sel-emotions.svg",
+          },
+          {
+            id: "sel2",
+            title: "Building Empathy",
+            description: "Understanding others' perspectives and feelings",
+            casel_competency: "Social Awareness",
+            recommended_moods: ["good", "okay"],
+            duration: "20 min",
+            difficulty: "Intermediate",
+            thumbnail: "/img/sel-empathy.svg",
+          },
+          {
+            id: "sel3",
+            title: "Mindful Communication",
+            description: "Express yourself clearly and listen actively",
+            casel_competency: "Relationship Skills",
+            recommended_moods: ["happy", "good"],
+            duration: "10 min",
+            difficulty: "Beginner",
+            thumbnail: "/img/sel-communication.svg",
+          },
+        ];
+      } catch (err) {
+        logError({
+          action: "fetch_sel_recommendations",
+          error_message: err instanceof Error ? err.message : "Unknown error loading SEL recommendations",
+          profile_type: "student"
+        });
+        throw err;
+      }
     },
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
 
-  const displayActivities = viewAll ? selActivities : selActivities?.slice(0, 3);
-  
-  const handleStartActivity = (activityId: string, activityTitle: string) => {
-    // In a real app, this would update the database
-    toast.success(`Starting "${activityTitle}"`, {
-      description: "Your progress will be saved automatically."
-    });
-  };
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-4 w-64" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <Skeleton className="h-32 w-full" />
-            <Skeleton className="h-32 w-full" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!selActivities?.length) {
-    return null;
-  }
+  // Log errors if query fails
+  useEffect(() => {
+    if (error) {
+      logError({
+        action: "sel_recommendations_component_error",
+        error_message: error instanceof Error ? error.message : "Unknown error in SEL recommendations",
+        profile_type: "student"
+      });
+    }
+  }, [error, logError]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <BookOpen className="mr-2 h-5 w-5 text-primary" />
-          <span>SEL Activities</span>
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-lg font-medium">
+          <div className="flex items-center">
+            <Sparkles className="mr-2 h-5 w-5 text-primary" />
+            Recommended for You
+          </div>
         </CardTitle>
-        <CardDescription>
-          Activities to support your social and emotional growth
-        </CardDescription>
+        <Button variant="ghost" size="sm">
+          View All
+        </Button>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {displayActivities?.map((activity) => (
-            <Card key={activity.id} className="overflow-hidden">
-              <div className="p-4 border-l-4 border-primary">
-                <div className="flex justify-between">
-                  <div className="space-y-1">
-                    <h3 className="font-medium">{activity.title}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {activity.description}
-                    </p>
-                  </div>
-                  {activity.isAssigned && (
-                    <Badge variant="outline" className="ml-2 h-fit">
-                      Assigned
-                    </Badge>
-                  )}
-                </div>
-                <div className="mt-3 flex justify-between items-center">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Clock className="mr-1 h-4 w-4" />
-                    <span>{activity.duration} min</span>
-                    
-                    {activity.dueDate && (
-                      <span className="ml-3">
-                        Due: {new Date(activity.dueDate).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-                  <Button 
-                    size="sm" 
-                    onClick={() => handleStartActivity(activity.id, activity.title)}
-                  >
-                    Start
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+        {isLoading ? (
+          <SELLoadingState />
+        ) : error ? (
+          <SELErrorState />
+        ) : (
+          <SELRecommendationsGrid recommendations={recommendations || []} />
+        )}
       </CardContent>
-      {selActivities.length > 3 && (
-        <CardFooter>
-          <Button 
-            variant="ghost" 
-            className="w-full" 
-            onClick={() => setViewAll(!viewAll)}
-          >
-            {viewAll ? "Show Less" : "View All Activities"}
-          </Button>
-        </CardFooter>
-      )}
     </Card>
   );
 };
+
+export default SELRecommendedSection;

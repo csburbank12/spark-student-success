@@ -12,6 +12,9 @@ import { Loader } from "@/components/ui/loader";
 import DashboardManager from "./DashboardManager";
 import { Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
+import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
+import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
+import SystemMonitoringDashboard from "@/components/error-handling/SystemMonitoringDashboard";
 
 // Dynamic imports for base pages
 const Login = lazy(() => import("@/pages/Login"));
@@ -33,6 +36,18 @@ const SuspenseWrapper = ({ children }: { children: ReactNode }) => (
   </Suspense>
 );
 
+// Create new route for system monitoring dashboard
+const systemMonitoringRoute = {
+  path: "/admin/system-monitoring",
+  element: (
+    <SuspenseWrapper>
+      <Layout>
+        <SystemMonitoringDashboard />
+      </Layout>
+    </SuspenseWrapper>
+  ),
+};
+
 // Combine all routes
 export const routes = [
   {
@@ -41,65 +56,90 @@ export const routes = [
   },
   {
     path: "/login",
-    element: <SuspenseWrapper><Login /></SuspenseWrapper>,
+    element: (
+      <GlobalErrorBoundary component="Login" fallback={<FallbackErrorPage />}>
+        <SuspenseWrapper>
+          <Login />
+        </SuspenseWrapper>
+      </GlobalErrorBoundary>
+    ),
   },
   {
     path: "/home",
-    element: <SuspenseWrapper><Index /></SuspenseWrapper>,
+    element: (
+      <GlobalErrorBoundary component="Index" fallback={<FallbackErrorPage />}>
+        <SuspenseWrapper>
+          <Index />
+        </SuspenseWrapper>
+      </GlobalErrorBoundary>
+    ),
   },
   {
     path: "/dashboard",
     element: (
-      <SuspenseWrapper>
-        <Layout>
-          <DashboardManager />
-        </Layout>
-      </SuspenseWrapper>
+      <GlobalErrorBoundary component="Dashboard" fallback={<FallbackErrorPage />}>
+        <SuspenseWrapper>
+          <Layout>
+            <DashboardManager />
+          </Layout>
+        </SuspenseWrapper>
+      </GlobalErrorBoundary>
     ),
   },
   {
     path: "/qa-dashboard",
     element: (
-      <SuspenseWrapper>
-        <Layout>
-          <QADashboard />
-        </Layout>
-      </SuspenseWrapper>
+      <GlobalErrorBoundary component="QADashboard" fallback={<FallbackErrorPage />}>
+        <SuspenseWrapper>
+          <Layout>
+            <QADashboard />
+          </Layout>
+        </SuspenseWrapper>
+      </GlobalErrorBoundary>
     ),
   },
   {
     path: "/welllens",
     element: (
-      <SuspenseWrapper>
-        <Layout>
-          <WellLensDashboard />
-        </Layout>
-      </SuspenseWrapper>
+      <GlobalErrorBoundary component="WellLensDashboard" fallback={<FallbackErrorPage />}>
+        <SuspenseWrapper>
+          <Layout>
+            <WellLensDashboard />
+          </Layout>
+        </SuspenseWrapper>
+      </GlobalErrorBoundary>
     ),
   },
   {
     path: "/profiles",
     element: (
-      <SuspenseWrapper>
-        <Layout>
-          <Profiles />
-        </Layout>
-      </SuspenseWrapper>
+      <GlobalErrorBoundary component="Profiles" fallback={<FallbackErrorPage />}>
+        <SuspenseWrapper>
+          <Layout>
+            <Profiles />
+          </Layout>
+        </SuspenseWrapper>
+      </GlobalErrorBoundary>
     ),
   },
   {
     path: "/profile",
     element: (
-      <SuspenseWrapper>
-        <Layout>
-          <UserProfile />
-        </Layout>
-      </SuspenseWrapper>
+      <GlobalErrorBoundary component="UserProfile" fallback={<FallbackErrorPage />}>
+        <SuspenseWrapper>
+          <Layout>
+            <UserProfile />
+          </Layout>
+        </SuspenseWrapper>
+      </GlobalErrorBoundary>
     ),
   },
-  // Instead of trying to spread individual arrays which was causing the error
-  // We'll concatenate the arrays here
-].concat(
+  // Add the new system monitoring route
+  systemMonitoringRoute,
+];
+
+// Add all the remaining routes
+const allRoutes = routes.concat(
   generalRoutes,
   adminRoutes,
   teacherAdminRoutes,
@@ -109,6 +149,14 @@ export const routes = [
   onboardingRoutes,
   [{
     path: "*",
-    element: <SuspenseWrapper><NotFound /></SuspenseWrapper>
+    element: (
+      <GlobalErrorBoundary component="NotFound" fallback={<FallbackErrorPage />}>
+        <SuspenseWrapper>
+          <NotFound />
+        </SuspenseWrapper>
+      </GlobalErrorBoundary>
+    )
   }]
 );
+
+export default allRoutes;
