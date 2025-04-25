@@ -7,6 +7,11 @@ import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
 import UserManagement from "@/pages/admin/UserManagement";
 import DataAnalytics from "@/pages/admin/DataAnalytics";
 import SchoolManagement from "@/pages/admin/SchoolManagement";
+import SchoolProfilePage from "@/pages/admin/SchoolProfilePage";
+import AddSchoolPage from "@/pages/admin/AddSchoolPage";
+import EditSchoolPage from "@/pages/admin/EditSchoolPage";
+import SchoolImportPage from "@/pages/admin/SchoolImportPage";
+import SchoolOnboarding from "@/pages/admin/SchoolOnboarding";
 import FERPACompliance from "@/pages/admin/FERPACompliance";
 import SystemSettings from "@/pages/admin/SystemSettings";
 import LoopBotLogs from "@/pages/admin/LoopBotLogs";
@@ -55,6 +60,46 @@ const adminRoutes = [
     ),
   },
   {
+    path: "/admin/schools",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <SchoolManagement />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/schools/new",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <AddSchoolPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/schools/import",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <SchoolImportPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/schools/:id",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <SchoolProfilePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/schools/:id/edit",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <EditSchoolPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: "/admin/ferpa-compliance",
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
@@ -91,6 +136,14 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <ErrorLogsDashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/school-onboarding",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <SchoolOnboarding />
       </ProtectedRoute>
     ),
   },
