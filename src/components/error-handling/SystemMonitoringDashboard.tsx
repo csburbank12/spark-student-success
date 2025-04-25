@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Activity, Shield, RefreshCw } from "lucide-react";
+import { Activity, Shield } from "lucide-react";
 import { useErrorLogs } from "@/hooks/useErrorLogs";
 import { ErrorMonitoringService } from "@/services/ErrorMonitoringService";
 import { SystemHealthCheckService } from "@/services/SystemHealthCheckService";
@@ -12,6 +11,7 @@ import { MonitoringStatsCards } from './monitoring/MonitoringStatsCards';
 import { HealthCheckResults } from './monitoring/HealthCheckResults';
 import { MonitoringSettings } from './monitoring/MonitoringSettings';
 import { ErrorLogsSection } from './monitoring/ErrorLogsSection';
+import { MonitoringActions } from './monitoring/MonitoringActions';
 
 const SystemMonitoringDashboard = () => {
   const [configValues, setConfigValues] = useState({
@@ -156,32 +156,7 @@ const SystemMonitoringDashboard = () => {
           </TabsContent>
           
           <TabsContent value="actions" className="space-y-4 pt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Manual System Actions</CardTitle>
-                <CardDescription>
-                  Perform manual maintenance and repair actions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 border rounded-md">
-                    <h3 className="font-medium mb-2">System Restart</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Completely restart the system. This will reload the application, clear caches,
-                      and reestablish all connections.
-                    </p>
-                    <Button 
-                      variant="destructive" 
-                      onClick={handleRestartSystem}
-                    >
-                      <RefreshCw className="mr-2 h-4 w-4" />
-                      Restart System
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <MonitoringActions handleRestartSystem={handleRestartSystem} />
           </TabsContent>
         </Tabs>
       </div>
