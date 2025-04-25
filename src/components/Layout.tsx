@@ -31,7 +31,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setAuthChecked(true);
     
     const publicPaths = ['/login', '/signup', '/404', '/privacy-policy', '/terms', '/help'];
-    const isPublicPath = publicPaths.includes(location.pathname) || location.pathname.includes('/auth/');
+    const isPublicPath = publicPaths.includes(location.pathname) || 
+                        location.pathname.includes('/auth/') || 
+                        location.pathname.includes('/onboarding/');
     
     // Immediate redirect to login if not authenticated and not on public path
     if (!user && !isPublicPath) {

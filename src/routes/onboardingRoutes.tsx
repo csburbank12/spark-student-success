@@ -17,9 +17,7 @@ const onboardingRoutes = [
         component="TeacherOnboarding"
         fallback={<FallbackErrorPage />}
       >
-        <ProtectedRoute requiredRole={[UserRole.teacher]}>
-          <TeacherOnboarding />
-        </ProtectedRoute>
+        <TeacherOnboarding />
       </GlobalErrorBoundary>
     ),
   },
@@ -30,9 +28,7 @@ const onboardingRoutes = [
         component="StudentOnboarding"
         fallback={<FallbackErrorPage />}
       >
-        <ProtectedRoute requiredRole={[UserRole.student]}>
-          <StudentOnboarding />
-        </ProtectedRoute>
+        <StudentOnboarding />
       </GlobalErrorBoundary>
     ),
   },
@@ -43,9 +39,7 @@ const onboardingRoutes = [
         component="ParentOnboarding"
         fallback={<FallbackErrorPage />}
       >
-        <ProtectedRoute requiredRole={[UserRole.parent]}>
-          <ParentOnboarding />
-        </ProtectedRoute>
+        <ParentOnboarding />
       </GlobalErrorBoundary>
     ),
   },

@@ -1,63 +1,35 @@
 
-import { UserRole } from "@/types/roles";
+import { UserRole } from '@/types/roles';
 
 /**
- * Get the appropriate fallback route based on user role
- * @param role User's role
- * @returns The fallback dashboard route
+ * Returns the appropriate dashboard route based on user role
  */
-export const getFallbackDashboardByRole = (role: string): string => {
+export const getFallbackDashboardByRole = (role: UserRole): string => {
   switch (role) {
     case UserRole.admin:
       return '/admin-dashboard';
     case UserRole.teacher:
-      return '/teacher-dashboard';
+      return '/teacher-dashboard-enhanced';
+    case UserRole.student:
+      return '/student-dashboard-enhanced';
+    case UserRole.parent:
+      return '/parent-dashboard-enhanced';
     case UserRole.staff:
       return '/staff-dashboard';
-    case UserRole.student:
-      return '/student-dashboard';
-    case UserRole.parent:
-      return '/parent-dashboard';
+    case UserRole.counselor:
+      return '/trusted-adult-dashboard';
     default:
       return '/dashboard';
   }
 };
 
 /**
- * Check if the current path matches any of the provided routes
- * @param currentPath The current path
- * @param routesList List of routes to check against
- * @returns Boolean indicating if the path matches any route
+ * Check if a path is considered a public path that doesn't require authentication
  */
-export const isValidRoute = (currentPath: string, routesList: Array<{path: string}>): boolean => {
-  // Check exact matches
-  if (routesList.some(route => route.path === currentPath)) {
-    return true;
-  }
+export const isPublicPath = (pathname: string): boolean => {
+  const publicPaths = ['/login', '/signup', '/404', '/privacy-policy', '/terms', '/help'];
   
-  // Check for routes with parameters
-  return routesList.some(route => {
-    const routePath = route.path;
-    if (routePath.includes(':')) {
-      // Convert route pattern to regex
-      const pattern = routePath.replace(/:[^/]+/g, '[^/]+');
-      const regex = new RegExp(`^${pattern}$`);
-      return regex.test(currentPath);
-    }
-    return false;
-  });
-};
-
-/**
- * Check if a user has permission to access a route
- * @param userRole The user's role
- * @param requiredRoles Array of roles that can access the route
- * @returns Boolean indicating if the user can access the route
- */
-export const hasRouteAccess = (userRole: string, requiredRoles: string[]): boolean => {
-  if (!requiredRoles || requiredRoles.length === 0) {
-    return true; // No roles required, everyone can access
-  }
-  
-  return requiredRoles.includes(userRole);
+  return publicPaths.includes(pathname) || 
+         pathname.startsWith('/auth/') || 
+         pathname.startsWith('/onboarding/');
 };

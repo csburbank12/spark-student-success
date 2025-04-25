@@ -49,4 +49,9 @@ export class ErrorLoggingService {
     // Implementation would query database in production
     return [];
   }
+
+  static initialize(): Promise<void> {
+    console.log("Error monitoring service initialized");
+    return Promise.resolve();
+  }
 }

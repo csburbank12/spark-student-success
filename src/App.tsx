@@ -38,10 +38,12 @@ function App() {
     if (!isLoading && !user) {
       const publicPaths = ['/login', '/signup', '/404', '/privacy-policy', '/terms', '/help'];
       const isPublicPath = publicPaths.some(path => 
-        location.pathname === path || location.pathname.startsWith('/auth/')
+        location.pathname === path || 
+        location.pathname.startsWith('/auth/') ||
+        location.pathname.startsWith('/onboarding/')
       );
       
-      if (!isPublicPath && !location.pathname.includes('/onboarding/')) {
+      if (!isPublicPath) {
         navigate('/login', { replace: true, state: { from: location.pathname } });
       }
     }

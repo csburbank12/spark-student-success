@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
 import { ProfileType } from '@/services/ErrorLoggingService';
 
+// Export type instead of re-exporting to fix TS1205 error
 export type { ProfileType };
 
 export const useErrorLogging = () => {
