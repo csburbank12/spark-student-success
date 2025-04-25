@@ -1,4 +1,3 @@
-
 import { lazy, Suspense, ReactNode } from "react";
 import Layout from "@/components/Layout";
 import adminRoutes from "./adminRoutes";
@@ -49,7 +48,7 @@ const createProtectedRoute = (Component: React.ComponentType, name: string) => (
   </GlobalErrorBoundary>
 );
 
-// Add public route without Layout wrapper
+// Create public route without Layout wrapper
 const createPublicRoute = (Component: React.ComponentType, name: string) => (
   <GlobalErrorBoundary component={name} fallback={<FallbackErrorPage />}>
     <SuspenseWrapper>
@@ -127,10 +126,7 @@ export const routes = [
 // Make sure ALL routes use the protected route wrapper with layout
 export const allRoutes = [
   ...routes,
-  ...generalRoutes.map(route => ({
-    ...route,
-    element: typeof route.element === 'object' ? route.element : createProtectedRoute(() => route.element, route.path)
-  })),
+  ...generalRoutes,
   ...adminRoutes,
   ...teacherAdminRoutes,
   ...studentRoutes,
@@ -139,4 +135,5 @@ export const allRoutes = [
   ...onboardingRoutes
 ];
 
+export { createProtectedRoute, createPublicRoute };
 export default allRoutes;

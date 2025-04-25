@@ -1,7 +1,6 @@
 
 import { lazy } from "react";
-import Layout from "@/components/Layout";
-import { Navigate } from "react-router-dom";
+import { createProtectedRoute } from "./index";
 
 const Help = lazy(() => import("@/pages/Help"));
 const Settings = lazy(() => import("@/pages/Settings"));
@@ -14,58 +13,30 @@ const SharedResources = lazy(() => import("@/pages/SharedResources"));
 export const generalRoutes = [
   {
     path: "/help",
-    element: (
-      <Layout>
-        <Help />
-      </Layout>
-    ),
+    element: createProtectedRoute(Help, "Help")
   },
   {
     path: "/settings",
-    element: (
-      <Layout>
-        <Settings />
-      </Layout>
-    ),
+    element: createProtectedRoute(Settings, "Settings")
   },
   {
     path: "/welllens",
-    element: (
-      <Layout>
-        <WellLensDashboard />
-      </Layout>
-    ),
+    element: createProtectedRoute(WellLensDashboard, "WellLens")
   },
   {
     path: "/predictive-support",
-    element: (
-      <Layout>
-        <PredictiveSupport />
-      </Layout>
-    ),
+    element: createProtectedRoute(PredictiveSupport, "PredictiveSupport")
   },
   {
     path: "/emotion-scheduling",
-    element: (
-      <Layout>
-        <EmotionAwareScheduling />
-      </Layout>
-    ),
+    element: createProtectedRoute(EmotionAwareScheduling, "EmotionScheduling")
   },
   {
     path: "/profiles",
-    element: (
-      <Layout>
-        <Profiles />
-      </Layout>
-    ),
+    element: createProtectedRoute(Profiles, "Profiles")
   },
   {
     path: "/shared-resources",
-    element: (
-      <Layout>
-        <SharedResources />
-      </Layout>
-    ),
-  },
+    element: createProtectedRoute(SharedResources, "SharedResources")
+  }
 ];
