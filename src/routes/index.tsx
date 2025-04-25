@@ -1,4 +1,3 @@
-
 import { lazy, Suspense, ReactNode } from "react";
 import Layout from "@/components/Layout";
 import adminRoutes from "./adminRoutes";
@@ -84,7 +83,7 @@ const privacyRoutes = [
   }
 ];
 
-// Update the routes constant to ensure Login page is properly referenced
+// Update the routes constant to use regular dashboard components
 export const routes = [
   {
     path: "/",
@@ -118,9 +117,7 @@ export const routes = [
     path: "/profile",
     element: createProtectedRoute(UserProfile, "UserProfile")
   },
-  // Add the new system monitoring route
   systemMonitoringRoute,
-  // Add privacy routes
   ...privacyRoutes
 ];
 

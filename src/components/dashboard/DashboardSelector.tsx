@@ -1,10 +1,10 @@
 
 import React from "react";
 import { UserRole } from "@/types/roles";
-import StudentDashboardEnhanced from "@/pages/StudentDashboardEnhanced";
-import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
-import AdminDashboardEnhanced from "@/pages/AdminDashboardEnhanced";
-import ParentDashboardEnhanced from "@/pages/ParentDashboardEnhanced";
+import StudentDashboard from "@/pages/StudentDashboard";
+import TeacherDashboard from "@/pages/TeacherDashboard";
+import AdminDashboard from "@/pages/AdminDashboard";
+import ParentDashboard from "@/pages/ParentDashboard";
 import { UnknownRoleView } from "./UnknownRoleView";
 
 interface DashboardSelectorProps {
@@ -14,13 +14,13 @@ interface DashboardSelectorProps {
 export const DashboardSelector: React.FC<DashboardSelectorProps> = ({ userRole }) => {
   switch (userRole) {
     case UserRole.student:
-      return <StudentDashboardEnhanced />;
+      return <StudentDashboard />;
     case UserRole.teacher:
-      return <TeacherDashboardEnhanced />;
+      return <TeacherDashboard />;
     case UserRole.admin:
-      return <AdminDashboardEnhanced />;
+      return <AdminDashboard />;
     case UserRole.parent:
-      return <ParentDashboardEnhanced />;
+      return <ParentDashboard />;
     default:
       return <UnknownRoleView />;
   }

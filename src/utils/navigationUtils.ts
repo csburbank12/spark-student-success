@@ -1,4 +1,3 @@
-
 import { UserRole } from '@/types/roles';
 
 /**
@@ -9,11 +8,11 @@ export const getFallbackDashboardByRole = (role: UserRole): string => {
     case UserRole.admin:
       return '/admin-dashboard';
     case UserRole.teacher:
-      return '/teacher-dashboard-enhanced';
+      return '/teacher-dashboard';
     case UserRole.student:
-      return '/student-dashboard-enhanced';
+      return '/student-dashboard';
     case UserRole.parent:
-      return '/parent-dashboard-enhanced';
+      return '/parent-dashboard';
     case UserRole.staff:
       return '/staff-dashboard';
     case UserRole.counselor:
