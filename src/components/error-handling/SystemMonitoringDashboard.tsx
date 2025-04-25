@@ -1,27 +1,28 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Activity, Shield, RefreshCw } from "lucide-react";
 import { useErrorLogs } from "@/hooks/useErrorLogs";
-import { ErrorMonitoringService, MonitoringConfig } from "@/services/ErrorMonitoringService";
-import { SystemHealthCheckService, HealthCheckResult, PreDeployResult } from "@/services/SystemHealthCheckService";
-import { AlertCircle, CheckCircle, RefreshCw, Settings, Activity, Shield } from "lucide-react";
-import GlobalErrorBoundary from '@/components/error-handling/GlobalErrorBoundary';
+import { ErrorMonitoringService } from "@/services/ErrorMonitoringService";
+import { SystemHealthCheckService } from "@/services/SystemHealthCheckService";
 import { toast } from "sonner";
+import GlobalErrorBoundary from '@/components/error-handling/GlobalErrorBoundary';
+import { MonitoringStatsCards } from './monitoring/MonitoringStatsCards';
+import { HealthCheckResults } from './monitoring/HealthCheckResults';
+import { MonitoringSettings } from './monitoring/MonitoringSettings';
 
 const SystemMonitoringDashboard = () => {
-  const [configValues, setConfigValues] = useState<MonitoringConfig>({
+  const [configValues, setConfigValues] = useState({
     autoRepairEnabled: true,
     notificationMethod: 'popup',
     minSeverityToNotify: 'error',
     heartbeatIntervalMinutes: 10
   });
+
   const [monitoringStats, setMonitoringStats] = useState<any>(null);
-  const [healthCheckResult, setHealthCheckResult] = useState<HealthCheckResult | PreDeployResult | null>(null);
+  const [healthCheckResult, setHealthCheckResult] = useState<any>(null);
   const [isRunningHealthCheck, setIsRunningHealthCheck] = useState(false);
   const { logs, isLoading, refreshLogs } = useErrorLogs(false, 50, 0);
 
@@ -94,143 +95,14 @@ const SystemMonitoringDashboard = () => {
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">System Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold flex items-center">
-                {healthCheckResult?.success === false ? (
-                  <>
-                    <AlertCircle className="text-destructive mr-2 h-5 w-5" />
-                    Issues Detected
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="text-green-500 mr-2 h-5 w-5" />
-                    All Systems Operational
-                  </>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Last checked: {healthCheckResult?.timestamp ? 
-                  new Date(healthCheckResult.timestamp).toLocaleString() : 
-                  'Never'}
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Error Count (24h)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {monitoringStats?.totalErrors || logs?.length || 0}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {monitoringStats?.resolvedErrors || 0} resolved
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Auto-repair Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold flex items-center">
-                {configValues.autoRepairEnabled ? (
-                  <>
-                    <CheckCircle className="text-green-500 mr-2 h-5 w-5" />
-                    Enabled
-                  </>
-                ) : (
-                  <>
-                    <AlertCircle className="text-amber-500 mr-2 h-5 w-5" />
-                    Disabled
-                  </>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {configValues.autoRepairEnabled ? 'System will attempt to repair errors' : 'Manual repair only'}
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Heartbeat Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold flex items-center">
-                {monitoringStats?.lastHeartbeatStatus === 'healthy' ? (
-                  <>
-                    <CheckCircle className="text-green-500 mr-2 h-5 w-5" />
-                    Healthy
-                  </>
-                ) : (
-                  <>
-                    <AlertCircle className="text-amber-500 mr-2 h-5 w-5" />
-                    Issues Detected
-                  </>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Last check: {monitoringStats?.lastHeartbeatTime ? 
-                  new Date(monitoringStats.lastHeartbeatTime).toLocaleString() : 
-                  'Never'}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        <MonitoringStatsCards 
+          healthCheckResult={healthCheckResult}
+          monitoringStats={monitoringStats}
+          configValues={configValues}
+        />
 
         {healthCheckResult && (
-          <Card className="border-2 border-primary/10">
-            <CardHeader>
-              <CardTitle>Health Check Results</CardTitle>
-              <CardDescription>
-                Completed in {healthCheckResult.duration}ms at {new Date(healthCheckResult.timestamp).toLocaleString()}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {healthCheckResult.checks && healthCheckResult.checks.map((check, index) => (
-                  <div 
-                    key={index} 
-                    className={`flex items-center justify-between p-2 rounded-md ${
-                      check.status === 'passed' ? 'bg-green-500/10' : 
-                      check.status === 'warning' ? 'bg-amber-500/10' : 
-                      'bg-destructive/10'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      {check.status === 'passed' ? (
-                        <CheckCircle className="text-green-500 mr-2 h-4 w-4" />
-                      ) : check.status === 'warning' ? (
-                        <AlertCircle className="text-amber-500 mr-2 h-4 w-4" />
-                      ) : (
-                        <AlertCircle className="text-destructive mr-2 h-4 w-4" />
-                      )}
-                      <span className="font-medium">{check.name.replace(/_/g, ' ')}</span>
-                    </div>
-                    <span className="text-sm capitalize">{check.status}</span>
-                  </div>
-                ))}
-              </div>
-              {'warnings' in healthCheckResult && healthCheckResult.warnings?.length > 0 && (
-                <div className="mt-4 p-3 bg-amber-500/10 rounded-md">
-                  <h3 className="font-medium mb-1">Warnings</h3>
-                  <ul className="text-sm space-y-1">
-                    {healthCheckResult.warnings.map((warning, index) => (
-                      <li key={index}>{warning}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <HealthCheckResults healthCheckResult={healthCheckResult} />
         )}
 
         <Tabs defaultValue="errors">
@@ -291,100 +163,11 @@ const SystemMonitoringDashboard = () => {
           </TabsContent>
           
           <TabsContent value="settings" className="space-y-4 pt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>System Monitoring Settings</CardTitle>
-                <CardDescription>
-                  Configure how the monitoring system operates
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label htmlFor="auto-repair">Auto-Repair System</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Automatically attempt to fix common errors
-                      </p>
-                    </div>
-                    <Switch 
-                      id="auto-repair" 
-                      checked={configValues.autoRepairEnabled}
-                      onCheckedChange={(checked) => 
-                        setConfigValues({...configValues, autoRepairEnabled: checked})
-                      }
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <Label htmlFor="notification-method">Notification Method</Label>
-                    <Select 
-                      value={configValues.notificationMethod}
-                      onValueChange={(value: 'popup' | 'email' | 'slack' | 'all') => 
-                        setConfigValues({...configValues, notificationMethod: value})
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select notification method" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="popup">In-app Popup</SelectItem>
-                        <SelectItem value="email">Email</SelectItem>
-                        <SelectItem value="slack">Slack</SelectItem>
-                        <SelectItem value="all">All Methods</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <Label htmlFor="min-severity">Minimum Severity to Notify</Label>
-                    <Select 
-                      value={configValues.minSeverityToNotify}
-                      onValueChange={(value: 'info' | 'warning' | 'error' | 'critical') => 
-                        setConfigValues({...configValues, minSeverityToNotify: value})
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select minimum severity" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="info">Info (All Messages)</SelectItem>
-                        <SelectItem value="warning">Warning</SelectItem>
-                        <SelectItem value="error">Error</SelectItem>
-                        <SelectItem value="critical">Critical Only</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <Label htmlFor="heartbeat-interval">Heartbeat Check Interval (minutes)</Label>
-                    <Select 
-                      value={configValues.heartbeatIntervalMinutes.toString()}
-                      onValueChange={(value) => 
-                        setConfigValues({...configValues, heartbeatIntervalMinutes: parseInt(value)})
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select heartbeat interval" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="0">Disabled</SelectItem>
-                        <SelectItem value="5">Every 5 minutes</SelectItem>
-                        <SelectItem value="10">Every 10 minutes</SelectItem>
-                        <SelectItem value="15">Every 15 minutes</SelectItem>
-                        <SelectItem value="30">Every 30 minutes</SelectItem>
-                        <SelectItem value="60">Every hour</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <Button onClick={handleSaveConfig}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Save Settings
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <MonitoringSettings
+              configValues={configValues}
+              setConfigValues={setConfigValues}
+              handleSaveConfig={handleSaveConfig}
+            />
           </TabsContent>
           
           <TabsContent value="actions" className="space-y-4 pt-4">
@@ -409,28 +192,6 @@ const SystemMonitoringDashboard = () => {
                     >
                       <RefreshCw className="mr-2 h-4 w-4" />
                       Restart System
-                    </Button>
-                  </div>
-                  
-                  <div className="p-4 border rounded-md">
-                    <h3 className="font-medium mb-2">Run Pre-deployment Checklist</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Runs a comprehensive check to ensure the system is ready for deployment.
-                      Verifies routes, authentication flows, API endpoints, and more.
-                    </p>
-                    <Button onClick={handleRunPreDeployCheck}>
-                      <Shield className="mr-2 h-4 w-4" />
-                      Run Pre-deploy Check
-                    </Button>
-                  </div>
-                  
-                  <div className="p-4 border rounded-md">
-                    <h3 className="font-medium mb-2">Export Error Logs</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Download all error logs for offline analysis or backup purposes.
-                    </p>
-                    <Button variant="outline">
-                      Export Logs
                     </Button>
                   </div>
                 </div>
