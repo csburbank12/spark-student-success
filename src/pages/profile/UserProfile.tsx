@@ -13,7 +13,7 @@ const UserProfile: React.FC = () => {
   const [formData, setFormData] = useState({
     name: user?.name || "John Doe",
     email: user?.email || "john.doe@example.com",
-    avatarUrl: user?.avatar_url || "",
+    avatarUrl: user?.avatarUrl || "",
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,7 +50,7 @@ const UserProfile: React.FC = () => {
     setFormData({
       name: user?.name || "John Doe",
       email: user?.email || "john.doe@example.com",
-      avatarUrl: user?.avatar_url || "",
+      avatarUrl: user?.avatarUrl || "",
     });
     toast.info("Changes cancelled");
   }, [user]);
