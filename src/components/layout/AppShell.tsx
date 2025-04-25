@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
@@ -14,23 +14,31 @@ interface AppShellProps {
   children: React.ReactNode;
 }
 
+// Use memo to prevent unnecessary re-renders
+const MemoizedSidebar = memo(Sidebar);
+
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { isLoading, user } = useAuth();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
-  // Log page navigation for monitoring - avoid logging on every render
+  // Log page navigation for monitoring - use a ref to track previous path
   useEffect(() => {
     if (user && location.pathname) {
-      try {
-        ErrorLoggingService.logError({
-          action: 'page_navigation',
-          error_message: `User navigated to: ${location.pathname}`,
-          profile_type: (user.role as ProfileType) || 'unauthenticated'
-        });
-      } catch (error) {
-        console.error('Failed to log navigation:', error);
-      }
+      // Debounce navigation logging to prevent multiple logs for the same path
+      const logTimer = setTimeout(() => {
+        try {
+          ErrorLoggingService.logError({
+            action: 'page_navigation',
+            error_message: `User navigated to: ${location.pathname}`,
+            profile_type: (user.role as ProfileType) || 'unauthenticated'
+          });
+        } catch (error) {
+          console.error('Failed to log navigation:', error);
+        }
+      }, 100);
+      
+      return () => clearTimeout(logTimer);
     }
   }, [location.pathname, user]);
   
@@ -40,7 +48,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                       location.pathname === '/404' ||
                       location.pathname.includes('/auth/');
 
-  // Skip additional checks when on public pages
+  // Public pages use simplified layout
   if (isPublicPage) {
     return <ThemeProvider>{children}</ThemeProvider>;
   }
@@ -54,12 +62,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     <ThemeProvider>
       <SidebarProvider defaultOpen={true}>
         <div className="flex h-screen w-full overflow-hidden bg-background">
-          <Sidebar />
+          <MemoizedSidebar />
           <SidebarRail />
           <SidebarInset enableScroll={true}>
             <div className="flex flex-1 flex-col h-full">
               <Navbar onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-              <main className="flex-1 bg-background p-4 md:p-6">
+              <main className="flex-1 bg-background p-4 md:p-6 overflow-auto">
                 {children}
               </main>
               <footer className="border-t py-4 px-6 bg-card">

@@ -28,9 +28,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     // Set auth check completed flag
     setAuthChecked(true);
     
-    // Redirect to login if not authenticated
-    if (!user && location.pathname !== '/login' && location.pathname !== '/signup' && 
-        !location.pathname.includes('/auth/') && location.pathname !== '/404') {
+    const publicPaths = ['/login', '/signup', '/404'];
+    const isPublicPath = publicPaths.includes(location.pathname) || location.pathname.includes('/auth/');
+    
+    // Redirect to login if not authenticated and not on public path
+    if (!user && !isPublicPath) {
       // Only show toast for non-initial loads to prevent flicker
       if (document.referrer) {
         toast.error('Please log in to continue', {
@@ -50,7 +52,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Log 404 errors for valid users - only if on an unknown route
   useEffect(() => {
-    const isKnownRoute = ['/login', '/dashboard', '/404', '/'].includes(location.pathname);
+    const knownRoutes = ['/login', '/dashboard', '/404', '/', '/privacy-policy', '/terms', '/help'];
+    const isKnownRoute = knownRoutes.includes(location.pathname) || 
+                       location.pathname.startsWith('/admin') ||
+                       location.pathname.startsWith('/student') ||
+                       location.pathname.startsWith('/teacher') ||
+                       location.pathname.startsWith('/parent') ||
+                       location.pathname.startsWith('/auth') ||
+                       location.pathname.startsWith('/profile');
     
     if (!isKnownRoute && user && !isLoading) {
       try {
@@ -66,10 +75,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [location.pathname, user, isLoading]);
 
-  // Show transparent loading state only during initial auth check
-  // After auth check, we still render null but for different cases
-  if (!authChecked || isLoading || (!user && location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/404')) {
-    return null; // Return null during auth check and redirects
+  // Show loading state only during initial auth check
+  if (!authChecked && isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    ); 
+  }
+
+  // After auth check, handle special cases
+  if (!user && location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/404' && !location.pathname.includes('/auth/')) {
+    return null; // Return null during redirects
   }
 
   return (

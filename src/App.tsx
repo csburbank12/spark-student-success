@@ -1,5 +1,5 @@
 
-import React, { useEffect, Suspense } from "react";
+import React, { useEffect, Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
@@ -8,6 +8,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
 import { ErrorMonitoringService } from "./services/ErrorMonitoringService";
 import { useErrorLogging } from "@/hooks/useErrorLogging";
+
+// Optimized loader component
+const AppLoader = () => (
+  <div className="flex h-screen items-center justify-center bg-background">
+    <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+  </div>
+);
 
 function App() {
   const { isLoading } = useAuth();
@@ -21,11 +28,14 @@ function App() {
     );
   }, []);
   
-  // Log 404 errors - modified to avoid false positives
+  // Optimized 404 error logging
   useEffect(() => {
     if (isLoading) return; // Skip when auth is still loading
     
-    const isKnownRoute = routes.some(route => {
+    const specialPaths = ['/', '/login', '/404', '/privacy-policy', '/terms', '/help'];
+    const isSpecialPath = specialPaths.includes(location.pathname);
+    
+    const isKnownRoute = isSpecialPath || routes.some(route => {
       // Handle exact paths
       if (route.path === location.pathname) return true;
       
@@ -39,21 +49,14 @@ function App() {
     });
     
     // Only log unknown routes that aren't special paths
-    if (!isKnownRoute && 
-        location.pathname !== "/" && 
-        location.pathname !== "/login" && 
-        location.pathname !== "/404") {
+    if (!isKnownRoute) {
       log404Error(location.pathname);
     }
   }, [location.pathname, log404Error, isLoading]);
 
-  // Show consistent loading state during initial auth check
+  // Simplified loading state during initial auth check
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
+    return <AppLoader />;
   }
 
   return (
@@ -65,11 +68,7 @@ function App() {
             path={route.path}
             element={
               <GlobalErrorBoundary component={`Route-${route.path}`}>
-                <Suspense fallback={
-                  <div className="flex h-screen items-center justify-center bg-background">
-                    <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-                  </div>
-                }>
+                <Suspense fallback={<AppLoader />}>
                   {route.element}
                 </Suspense>
               </GlobalErrorBoundary>

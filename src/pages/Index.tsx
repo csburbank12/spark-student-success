@@ -10,20 +10,14 @@ const Index = () => {
   useEffect(() => {
     // Only redirect after auth is checked
     if (!isLoading) {
-      if (user) {
-        navigate("/dashboard", { replace: true });
-      } else {
-        navigate("/login", { replace: true });
-      }
+      navigate(user ? "/dashboard" : "/login", { replace: true });
     }
   }, [navigate, user, isLoading]);
 
-  // Return minimal loading state to prevent flash
+  // Minimal inline loader to prevent layout shifts
   return (
     <div className="flex h-screen items-center justify-center bg-background">
-      {isLoading && (
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-      )}
+      <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
     </div>
   );
 };

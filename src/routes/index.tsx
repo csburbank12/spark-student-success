@@ -13,6 +13,7 @@ import DashboardManager from "./DashboardManager";
 import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
 import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
 import SystemMonitoringDashboard from "@/components/error-handling/SystemMonitoringDashboard";
+import ConsentSettings from "@/pages/ConsentSettings";
 
 // Dynamic imports for base pages
 const Login = lazy(() => import("@/pages/Login"));
@@ -22,6 +23,7 @@ const QADashboard = lazy(() => import("@/pages/QADashboard"));
 const WellLensDashboard = lazy(() => import("@/pages/WellLensDashboard"));
 const Profiles = lazy(() => import("@/pages/Profiles"));
 const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
+const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
 
 // Create a suspense wrapper for lazy loaded components
 const SuspenseWrapper = ({ children }: { children: ReactNode }) => (
@@ -60,6 +62,18 @@ const systemMonitoringRoute = {
   element: createProtectedRoute(SystemMonitoringDashboard, "SystemMonitoring")
 };
 
+// Explicit privacy routes
+const privacyRoutes = [
+  {
+    path: "/privacy-policy",
+    element: createProtectedRoute(PrivacyPolicy, "PrivacyPolicy")
+  },
+  {
+    path: "/consent-settings",
+    element: createProtectedRoute(ConsentSettings, "ConsentSettings")
+  }
+];
+
 // Combine all routes
 export const routes = [
   {
@@ -96,6 +110,8 @@ export const routes = [
   },
   // Add the new system monitoring route
   systemMonitoringRoute,
+  // Add privacy routes
+  ...privacyRoutes
 ];
 
 // Add all the remaining routes
