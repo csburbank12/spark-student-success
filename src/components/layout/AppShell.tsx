@@ -6,10 +6,9 @@ import { SidebarInset } from '@/components/ui/sidebar';
 import { SidebarRail } from '@/components/ui/sidebar';
 import Sidebar from './Sidebar';
 import { Navbar } from './Navbar';
-import { Loader } from '@/components/ui/loader';
 import { useLocation, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
-import { ErrorLoggingService } from '@/services/ErrorLoggingService';
+import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -27,7 +26,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         ErrorLoggingService.logError({
           action: 'page_navigation',
           error_message: `User navigated to: ${location.pathname}`,
-          profile_type: user.role || 'unauthenticated'
+          profile_type: (user.role as ProfileType) || 'unauthenticated'
         });
       } catch (error) {
         console.error('Failed to log navigation:', error);

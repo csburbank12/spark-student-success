@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { ErrorLoggingService } from '@/services/ErrorLoggingService';
+import { ProfileType } from '@/services/ErrorLoggingService';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -51,7 +52,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           action: 'navigation_error',
           error_message: `User attempted to access non-existent route: ${location.pathname}`,
           status_code: '404',
-          profile_type: user.role || 'unknown'
+          profile_type: (user.role as ProfileType) || 'unknown'
         });
       } catch (error) {
         console.error('Error logging navigation error:', error);
