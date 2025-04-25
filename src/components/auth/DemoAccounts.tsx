@@ -1,29 +1,10 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { TermsAgreement } from "./TermsAgreement";
-import { toast } from "sonner";
-import { ErrorLoggingService, ProfileType } from "@/services/ErrorLoggingService";
-import { UserRole } from "@/types/roles";
-import { demoUsers } from "@/data/demoUsers";
-import { 
-  Card, 
-  CardContent 
-} from "@/components/ui/card";
-import { 
-  School, 
-  User, 
-  Users, 
-  UserPlus 
-} from "lucide-react";
 
-interface DemoAccount {
-  role: string;
-  name: string;
-  email: string;
-  description: string;
-  icon: React.ReactNode;
-  iconClass: string;
-}
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { School, User, Users, UserPlus } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { demoUsers } from "@/data/demoUsers";
+import { UserRole } from "@/types/roles";
 
 interface DemoAccountsProps {
   presetLogin: (role: string) => void;
@@ -44,86 +25,70 @@ export const DemoAccounts = ({
   setAgreedToTerms,
   handleSubmit,
 }: DemoAccountsProps) => {
-  const demoAccounts: DemoAccount[] = [
-    { 
-      role: UserRole.student, 
+  const demoAccounts = [
+    {
+      role: UserRole.student,
       name: demoUsers[UserRole.student].name,
       email: demoUsers[UserRole.student].email,
-      description: "Access student dashboard, mood tracking, SEL resources, and digital journal",
+      description: "Access student dashboard and resources",
       icon: <User className="h-5 w-5" />,
       iconClass: "bg-emerald-100 text-emerald-600"
     },
-    { 
-      role: UserRole.teacher, 
+    {
+      role: UserRole.teacher,
       name: demoUsers[UserRole.teacher].name,
       email: demoUsers[UserRole.teacher].email,
-      description: "View student data, assign interventions, and track progress",
+      description: "View student data and assign tasks",
       icon: <Users className="h-5 w-5" />,
       iconClass: "bg-blue-100 text-blue-600"
     },
-    { 
-      role: UserRole.admin, 
+    {
+      role: UserRole.admin,
       name: demoUsers[UserRole.admin].name,
       email: demoUsers[UserRole.admin].email,
-      description: "Manage school settings, users, and access analytics",
+      description: "Manage school settings and analytics",
       icon: <School className="h-5 w-5" />,
       iconClass: "bg-purple-100 text-purple-600"
     },
-    { 
-      role: UserRole.parent, 
+    {
+      role: UserRole.parent,
       name: demoUsers[UserRole.parent].name,
       email: demoUsers[UserRole.parent].email,
-      description: "Monitor child activities, wellness, and communicate with staff",
+      description: "Monitor child progress and engage",
       icon: <UserPlus className="h-5 w-5" />,
       iconClass: "bg-amber-100 text-amber-600"
     }
   ];
 
-  const handleAccountSelect = (role: string) => {
-    try {
-      presetLogin(role);
-      toast.info(`${role.charAt(0).toUpperCase() + role.slice(1)} demo account selected`);
-    } catch (error) {
-      console.error("Error selecting demo account:", error);
-      ErrorLoggingService.logError({
-        action: "demo_account_selection",
-        error_message: `Failed to select ${role} demo account: ${error instanceof Error ? error.message : String(error)}`,
-        profile_type: role as ProfileType
-      });
-      toast.error(`Could not load ${role} demo account`);
-    }
-  };
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    try {
-      handleSubmit(e);
-    } catch (error) {
-      console.error("Error in form submission:", error);
-      ErrorLoggingService.logError({
-        action: "demo_login_submit",
-        error_message: `Demo login form submission failed: ${error instanceof Error ? error.message : String(error)}`,
-        profile_type: email.includes("@") ? email.split("@")[0] as ProfileType : "unknown"
-      });
-      toast.error("Login failed. Please try again.");
-    }
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <div className="text-center">
+        <h3 className="text-lg font-semibold mb-1">Demo Accounts</h3>
+        <p className="text-sm text-muted-foreground">
+          Select a role to explore the platform
+        </p>
+      </div>
+
       <div className="grid gap-3">
         {demoAccounts.map((account) => (
-          <Card 
+          <Card
             key={account.role}
-            className="border border-primary-100 cursor-pointer hover:bg-primary-50 transition-all"
-            onClick={() => handleAccountSelect(account.role)}
+            className={cn(
+              "border border-primary-100 cursor-pointer transition-all",
+              "hover:shadow-md hover:-translate-y-0.5 hover:bg-primary-50/50"
+            )}
+            onClick={() => presetLogin(account.role)}
           >
             <CardContent className="p-4">
-              <div className="flex items-center">
-                <div className={`mr-3 h-10 w-10 rounded-full ${account.iconClass} flex items-center justify-center`}>
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "h-10 w-10 rounded-full flex items-center justify-center",
+                  account.iconClass
+                )}>
                   {account.icon}
                 </div>
                 <div className="text-left flex-1">
-                  <p className="font-medium">{account.name}</p>
+                  <p className="font-medium text-sm">{account.name}</p>
                   <p className="text-xs text-muted-foreground">
                     {account.description}
                   </p>
@@ -133,30 +98,12 @@ export const DemoAccounts = ({
           </Card>
         ))}
       </div>
-      
-      <TermsAgreement
-        checked={agreedToTerms}
-        onCheckedChange={setAgreedToTerms}
-        id="terms-demo"
-      />
-      
-      <Button 
-        className="w-full"
-        disabled={!email || !password || !agreedToTerms || isSubmitting}
-        onClick={handleSubmit}
-        aria-busy={isSubmitting}
-      >
-        {isSubmitting ? "Logging in..." : "Log in with Selected Account"}
-      </Button>
 
       {email && !password && (
-        <p className="text-sm text-muted-foreground text-center">
-          For demo accounts, the password is always "password"
+        <p className="text-sm text-center text-muted-foreground">
+          For demo accounts, use password: "password"
         </p>
       )}
-      <p className="text-xs text-center text-muted-foreground">
-        All demo profiles are fully functional with realistic data
-      </p>
     </div>
   );
 };

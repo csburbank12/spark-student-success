@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,6 +11,7 @@ import { Link } from "react-router-dom";
 import { ErrorLoggingService } from "@/services/ErrorLoggingService";
 import { getFallbackDashboardByRole } from "@/utils/navigationUtils";
 import { UserRole } from "@/types/roles";
+import { cn } from "@/lib/utils";
 
 const Login = () => {
   const { login, user, isLoading } = useAuth();
@@ -26,7 +26,6 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // Enhanced redirection logic for better UX
   useEffect(() => {
     if (!isLoading && user) {
       const dashboardRoute = getFallbackDashboardByRole(user.role as UserRole);
@@ -35,7 +34,6 @@ const Login = () => {
     }
   }, [user, isLoading, navigate, location.state, redirectTo]);
 
-  // Updated handleSubmit with better error handling
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -65,14 +63,13 @@ const Login = () => {
   };
 
   const presetLogin = (role: string) => {
-    // Map roles to email addresses
     const demoEmails: Record<string, string> = {
       student: "jada@school.edu",
       teacher: "nguyen@school.edu",
       admin: "rodriguez@district.edu",
       parent: "sarah@family.com",
       staff: "chen@school.edu",
-      counselor: "miguel@school.edu"  // Added counselor role
+      counselor: "miguel@school.edu"
     };
 
     if (demoEmails[role]) {
@@ -82,17 +79,21 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <LoginHeader />
-      <div className="flex-1 flex items-center justify-center p-6 md:p-8">
-        <div className="bg-card w-full max-w-md p-6 md:p-8 rounded-xl shadow-sm border">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-heading font-bold">Welcome Back</h2>
-            <p className="text-muted-foreground">
-              Sign in to continue to your account
-            </p>
-          </div>
+    <div className="flex min-h-screen">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-400 to-primary-700 p-12 items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
+        <div className="relative z-10 text-white max-w-2xl">
+          <h1 className="text-4xl font-bold mb-6">ThriveTrackED</h1>
+          <p className="text-lg opacity-90">
+            Empowering education through emotional intelligence and data-driven insights.
+          </p>
+        </div>
+      </div>
 
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 md:p-12 bg-background">
+        <div className="w-full max-w-md space-y-8">
+          <LoginHeader />
+          
           {errorMessage && (
             <Alert variant="destructive" className="mb-4">
               <AlertTitle>Login Error</AlertTitle>
@@ -100,28 +101,33 @@ const Login = () => {
             </Alert>
           )}
 
-          <LoginForm
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            isSubmitting={isSubmitting}
-            agreedToTerms={agreedToTerms}
-            setAgreedToTerms={setAgreedToTerms}
-            handleSubmit={handleSubmit}
-          />
+          <div className={cn(
+            "bg-card border rounded-xl p-6 shadow-sm space-y-6",
+            "transition-all duration-200 hover:shadow-md"
+          )}>
+            <LoginForm
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              isSubmitting={isSubmitting}
+              agreedToTerms={agreedToTerms}
+              setAgreedToTerms={setAgreedToTerms}
+              handleSubmit={handleSubmit}
+            />
+          </div>
 
-          <DemoAccounts
-            presetLogin={presetLogin}
-            email={email}
-            password={password}
-            isSubmitting={isSubmitting}
-            agreedToTerms={agreedToTerms}
-            setAgreedToTerms={setAgreedToTerms}
-            handleSubmit={handleSubmit}
-          />
+          <div className="mt-8 space-y-6">
+            <DemoAccounts
+              presetLogin={presetLogin}
+              email={email}
+              password={password}
+              isSubmitting={isSubmitting}
+              agreedToTerms={agreedToTerms}
+              setAgreedToTerms={setAgreedToTerms}
+              handleSubmit={handleSubmit}
+            />
 
-          <div className="mt-8 space-y-4">
             <ConfidentialityNotice />
             
             <Alert className="bg-blue-50 border-blue-200 text-blue-900">
@@ -129,8 +135,7 @@ const Login = () => {
               <AlertTitle className="font-medium">FERPA Compliance</AlertTitle>
               <AlertDescription className="mt-2 text-sm">
                 This platform is FERPA compliant. All educational records are protected in accordance with
-                the Family Educational Rights and Privacy Act. By logging in, you agree to handle student data
-                according to FERPA guidelines.
+                the Family Educational Rights and Privacy Act.
                 <div className="mt-2">
                   <Link to="/privacy-policy" className="text-blue-600 hover:underline flex items-center gap-1">
                     View our Privacy Policy 
