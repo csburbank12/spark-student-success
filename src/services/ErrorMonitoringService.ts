@@ -1,15 +1,6 @@
-
 import { MonitoringConfig } from '@/types/admin';
 import { ErrorLoggingService } from './ErrorLoggingService';
 import { ProfileType } from '@/services/ErrorLoggingService';
-
-// This is a simplified version, in a real app this would be more comprehensive
-export interface MonitoringConfig {
-  autoRepairEnabled: boolean;
-  notificationMethod: 'email' | 'popup' | 'slack' | 'all';
-  minSeverityToNotify: 'info' | 'warning' | 'error' | 'critical';
-  heartbeatIntervalMinutes: number;
-}
 
 const DEFAULT_CONFIG: MonitoringConfig = {
   autoRepairEnabled: true,

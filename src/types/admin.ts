@@ -31,3 +31,10 @@ export interface RepairStatus {
   message: string;
   timestamp: Date;
 }
+
+export interface MonitoringConfig {
+  autoRepairEnabled: boolean;
+  notificationMethod: 'email' | 'popup' | 'slack' | 'all';
+  minSeverityToNotify: 'info' | 'warning' | 'error' | 'critical';
+  heartbeatIntervalMinutes: number;
+}

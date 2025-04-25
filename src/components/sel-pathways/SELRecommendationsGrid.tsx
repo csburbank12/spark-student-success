@@ -4,7 +4,7 @@ import React from "react";
 export interface SELLesson {
   id: string;
   title: string;
-  description: string;
+  description?: string;  // Changed from required to optional
   competency_area?: string;
   recommended_moods?: string[];
   estimated_duration?: number;
@@ -38,7 +38,7 @@ export const SELRecommendationsGrid = ({ lessons, onSelectLesson }: SELRecommend
           )}
           <h3 className="font-medium text-sm mb-1">{lesson.title}</h3>
           <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
-            {lesson.description}
+            {lesson.description || "No description available"}
           </p>
           <div className="flex items-center justify-between text-xs">
             <span className="bg-primary/10 text-primary px-2 py-0.5 rounded">
