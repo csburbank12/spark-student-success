@@ -1,4 +1,5 @@
-import { supabase } from '@/integrations/supabase/client';
+
+import { callSecureFunction } from '@/utils/supabaseSecurityUtils';
 
 export interface TeacherMoodCheckIn {
   student_id: string;
@@ -19,16 +20,14 @@ function isArrayGuard<T>(data: any): data is T[] {
  */
 export const recordTeacherMoodCheckIn = async (checkIn: TeacherMoodCheckIn) => {
   try {
-    const { data, error } = await supabase
-      .rpc('insert_teacher_mood_check_in', {
-        p_student_id: checkIn.student_id,
-        p_teacher_id: checkIn.teacher_id,
-        p_mood_type: checkIn.mood_type,
-        p_energy_level: checkIn.energy_level,
-        p_notes: checkIn.notes
-      });
+    const data = await callSecureFunction('insert_teacher_mood_check_in', {
+      p_student_id: checkIn.student_id,
+      p_teacher_id: checkIn.teacher_id,
+      p_mood_type: checkIn.mood_type,
+      p_energy_level: checkIn.energy_level,
+      p_notes: checkIn.notes
+    });
 
-    if (error) throw error;
     return data;
   } catch (error) {
     console.error('Error recording teacher mood check-in:', error);
@@ -44,13 +43,11 @@ export const recordTeacherMoodCheckIn = async (checkIn: TeacherMoodCheckIn) => {
  */
 export const getTeacherMoodCheckIns = async (teacherId: string, daysBack: number = 30) => {
   try {
-    const { data, error } = await supabase
-      .rpc('get_teacher_mood_check_ins', {
-        p_teacher_id: teacherId,
-        p_days_back: daysBack
-      });
+    const data = await callSecureFunction('get_teacher_mood_check_ins', {
+      p_teacher_id: teacherId,
+      p_days_back: daysBack
+    });
 
-    if (error) throw error;
     if (isArrayGuard<any>(data)) {
       return data;
     }
@@ -69,13 +66,11 @@ export const getTeacherMoodCheckIns = async (teacherId: string, daysBack: number
  */
 export const getTeacherMoodTrends = async (studentId: string, daysBack: number = 30) => {
   try {
-    const { data, error } = await supabase
-      .rpc('get_teacher_mood_trends', {
-        p_student_id: studentId,
-        p_days_back: daysBack
-      });
+    const data = await callSecureFunction('get_teacher_mood_trends', {
+      p_student_id: studentId,
+      p_days_back: daysBack
+    });
 
-    if (error) throw error;
     if (isArrayGuard<any>(data)) {
       return data;
     }

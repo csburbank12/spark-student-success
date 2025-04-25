@@ -31,47 +31,53 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { action, params } = await req.json();
+    // Check for admin permissions
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseClient.auth.getUser();
 
-    let result;
+    if (userError) throw userError;
+    
+    // Make sure the user is authenticated
+    if (!user) {
+      throw new Error('User is not authenticated');
+    }
+
+    // Check if user has admin role
+    const { data: roleData, error: roleError } = await supabaseClient
+      .rpc('get_user_role', { user_uuid: user.id });
+
+    if (roleError) throw roleError;
+    if (roleData !== 'admin') {
+      throw new Error('Unauthorized: Only admins can access this endpoint');
+    }
+
+    // Get the query type from the request
+    const { action } = await req.json();
+
+    let result = null;
+    
+    // Perform the requested database operation
     switch (action) {
-      case 'check_rls_enabled':
-        // Check if a table has RLS enabled
-        const { tableName } = params;
-        const { data: rlsData, error: rlsError } = await supabaseClient
-          .rpc('check_rls_enabled', { p_table_name: tableName });
+      case 'check_rls_status':
+        // Fetch tables without RLS enabled
+        const { data: tablesWithoutRls, error: rlsError } = await supabaseClient
+          .rpc('check_rls_enabled_all_tables');
+          
         if (rlsError) throw rlsError;
-        result = { isEnabled: rlsData };
+        result = { tables_without_rls: tablesWithoutRls };
         break;
-
-      case 'table_structure_validation':
-        // Validate table structure
-        const { table, requiredColumns } = params;
-        const { data: columnsData, error: columnsError } = await supabaseClient
-          .rpc('get_table_columns', { p_table_name: table });
-        if (columnsError) throw columnsError;
-
-        const columnNames = columnsData.map(col => col.column_name);
-        const missingColumns = requiredColumns.filter(col => !columnNames.includes(col));
-        const hasPrimaryKey = columnsData.some(col => col.is_primary_key);
-        const hasTimestamps = columnNames.includes('created_at') && columnNames.includes('updated_at');
-
-        result = {
-          valid: missingColumns.length === 0 && hasPrimaryKey,
-          missingColumns,
-          hasPrimaryKey,
-          hasTimestamps
-        };
-        break;
-
-      case 'run_db_health_check':
-        // Run database health checks
-        const { data: healthData, error: healthError } = await supabaseClient
-          .rpc('run_db_health_check');
+        
+      case 'database_health':
+        // Check database health
+        const { data: health, error: healthError } = await supabaseClient
+          .rpc('get_database_health');
+          
         if (healthError) throw healthError;
-        result = healthData;
+        result = health;
         break;
-
+        
       default:
         throw new Error(`Unknown action: ${action}`);
     }

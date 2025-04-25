@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { callSecureFunction } from '@/utils/supabaseSecurityUtils';
 
 export interface MicroCoachLog {
   student_id: string;
@@ -19,15 +19,13 @@ function isArrayGuard<T>(data: any): data is T[] {
  */
 export const recordMicroCoachLog = async (log: MicroCoachLog) => {
   try {
-    const { data, error } = await supabase
-      .rpc('insert_micro_coach_log', {
-        p_student_id: log.student_id,
-        p_user_id: log.user_id,
-        p_viewed_prompt: log.viewed_prompt,
-        p_context: log.context
-      });
+    const data = await callSecureFunction('insert_micro_coach_log', {
+      p_student_id: log.student_id,
+      p_user_id: log.user_id,
+      p_viewed_prompt: log.viewed_prompt,
+      p_context: log.context
+    });
 
-    if (error) throw error;
     return data;
   } catch (error) {
     console.error('Error recording micro coach log:', error);
@@ -42,12 +40,10 @@ export const recordMicroCoachLog = async (log: MicroCoachLog) => {
  */
 export const getMicroCoachLogs = async (studentId?: string) => {
   try {
-    const { data, error } = await supabase
-      .rpc('get_micro_coach_logs', {
-        p_student_id: studentId || null
-      });
+    const data = await callSecureFunction('get_micro_coach_logs', {
+      p_student_id: studentId || null
+    });
 
-    if (error) throw error;
     if (isArrayGuard<any>(data)) {
       return data;
     }

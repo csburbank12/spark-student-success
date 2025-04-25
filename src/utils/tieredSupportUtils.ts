@@ -1,5 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { callSecureFunction } from '@/utils/supabaseSecurityUtils';
 
 export interface TieredSupportRecommendation {
   student_id: string;
@@ -16,17 +16,15 @@ function isArrayGuard<T>(data: any): data is T[] {
 
 export const createTieredSupportRecommendation = async (recommendation: TieredSupportRecommendation) => {
   try {
-    const { data, error } = await supabase
-      .rpc('create_tiered_support_recommendation', {
-        p_student_id: recommendation.student_id,
-        p_recommended_by: recommendation.recommended_by,
-        p_tier: recommendation.tier,
-        p_intervention_id: recommendation.intervention_id,
-        p_recommendation_notes: recommendation.recommendation_notes,
-        p_status: recommendation.status || 'pending'
-      });
+    const data = await callSecureFunction('create_tiered_support_recommendation', {
+      p_student_id: recommendation.student_id,
+      p_recommended_by: recommendation.recommended_by,
+      p_tier: recommendation.tier,
+      p_intervention_id: recommendation.intervention_id,
+      p_recommendation_notes: recommendation.recommendation_notes,
+      p_status: recommendation.status || 'pending'
+    });
 
-    if (error) throw error;
     return data;
   } catch (error) {
     console.error('Error creating tiered support recommendation:', error);
@@ -36,12 +34,10 @@ export const createTieredSupportRecommendation = async (recommendation: TieredSu
 
 export const getTieredSupportRecommendations = async (studentId: string) => {
   try {
-    const { data, error } = await supabase
-      .rpc('get_tiered_support_recommendations', {
-        p_student_id: studentId
-      });
+    const data = await callSecureFunction('get_tiered_support_recommendations', {
+      p_student_id: studentId
+    });
 
-    if (error) throw error;
     if (isArrayGuard<any>(data)) {
       return data;
     }

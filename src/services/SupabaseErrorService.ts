@@ -1,8 +1,7 @@
 
 import { PostgrestError } from '@supabase/supabase-js';
 import { ErrorLoggingService, ProfileType } from '@/hooks/useErrorLogging';
-import { supabase } from '@/integrations/supabase/client';
-import { executeSql } from '@/utils/supabaseUtils';
+import { callSecureFunction } from '@/utils/supabaseSecurityUtils';
 
 /**
  * Service to handle Supabase error reporting and analysis
@@ -34,28 +33,17 @@ export class SupabaseErrorService {
    */
   static async checkRLSPolicyIssues(tableName: string) {
     try {
-      // Check if table has RLS enabled using direct SQL query
-      const { data: rlsStatus, error: rlsError } = await executeSql(`
-        SELECT relrowsecurity
-        FROM pg_class
-        WHERE relname = '${tableName}'
-        AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
-        LIMIT 1
-      `);
+      // Use secure function calling
+      const rlsStatus = await callSecureFunction('check_rls_enabled', {
+        p_table_name: tableName
+      });
       
-      if (rlsError) throw rlsError;
+      // Check for policies using secure function
+      const policies = await callSecureFunction('get_table_policies', {
+        p_table_name: tableName
+      });
       
-      // Check for policies using direct SQL query
-      const { data: policies, error: policiesError } = await executeSql(`
-        SELECT polname as name, polcmd as operation
-        FROM pg_policy
-        WHERE relname = '${tableName}'
-        AND polnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
-      `);
-      
-      if (policiesError) throw policiesError;
-      
-      const hasRLS = rlsStatus && rlsStatus.length > 0 ? !!rlsStatus[0].relrowsecurity : false;
+      const hasRLS = rlsStatus ? true : false;
       const policiesArray = Array.isArray(policies) ? policies : [];
       
       return {
