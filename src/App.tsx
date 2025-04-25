@@ -24,6 +24,7 @@ function App() {
   const { isLoading, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { log404Error } = useErrorLogging();
   
   // Initialize error monitoring on app load
   useEffect(() => {
@@ -36,13 +37,26 @@ function App() {
   useEffect(() => {
     if (!isLoading && !user) {
       const publicPaths = ['/login', '/signup', '/404', '/privacy-policy', '/terms', '/help'];
-      const isPublicPath = publicPaths.includes(location.pathname) || location.pathname.includes('/auth/');
+      const isPublicPath = publicPaths.some(path => 
+        location.pathname === path || location.pathname.startsWith('/auth/')
+      );
       
-      if (!isPublicPath) {
-        navigate('/login', { replace: true });
+      if (!isPublicPath && !location.pathname.includes('/onboarding/')) {
+        navigate('/login', { replace: true, state: { from: location.pathname } });
       }
     }
   }, [isLoading, user, location.pathname, navigate]);
+  
+  // Log 404 errors
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (document.title.includes("404") || location.pathname === "/404") {
+        log404Error(location.pathname);
+      }
+    }, 1000);
+    
+    return () => clearTimeout(timeout);
+  }, [location.pathname, log404Error]);
 
   // Simplified loading state during initial auth check
   if (isLoading) {
@@ -59,6 +73,16 @@ function App() {
             element={route.element}
           />
         ))}
+        
+        {/* Explicit route for login to ensure it always loads */}
+        <Route 
+          path="/login" 
+          element={
+            <Suspense fallback={<AppLoader />}>
+              <Login />
+            </Suspense>
+          } 
+        />
         
         {/* Catch-all route for invalid paths - redirect to 404 page */}
         <Route 

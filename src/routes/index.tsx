@@ -1,4 +1,3 @@
-
 import { lazy, Suspense, ReactNode } from "react";
 import Layout from "@/components/Layout";
 import adminRoutes from "./adminRoutes";
@@ -84,7 +83,7 @@ const privacyRoutes = [
   }
 ];
 
-// Combine all routes
+// Update the routes constant to ensure Login page is properly referenced
 export const routes = [
   {
     path: "/",

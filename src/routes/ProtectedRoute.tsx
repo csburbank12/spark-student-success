@@ -4,8 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
 import { toast } from 'sonner';
-import { ErrorLoggingService } from '@/services/ErrorLoggingService';
-import { ProfileType } from '@/hooks/useErrorLogging';
+import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -29,7 +28,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     ErrorLoggingService.logError({
       action: 'route_access_denied',
       error_message: `Unauthenticated user attempted to access ${location.pathname}`,
-      profile_type: 'unauthenticated' as ProfileType
+      profile_type: 'unauthenticated'
     });
     
     toast.error('Please log in to access this page', {

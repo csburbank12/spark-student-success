@@ -9,13 +9,14 @@ import { DemoAccounts } from "@/components/auth/DemoAccounts";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Shield, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ErrorLoggingService } from "@/services/ErrorLoggingService";
 
 const Login = () => {
   const { login, user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const redirectTo = "/dashboard";
+  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,11 +39,19 @@ const Login = () => {
 
     try {
       await login(email, password);
-      navigate(redirectTo);
+      const from = location.state?.from || redirectTo;
+      navigate(from);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to login";
       console.error(errorMessage);
       setErrorMessage(errorMessage);
+      
+      // Log the error
+      ErrorLoggingService.logError({
+        action: 'login_attempt_failed',
+        error_message: errorMessage,
+        profile_type: 'unauthenticated'
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -55,7 +64,8 @@ const Login = () => {
       teacher: "nguyen@school.edu",
       admin: "rodriguez@district.edu",
       parent: "sarah@family.com",
-      staff: "chen@school.edu"
+      staff: "chen@school.edu",
+      counselor: "miguel@school.edu"  // Added counselor role
     };
 
     if (demoEmails[role]) {
@@ -82,6 +92,17 @@ const Login = () => {
               <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
+
+          <LoginForm
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            isSubmitting={isSubmitting}
+            agreedToTerms={agreedToTerms}
+            setAgreedToTerms={setAgreedToTerms}
+            handleSubmit={handleSubmit}
+          />
 
           <DemoAccounts
             presetLogin={presetLogin}
