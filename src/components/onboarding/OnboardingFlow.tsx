@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
+import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
 
 interface OnboardingStep {
   title: string;
@@ -45,12 +45,13 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     }
   };
 
+  const { completeOnboarding } = useOnboardingStatus();
+  
   const handleComplete = async () => {
     setIsCompleting(true);
     try {
-      // In a real implementation, we would save the onboarding completion status
-      // to the user's profile in the database
-      onComplete();
+      await completeOnboarding();
+      await onComplete();
       
       // Navigate to the appropriate dashboard based on user role
       switch (userRole) {
@@ -71,6 +72,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       }
     } catch (error) {
       console.error("Error completing onboarding:", error);
+      toast.error("Failed to complete onboarding");
     } finally {
       setIsCompleting(false);
     }
