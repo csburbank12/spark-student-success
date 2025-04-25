@@ -1,5 +1,5 @@
 
-export type ProfileType = 'student' | 'teacher' | 'admin' | 'parent' | 'staff' | 'unauthenticated' | 'unknown' | 'system';
+export type ProfileType = 'student' | 'teacher' | 'admin' | 'parent' | 'staff' | 'unauthenticated' | 'unknown' | 'system' | 'counselor';
 
 export interface ErrorLogPayload {
   action: string;

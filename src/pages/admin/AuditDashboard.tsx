@@ -3,7 +3,7 @@ import React from "react";
 import { useErrorLogs } from "@/hooks/useErrorLogs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlatformAudit } from "@/components/admin-dashboard/PlatformAudit";
+import { PlatformAudit } from "@/components/admin-dashboard/platform-audit/PlatformAudit";
 import { PlatformAuditButton } from "@/components/admin-dashboard/alerts/PlatformAuditButton";
 import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
 
