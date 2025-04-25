@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useNavigate } from 'react-router-dom';
-import { parentRoutes } from "@/components/layout/routes/parentRoutes";
+import { useNavigate, useLocation } from 'react-router-dom';
 
-// Extract a simplified version of the parent routes for the navigation
+// Updated parent nav links with active state logic
 export const parentNavLinks = [
+  { name: "Dashboard", href: "/parent-dashboard-enhanced" },
   { name: "Child Activity", href: "/child-activity" },
   { name: "Messages", href: "/messages" },
   { name: "Resources", href: "/parent-resources" },
@@ -14,7 +14,8 @@ export const parentNavLinks = [
 
 const ParentNav = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
+  
   return (
     <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4">
       <div className="text-sm flex items-center text-muted-foreground">
@@ -22,17 +23,20 @@ const ParentNav = () => {
       </div>
       
       <div className="flex flex-wrap items-center gap-2">
-        {parentNavLinks.map((link, index) => (
-          <Button 
-            key={index} 
-            variant="outline" 
-            size="sm" 
-            className="text-xs md:text-sm"
-            onClick={() => navigate(link.href)}
-          >
-            {link.name}
-          </Button>
-        ))}
+        {parentNavLinks.map((link, index) => {
+          const isActive = location.pathname === link.href;
+          return (
+            <Button 
+              key={index} 
+              variant={isActive ? "default" : "outline"} 
+              size="sm" 
+              className={`text-xs md:text-sm ${isActive ? 'bg-primary text-primary-foreground' : ''}`}
+              onClick={() => navigate(link.href)}
+            >
+              {link.name}
+            </Button>
+          );
+        })}
       </div>
     </div>
   );

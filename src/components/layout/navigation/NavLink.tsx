@@ -26,9 +26,11 @@ export const NavLink: React.FC<NavLinkProps> = ({
   const location = useLocation();
   
   // Either use provided isActive or calculate based on route
+  // Enhanced matching to consider nested routes properly
   const isActive = isActiveProp !== undefined 
     ? isActiveProp 
-    : location.pathname === to || location.pathname.startsWith(`${to}/`);
+    : location.pathname === to || 
+      (to !== '/' && location.pathname.startsWith(`${to}/`));
 
   const navLinkContent = (
     <RouterNavLink 
@@ -36,7 +38,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
       className={({ isActive }) =>
         `flex items-center gap-2 w-full ${
           isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""
-        } ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`
+        } ${isActive ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`
       }
       onClick={(e) => {
         if (isDisabled) {

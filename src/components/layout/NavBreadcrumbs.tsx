@@ -32,6 +32,16 @@ export const NavBreadcrumbs: React.FC<NavBreadcrumbsProps> = ({ path }) => {
     // Remove leading and trailing slashes and split the path
     const segments = path.split('/').filter(segment => segment !== '');
     
+    // Special case for onboarding paths
+    if (segments[0] === 'onboarding') {
+      const userType = segments[1] || '';
+      return [{
+        name: 'Onboarding',
+        path: `/onboarding/${userType}`,
+        isLast: segments.length <= 2
+      }];
+    }
+    
     return segments.map((segment, index) => {
       // Calculate the path for this breadcrumb
       const url = '/' + segments.slice(0, index + 1).join('/');
@@ -43,7 +53,11 @@ export const NavBreadcrumbs: React.FC<NavBreadcrumbsProps> = ({ path }) => {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
       
-      return { name: displayName, path: url };
+      return { 
+        name: displayName, 
+        path: url,
+        isLast: index === segments.length - 1
+      };
     });
   }, [path]);
 
@@ -52,9 +66,9 @@ export const NavBreadcrumbs: React.FC<NavBreadcrumbsProps> = ({ path }) => {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to={homeLink}>
+            <Link to={homeLink} className="flex items-center">
               <Home className="h-4 w-4 mr-1" />
-              <span className="sr-only md:not-sr-only md:inline-block">Dashboard</span>
+              <span className="sr-only md:not-sr-only md:inline-block">Home</span>
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -65,11 +79,15 @@ export const NavBreadcrumbs: React.FC<NavBreadcrumbsProps> = ({ path }) => {
             <BreadcrumbItem>
               <BreadcrumbLink 
                 asChild
-                className={index === breadcrumbItems.length - 1 ? 'font-semibold' : ''}
+                className={item.isLast ? 'font-semibold text-foreground' : ''}
               >
-                <Link to={item.path}>
-                  {item.name}
-                </Link>
+                {item.isLast ? (
+                  <span>{item.name}</span>
+                ) : (
+                  <Link to={item.path}>
+                    {item.name}
+                  </Link>
+                )}
               </BreadcrumbLink>
             </BreadcrumbItem>
           </React.Fragment>

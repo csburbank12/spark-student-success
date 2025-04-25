@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { ErrorLoggingService, ProfileType } from './ErrorLoggingService';
 import { toast } from 'sonner';
@@ -273,7 +272,6 @@ export class SystemHealthCheckService {
     }
   }
 
-  // Add the missing methods that were causing the TypeScript errors
   static async runFullHealthCheck(): Promise<SystemHealthCheckResponse> {
     const startTime = Date.now();
     
@@ -281,14 +279,14 @@ export class SystemHealthCheckService {
       // Perform various checks
       const { overallStatus, results } = await this.checkSystemHealth();
       
-      // Convert results to the expected format
+      // Convert results to the expected format with proper type for status
       const checks = results.map(result => ({
         name: result.component,
         status: result.status === 'healthy' 
-          ? 'passed' 
+          ? 'passed' as const
           : result.status === 'degraded' 
-            ? 'warning' 
-            : 'failed',
+            ? 'warning' as const
+            : 'failed' as const,
         details: result.details
       }));
       
@@ -314,7 +312,7 @@ export class SystemHealthCheckService {
         errorCount: 1,
         checks: [{
           name: 'system_check',
-          status: 'failed',
+          status: 'failed' as const,
           details: { error: error instanceof Error ? error.message : String(error) }
         }],
         timestamp: new Date().toISOString(),
@@ -401,7 +399,7 @@ export class SystemHealthCheckService {
         errorCount: 1,
         checks: [{
           name: 'pre_deploy_check',
-          status: 'failed',
+          status: 'failed' as const,
           details: { error: error instanceof Error ? error.message : String(error) }
         }],
         timestamp: new Date().toISOString(),
