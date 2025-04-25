@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { X } from "lucide-react";
-import { TrustedAdult } from "@/hooks/useTrustedAdults";
+import { TrustedAdult } from "@/types/trusted-adults";
 
 interface SelectedTrustedAdultsProps {
   trustedAdults: TrustedAdult[];

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { useTrustedAdults } from "@/hooks/useTrustedAdults";
+import { useTrustedAdults } from "@/hooks/trusted-adults/useTrustedAdults";
 import { Loader } from "@/components/ui/loader";
 import StaffSearch from "./StaffSearch";
 import StaffList from "./StaffList";
