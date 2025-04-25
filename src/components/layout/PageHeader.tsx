@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PageHeaderProps {
   title: string;
@@ -10,11 +11,31 @@ interface PageHeaderProps {
 }
 
 const PageHeader = ({ title, showBackButton = true }: PageHeaderProps) => {
+  const { user } = useAuth();
+  
+  // Determine the correct dashboard route based on user role
+  const getDashboardRoute = () => {
+    if (!user?.role) return '/dashboard';
+    
+    switch (user.role) {
+      case 'teacher':
+        return '/teacher-dashboard-enhanced';
+      case 'student':
+        return '/student-dashboard-enhanced';
+      case 'admin':
+        return '/admin-dashboard-enhanced';
+      case 'parent':
+        return '/parent-dashboard-enhanced';
+      default:
+        return '/dashboard';
+    }
+  };
+
   return (
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-4">
         {showBackButton && (
-          <Link to="/dashboard">
+          <Link to={getDashboardRoute()}>
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard

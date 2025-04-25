@@ -5,13 +5,14 @@ import { ProtectedRoute } from "@/routes/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { FileText } from "lucide-react";
+import PageHeader from "@/components/layout/PageHeader";
 
 const ConsentSettings = () => {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-heading font-bold">Privacy & Consent Settings</h2>
+        <PageHeader title="Privacy & Consent Settings" />
+        <div className="flex justify-end">
           <Button variant="outline" asChild>
             <Link to="/privacy-policy">
               <FileText className="mr-2 h-4 w-4" />

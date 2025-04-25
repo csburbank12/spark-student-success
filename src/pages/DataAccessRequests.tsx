@@ -1,18 +1,16 @@
-
 import React from "react";
 import { DataAccessRequestForm } from "@/components/privacy/DataAccessRequestForm";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
+import PageHeader from "@/components/layout/PageHeader";
 
 const DataAccessRequests = () => {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-heading font-bold">Data Access Requests</h2>
-        </div>
+        <PageHeader title="Data Access Requests" />
         
         <Alert>
           <Info className="h-4 w-4" />
