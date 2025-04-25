@@ -1,5 +1,5 @@
 
-import { Users, BarChart3, School, Settings, Shield, Keyboard, ScanSearch, AlertCircle } from "lucide-react";
+import { Users, BarChart3, School, Settings, Shield, Keyboard, ScanSearch, AlertCircle, Hammer } from "lucide-react";
 
 export const adminRoutes = [
   {
@@ -41,5 +41,10 @@ export const adminRoutes = [
     name: "Error Logs",
     href: "/admin/error-logs",
     icon: AlertCircle,
+  },
+  {
+    name: "Repair Toolkit",
+    href: "/admin",
+    icon: Hammer,
   },
 ];

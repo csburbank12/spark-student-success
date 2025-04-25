@@ -29,12 +29,12 @@ const queryClient = new QueryClient({
         // Retry other errors up to 2 times
         return failureCount < 2;
       },
-      meta: {
-        onError: (error: Error) => {
-          console.error('Query error:', error);
-        }
-      }
     },
+    mutations: {
+      onError: (error) => {
+        console.error('Mutation error:', error);
+      }
+    }
   },
 })
 

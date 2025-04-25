@@ -9,6 +9,7 @@ import DashboardStatsGrid from "@/components/admin-dashboard/DashboardStatsGrid"
 import SystemHealthCard from "@/components/admin-dashboard/SystemHealthCard";
 import RecentActivityCard from "@/components/admin-dashboard/RecentActivityCard";
 import SystemAlertsCard from "@/components/admin-dashboard/SystemAlertsCard";
+import RepairToolkit from "@/components/admin-dashboard/repair-toolkit/RepairToolkit";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -37,6 +38,7 @@ const AdminDashboard = () => {
           <TabsTrigger value="schools">Schools</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="repair">Repair & Recovery</TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-4 pt-4">
@@ -78,6 +80,10 @@ const AdminDashboard = () => {
               <p className="text-muted-foreground">System analytics dashboard coming soon</p>
             </CardContent>
           </Card>
+        </TabsContent>
+        
+        <TabsContent value="repair" className="pt-4">
+          <RepairToolkit />
         </TabsContent>
       </Tabs>
     </div>

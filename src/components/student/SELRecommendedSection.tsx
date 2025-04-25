@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { SELLoadingState } from "@/components/sel-pathways/SELLoadingState";
 import { SELErrorState } from "@/components/sel-pathways/SELErrorState";
-import { SELRecommendationsGrid } from "@/components/sel-pathways/SELRecommendationsGrid";
+import { SELRecommendationsGrid, SELLesson } from "@/components/sel-pathways/SELRecommendationsGrid";
 import { Sparkles } from "lucide-react";
 import { useErrorLogging } from "@/hooks/useErrorLogging";
 
@@ -53,7 +53,7 @@ export const SELRecommendedSection = () => {
             thumbnail: "/img/sel-communication.svg",
             activity_type: "Activity"
           },
-        ];
+        ] as SELLesson[];
       } catch (err) {
         logError({
           action: "fetch_sel_recommendations",
@@ -86,7 +86,7 @@ export const SELRecommendedSection = () => {
     }
   }, [error, logError]);
 
-  const handleSelectLesson = (lesson: any) => {
+  const handleSelectLesson = (lesson: SELLesson) => {
     // Handle lesson selection
     console.log("Selected lesson:", lesson);
   };
