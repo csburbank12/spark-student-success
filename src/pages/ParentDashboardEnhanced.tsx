@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import PageHeader from "@/components/layout/PageHeader";
 import ChildSelector from "./parent-dashboard-enhanced/ChildSelector";
 import WellnessSummaryCard from "./parent-dashboard-enhanced/WellnessSummaryCard";
 import ParentStatCardsRow from "./parent-dashboard-enhanced/ParentStatCardsRow";
@@ -9,9 +11,6 @@ import WellnessTab from "./parent-dashboard-enhanced/WellnessTab";
 import AcademicsTab from "./parent-dashboard-enhanced/AcademicsTab";
 import ResourcesTab from "./parent-dashboard-enhanced/ResourcesTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { toast } from "sonner";
 
 const ParentDashboardEnhanced = () => {
   const { user } = useAuth();
@@ -141,10 +140,11 @@ const ParentDashboardEnhanced = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-heading font-bold">
-          Welcome, {user?.name?.split(" ")[0]}!
-        </h2>
+      <PageHeader 
+        title={`Welcome, ${user?.name?.split(" ")[0]}!`} 
+        showBackButton={false}
+      />
+      <div className="flex justify-end">
         <ChildSelector 
           childrenList={children} 
           selectedChild={selectedChild} 
