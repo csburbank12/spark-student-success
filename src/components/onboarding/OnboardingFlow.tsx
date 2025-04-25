@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
 import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
+import { toast } from "sonner";
 
 interface OnboardingStep {
   title: string;
@@ -53,7 +54,6 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       await completeOnboarding();
       await onComplete();
       
-      // Navigate to the appropriate dashboard based on user role
       switch (userRole) {
         case UserRole.teacher:
           navigate('/teacher-dashboard-enhanced');
@@ -80,7 +80,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
 
   const currentStepData = steps[currentStep];
   const isLastStep = currentStep === steps.length - 1;
-  const schoolName = user?.schoolId ? "Your School" : "Your School"; // This would normally get the school name from the school ID
+  const schoolName = user?.schoolId ? "Your School" : "Your School";
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
