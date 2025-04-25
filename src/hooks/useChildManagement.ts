@@ -11,6 +11,7 @@ export const useChildManagement = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const childParam = searchParams.get('child');
+  const [isLoading, setIsLoading] = useState(true);
   
   const [selectedChild, setSelectedChild] = useState<string>(
     childParam || (user?.children?.[0]?.id || mockParentDashboardData.children[0].id)
@@ -22,7 +23,16 @@ export const useChildManagement = () => {
     }
   }, [selectedChild, childParam, navigate]);
 
+  useEffect(() => {
+    // Simulate data loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [selectedChild]);
+
   const handleChildChange = (childId: string) => {
+    setIsLoading(true);
     setSelectedChild(childId);
     const selectedChild = mockParentDashboardData.children.find(child => child.id === childId);
     if (selectedChild) {
@@ -38,6 +48,7 @@ export const useChildManagement = () => {
     selectedChild,
     selectedChildData,
     handleChildChange,
-    children: mockParentDashboardData.children
+    children: mockParentDashboardData.children,
+    isLoading
   };
 };

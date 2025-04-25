@@ -1,3 +1,4 @@
+
 export interface Child {
   id: string;
   name: string;
@@ -30,5 +31,3 @@ export interface WellnessSummary {
   description: string;
   statusColor: string;
 }
-
-export type RiskLevel = 'low' | 'medium' | 'high';

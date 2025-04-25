@@ -10,10 +10,11 @@ import ParentNav from "./parent-dashboard-enhanced/ParentNav";
 import { getRiskColor } from "@/data/mockParentDashboard";
 import { useChildManagement } from "@/hooks/useChildManagement";
 import { RiskLevel } from "@/types/parent-dashboard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ParentDashboardEnhanced = () => {
   const { user } = useAuth();
-  const { selectedChild, selectedChildData, handleChildChange, children } = useChildManagement();
+  const { selectedChild, selectedChildData, handleChildChange, children, isLoading } = useChildManagement();
   const [activeTab, setActiveTab] = useState<string>("overview");
 
   const handleTabChange = (value: string) => {
@@ -49,7 +50,11 @@ const ParentDashboardEnhanced = () => {
       
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-medium">
-          {selectedChild ? children.find(child => child.id === selectedChild)?.name + "'s Dashboard" : "Child Dashboard"}
+          {isLoading ? (
+            <Skeleton className="h-8 w-48" />
+          ) : (
+            selectedChild ? children.find(child => child.id === selectedChild)?.name + "'s Dashboard" : "Child Dashboard"
+          )}
         </h2>
         <ChildSelector 
           childrenList={children} 
@@ -58,37 +63,51 @@ const ParentDashboardEnhanced = () => {
         />
       </div>
 
-      <WellnessSummaryCard
-        childData={selectedChildData}
-        getWellnessSummary={() => ({
-          title: selectedChildData.behaviorRiskLevel === "high" 
-            ? "Needs Additional Support"
-            : selectedChildData.behaviorRiskLevel === "medium"
-            ? "Some Areas Need Support"
-            : "Doing Well Overall",
-          description: selectedChildData.behaviorRiskLevel === "high"
-            ? "Our team has noticed some challenges that may need attention."
-            : selectedChildData.behaviorRiskLevel === "medium"
-            ? "Your child is doing well in some areas but could use extra support in others."
-            : "Your child is showing positive engagement and wellness at school.",
-          statusColor: getRiskColor(selectedChildData.behaviorRiskLevel as RiskLevel)
-        })}
-        getTrendIcon={(trend) => {
-          if (trend === "up") return <span className="text-green-500">↑</span>;
-          if (trend === "down") return <span className="text-red-500">↓</span>;
-          return null;
-        }}
-      />
+      {isLoading ? (
+        <div className="space-y-6">
+          <Skeleton className="h-[200px] w-full" />
+          <div className="grid gap-4 md:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-[100px]" />
+            ))}
+          </div>
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      ) : (
+        <>
+          <WellnessSummaryCard
+            childData={selectedChildData}
+            getWellnessSummary={() => ({
+              title: selectedChildData.behaviorRiskLevel === "high" 
+                ? "Needs Additional Support"
+                : selectedChildData.behaviorRiskLevel === "medium"
+                ? "Some Areas Need Support"
+                : "Doing Well Overall",
+              description: selectedChildData.behaviorRiskLevel === "high"
+                ? "Our team has noticed some challenges that may need attention."
+                : selectedChildData.behaviorRiskLevel === "medium"
+                ? "Your child is doing well in some areas but could use extra support in others."
+                : "Your child is showing positive engagement and wellness at school.",
+              statusColor: getRiskColor(selectedChildData.behaviorRiskLevel as RiskLevel)
+            })}
+            getTrendIcon={(trend) => {
+              if (trend === "up") return <span className="text-green-500">↑</span>;
+              if (trend === "down") return <span className="text-red-500">↓</span>;
+              return null;
+            }}
+          />
 
-      <ParentStatCardsRow selectedChildData={selectedChildData} />
+          <ParentStatCardsRow selectedChildData={selectedChildData} />
 
-      <DashboardTabs
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        selectedChildData={selectedChildData}
-        getHomeStrategies={getHomeStrategies}
-        getRiskColor={getRiskColor}
-      />
+          <DashboardTabs
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            selectedChildData={selectedChildData}
+            getHomeStrategies={getHomeStrategies}
+            getRiskColor={getRiskColor}
+          />
+        </>
+      )}
     </div>
   );
 };
