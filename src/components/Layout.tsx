@@ -1,11 +1,10 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppShell } from './layout/AppShell';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { ErrorLoggingService } from '@/services/ErrorLoggingService';
-import { ProfileType } from '@/services/ErrorLoggingService';
+import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,6 +14,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isLoading } = useAuth();
+  const [authChecked, setAuthChecked] = useState(false);
   
   // Scroll to top on route change
   useEffect(() => {
@@ -25,12 +25,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   useEffect(() => {
     if (isLoading) return; // Skip if still loading auth state
     
+    // Set auth check completed flag
+    setAuthChecked(true);
+    
     // Redirect to login if not authenticated
     if (!user && location.pathname !== '/login' && location.pathname !== '/signup' && 
         !location.pathname.includes('/auth/') && location.pathname !== '/404') {
-      toast.error('Please log in to continue', {
-        id: 'auth-redirect' // Using ID prevents duplicate toasts
-      });
+      // Only show toast for non-initial loads to prevent flicker
+      if (document.referrer) {
+        toast.error('Please log in to continue', {
+          id: 'auth-redirect' // Using ID prevents duplicate toasts
+        });
+      }
       navigate('/login', { replace: true });
       return;
     }
@@ -60,9 +66,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [location.pathname, user, isLoading]);
 
-  // Show transparent loading state while checking auth
-  if (isLoading) {
-    return null; // Return null to prevent flickering during auth check
+  // Show transparent loading state only during initial auth check
+  // After auth check, we still render null but for different cases
+  if (!authChecked || isLoading || (!user && location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/404')) {
+    return null; // Return null during auth check and redirects
   }
 
   return (

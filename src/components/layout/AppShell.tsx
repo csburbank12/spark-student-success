@@ -40,19 +40,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                       location.pathname === '/404' ||
                       location.pathname.includes('/auth/');
 
-  // Return simple loader during initial auth check
-  if (isLoading) {
-    return null; // Return nothing during auth loading to prevent flicker
-  }
-  
-  // Redirect to login if not authenticated and not on a public page
-  if (!user && !isPublicPage) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  // For public pages, render without the sidebar and navbar
+  // Skip additional checks when on public pages
   if (isPublicPage) {
     return <ThemeProvider>{children}</ThemeProvider>;
+  }
+  
+  // For authenticated pages, ensure the user is logged in
+  if (!isLoading && !user) {
+    return <Navigate to="/login" replace />;
   }
 
   return (

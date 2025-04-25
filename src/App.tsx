@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
@@ -21,19 +21,33 @@ function App() {
     );
   }, []);
   
-  // Log 404 errors
+  // Log 404 errors - modified to avoid false positives
   useEffect(() => {
-    const isKnownRoute = routes.some(route => 
-      route.path === location.pathname || 
-      (route.path.includes(':') && location.pathname.startsWith(route.path.split(':')[0]))
-    );
+    if (isLoading) return; // Skip when auth is still loading
     
-    if (!isKnownRoute && location.pathname !== "/" && location.pathname !== "/login") {
+    const isKnownRoute = routes.some(route => {
+      // Handle exact paths
+      if (route.path === location.pathname) return true;
+      
+      // Handle parameterized routes
+      if (route.path.includes(':')) {
+        const routeBase = route.path.split(':')[0];
+        return location.pathname.startsWith(routeBase);
+      }
+      
+      return false;
+    });
+    
+    // Only log unknown routes that aren't special paths
+    if (!isKnownRoute && 
+        location.pathname !== "/" && 
+        location.pathname !== "/login" && 
+        location.pathname !== "/404") {
       log404Error(location.pathname);
     }
-  }, [location.pathname, log404Error]);
+  }, [location.pathname, log404Error, isLoading]);
 
-  // Show minimal loading state during initial auth check
+  // Show consistent loading state during initial auth check
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
@@ -51,14 +65,20 @@ function App() {
             path={route.path}
             element={
               <GlobalErrorBoundary component={`Route-${route.path}`}>
-                {route.element}
+                <Suspense fallback={
+                  <div className="flex h-screen items-center justify-center bg-background">
+                    <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+                  </div>
+                }>
+                  {route.element}
+                </Suspense>
               </GlobalErrorBoundary>
             }
           />
         ))}
         
         {/* Catch-all route for invalid paths - redirect to 404 page */}
-        <Route path="*" element={<Navigate to="/404" replace />} />
+        <Route path="*" element={<Navigate to="/404" replace state={{ from: location.pathname }} />} />
       </Routes>
       <Toaster />
       <SonnerToaster position="top-right" closeButton richColors />

@@ -18,8 +18,14 @@ const Index = () => {
     }
   }, [navigate, user, isLoading]);
 
-  // Return null to avoid any flicker during redirection
-  return null;
+  // Return minimal loading state to prevent flash
+  return (
+    <div className="flex h-screen items-center justify-center bg-background">
+      {isLoading && (
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+      )}
+    </div>
+  );
 };
 
 export default Index;

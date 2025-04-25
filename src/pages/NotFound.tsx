@@ -27,6 +27,17 @@ const NotFound = () => {
     }
   }, [location.pathname, log404Error]);
 
+  // Auto-redirect to dashboard after a delay if user is authenticated
+  useEffect(() => {
+    if (user && location.pathname === "/404") {
+      const redirectTimer = setTimeout(() => {
+        navigate(dashboardRoute, { replace: true });
+      }, 5000); // 5 second delay
+      
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [user, location.pathname, navigate, dashboardRoute]);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="text-center space-y-6 max-w-md">
@@ -35,9 +46,14 @@ const NotFound = () => {
         <h2 className="text-2xl font-heading">Oops! That page doesn't exist</h2>
         <p className="text-muted-foreground mb-6">
           But you're still on the right track. Let's get you back where you belong.
+          {user && <span className="block mt-2 font-medium">Redirecting you automatically in a few seconds...</span>}
         </p>
         <div className="space-y-4">
-          <Button size="lg" className="w-full" onClick={() => navigate(dashboardRoute)}>
+          <Button 
+            size="lg" 
+            className="w-full" 
+            onClick={() => navigate(dashboardRoute, { replace: true })}
+          >
             <Home className="mr-2 h-4 w-4" />
             {user ? 'Return to Dashboard' : 'Go to Login'}
           </Button>

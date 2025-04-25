@@ -45,6 +45,15 @@ const createProtectedRoute = (Component: React.ComponentType, name: string) => (
   </GlobalErrorBoundary>
 );
 
+// Add public route without Layout wrapper
+const createPublicRoute = (Component: React.ComponentType, name: string) => (
+  <GlobalErrorBoundary component={name} fallback={<FallbackErrorPage />}>
+    <SuspenseWrapper>
+      <Component />
+    </SuspenseWrapper>
+  </GlobalErrorBoundary>
+);
+
 // Create new route for system monitoring dashboard
 const systemMonitoringRoute = {
   path: "/admin/system-monitoring",
@@ -55,33 +64,15 @@ const systemMonitoringRoute = {
 export const routes = [
   {
     path: "/",
-    element: (
-      <GlobalErrorBoundary component="Index" fallback={<FallbackErrorPage />}>
-        <SuspenseWrapper>
-          <Index />
-        </SuspenseWrapper>
-      </GlobalErrorBoundary>
-    ),
+    element: createPublicRoute(Index, "Index"),
   },
   {
     path: "/login",
-    element: (
-      <GlobalErrorBoundary component="Login" fallback={<FallbackErrorPage />}>
-        <SuspenseWrapper>
-          <Login />
-        </SuspenseWrapper>
-      </GlobalErrorBoundary>
-    ),
+    element: createPublicRoute(Login, "Login"),
   },
   {
     path: "/404",
-    element: (
-      <GlobalErrorBoundary component="NotFound" fallback={<FallbackErrorPage />}>
-        <SuspenseWrapper>
-          <NotFound />
-        </SuspenseWrapper>
-      </GlobalErrorBoundary>
-    ),
+    element: createPublicRoute(NotFound, "NotFound"),
   },
   {
     path: "/dashboard",
