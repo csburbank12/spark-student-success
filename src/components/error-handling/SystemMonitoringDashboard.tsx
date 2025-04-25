@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,19 +11,23 @@ import GlobalErrorBoundary from '@/components/error-handling/GlobalErrorBoundary
 import { MonitoringStatsCards } from './monitoring/MonitoringStatsCards';
 import { HealthCheckResults } from './monitoring/HealthCheckResults';
 import { MonitoringSettings } from './monitoring/MonitoringSettings';
+import { ErrorLogsSection } from './monitoring/ErrorLogsSection';
 
 const SystemMonitoringDashboard = () => {
   const [configValues, setConfigValues] = useState({
     autoRepairEnabled: true,
-    notificationMethod: 'popup',
-    minSeverityToNotify: 'error',
+    notificationMethod: 'popup' as const,
+    minSeverityToNotify: 'error' as const,
     heartbeatIntervalMinutes: 10
   });
 
   const [monitoringStats, setMonitoringStats] = useState<any>(null);
   const [healthCheckResult, setHealthCheckResult] = useState<any>(null);
   const [isRunningHealthCheck, setIsRunningHealthCheck] = useState(false);
-  const { logs, isLoading, refreshLogs } = useErrorLogs(false, 50, 0);
+  const { logs, isLoading, refreshLogs, toggleResolution } = useErrorLogs(false, 50, 0);
+  const [filteredLogs, setFilteredLogs] = useState(logs);
+  const [currentLimit, setCurrentLimit] = useState(25);
+  const [currentPage, setCurrentPage] = useState(0);
 
   // Load monitoring stats on mount
   useEffect(() => {
@@ -113,56 +116,39 @@ const SystemMonitoringDashboard = () => {
           </TabsList>
           
           <TabsContent value="errors" className="space-y-4 pt-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Latest Error Logs</CardTitle>
-                  <CardDescription>
-                    Recent errors detected across the platform
-                  </CardDescription>
+            <ErrorLogsSection 
+              isLoading={isLoading}
+              filteredLogs={filteredLogs}
+              toggleResolution={toggleResolution}
+            />
+            {filteredLogs.length > 0 && (
+              <div className="flex justify-between items-center mt-4">
+                <div className="text-sm text-muted-foreground">
+                  Showing {currentPage * currentLimit + 1} to {Math.min((currentPage + 1) * currentLimit, filteredLogs.length)} of {filteredLogs.length} errors
                 </div>
-                <Button variant="outline" size="sm" onClick={refreshLogs}>
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="text-center py-6">Loading error logs...</div>
-                ) : logs.length > 0 ? (
-                  <div className="space-y-4">
-                    {logs.map((log) => (
-                      <div key={log.id} className="border rounded-md p-4">
-                        <div className="flex justify-between mb-2">
-                          <span className="text-sm font-medium">{log.action}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(log.timestamp).toLocaleString()}
-                          </span>
-                        </div>
-                        <p className="text-sm">{log.error_message}</p>
-                        <div className="mt-2 flex gap-2 text-xs">
-                          <span className="bg-muted px-2 py-1 rounded-md">
-                            Profile: {log.profile_type || "unknown"}
-                          </span>
-                          {log.status_code && (
-                            <span className="bg-muted px-2 py-1 rounded-md">
-                              Status: {log.status_code}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-6 text-muted-foreground">
-                    No error logs found. Your platform is running smoothly!
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                    disabled={currentPage === 0}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => prev + 1)}
+                    disabled={(currentPage + 1) * currentLimit >= logs.length}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
           </TabsContent>
           
-          <TabsContent value="settings" className="space-y-4 pt-4">
+          <TabsContent value="settings" className="mt-4">
             <MonitoringSettings
               configValues={configValues}
               setConfigValues={setConfigValues}
