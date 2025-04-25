@@ -24,10 +24,10 @@ const SystemMonitoringDashboard = () => {
   const [monitoringStats, setMonitoringStats] = useState<any>(null);
   const [healthCheckResult, setHealthCheckResult] = useState<any>(null);
   const [isRunningHealthCheck, setIsRunningHealthCheck] = useState(false);
-  const { logs, isLoading, refreshLogs, toggleResolution } = useErrorLogs(false, 50, 0);
-  const [filteredLogs, setFilteredLogs] = useState(logs);
   const [currentLimit, setCurrentLimit] = useState(25);
   const [currentPage, setCurrentPage] = useState(0);
+  const { logs, isLoading, refreshLogs, toggleResolution } = useErrorLogs(false, 50, 0);
+  const [filteredLogs, setFilteredLogs] = useState(logs);
 
   useEffect(() => {
     loadMonitoringStats();
@@ -119,32 +119,10 @@ const SystemMonitoringDashboard = () => {
               isLoading={isLoading}
               filteredLogs={filteredLogs}
               toggleResolution={toggleResolution}
+              currentPage={currentPage}
+              currentLimit={currentLimit}
+              onPageChange={setCurrentPage}
             />
-            {filteredLogs.length > 0 && (
-              <div className="flex justify-between items-center mt-4">
-                <div className="text-sm text-muted-foreground">
-                  Showing {currentPage * currentLimit + 1} to {Math.min((currentPage + 1) * currentLimit, filteredLogs.length)} of {filteredLogs.length} errors
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
-                    disabled={currentPage === 0}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(prev => prev + 1)}
-                    disabled={(currentPage + 1) * currentLimit >= logs.length}
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
-            )}
           </TabsContent>
           
           <TabsContent value="settings" className="mt-4">
