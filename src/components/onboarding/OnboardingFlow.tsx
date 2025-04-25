@@ -56,16 +56,16 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       
       switch (userRole) {
         case UserRole.teacher:
-          navigate('/teacher-dashboard');
+          navigate('/dashboard');
           break;
         case UserRole.student:
-          navigate('/student-dashboard');
+          navigate('/dashboard');
           break;
         case UserRole.parent:
-          navigate('/parent-dashboard');
+          navigate('/dashboard');
           break;
         case UserRole.admin:
-          navigate('/admin-dashboard');
+          navigate('/dashboard');
           break;
         default:
           navigate('/dashboard');
