@@ -39,3 +39,13 @@ export const isPublicPath = (pathname: string): boolean => {
 export const isOnboardingPath = (pathname: string): boolean => {
   return pathname.startsWith('/onboarding/');
 };
+
+/**
+ * Determine if an onboarding path should be accessible without authentication
+ * We'll make onboarding paths require authentication by default
+ */
+export const isPublicOnboardingPath = (pathname: string): boolean => {
+  // For now, no onboarding paths are considered public
+  // If specific onboarding paths should be public, list them here
+  return false;
+}

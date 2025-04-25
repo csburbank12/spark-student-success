@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { AppShell } from './layout/AppShell';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -5,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { ErrorLoggingService } from '@/services/ErrorLoggingService';
 import { UserRole } from '@/types/roles';
-import { getFallbackDashboardByRole, isPublicPath, isOnboardingPath } from '@/utils/navigationUtils';
+import { getFallbackDashboardByRole, isPublicPath } from '@/utils/navigationUtils';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -23,13 +24,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     setAuthChecked(true);
     
     const isCurrentPathPublic = isPublicPath(location.pathname);
-    const currentIsOnboardingPath = isOnboardingPath(location.pathname);
 
-    if (currentIsOnboardingPath && user) {
-      return;
-    }
-    
-    if (!user && !isCurrentPathPublic && !currentIsOnboardingPath) {
+    // If user is not authenticated and on a protected route, redirect to login
+    if (!user && !isCurrentPathPublic) {
       navigate('/login', { 
         replace: true, 
         state: { from: location.pathname } 
@@ -37,6 +34,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
+    // If authenticated user is on login page, redirect to their dashboard
     if (user && location.pathname === '/login') {
       const dashboardRoute = getFallbackDashboardByRole(user.role as UserRole);
       navigate(dashboardRoute, { replace: true });

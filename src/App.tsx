@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
 import { ErrorMonitoringService } from "./services/ErrorMonitoringService";
 import { useErrorLogging } from "@/hooks/useErrorLogging";
-import { isPublicPath, isOnboardingPath } from "./utils/navigationUtils";
+import { isPublicPath } from "./utils/navigationUtils";
 
 // Optimized loader component
 const AppLoader = () => (
@@ -37,12 +37,11 @@ function App() {
   // Redirect to login if not authenticated (except for public routes)
   useEffect(() => {
     if (!isLoading && !user) {
-      // Check if current path is public or an onboarding path
+      // Check if current path is public
       const isCurrentPathPublic = isPublicPath(location.pathname);
-      const currentIsOnboardingPath = isOnboardingPath(location.pathname);
       
-      // Only redirect to login if not on a public path or onboarding path
-      if (!isCurrentPathPublic && !currentIsOnboardingPath) {
+      // Only redirect to login if not on a public path
+      if (!isCurrentPathPublic && location.pathname !== '/login') {
         navigate('/login', { replace: true, state: { from: location.pathname } });
       }
     }

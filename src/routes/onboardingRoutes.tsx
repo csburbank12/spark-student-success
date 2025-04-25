@@ -7,8 +7,9 @@ import ParentOnboarding from "@/pages/onboarding/ParentOnboarding";
 import { UserRole } from "@/types/roles";
 import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
 import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
+import Layout from "@/components/Layout";
 
-// Onboarding routes should be accessible with or without authentication
+// Onboarding routes should require authentication
 const onboardingRoutes = [
   {
     path: "/onboarding/teacher",
@@ -17,7 +18,9 @@ const onboardingRoutes = [
         component="TeacherOnboarding"
         fallback={<FallbackErrorPage />}
       >
-        <TeacherOnboarding />
+        <Layout>
+          <TeacherOnboarding />
+        </Layout>
       </GlobalErrorBoundary>
     ),
   },
@@ -28,7 +31,9 @@ const onboardingRoutes = [
         component="StudentOnboarding"
         fallback={<FallbackErrorPage />}
       >
-        <StudentOnboarding />
+        <Layout>
+          <StudentOnboarding />
+        </Layout>
       </GlobalErrorBoundary>
     ),
   },
@@ -39,7 +44,9 @@ const onboardingRoutes = [
         component="ParentOnboarding"
         fallback={<FallbackErrorPage />}
       >
-        <ParentOnboarding />
+        <Layout>
+          <ParentOnboarding />
+        </Layout>
       </GlobalErrorBoundary>
     ),
   },
