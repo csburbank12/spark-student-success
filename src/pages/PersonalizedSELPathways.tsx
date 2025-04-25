@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { type SelLesson } from "@/components/sel-pathways/types";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,22 +15,24 @@ const PersonalizedSELPathways: React.FC = () => {
   const [selectedLesson, setSelectedLesson] = useState<SelLesson | null>(null);
   const { recommendedLessons, isLoading, isError } = useSELRecommendations();
 
+  // Prepare lesson data for player before conditional rendering
+  const playerLesson = selectedLesson ? {
+    id: selectedLesson.id,
+    title: selectedLesson.title,
+    description: selectedLesson.description || "",
+    content: selectedLesson.description || selectedLesson.content || "",
+    pathway: selectedLesson.competency_area || selectedLesson.pathway || "",
+    duration: selectedLesson.estimated_duration || selectedLesson.duration || 5,
+    difficulty: selectedLesson.difficulty || "Standard",
+    media_url: selectedLesson.content_url || undefined
+  } : null;
+
   if (isLoading) return <SELLoadingState />;
   if (isError) return <SELErrorState />;
   if (!recommendedLessons || recommendedLessons.length === 0) return <SELEmptyState />;
 
-  if (selectedLesson) {
-    const playerLesson = {
-      id: selectedLesson.id,
-      title: selectedLesson.title,
-      description: selectedLesson.description || "",
-      content: selectedLesson.description || selectedLesson.content || "",
-      pathway: selectedLesson.competency_area || selectedLesson.pathway || "",
-      duration: selectedLesson.estimated_duration || selectedLesson.duration || 5,
-      difficulty: selectedLesson.difficulty || "Standard",
-      media_url: selectedLesson.content_url || undefined
-    };
-    
+  // Display the lesson player when a lesson is selected
+  if (selectedLesson && playerLesson) {
     return (
       <SELLessonPlayer 
         lesson={playerLesson}
@@ -39,6 +42,7 @@ const PersonalizedSELPathways: React.FC = () => {
     );
   }
   
+  // Display the recommendations grid when no lesson is selected
   return (
     <div className="space-y-6">
       <PageHeader title="Personalized SEL Pathways" />
