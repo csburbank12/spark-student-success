@@ -20,7 +20,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
-  // Log page navigation for monitoring - Fixed by removing logNavigation which doesn't exist
+  // Log page navigation for monitoring
   React.useEffect(() => {
     if (user && location.pathname) {
       try {

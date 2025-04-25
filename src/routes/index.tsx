@@ -11,7 +11,6 @@ import staffRoutes from "./staffRoutes";
 import { Loader } from "@/components/ui/loader";
 import DashboardManager from "./DashboardManager";
 import { Navigate } from "react-router-dom";
-import { ProtectedRoute } from "./ProtectedRoute";
 import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
 import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
 import SystemMonitoringDashboard from "@/components/error-handling/SystemMonitoringDashboard";
@@ -36,16 +35,21 @@ const SuspenseWrapper = ({ children }: { children: ReactNode }) => (
   </Suspense>
 );
 
+// Create wrapped component with error boundary
+const createProtectedRoute = (Component: React.ComponentType, name: string) => (
+  <GlobalErrorBoundary component={name} fallback={<FallbackErrorPage />}>
+    <SuspenseWrapper>
+      <Layout>
+        <Component />
+      </Layout>
+    </SuspenseWrapper>
+  </GlobalErrorBoundary>
+);
+
 // Create new route for system monitoring dashboard
 const systemMonitoringRoute = {
   path: "/admin/system-monitoring",
-  element: (
-    <SuspenseWrapper>
-      <Layout>
-        <SystemMonitoringDashboard />
-      </Layout>
-    </SuspenseWrapper>
-  ),
+  element: createProtectedRoute(SystemMonitoringDashboard, "SystemMonitoring")
 };
 
 // Combine all routes
@@ -76,63 +80,23 @@ export const routes = [
   },
   {
     path: "/dashboard",
-    element: (
-      <GlobalErrorBoundary component="Dashboard" fallback={<FallbackErrorPage />}>
-        <SuspenseWrapper>
-          <Layout>
-            <DashboardManager />
-          </Layout>
-        </SuspenseWrapper>
-      </GlobalErrorBoundary>
-    ),
+    element: createProtectedRoute(DashboardManager, "Dashboard")
   },
   {
     path: "/qa-dashboard",
-    element: (
-      <GlobalErrorBoundary component="QADashboard" fallback={<FallbackErrorPage />}>
-        <SuspenseWrapper>
-          <Layout>
-            <QADashboard />
-          </Layout>
-        </SuspenseWrapper>
-      </GlobalErrorBoundary>
-    ),
+    element: createProtectedRoute(QADashboard, "QADashboard")
   },
   {
     path: "/welllens",
-    element: (
-      <GlobalErrorBoundary component="WellLensDashboard" fallback={<FallbackErrorPage />}>
-        <SuspenseWrapper>
-          <Layout>
-            <WellLensDashboard />
-          </Layout>
-        </SuspenseWrapper>
-      </GlobalErrorBoundary>
-    ),
+    element: createProtectedRoute(WellLensDashboard, "WellLensDashboard")
   },
   {
     path: "/profiles",
-    element: (
-      <GlobalErrorBoundary component="Profiles" fallback={<FallbackErrorPage />}>
-        <SuspenseWrapper>
-          <Layout>
-            <Profiles />
-          </Layout>
-        </SuspenseWrapper>
-      </GlobalErrorBoundary>
-    ),
+    element: createProtectedRoute(Profiles, "Profiles")
   },
   {
     path: "/profile",
-    element: (
-      <GlobalErrorBoundary component="UserProfile" fallback={<FallbackErrorPage />}>
-        <SuspenseWrapper>
-          <Layout>
-            <UserProfile />
-          </Layout>
-        </SuspenseWrapper>
-      </GlobalErrorBoundary>
-    ),
+    element: createProtectedRoute(UserProfile, "UserProfile")
   },
   // Add the new system monitoring route
   systemMonitoringRoute,

@@ -24,7 +24,6 @@ const NotFound = () => {
     // Don't log if explicitly navigating to the 404 page
     if (location.pathname !== "/404") {
       log404Error(location.pathname);
-      console.log(`404 error: ${location.pathname} not found`);
     }
   }, [location.pathname, log404Error]);
 

@@ -2,7 +2,9 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
+import { parentRoutes } from "@/components/layout/routes/parentRoutes";
 
+// Extract a simplified version of the parent routes for the navigation
 export const parentNavLinks = [
   { name: "Child Activity", href: "/child-activity" },
   { name: "Messages", href: "/messages" },
