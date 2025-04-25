@@ -1,4 +1,3 @@
-
 import { ErrorLoggingService } from './ErrorLoggingService';
 import { toast } from 'sonner';
 
@@ -200,7 +199,8 @@ export class SystemHealthCheckService {
         timestamp: new Date().toISOString(),
         duration: 0,
         checks: [],
-        warnings: []
+        warnings: [],
+        errorCount: 0
       };
       
       // Run all checks
@@ -211,6 +211,7 @@ export class SystemHealthCheckService {
       
       // Calculate overall status
       results.success = !results.checks.some(check => check.status === 'failed');
+      results.errorCount = results.checks.filter(check => check.status === 'failed').length;
       
       // Calculate duration
       results.duration = Math.round(performance.now() - startTime);
@@ -236,7 +237,8 @@ export class SystemHealthCheckService {
           status: 'failed',
           error: error instanceof Error ? error.message : 'Unknown pre-deploy check error'
         }],
-        warnings: []
+        warnings: [],
+        errorCount: 1
       };
     }
   }
@@ -344,8 +346,7 @@ export class SystemHealthCheckService {
         description: `All ${result.checks.length} checks completed successfully`,
       });
     } else {
-      const errorCount = 'errorCount' in result ? result.errorCount : 
-        result.checks.filter(check => check.status === 'failed').length;
+      const errorCount = result.errorCount;
       
       toast.error('Health Check Failed', {
         description: `${errorCount} issue${errorCount !== 1 ? 's' : ''} detected`,
@@ -375,6 +376,7 @@ export interface PreDeployResult {
   duration: number; // milliseconds
   checks: HealthCheck[];
   warnings: string[];
+  errorCount: number;
 }
 
 export interface HealthCheck {

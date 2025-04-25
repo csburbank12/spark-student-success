@@ -7,21 +7,21 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useErrorLogs } from "@/hooks/useErrorLogs";
-import { ErrorMonitoringService } from "@/services/ErrorMonitoringService";
-import { SystemHealthCheckService, HealthCheckResult } from "@/services/SystemHealthCheckService";
+import { ErrorMonitoringService, MonitoringConfig } from "@/services/ErrorMonitoringService";
+import { SystemHealthCheckService, HealthCheckResult, PreDeployResult } from "@/services/SystemHealthCheckService";
 import { AlertCircle, CheckCircle, RefreshCw, Settings, Activity, Shield } from "lucide-react";
 import GlobalErrorBoundary from '@/components/error-handling/GlobalErrorBoundary';
 import { toast } from "sonner";
 
 const SystemMonitoringDashboard = () => {
-  const [configValues, setConfigValues] = useState({
+  const [configValues, setConfigValues] = useState<MonitoringConfig>({
     autoRepairEnabled: true,
     notificationMethod: 'popup',
     minSeverityToNotify: 'error',
     heartbeatIntervalMinutes: 10
   });
   const [monitoringStats, setMonitoringStats] = useState<any>(null);
-  const [healthCheckResult, setHealthCheckResult] = useState<HealthCheckResult | null>(null);
+  const [healthCheckResult, setHealthCheckResult] = useState<HealthCheckResult | PreDeployResult | null>(null);
   const [isRunningHealthCheck, setIsRunningHealthCheck] = useState(false);
   const { logs, isLoading, refreshLogs } = useErrorLogs(false, 50, 0);
 
@@ -127,7 +127,7 @@ const SystemMonitoringDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {monitoringStats?.totalErrors || logs.length || 0}
+                {monitoringStats?.totalErrors || logs?.length || 0}
               </div>
               <p className="text-xs text-muted-foreground">
                 {monitoringStats?.resolvedErrors || 0} resolved
@@ -196,7 +196,7 @@ const SystemMonitoringDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {healthCheckResult.checks.map((check, index) => (
+                {healthCheckResult.checks && healthCheckResult.checks.map((check, index) => (
                   <div 
                     key={index} 
                     className={`flex items-center justify-between p-2 rounded-md ${
@@ -219,7 +219,7 @@ const SystemMonitoringDashboard = () => {
                   </div>
                 ))}
               </div>
-              {'warnings' in healthCheckResult && healthCheckResult.warnings.length > 0 && (
+              {'warnings' in healthCheckResult && healthCheckResult.warnings?.length > 0 && (
                 <div className="mt-4 p-3 bg-amber-500/10 rounded-md">
                   <h3 className="font-medium mb-1">Warnings</h3>
                   <ul className="text-sm space-y-1">
@@ -320,8 +320,8 @@ const SystemMonitoringDashboard = () => {
                     <Label htmlFor="notification-method">Notification Method</Label>
                     <Select 
                       value={configValues.notificationMethod}
-                      onValueChange={(value) => 
-                        setConfigValues({...configValues, notificationMethod: value as any})
+                      onValueChange={(value: 'popup' | 'email' | 'slack' | 'all') => 
+                        setConfigValues({...configValues, notificationMethod: value})
                       }
                     >
                       <SelectTrigger>
@@ -340,8 +340,8 @@ const SystemMonitoringDashboard = () => {
                     <Label htmlFor="min-severity">Minimum Severity to Notify</Label>
                     <Select 
                       value={configValues.minSeverityToNotify}
-                      onValueChange={(value) => 
-                        setConfigValues({...configValues, minSeverityToNotify: value as any})
+                      onValueChange={(value: 'info' | 'warning' | 'error' | 'critical') => 
+                        setConfigValues({...configValues, minSeverityToNotify: value})
                       }
                     >
                       <SelectTrigger>

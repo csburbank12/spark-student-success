@@ -13,7 +13,7 @@ export const SELRecommendedSection = () => {
   const { logError } = useErrorLogging();
 
   // Query to fetch recommended SEL lessons
-  const { data: recommendations, isLoading, error } = useQuery({
+  const { data: lessons, isLoading, error } = useQuery({
     queryKey: ["sel-recommendations"],
     queryFn: async () => {
       try {
@@ -24,31 +24,34 @@ export const SELRecommendedSection = () => {
             id: "sel1",
             title: "Managing Big Emotions",
             description: "Learn strategies to handle overwhelming feelings",
-            casel_competency: "Self-Management",
+            competency_area: "Self-Management",
             recommended_moods: ["stressed", "sad"],
-            duration: "15 min",
+            estimated_duration: 15,
             difficulty: "Beginner",
             thumbnail: "/img/sel-emotions.svg",
+            activity_type: "Interactive"
           },
           {
             id: "sel2",
             title: "Building Empathy",
             description: "Understanding others' perspectives and feelings",
-            casel_competency: "Social Awareness",
+            competency_area: "Social Awareness",
             recommended_moods: ["good", "okay"],
-            duration: "20 min",
+            estimated_duration: 20,
             difficulty: "Intermediate",
             thumbnail: "/img/sel-empathy.svg",
+            activity_type: "Reflection"
           },
           {
             id: "sel3",
             title: "Mindful Communication",
             description: "Express yourself clearly and listen actively",
-            casel_competency: "Relationship Skills",
+            competency_area: "Relationship Skills",
             recommended_moods: ["happy", "good"],
-            duration: "10 min",
+            estimated_duration: 10,
             difficulty: "Beginner",
             thumbnail: "/img/sel-communication.svg",
+            activity_type: "Activity"
           },
         ];
       } catch (err) {
@@ -58,6 +61,15 @@ export const SELRecommendedSection = () => {
           profile_type: "student"
         });
         throw err;
+      }
+    },
+    meta: {
+      onError: (error: Error) => {
+        logError({
+          action: "sel_recommendations_query_error",
+          error_message: error.message,
+          profile_type: "student"
+        });
       }
     },
     refetchOnWindowFocus: false,
@@ -73,6 +85,11 @@ export const SELRecommendedSection = () => {
       });
     }
   }, [error, logError]);
+
+  const handleSelectLesson = (lesson: any) => {
+    // Handle lesson selection
+    console.log("Selected lesson:", lesson);
+  };
 
   return (
     <Card className="w-full">
@@ -93,7 +110,7 @@ export const SELRecommendedSection = () => {
         ) : error ? (
           <SELErrorState />
         ) : (
-          <SELRecommendationsGrid recommendations={recommendations || []} />
+          <SELRecommendationsGrid lessons={lessons || []} onSelectLesson={handleSelectLesson} />
         )}
       </CardContent>
     </Card>

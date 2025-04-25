@@ -78,7 +78,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
 
   const currentStepData = steps[currentStep];
   const isLastStep = currentStep === steps.length - 1;
-  const schoolName = user?.school?.name || "Your School";
+  const schoolName = user?.schoolId ? "Your School" : "Your School"; // This would normally get the school name from the school ID
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
@@ -118,3 +118,4 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     </div>
   );
 };
+

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/lib/supabase";
 import { ErrorLoggingService, ProfileType } from "@/services/ErrorLoggingService";
 import { toast } from "sonner";
