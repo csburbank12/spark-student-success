@@ -8,7 +8,7 @@ export interface Child {
   id: string;
   name: string;
   grade: string;
-  status: string;
+  school: string;
 }
 
 interface ChildSelectorProps {
@@ -20,7 +20,9 @@ interface ChildSelectorProps {
 const ChildSelector = ({ selectedChild, onChange, childrenList }: ChildSelectorProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const children = user?.children || [];
+  
+  // If we have children data from the user context, use that, otherwise use the childrenList prop
+  const children = user?.children || childrenList || [];
 
   const handleChildChange = (childId: string) => {
     // Update the selected child

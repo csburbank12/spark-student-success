@@ -11,13 +11,16 @@ import WellnessTab from "./parent-dashboard-enhanced/WellnessTab";
 import AcademicsTab from "./parent-dashboard-enhanced/AcademicsTab";
 import ResourcesTab from "./parent-dashboard-enhanced/ResourcesTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useRouter } from "@/components/ui/router";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 
 const ParentDashboardEnhanced = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const router = useRouter();
   const [searchParams] = useSearchParams();
   const childParam = searchParams.get('child');
   
@@ -141,13 +144,44 @@ const ParentDashboardEnhanced = () => {
     setActiveTab(value);
   };
 
+  // Navigation links for quick access to other parent pages
+  const parentNavLinks = [
+    { name: "Child Activity", href: "/child-activity" },
+    { name: "Messages", href: "/messages" },
+    { name: "Resources", href: "/parent-resources" },
+    { name: "Privacy Settings", href: "/privacy-settings" }
+  ];
+
   return (
     <div className="space-y-6">
       <PageHeader 
         title={`Welcome, ${user?.name?.split(" ")[0]}!`} 
         showBackButton={false}
       />
-      <div className="flex justify-end">
+      
+      {/* Navigation breadcrumbs and quick links */}
+      <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4">
+        <div className="text-sm flex items-center text-muted-foreground">
+          <span className="font-medium text-foreground">Parent Dashboard</span>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-2">
+          {parentNavLinks.map((link, index) => (
+            <Button 
+              key={index} 
+              variant="outline" 
+              size="sm" 
+              className="text-xs md:text-sm"
+              onClick={() => navigate(link.href)}
+            >
+              {link.name}
+            </Button>
+          ))}
+        </div>
+      </div>
+      
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-medium">{selectedChild ? children.find(child => child.id === selectedChild)?.name + "'s Dashboard" : "Child Dashboard"}</h2>
         <ChildSelector 
           childrenList={children} 
           selectedChild={selectedChild} 
@@ -164,7 +198,7 @@ const ParentDashboardEnhanced = () => {
       <ParentStatCardsRow selectedChildData={selectedChildData} />
 
       <Tabs defaultValue="overview" value={activeTab} onValueChange={handleTabChange}>
-        <TabsList>
+        <TabsList className="w-full md:w-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="wellness">Mood & Wellness</TabsTrigger>
           <TabsTrigger value="academics">Academics</TabsTrigger>
