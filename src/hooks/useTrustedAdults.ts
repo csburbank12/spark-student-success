@@ -94,11 +94,7 @@ export function useTrustedAdults(studentId: string) {
         error_message: error.message,
         profile_type: 'student'
       });
-      toast({
-        title: "Could not load trusted adults",
-        description: "Please try again later. If the problem persists, contact support.",
-        variant: "destructive",
-      });
+      toast.error("Could not load trusted adults. Please try again later. If the problem persists, contact support.");
     }
     setIsLoading(false);
   };
@@ -118,10 +114,7 @@ export function useTrustedAdults(studentId: string) {
       
       setTrustedAdults(prev => [...prev, newAdult]);
       
-      toast({
-        title: "Trusted Adult Added",
-        description: "You can now reach out to this staff member when you need support.",
-      });
+      toast.success("Trusted Adult Added. You can now reach out to this staff member when you need support.");
       
       return newAdult;
       
@@ -153,11 +146,7 @@ export function useTrustedAdults(studentId: string) {
         error_message: error.message,
         profile_type: 'student'
       });
-      toast({
-        title: "Could not add trusted adult",
-        description: "Please try again. If the problem persists, contact support.",
-        variant: "destructive",
-      });
+      toast.error("Could not add trusted adult. Please try again. If the problem persists, contact support.");
     }
   };
 
@@ -166,10 +155,7 @@ export function useTrustedAdults(studentId: string) {
       // For now, use mock implementation
       setTrustedAdults((prev) => prev.filter(adult => adult.id !== trustedAdultId));
       
-      toast({
-        title: "Trusted Adult Removed",
-        description: "The staff member has been removed from your trusted adults.",
-      });
+      toast.success("Trusted Adult Removed. The staff member has been removed from your trusted adults.");
       
       // Original database implementation - commented out until issues are fixed
       /*
@@ -194,11 +180,7 @@ export function useTrustedAdults(studentId: string) {
         error_message: error.message,
         profile_type: 'student'
       });
-      toast({
-        title: "Could not remove trusted adult",
-        description: "Please try again. If the problem persists, contact support.",
-        variant: "destructive",
-      });
+      toast.error("Could not remove trusted adult. Please try again. If the problem persists, contact support.");
     }
   };
 

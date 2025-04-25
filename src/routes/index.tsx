@@ -1,5 +1,5 @@
 
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, ReactNode } from "react";
 import Layout from "@/components/Layout";
 import adminRoutes from "./adminRoutes";
 import teacherAdminRoutes from "./teacherAdminRoutes";
@@ -22,7 +22,7 @@ const Profiles = lazy(() => import("@/pages/Profiles"));
 const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
 
 // Create a suspense wrapper for lazy loaded components
-const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+const SuspenseWrapper = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={
     <div className="flex h-screen w-screen items-center justify-center">
       <Loader size="lg" />

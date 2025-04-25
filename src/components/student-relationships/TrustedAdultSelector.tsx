@@ -111,11 +111,7 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
         */
       } catch (error) {
         console.error('Error fetching staff members:', error);
-        toast({
-          title: "Error",
-          description: "Could not load staff members.",
-          variant: "destructive"
-        });
+        toast.error("Could not load staff members.");
       }
       setIsLoadingStaff(false);
     };
@@ -125,11 +121,7 @@ const TrustedAdultSelector: React.FC<TrustedAdultSelectorProps> = ({
 
   const handleSelectStaff = async (staffMember: StaffMember) => {
     if (trustedAdults.length >= maxSelections) {
-      toast({
-        title: "Maximum selections reached",
-        description: `You can only select up to ${maxSelections} trusted adults.`,
-        variant: "destructive"
-      });
+      toast.error(`You can only select up to ${maxSelections} trusted adults.`);
       return;
     }
 
