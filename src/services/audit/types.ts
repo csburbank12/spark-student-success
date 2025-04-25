@@ -1,5 +1,5 @@
 
-import { ProfileType } from "@/services/ErrorLoggingService";
+export type ProfileType = 'student' | 'teacher' | 'admin' | 'parent' | 'staff' | 'unauthenticated' | 'unknown' | 'system';
 
 export interface AuditResult {
   success: boolean;
