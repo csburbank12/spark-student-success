@@ -29,7 +29,6 @@ const SystemMonitoringDashboard = () => {
   const [currentLimit, setCurrentLimit] = useState(25);
   const [currentPage, setCurrentPage] = useState(0);
 
-  // Load monitoring stats on mount
   useEffect(() => {
     loadMonitoringStats();
   }, []);
