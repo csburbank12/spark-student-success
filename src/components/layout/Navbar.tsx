@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { NotificationMenu } from './navbar/NotificationMenu';
-import { UserMenu } from './navbar/UserMenu';
-import { SearchBar } from './navbar/SearchBar';
+import NotificationMenu from './navbar/NotificationMenu';
+import UserMenu from './navbar/UserMenu';
+import SearchBar from './navbar/SearchBar';
 import { ThemeToggle } from './navbar/ThemeToggle';
 import { useThemeToggle } from '@/hooks/useThemeToggle';
 

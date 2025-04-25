@@ -3,12 +3,7 @@ import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Info } from "lucide-react";
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 import { Student } from "./PredictiveSupportEngine";
 
 interface RiskFactorsCardProps {
@@ -46,21 +41,18 @@ const RiskFactorsCard: React.FC<RiskFactorsCardProps> = ({ student }) => {
     return explanations[factor] || "Additional data being analyzed.";
   };
   
+  const tooltipContent = (
+    <p className="w-80">These factors contribute to the risk score with varying levels of importance. Click on any factor to see the underlying data that led to this assessment.</p>
+  );
+
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between">
           <CardTitle>Risk Factors & Explanations</CardTitle>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Info className="h-4 w-4 text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent className="w-80">
-                <p>These factors contribute to the risk score with varying levels of importance. Click on any factor to see the underlying data that led to this assessment.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={tooltipContent}>
+            <Info className="h-4 w-4 text-muted-foreground" />
+          </Tooltip>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

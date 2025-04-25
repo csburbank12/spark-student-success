@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { SystemHealthCheckService } from "@/services/SystemHealthCheckService";
 import { useRouter } from "@/components/ui/router";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 import { Activity } from "lucide-react";
 
 /**
@@ -60,31 +60,28 @@ const SystemStatusIndicator: React.FC = () => {
     'checking': 'outline'
   }[status];
   
+  const tooltipContent = (
+    <div className="text-xs">
+      <p>System Status: <span className="font-bold capitalize">{status}</span></p>
+      {lastChecked && <p className="text-muted-foreground">Last checked: {lastChecked.toLocaleString()}</p>}
+      <p className="italic mt-1">Click to view monitoring dashboard</p>
+    </div>
+  );
+  
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge 
-            variant={badgeVariant as any}
-            className="cursor-pointer flex items-center gap-1 hover:bg-secondary"
-            onClick={navigateToMonitoringDashboard}
-          >
-            <Activity className="h-3 w-3" />
-            {status === 'checking' ? 'Checking...' : 
-              status === 'healthy' ? 'All Systems Operational' : 
-              status === 'warning' ? 'Minor Issues Detected' : 
-              'System Issues Detected'}
-          </Badge>
-        </TooltipTrigger>
-        <TooltipContent>
-          <div className="text-xs">
-            <p>System Status: <span className="font-bold capitalize">{status}</span></p>
-            {lastChecked && <p className="text-muted-foreground">Last checked: {lastChecked.toLocaleString()}</p>}
-            <p className="italic mt-1">Click to view monitoring dashboard</p>
-          </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip content={tooltipContent}>
+      <Badge 
+        variant={badgeVariant as any}
+        className="cursor-pointer flex items-center gap-1 hover:bg-secondary"
+        onClick={navigateToMonitoringDashboard}
+      >
+        <Activity className="h-3 w-3" />
+        {status === 'checking' ? 'Checking...' : 
+          status === 'healthy' ? 'All Systems Operational' : 
+          status === 'warning' ? 'Minor Issues Detected' : 
+          'System Issues Detected'}
+      </Badge>
+    </Tooltip>
   );
 };
 

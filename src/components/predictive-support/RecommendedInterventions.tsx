@@ -5,12 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { InfoIcon, PlusCircle } from "lucide-react";
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 import { Student } from "./PredictiveSupportEngine";
 
 interface Recommendation {
@@ -71,16 +66,9 @@ const RecommendedInterventions: React.FC<RecommendedInterventionsProps> = ({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1">
                       <span className="text-xs text-muted-foreground">Predicted Impact</span>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <InfoIcon className="h-3 w-3 text-muted-foreground" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="w-64">Estimated improvement in risk score if this intervention is implemented successfully</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip content="Estimated improvement in risk score if this intervention is implemented successfully">
+                        <InfoIcon className="h-3 w-3 text-muted-foreground" />
+                      </Tooltip>
                     </div>
                     <span className="text-xs font-medium">{rec.impact}%</span>
                   </div>

@@ -6,12 +6,7 @@ import {
   Brain, 
   InfoIcon
 } from "lucide-react";
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 
 const PredictionConfidenceCard: React.FC = () => {
   // Mock data for the AI model performance
@@ -23,6 +18,10 @@ const PredictionConfidenceCard: React.FC = () => {
     falsePositives: 7.2,
     falseNegatives: 5.8
   };
+
+  const tooltipContent = (
+    <p className="w-64">The overall accuracy of predictions based on cross-validation with known outcomes</p>
+  );
 
   return (
     <Card>
@@ -37,16 +36,9 @@ const PredictionConfidenceCard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <span className="text-sm font-medium">Accuracy Score</span>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <InfoIcon className="h-3 w-3 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="w-64">The overall accuracy of predictions based on cross-validation with known outcomes</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Tooltip content={tooltipContent}>
+                  <InfoIcon className="h-3 w-3 text-muted-foreground" />
+                </Tooltip>
               </div>
               <span className="text-lg font-bold">{aiModelData.accuracyScore}%</span>
             </div>

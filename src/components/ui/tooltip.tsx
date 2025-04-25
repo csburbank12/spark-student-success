@@ -10,6 +10,10 @@ interface TooltipProps {
   delayDuration?: number;
 }
 
+export const TooltipProvider = TooltipPrimitive.Provider;
+export const TooltipTrigger = TooltipPrimitive.Trigger;
+export const TooltipContent = TooltipPrimitive.Content;
+
 export const Tooltip = ({
   children,
   content,
