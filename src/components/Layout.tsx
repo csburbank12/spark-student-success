@@ -23,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Handle authentication redirects - only run once per location change
+  // Handle authentication redirects - immediately after auth state is known
   useEffect(() => {
     if (isLoading) return; // Skip if still loading auth state
     
@@ -33,15 +33,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const publicPaths = ['/login', '/signup', '/404', '/privacy-policy', '/terms', '/help'];
     const isPublicPath = publicPaths.includes(location.pathname) || location.pathname.includes('/auth/');
     
-    // Redirect to login if not authenticated and not on public path
+    // Immediate redirect to login if not authenticated and not on public path
     if (!user && !isPublicPath) {
-      // Only show toast for non-initial loads to prevent flicker
-      if (document.referrer) {
-        toast.error('Please log in to continue', {
-          id: 'auth-redirect' // Using ID prevents duplicate toasts
-        });
-      }
-      navigate('/login', { replace: true });
+      navigate('/login', { replace: true, state: { from: location.pathname } });
       return;
     }
 
@@ -53,7 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [user, isLoading, location.pathname, navigate]);
 
-  // Log navigation for analytics
+  // Log navigation for analytics - debounced to avoid excessive logging
   useEffect(() => {
     if (user && location.pathname) {
       const logTimer = setTimeout(() => {

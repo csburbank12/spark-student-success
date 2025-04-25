@@ -8,9 +8,13 @@ const Index = () => {
   const { user, isLoading } = useAuth();
   
   useEffect(() => {
-    // Only redirect after auth is checked
+    // Immediately redirect when auth state is known
     if (!isLoading) {
-      navigate(user ? "/dashboard" : "/login", { replace: true });
+      if (user) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate("/login", { replace: true });
+      }
     }
   }, [navigate, user, isLoading]);
 

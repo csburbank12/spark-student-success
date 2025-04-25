@@ -1,6 +1,6 @@
 
 import React, { useEffect, Suspense, lazy } from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import GlobalErrorBoundary from "./components/error-handling/GlobalErrorBoundary";
 import { allRoutes } from "./routes/index";
@@ -18,10 +18,12 @@ const AppLoader = () => (
 
 // Lazy load NotFound component
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Login = lazy(() => import("./pages/Login"));
 
 function App() {
-  const { isLoading } = useAuth();
+  const { isLoading, user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Initialize error monitoring on app load
   useEffect(() => {
@@ -29,6 +31,18 @@ function App() {
       console.error("Failed to initialize error monitoring:", err)
     );
   }, []);
+
+  // Redirect to login if not authenticated (except for public routes)
+  useEffect(() => {
+    if (!isLoading && !user) {
+      const publicPaths = ['/login', '/signup', '/404', '/privacy-policy', '/terms', '/help'];
+      const isPublicPath = publicPaths.includes(location.pathname) || location.pathname.includes('/auth/');
+      
+      if (!isPublicPath) {
+        navigate('/login', { replace: true });
+      }
+    }
+  }, [isLoading, user, location.pathname, navigate]);
 
   // Simplified loading state during initial auth check
   if (isLoading) {

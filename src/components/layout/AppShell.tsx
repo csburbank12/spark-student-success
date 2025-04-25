@@ -22,30 +22,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
-  // Log page navigation for monitoring - use a ref to track previous path
-  useEffect(() => {
-    if (user && location.pathname) {
-      // Debounce navigation logging to prevent multiple logs for the same path
-      const logTimer = setTimeout(() => {
-        try {
-          ErrorLoggingService.logError({
-            action: 'page_navigation',
-            error_message: `User navigated to: ${location.pathname}`,
-            profile_type: (user.role as ProfileType) || 'unauthenticated'
-          });
-        } catch (error) {
-          console.error('Failed to log navigation:', error);
-        }
-      }, 100);
-      
-      return () => clearTimeout(logTimer);
-    }
-  }, [location.pathname, user]);
-  
   // Determine if we're on a public page that doesn't need the full shell
   const isPublicPage = location.pathname === '/login' || 
                       location.pathname === '/signup' ||
                       location.pathname === '/404' ||
+                      location.pathname === '/privacy-policy' ||
+                      location.pathname === '/terms' ||
+                      location.pathname === '/help' ||
                       location.pathname.includes('/auth/');
 
   // Public pages use simplified layout
@@ -53,9 +36,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     return <ThemeProvider>{children}</ThemeProvider>;
   }
   
-  // For authenticated pages, ensure the user is logged in
+  // For authenticated pages, ensure the user is logged in - immediate redirect
   if (!isLoading && !user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
   return (
