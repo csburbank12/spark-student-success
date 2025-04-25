@@ -1,15 +1,16 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OverviewTab from "./OverviewTab";
 import WellnessTab from "./WellnessTab";
 import AcademicsTab from "./AcademicsTab";
 import ResourcesTab from "./ResourcesTab";
+import { Child, RiskLevel } from "@/types/parent-dashboard";
+import { getRiskColor } from "@/data/mockParentDashboard";
 
 interface DashboardTabsProps {
   activeTab: string;
   onTabChange: (value: string) => void;
-  selectedChildData: any;
+  selectedChildData: Child;
   getHomeStrategies: () => string[];
 }
 
@@ -33,7 +34,7 @@ const DashboardTabs = ({
       </TabsContent>
 
       <TabsContent value="wellness" className="space-y-6 pt-4">
-        <WellnessTab selectedChildData={selectedChildData} />
+        <WellnessTab selectedChildData={selectedChildData} getRiskColor={(level: RiskLevel) => getRiskColor(level)} />
       </TabsContent>
 
       <TabsContent value="academics" className="space-y-6 pt-4">

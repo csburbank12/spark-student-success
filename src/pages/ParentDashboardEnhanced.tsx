@@ -8,6 +8,8 @@ import ParentStatCardsRow from "./parent-dashboard-enhanced/ParentStatCardsRow";
 import DashboardTabs from "./parent-dashboard-enhanced/DashboardTabs";
 import ParentNav from "./parent-dashboard-enhanced/ParentNav";
 import { toast } from "sonner";
+import { mockParentDashboardData } from "@/data/mockParentDashboard";
+import { Child } from "@/types/parent-dashboard";
 
 const ParentDashboardEnhanced = () => {
   const { user } = useAuth();
@@ -16,7 +18,7 @@ const ParentDashboardEnhanced = () => {
   const childParam = searchParams.get('child');
   
   const [selectedChild, setSelectedChild] = useState<string>(
-    childParam || (user?.children?.[0]?.id || "child1")
+    childParam || (user?.children?.[0]?.id || mockParentDashboardData.children[0].id)
   );
   const [activeTab, setActiveTab] = useState<string>("overview");
 
@@ -28,57 +30,19 @@ const ParentDashboardEnhanced = () => {
 
   const handleChildChange = (childId: string) => {
     setSelectedChild(childId);
-    toast.success(`Viewing ${children.find(child => child.id === childId)?.name}'s information`);
+    const selectedChild = mockParentDashboardData.children.find(child => child.id === childId);
+    if (selectedChild) {
+      toast.success(`Viewing ${selectedChild.name}'s information`);
+    }
   };
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
   };
 
-  const children = [
-    {
-      id: "child1",
-      name: "Alex Johnson",
-      grade: "10th Grade",
-      school: "Washington High School",
-      recentMood: "Good",
-      moodTrend: "stable",
-      attendance: 92,
-      attendanceTrend: "up",
-      checkIns: 14,
-      academicStanding: "On Track",
-      behaviorRisk: 38,
-      behaviorRiskLevel: "low",
-      behaviorTrend: "down",
-      recentNotes: [
-        { date: "Apr 21, 2025", note: "Great participation in class discussion today." },
-        { date: "Apr 19, 2025", note: "Completed all assignments for the week." },
-      ],
-      alerts: 0
-    },
-    {
-      id: "child2",
-      name: "Jordan Johnson",
-      grade: "7th Grade",
-      school: "Lincoln Middle School",
-      recentMood: "Okay",
-      moodTrend: "down",
-      attendance: 85,
-      attendanceTrend: "down",
-      checkIns: 10,
-      academicStanding: "Needs Support",
-      behaviorRisk: 65,
-      behaviorRiskLevel: "medium",
-      behaviorTrend: "up",
-      recentNotes: [
-        { date: "Apr 20, 2025", note: "Struggled to stay focused in math class." },
-        { date: "Apr 18, 2025", note: "Missing one homework assignment this week." },
-      ],
-      alerts: 1
-    }
-  ];
-
-  const selectedChildData = children.find(child => child.id === selectedChild) || children[0];
+  const selectedChildData = mockParentDashboardData.children.find(
+    child => child.id === selectedChild
+  ) || mockParentDashboardData.children[0];
 
   const getHomeStrategies = () => {
     if (selectedChildData.behaviorRiskLevel === "medium" || selectedChildData.behaviorRiskLevel === "high") {
@@ -109,10 +73,10 @@ const ParentDashboardEnhanced = () => {
       
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-medium">
-          {selectedChild ? children.find(child => child.id === selectedChild)?.name + "'s Dashboard" : "Child Dashboard"}
+          {selectedChild ? mockParentDashboardData.children.find(child => child.id === selectedChild)?.name + "'s Dashboard" : "Child Dashboard"}
         </h2>
         <ChildSelector 
-          childrenList={children} 
+          childrenList={mockParentDashboardData.children} 
           selectedChild={selectedChild} 
           onChange={handleChildChange} 
         />
