@@ -1814,6 +1814,10 @@ export type Database = {
         }
         Returns: Json
       }
+      execute_sql_transaction: {
+        Args: { p_sql: string }
+        Returns: Json
+      }
       get_current_weekly_sel_focus: {
         Args: { p_school_id?: string }
         Returns: {
