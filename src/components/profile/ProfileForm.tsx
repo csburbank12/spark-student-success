@@ -33,7 +33,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-6 max-w-2xl mx-auto">
       <AvatarUpload
         currentUrl={formData.avatarUrl}
         onUploadComplete={handleAvatarUpload}
@@ -61,7 +61,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
         />
       </div>
       
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-end">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : 'Save Changes'}
         </Button>

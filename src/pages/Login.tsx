@@ -84,8 +84,8 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <LoginHeader />
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-card w-full max-w-md p-6 rounded-xl shadow-sm border">
+      <div className="flex-1 flex items-center justify-center p-6 md:p-8">
+        <div className="bg-card w-full max-w-md p-6 md:p-8 rounded-xl shadow-sm border">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-heading font-bold">Welcome Back</h2>
             <p className="text-muted-foreground">

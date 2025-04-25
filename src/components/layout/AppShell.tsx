@@ -18,7 +18,13 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
 
   // Use simplified layout for public pages
   if (isPublicPage) {
-    return <ThemeProvider>{children}</ThemeProvider>;
+    return (
+      <ThemeProvider>
+        <div className="min-h-screen w-full bg-background">
+          {children}
+        </div>
+      </ThemeProvider>
+    );
   }
   
   // Handle auth redirection
@@ -35,8 +41,10 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
           <SidebarInset enableScroll={true}>
             <div className="flex flex-1 flex-col h-full">
               <Navbar />
-              <main className="flex-1 bg-background p-4 md:p-6 overflow-auto">
-                {children}
+              <main className="flex-1 bg-background p-6 md:p-8 overflow-auto">
+                <div className="mx-auto max-w-7xl">
+                  {children}
+                </div>
               </main>
               <footer className="border-t py-4 px-6 bg-card">
                 <div className="container flex flex-col md:flex-row justify-between items-center gap-2">
@@ -57,3 +65,4 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
     </ThemeProvider>
   );
 };
+

@@ -53,21 +53,23 @@ const UserProfile: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader title="Profile Settings" />
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 className="text-lg font-medium mb-4">Personal Information</h3>
-        <ProfileForm 
-          formData={formData} 
-          setFormData={setFormData} 
-          onSubmit={handleSubmit} 
-          onCancel={handleCancel}
-          isSubmitting={isSubmitting}
-        />
-      </div>
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 className="text-lg font-medium mb-4">Notification Settings</h3>
-        <NotificationPreferences />
+      <div className="grid gap-8">
+        <div className="bg-card p-6 rounded-lg shadow-sm border">
+          <h3 className="text-lg font-medium mb-4">Personal Information</h3>
+          <ProfileForm 
+            formData={formData} 
+            setFormData={setFormData} 
+            onSubmit={handleSubmit} 
+            onCancel={handleCancel}
+            isSubmitting={isSubmitting}
+          />
+        </div>
+        <div className="bg-card p-6 rounded-lg shadow-sm border">
+          <h3 className="text-lg font-medium mb-4">Notification Settings</h3>
+          <NotificationPreferences />
+        </div>
       </div>
     </div>
   );

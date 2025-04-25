@@ -347,6 +347,7 @@ export type Database = {
           integration_id: string
           is_active: boolean | null
           updated_at: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -357,6 +358,7 @@ export type Database = {
           integration_id: string
           is_active?: boolean | null
           updated_at?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
@@ -367,6 +369,7 @@ export type Database = {
           integration_id?: string
           is_active?: boolean | null
           updated_at?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -1518,6 +1521,7 @@ export type Database = {
           last_run: string | null
           next_run: string | null
           updated_at: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -1529,6 +1533,7 @@ export type Database = {
           last_run?: string | null
           next_run?: string | null
           updated_at?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
@@ -1540,6 +1545,7 @@ export type Database = {
           last_run?: string | null
           next_run?: string | null
           updated_at?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -1804,15 +1810,17 @@ export type Database = {
         Returns: undefined
       }
       create_tiered_support_recommendation: {
-        Args: {
-          p_student_id: string
-          p_recommended_by: string
-          p_tier: number
-          p_intervention_id?: string
-          p_recommendation_notes?: string
-          p_status?: string
-        }
-        Returns: Json
+        Args:
+          | Record<PropertyKey, never>
+          | {
+              p_student_id: string
+              p_recommended_by: string
+              p_tier: number
+              p_intervention_id?: string
+              p_recommendation_notes?: string
+              p_status?: string
+            }
+        Returns: undefined
       }
       execute_sql_transaction: {
         Args: { p_sql: string }
@@ -2026,7 +2034,7 @@ export type Database = {
         Returns: undefined
       }
       safe_uuid_cast: {
-        Args: { text_id: string }
+        Args: { uuid_input: string }
         Returns: string
       }
       schedule_integration_sync: {
