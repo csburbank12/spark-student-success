@@ -10,6 +10,15 @@ import { parentRoutes } from "@/components/layout/routes/parentRoutes";
 import { universalRoutes } from "@/components/layout/routes/universalRoutes";
 import { sidebarRoutes } from "@/components/layout/sidebarRoutes";
 
+// Define a type for Route to match what NavMenu expects
+interface Route {
+  name: string;
+  href: string;
+  icon: React.ElementType;
+  badge?: number | string;
+  isDisabled?: boolean;
+}
+
 export const RoleBasedNavigation: React.FC = () => {
   const { user } = useAuth();
   const userRole = user?.role as UserRole || "";
@@ -33,12 +42,18 @@ export const RoleBasedNavigation: React.FC = () => {
 
   const roleSpecificRoutes = getRoleSpecificRoutes();
   
-  // Filter sidebar routes based on user role
-  const profileRoutes = sidebarRoutes.filter(route => 
-    route.roles.includes(userRole as UserRole)
-  );
+  // Filter sidebar routes based on user role and map to the Route format
+  const profileRoutes = sidebarRoutes
+    .filter(route => route.roles.includes(userRole as UserRole))
+    .map(route => ({
+      name: route.title,
+      href: route.href,
+      icon: route.icon as unknown as React.ElementType,
+      badge: undefined,
+      isDisabled: false
+    }));
 
-  const allRoutes = [...roleSpecificRoutes, ...profileRoutes];
+  const allRoutes = [...roleSpecificRoutes, ...profileRoutes] as Route[];
 
   return (
     <div className="space-y-6">

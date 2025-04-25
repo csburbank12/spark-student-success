@@ -1,9 +1,9 @@
-
 import { supabase } from '@/lib/supabase';
 import { ErrorLoggingService } from './ErrorLoggingService';
 import { UserRole } from '@/types/roles';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { ProfileType } from '@/hooks/useErrorLogging';
 
 // Profile routes to check for each user role
 const routesByRole = {
@@ -163,6 +163,7 @@ export class PlatformAuditService {
         .single();
 
       const currentRole = userData?.role as UserRole;
+      const currentRoleAsProfileType = currentRole.toLowerCase() as ProfileType;
 
       // Check roles - either current user or all roles if specified
       const rolesToCheck = currentUserOnly 
@@ -204,7 +205,7 @@ export class PlatformAuditService {
               ErrorLoggingService.logError({
                 action: 'audit_role_check',
                 error_message: `Failed to verify role: ${role}`,
-                profile_type: currentRole
+                profile_type: currentRoleAsProfileType
               });
             }
           }
@@ -240,7 +241,7 @@ export class PlatformAuditService {
                 ErrorLoggingService.logError({
                   action: 'audit_route_check',
                   error_message: `Route not found: ${route}`,
-                  profile_type: currentRole
+                  profile_type: currentRoleAsProfileType
                 });
               }
             }
@@ -258,7 +259,7 @@ export class PlatformAuditService {
               ErrorLoggingService.logError({
                 action: 'audit_route_check',
                 error_message: `Failed to check route: ${route}`,
-                profile_type: currentRole
+                profile_type: currentRoleAsProfileType
               });
             }
           }
@@ -291,7 +292,7 @@ export class PlatformAuditService {
                   ErrorLoggingService.logError({
                     action: 'audit_route_check',
                     error_message: `Route not found: ${route} for role ${role}`,
-                    profile_type: currentRole
+                    profile_type: currentRoleAsProfileType
                   });
                 }
               }
@@ -309,7 +310,7 @@ export class PlatformAuditService {
                 ErrorLoggingService.logError({
                   action: 'audit_route_check',
                   error_message: `Failed to check route: ${route} for role ${role}`,
-                  profile_type: currentRole
+                  profile_type: currentRoleAsProfileType
                 });
               }
             }
@@ -347,7 +348,7 @@ export class PlatformAuditService {
                 ErrorLoggingService.logError({
                   action: 'audit_component_check',
                   error_message: `Component not found: ${component}`,
-                  profile_type: currentRole
+                  profile_type: currentRoleAsProfileType
                 });
               }
             }
@@ -366,7 +367,7 @@ export class PlatformAuditService {
               ErrorLoggingService.logError({
                 action: 'audit_component_check',
                 error_message: `Failed to check component: ${component}`,
-                profile_type: currentRole
+                profile_type: currentRoleAsProfileType
               });
             }
           }

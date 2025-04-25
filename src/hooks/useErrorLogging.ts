@@ -2,8 +2,9 @@
 import { useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { UserRole } from '@/types/roles';
 
-export type ProfileType = 'student' | 'teacher' | 'admin' | 'parent' | 'staff' | 'unauthenticated' | 'unknown' | 'system';
+export type ProfileType = 'student' | 'teacher' | 'admin' | 'parent' | 'staff' | 'unauthenticated' | 'unknown' | 'system' | 'counselor';
 
 export const useErrorLogging = () => {
   const { user } = useAuth();

@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
 import { toast } from 'sonner';
 import { ErrorLoggingService } from '@/services/ErrorLoggingService';
+import { ProfileType } from '@/hooks/useErrorLogging';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -28,7 +29,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     ErrorLoggingService.logError({
       action: 'route_access_denied',
       error_message: `Unauthenticated user attempted to access ${location.pathname}`,
-      profile_type: 'unauthenticated'
+      profile_type: 'unauthenticated' as ProfileType
     });
     
     toast.error('Please log in to access this page', {
@@ -46,7 +47,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       ErrorLoggingService.logError({
         action: 'role_access_denied',
         error_message: `User with role ${userRole} attempted to access ${location.pathname} which requires roles: ${requiredRole.join(', ')}`,
-        profile_type: userRole
+        profile_type: userRole.toLowerCase() as ProfileType
       });
       
       toast.error('You do not have permission to access this page', {
