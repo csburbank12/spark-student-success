@@ -9,7 +9,8 @@ export type ProfileType =
   | 'staff' 
   | 'counselor' 
   | 'unknown' 
-  | 'unauthenticated';
+  | 'unauthenticated'
+  | 'system';
 
 export class ErrorLoggingService {
   static async logError({ 

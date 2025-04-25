@@ -1,5 +1,5 @@
 
-import { ErrorLoggingService } from '../ErrorLoggingService';
+import { ErrorLoggingService, ProfileType } from '../ErrorLoggingService';
 
 export class HeartbeatService {
   private static heartbeatInterval: number | null = null;
@@ -28,7 +28,7 @@ export class HeartbeatService {
         ErrorLoggingService.logError({
           action: 'heartbeat_failure',
           error_message: `System heartbeat detected issues: ${JSON.stringify(systemStatus)}`,
-          profile_type: 'system'
+          profile_type: 'system' as ProfileType
         });
       }
       
@@ -42,7 +42,7 @@ export class HeartbeatService {
       ErrorLoggingService.logError({
         action: 'heartbeat_error',
         error_message: error instanceof Error ? error.message : 'Unknown heartbeat error',
-        profile_type: 'system'
+        profile_type: 'system' as ProfileType
       });
     }
   }

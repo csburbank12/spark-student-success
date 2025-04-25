@@ -83,8 +83,9 @@ export class ErrorLoggingService {
 
   static async checkRecurringErrors(timeframe: string = '24h', minOccurrences: number = 3): Promise<any[]> {
     try {
+      // Using `as any` to bypass TypeScript strict checking for RPC functions
       const { data, error } = await supabase
-        .rpc('get_recurring_errors', { 
+        .rpc('get_recurring_errors' as any, { 
           p_timeframe: timeframe,
           p_min_occurrences: minOccurrences
         });

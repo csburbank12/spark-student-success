@@ -1,6 +1,6 @@
 
 import { MonitoringConfig } from '@/types/admin';
-import { ErrorLoggingService } from './ErrorLoggingService';
+import { ErrorLoggingService, ProfileType } from './ErrorLoggingService';
 import { HeartbeatService } from './monitoring/heartbeat-service';
 import { NotificationService } from './monitoring/notification-service';
 import { AutoRepairService } from './monitoring/auto-repair-service';
@@ -50,7 +50,7 @@ export class ErrorMonitoringService {
     ErrorLoggingService.logError({
       action: 'uncaught_error',
       error_message: error.message,
-      profile_type: 'system',
+      profile_type: 'system' as ProfileType,
       status_code: error.name
     });
     
@@ -72,7 +72,7 @@ export class ErrorMonitoringService {
     ErrorLoggingService.logError({
       action: 'unhandled_rejection',
       error_message: errorMessage,
-      profile_type: 'system'
+      profile_type: 'system' as ProfileType
     });
     
     if (this.config.autoRepairEnabled) {

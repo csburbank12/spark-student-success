@@ -1,5 +1,5 @@
 
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { ErrorLoggingService, ProfileType } from "@/services/ErrorLoggingService";
 
 export type FERPAAccessType = 'view' | 'edit' | 'delete' | 'create' | 'export' | 'print';

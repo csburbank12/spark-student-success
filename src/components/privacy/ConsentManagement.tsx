@@ -15,6 +15,15 @@ interface ConsentOption {
   value: boolean;
 }
 
+interface UserConsentSettings {
+  user_id: string;
+  data_collection?: boolean;
+  third_party_sharing?: boolean;
+  ai_processing?: boolean;
+  research?: boolean;
+  [key: string]: boolean | string | undefined;
+}
+
 interface ConsentManagementProps {
   studentId?: string;
 }
@@ -58,8 +67,9 @@ export const ConsentManagement: React.FC<ConsentManagementProps> = ({ studentId 
         setIsLoading(true);
         const targetId = studentId || user.id;
         
+        // Using a generic query approach to avoid type issues
         const { data, error } = await supabase
-          .from('user_consent_settings')
+          .from('user_consent_settings' as any)
           .select('*')
           .eq('user_id', targetId)
           .maybeSingle();
@@ -101,12 +111,12 @@ export const ConsentManagement: React.FC<ConsentManagementProps> = ({ studentId 
       const targetId = studentId || user.id;
       
       // Convert options array to object format for database
-      const settingsObject = consentOptions.reduce((acc, option) => {
+      const settingsObject: UserConsentSettings = consentOptions.reduce((acc, option) => {
         return { ...acc, [option.id]: option.value };
       }, { user_id: targetId });
       
       const { error } = await supabase
-        .from('user_consent_settings')
+        .from('user_consent_settings' as any)
         .upsert(settingsObject, { onConflict: 'user_id' });
       
       if (error) throw error;

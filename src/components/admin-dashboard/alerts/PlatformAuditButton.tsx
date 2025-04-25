@@ -20,7 +20,8 @@ export function PlatformAuditButton() {
         checkAllRoles: true,
         checkRoutes: true,
         checkComponents: true,
-        logErrors: true
+        logErrors: true,
+        currentUserOnly: false
       });
       
       if (auditResult.success) {
