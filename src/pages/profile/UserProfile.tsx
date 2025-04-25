@@ -4,11 +4,13 @@ import PageHeader from "@/components/layout/PageHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import NotificationPreferences from "@/components/profile/NotificationPreferences";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const UserProfile: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: "John Doe", // Default value, typically would be loaded from user context/API
-    email: "john.doe@example.com", // Default value, typically would be loaded from user context/API
+    name: "John Doe",
+    email: "john.doe@example.com",
+    avatarUrl: "",
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,8 +20,20 @@ const UserProfile: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // This would typically be an API call to update the user profile
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: formData.name.split(' ')[0],
+          last_name: formData.name.split(' ').slice(1).join(' '),
+          avatar_url: formData.avatarUrl
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      
       toast.success("Profile updated successfully!");
     } catch (error) {
       toast.error("Failed to update profile. Please try again.");
@@ -30,10 +44,10 @@ const UserProfile: React.FC = () => {
   };
   
   const handleCancel = () => {
-    // Reset form to original values
     setFormData({
-      name: "John Doe", // Would reset to original values from API/context
+      name: "John Doe",
       email: "john.doe@example.com",
+      avatarUrl: "",
     });
     toast.info("Changes cancelled");
   };

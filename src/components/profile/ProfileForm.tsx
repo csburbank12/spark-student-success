@@ -3,13 +3,19 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AvatarUpload } from "./AvatarUpload";
 
 interface ProfileFormProps {
   formData: {
     name: string;
     email: string;
+    avatarUrl?: string;
   };
-  setFormData: React.Dispatch<React.SetStateAction<{ name: string; email: string; }>>;
+  setFormData: React.Dispatch<React.SetStateAction<{
+    name: string;
+    email: string;
+    avatarUrl?: string;
+  }>>;
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
@@ -22,8 +28,18 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   onCancel,
   isSubmitting = false
 }) => {
+  const handleAvatarUpload = (url: string) => {
+    setFormData(prev => ({ ...prev, avatarUrl: url }));
+  };
+
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-6">
+      <AvatarUpload
+        currentUrl={formData.avatarUrl}
+        onUploadComplete={handleAvatarUpload}
+        fallback={formData.name?.charAt(0) || '?'}
+      />
+      
       <div className="space-y-2">
         <Label htmlFor="name">Full Name</Label>
         <Input
@@ -33,6 +49,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           disabled={isSubmitting}
         />
       </div>
+      
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -40,9 +57,10 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           type="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          disabled={isSubmitting || true} // Email typically can't be changed directly
+          disabled={isSubmitting || true}
         />
       </div>
+      
       <div className="flex gap-2">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : 'Save Changes'}
