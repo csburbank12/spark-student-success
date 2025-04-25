@@ -1,345 +1,207 @@
 
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Student } from "@/components/predictive-support/PredictiveSupportEngine";
-import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, Calendar, Clock, BookOpen, ChevronRight, ChevronsUpDown, Plus } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { Skeleton } from "@/components/ui/skeleton";
-import { format } from "date-fns";
-import { StudentSELSupportToolkit } from "./StudentSELSupportToolkit";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { WellLensAISummaryCard } from "@/components/welllens/WellLensAISummaryCard";
+import { StudentSELSupportToolkit } from "@/components/teacher/StudentSELSupportToolkit";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader } from "@/components/ui/loader";
+import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
 interface StudentInterventionViewProps {
-  studentId?: string;
-  studentName?: string;
-  onBack?: () => void;
+  studentId: string;
+  studentName: string;
+  onBack: () => void;
 }
 
-const StudentInterventionView: React.FC<StudentInterventionViewProps> = ({ 
-  studentId: propStudentId, 
-  studentName: propStudentName,
-  onBack 
+const StudentInterventionView: React.FC<StudentInterventionViewProps> = ({
+  studentId,
+  studentName,
+  onBack
 }) => {
-  const params = useParams();
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  
-  const studentId = propStudentId || params.studentId;
-  
-  // Fetch student information
-  const { data: student, isLoading } = useQuery({
+  const [activeTab, setActiveTab] = useState("overview");
+
+  // Fetch student data - Mock data for now
+  const { data: studentData, isLoading } = useQuery({
     queryKey: ["student", studentId],
     queryFn: async () => {
-      if (!studentId) return null;
-      
-      // This would be a real data fetch from the database
-      // For now using mock data
-      const mockStudent = {
+      // In a real app, this would be a call to Supabase
+      // For now, return mock data
+      return {
         id: studentId,
-        name: propStudentName || "Alex Johnson",
-        grade: "10th Grade",
-        riskScore: 35,
-        riskTrend: "down" as const,
+        name: studentName,
+        grade: "9th",
         recentMood: "tired",
-        lastCheckIn: "Today, 8:15 AM",
-        interventions: [
-          { 
-            id: "int1", 
-            name: "Scheduled Check-in", 
-            date: "Mar 15, 2025",
-            status: "completed"
-          },
-          { 
-            id: "int2", 
-            name: "SEL Lesson: Stress Management", 
-            date: "Mar 22, 2025",
-            status: "in-progress"
-          }
-        ],
-        selProgress: {
-          completedLessons: 3,
-          assignedLessons: 5,
-          recentLesson: {
-            title: "Understanding Emotions",
-            date: "Mar 18, 2025",
-            progress: 60
-          }
-        }
+        moodTrend: "declining",
+        selCompletionRate: 75,
+        lastCheckIn: "2 days ago",
+        flagged: true,
+        flagReason: "Declining mood pattern over past 2 weeks",
+        confidenceScore: 78,
+        recommendedAction: "Schedule a one-on-one check-in conversation"
       };
-      
-      return mockStudent;
-    },
-    enabled: !!studentId,
-  });
-  
-  // Fetch mood check-ins for the student
-  const { data: moodData, isLoading: isLoadingMoodData } = useQuery({
-    queryKey: ["student-mood", studentId],
-    queryFn: async () => {
-      if (!studentId) return null;
-      
-      // This would be a real data fetch from the database
-      // For now using mock data
-      const mockMoodData = [
-        { date: "2025-03-22", mood: "tired", energy: 4, notes: "Didn't sleep well" },
-        { date: "2025-03-21", mood: "anxious", energy: 5, notes: "Worried about test" },
-        { date: "2025-03-20", mood: "happy", energy: 8, notes: "Great day" },
-        { date: "2025-03-19", mood: "okay", energy: 6, notes: "" },
-        { date: "2025-03-18", mood: "sad", energy: 3, notes: "Argument with friend" },
-      ];
-      
-      return mockMoodData;
-    },
-    enabled: !!studentId,
-  });
-  
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      navigate(-1);
     }
-  };
+  });
 
-  if (isLoading || !student) {
+  if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center">
-          <Button variant="outline" size="sm" onClick={handleBack}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-        </div>
-        <Skeleton className="h-12 w-3/4" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Skeleton className="h-[300px]" />
-          <Skeleton className="h-[300px]" />
-          <Skeleton className="h-[300px]" />
-        </div>
+      <div className="flex h-full w-full items-center justify-center p-8">
+        <Loader size="lg" />
       </div>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" onClick={handleBack}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+        <Button variant="outline" size="sm" onClick={onBack}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
         </Button>
-        <h2 className="text-2xl font-heading font-bold">{student.name}</h2>
-        <Badge>{student.grade}</Badge>
+        <h2 className="text-3xl font-bold">{studentName}</h2>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Check-ins</CardTitle>
-            <CardDescription>
-              Last checked in {student.lastCheckIn}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {isLoadingMoodData ? (
-              <>
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-              </>
-            ) : (
-              <>
-                {moodData?.slice(0, 3).map((entry, index) => (
-                  <div key={index} className="flex items-start justify-between border-b pb-3 last:border-0">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <Badge 
-                          className={
-                            entry.mood === "happy" ? "bg-green-100 text-green-800" :
-                            entry.mood === "tired" ? "bg-purple-100 text-purple-800" :
-                            entry.mood === "anxious" ? "bg-yellow-100 text-yellow-800" :
-                            entry.mood === "sad" ? "bg-blue-100 text-blue-800" :
-                            "bg-gray-100 text-gray-800"
-                          }
-                        >
-                          {entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)}
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">
-                          Energy: {entry.energy}/10
-                        </span>
-                      </div>
-                      {entry.notes && (
-                        <p className="text-sm mt-1">{entry.notes}</p>
-                      )}
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {format(new Date(entry.date), "MMM d")}
-                    </span>
-                  </div>
-                ))}
-                
-                <Button variant="link" className="px-0 w-full justify-start">
-                  View full history <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </>
-            )}
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>SEL Progress</CardTitle>
-            <CardDescription>
-              {student.selProgress.completedLessons} of {student.selProgress.assignedLessons} lessons completed
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Progress 
-              value={Math.round((student.selProgress.completedLessons / student.selProgress.assignedLessons) * 100)} 
-              className="h-2"
-            />
-            
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Current Lesson</h4>
-              <Card>
-                <CardContent className="p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="font-medium truncate mr-2">
-                      {student.selProgress.recentLesson.title}
-                    </div>
-                    <Badge variant="outline" className="whitespace-nowrap">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {student.selProgress.recentLesson.date}
-                    </Badge>
-                  </div>
-                  <Progress 
-                    value={student.selProgress.recentLesson.progress} 
-                    className="h-1.5 mt-2"
-                  />
-                  <div className="flex justify-end mt-1">
-                    <span className="text-xs text-muted-foreground">
-                      {student.selProgress.recentLesson.progress}% complete
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <Button variant="outline" className="w-full">
-              <BookOpen className="h-4 w-4 mr-2" />
-              Manage SEL Lessons
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <StudentSELSupportToolkit 
-          studentId={studentId} 
-          studentName={student.name}
-          recentMood={student.recentMood}
-        />
-      </div>
-      
-      <Tabs defaultValue="overview">
+
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="sel">SEL Progress</TabsTrigger>
           <TabsTrigger value="interventions">Interventions</TabsTrigger>
-          <TabsTrigger value="notes">Notes & Observations</TabsTrigger>
-          <TabsTrigger value="communications">Communications</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="overview" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Student Overview</CardTitle>
-              <CardDescription>
-                Complete student information and statistics
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center items-center h-40 text-muted-foreground">
-              Student overview data will be displayed here
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="interventions" className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
+        <div className="mt-6">
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <WellLensAISummaryCard
+                entityName={studentName}
+                entityType="student"
+                flagged={studentData?.flagged || false}
+                confidenceScore={studentData?.confidenceScore || 0}
+                primaryReason={studentData?.flagReason}
+                recommendedAction={studentData?.recommendedAction}
+                trends={`${studentData?.name} has shown a ${studentData?.moodTrend} mood pattern over the past two weeks with inconsistent check-ins.`}
+                onViewDetails={() => setActiveTab("history")}
+              />
+              
+              <StudentSELSupportToolkit
+                studentId={studentId}
+                studentName={studentName}
+                recentMood={studentData?.recentMood}
+              />
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-4">
               <Card>
                 <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center">
-                    <CardTitle>Active Interventions</CardTitle>
-                    <Button size="sm">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Intervention
-                    </Button>
-                  </div>
+                  <CardTitle className="text-lg">SEL Engagement</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {student.interventions.map((intervention) => (
-                      <Card key={intervention.id}>
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h4 className="font-medium">{intervention.name}</h4>
-                              <div className="flex items-center gap-2 mt-1">
-                                <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">
-                                  {intervention.date}
-                                </span>
-                              </div>
-                            </div>
-                            <Badge 
-                              className={
-                                intervention.status === "completed" ? "bg-green-100 text-green-800" :
-                                intervention.status === "in-progress" ? "bg-blue-100 text-blue-800" :
-                                "bg-gray-100 text-gray-800"
-                              }
-                            >
-                              {intervention.status.charAt(0).toUpperCase() + intervention.status.slice(1)}
-                            </Badge>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                  <div className="text-3xl font-bold text-primary">
+                    {studentData?.selCompletionRate}%
                   </div>
+                  <p className="text-sm text-muted-foreground">
+                    Completion rate of assigned SEL activities
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Last Check-In</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">
+                    {studentData?.lastCheckIn}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Reported mood: {studentData?.recentMood}
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Current Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center space-x-2">
+                    <Badge className={studentData?.flagged ? "bg-amber-100 text-amber-800" : "bg-green-100 text-green-800"}>
+                      {studentData?.flagged ? "Requires Attention" : "On Track"}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {studentData?.flagged 
+                      ? "Intervention recommended by WellLens AI" 
+                      : "No immediate concerns detected"}
+                  </p>
                 </CardContent>
               </Card>
             </div>
-            
+          </TabsContent>
+          
+          <TabsContent value="sel" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Intervention History</CardTitle>
+                <CardTitle>SEL Progress & Activities</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex justify-center items-center h-40 text-muted-foreground">
-                  Intervention history will be displayed here
+                <p className="text-muted-foreground">
+                  This section would show detailed SEL progress, completed activities,
+                  and allow assigning new SEL content.
+                </p>
+                <div className="my-8 flex items-center justify-center">
+                  <div className="text-center text-muted-foreground">
+                    <p>Student SEL Progress Dashboard</p>
+                    <p>(To be implemented)</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="notes" className="mt-4">
-          <Card>
-            <CardContent className="flex justify-center items-center h-64 text-muted-foreground">
-              Teacher notes and observations will be displayed here
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="communications" className="mt-4">
-          <Card>
-            <CardContent className="flex justify-center items-center h-64 text-muted-foreground">
-              Communications history will be displayed here
-            </CardContent>
-          </Card>
-        </TabsContent>
+          </TabsContent>
+          
+          <TabsContent value="interventions" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Intervention Planning</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  This section would allow creating, tracking and managing interventions for this student.
+                </p>
+                <div className="my-8 flex items-center justify-center">
+                  <div className="text-center text-muted-foreground">
+                    <p>Student Intervention Dashboard</p>
+                    <p>(To be implemented)</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="history" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Student History & Trends</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  This section would show historical data, including mood trends, academic performance,
+                  attendance patterns, and past interventions.
+                </p>
+                <div className="my-8 flex items-center justify-center">
+                  <div className="text-center text-muted-foreground">
+                    <p>Student History Dashboard</p>
+                    <p>(To be implemented)</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

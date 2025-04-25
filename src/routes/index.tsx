@@ -5,6 +5,7 @@ import adminRoutes from "./adminRoutes";
 import teacherAdminRoutes from "./teacherAdminRoutes";
 import studentRoutes from "./studentRoutes";
 import parentRoutes from "./parentRoutes";
+import onboardingRoutes from "./onboardingRoutes";
 import { generalRoutes } from "./generalRoutes";
 import staffRoutes from "./staffRoutes";
 import { Loader } from "@/components/ui/loader";
@@ -96,14 +97,18 @@ export const routes = [
       </SuspenseWrapper>
     ),
   },
-  ...generalRoutes,
-  ...adminRoutes,
-  ...teacherAdminRoutes,
-  ...studentRoutes,
-  ...parentRoutes,
-  ...staffRoutes,
-  {
+  // Instead of trying to spread individual arrays which was causing the error
+  // We'll concatenate the arrays here
+].concat(
+  generalRoutes,
+  adminRoutes,
+  teacherAdminRoutes,
+  studentRoutes,
+  parentRoutes,
+  staffRoutes,
+  onboardingRoutes,
+  [{
     path: "*",
     element: <SuspenseWrapper><NotFound /></SuspenseWrapper>
-  }
-];
+  }]
+);

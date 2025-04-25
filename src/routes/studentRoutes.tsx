@@ -15,73 +15,107 @@ const DigitalJournal = lazy(() => import("@/pages/DigitalJournal"));
 const ResetRoom = lazy(() => import("@/pages/ResetRoom"));
 const TrustedAdults = lazy(() => import("@/pages/TrustedAdults"));
 const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
+const StudentOnboarding = lazy(() => import("@/pages/onboarding/StudentOnboarding"));
 
-const studentRoutes = (
-  <Routes>
-    <Route path="/student-dashboard" element={
-      <ProtectedRoute requiredRole={["student"] as UserRole[]}>
+const studentRoutes = [
+  {
+    path: "/student-dashboard",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
           <StudentDashboard />
         </Layout>
       </ProtectedRoute>
-    } />
-    <Route path="/student-dashboard-enhanced" element={
-      <ProtectedRoute requiredRole={["student"] as UserRole[]}>
+    )
+  },
+  {
+    path: "/student-dashboard-enhanced",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
           <StudentDashboardEnhanced />
         </Layout>
       </ProtectedRoute>
-    } />
-    <Route path="/sel-pathways" element={
-      <ProtectedRoute requiredRole={["student"] as UserRole[]}>
+    )
+  },
+  {
+    path: "/sel-pathways",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
           <SELPathways />
         </Layout>
       </ProtectedRoute>
-    } />
-    <Route path="/check-in" element={
-      <ProtectedRoute requiredRole={["student"] as UserRole[]}>
+    )
+  },
+  {
+    path: "/check-in",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
           <CheckIn />
         </Layout>
       </ProtectedRoute>
-    } />
-    <Route path="/mental-health-toolkit" element={
-      <ProtectedRoute requiredRole={["student"] as UserRole[]}>
+    )
+  },
+  {
+    path: "/mental-health-toolkit",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
           <MentalHealthToolkit />
         </Layout>
       </ProtectedRoute>
-    } />
-    <Route path="/digital-journal" element={
-      <ProtectedRoute requiredRole={["student"] as UserRole[]}>
+    )
+  },
+  {
+    path: "/digital-journal",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
           <DigitalJournal />
         </Layout>
       </ProtectedRoute>
-    } />
-    <Route path="/reset-room" element={
-      <ProtectedRoute requiredRole={["student"] as UserRole[]}>
+    )
+  },
+  {
+    path: "/reset-room",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
           <ResetRoom />
         </Layout>
       </ProtectedRoute>
-    } />
-    <Route path="/trusted-adults" element={
-      <ProtectedRoute requiredRole={["student"] as UserRole[]}>
+    )
+  },
+  {
+    path: "/trusted-adults",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
           <TrustedAdults />
         </Layout>
       </ProtectedRoute>
-    } />
-    <Route path="/profile" element={
-      <ProtectedRoute requiredRole={["student"] as UserRole[]}>
+    )
+  },
+  {
+    path: "/profile",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
           <UserProfile />
         </Layout>
       </ProtectedRoute>
-    } />
-  </Routes>
-);
+    )
+  },
+  {
+    path: "/onboarding/student",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
+        <StudentOnboarding />
+      </ProtectedRoute>
+    )
+  }
+];
 
 export default studentRoutes;

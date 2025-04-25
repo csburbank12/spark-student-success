@@ -1,107 +1,69 @@
 
-import React, { useState } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { BarChart2, Sun, Smile, Frown, AlertTriangle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 
 export const EmotionFilterSection: React.FC = () => {
-  const [selectedTime, setSelectedTime] = useState<string | null>("morning");
-  const [selectedMood, setSelectedMood] = useState<string | null>("all");
-  
-  const timeOptions = [
-    { value: "morning", label: "Morning", icon: <Sun className="h-3 w-3" /> },
-    { value: "midday", label: "Midday", icon: <Sun className="h-3 w-3" /> },
-    { value: "afternoon", label: "Afternoon", icon: <Sun className="h-3 w-3" /> }
-  ];
-  
-  const moodOptions = [
-    { value: "all", label: "All Moods", icon: null },
-    { value: "positive", label: "Positive", icon: <Smile className="h-3 w-3" /> },
-    { value: "negative", label: "Negative", icon: <Frown className="h-3 w-3" /> }
-  ];
-  
-  const getButtonVariant = (currentValue: string, selectedValue: string | null) => {
-    return currentValue === selectedValue ? "default" : "outline";
-  };
+  // Query to fetch emotion distribution data
+  const { data: emotionData, isLoading } = useQuery({
+    queryKey: ["class-emotion-distribution"],
+    queryFn: async () => {
+      // In a real app, this would fetch from Supabase
+      // For demo purposes, returning mock data
+      return [
+        { emotion: "Happy", count: 12, color: "bg-green-500" },
+        { emotion: "Good", count: 8, color: "bg-blue-500" },
+        { emotion: "Okay", count: 5, color: "bg-yellow-500" },
+        { emotion: "Tired", count: 3, color: "bg-purple-500" },
+        { emotion: "Sad", count: 2, color: "bg-red-500" },
+      ];
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  // Calculate total for percentages
+  const totalStudents = emotionData?.reduce((sum, item) => sum + item.count, 0) || 0;
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <BarChart2 className="mr-2 h-5 w-5" />
-          Well-Lens™ Optimal Timing
-        </CardTitle>
-        <CardDescription>
-          Use emotional intelligence to time your interventions
-        </CardDescription>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg">Class Mood Today</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <h4 className="text-sm font-medium mb-2">Time of Day</h4>
-          <div className="flex flex-wrap gap-2">
-            {timeOptions.map(option => (
-              <Button 
-                key={option.value} 
-                size="sm"
-                variant={getButtonVariant(option.value, selectedTime)}
-                onClick={() => setSelectedTime(option.value)}
-                className="flex items-center"
-              >
-                {option.icon && <span className="mr-1">{option.icon}</span>}
-                {option.label}
-              </Button>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {emotionData?.map((emotion) => (
+              <div key={emotion.emotion} className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <div className="flex items-center">
+                    <span className="mr-2">{emotion.emotion}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {Math.round((emotion.count / totalStudents) * 100)}%
+                    </span>
+                  </div>
+                  <span className="font-medium">{emotion.count}</span>
+                </div>
+                <Progress
+                  value={(emotion.count / totalStudents) * 100}
+                  className={emotion.color}
+                />
+              </div>
             ))}
-          </div>
-        </div>
-        
-        <div>
-          <h4 className="text-sm font-medium mb-2">Mood Filter</h4>
-          <div className="flex flex-wrap gap-2">
-            {moodOptions.map(option => (
-              <Button 
-                key={option.value} 
-                size="sm"
-                variant={getButtonVariant(option.value, selectedMood)}
-                onClick={() => setSelectedMood(option.value)}
-                className="flex items-center"
-              >
-                {option.icon && <span className="mr-1">{option.icon}</span>}
-                {option.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-        
-        <div className="p-3 border rounded-md bg-amber-50/40 dark:bg-amber-950/20">
-          <div className="flex items-start gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5" />
-            <div>
-              <p className="font-medium">Optimal Timing Insight</p>
-              <p className="text-sm text-muted-foreground">
-                For students currently showing negative moods, mornings (8-10am) appear to be the most receptive time for check-ins.
-              </p>
+
+            <div className="pt-2 text-xs text-muted-foreground">
+              Based on {totalStudents} student check-ins today
             </div>
           </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-2">
-          <div className="p-3 border rounded-md">
-            <p className="text-sm font-medium">Most Alert</p>
-            <div className="flex items-center mt-1">
-              <Badge className="mr-1" variant="outline">10:00 AM</Badge>
-              <span className="text-xs text-muted-foreground">Tuesdays</span>
-            </div>
-          </div>
-          
-          <div className="p-3 border rounded-md">
-            <p className="text-sm font-medium">Most Receptive</p>
-            <div className="flex items-center mt-1">
-              <Badge className="mr-1" variant="outline">1:30 PM</Badge>
-              <span className="text-xs text-muted-foreground">Thursdays</span>
-            </div>
-          </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );
