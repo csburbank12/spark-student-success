@@ -1,80 +1,118 @@
-
 import { UserRole } from "@/types/roles";
-import { universalRoutes } from "./routes/universalRoutes";
-import { adminRoutes } from "./routes/adminRoutes";
-import { studentRoutes } from "./routes/studentRoutes";
-import { parentRoutes } from "./routes/parentRoutes";
-import { teacherAdminRoutes } from "./routes/teacherAdminRoutes";
-import { 
-  BarChart3,
-  Activity,
-  LineChart,
-  Search,
-  Share2
-} from "lucide-react";
 
-// WellLens routes that should appear for teachers, admins, and staff
-export const wellLensRoutes = [
+export interface SidebarRoute {
+  title: string;
+  href: string;
+  icon?: string;
+  roles: UserRole[];
+  submenu?: {
+    title: string;
+    href: string;
+    icon?: string;
+    beta?: boolean;
+  }[];
+  beta?: boolean;
+  external?: boolean;
+}
+
+export const sidebarRoutes: SidebarRoute[] = [
   {
-    name: "WellLens Dashboard",
-    href: "/welllens",
-    icon: Activity,
+    title: "Dashboard",
+    href: "/dashboard",
+    icon: "LayoutDashboard",
+    roles: [UserRole.admin, UserRole.staff, UserRole.teacher, UserRole.counselor],
   },
   {
-    name: "Predictive Support",
-    href: "/predictive-support",
-    icon: LineChart,
+    title: "Analytics",
+    href: "/analytics",
+    icon: "BarChart4",
+    roles: [UserRole.admin],
   },
   {
-    name: "Emotion Scheduling",
-    href: "/emotion-scheduling",
-    icon: BarChart3,
+    title: "Student Success",
+    href: "#",
+    icon: "Users2",
+    roles: [UserRole.admin, UserRole.staff, UserRole.teacher, UserRole.counselor],
+    submenu: [
+      {
+        title: "Student Profiles",
+        href: "/students",
+        icon: "User",
+      },
+      {
+        title: "Students At Risk",
+        href: "/students-at-risk",
+        icon: "AlertCircle",
+      },
+      {
+        title: "Behavior Prediction",
+        href: "/behavior-prediction",
+        icon: "Brain",
+      },
+      {
+        title: "Emotion-Aware Scheduling",
+        href: "/emotion-aware-scheduling",
+        icon: "CalendarClock",
+        beta: true,
+      },
+    ],
+  },
+  {
+    title: "Student Support",
+    href: "#",
+    icon: "HeartHandshake",
+    roles: [UserRole.teacher, UserRole.admin, UserRole.staff, UserRole.counselor],
+    submenu: [
+      {
+        title: "Well-Being Dashboard",
+        href: "/well-lens",
+        icon: "Activity",
+      },
+      {
+        title: "Student Support Heatmap",
+        href: "/student-support-heatmap",
+        icon: "GridIcon",
+        beta: true,
+      },
+      {
+        title: "Predictive Support",
+        href: "/predictive-support",
+        icon: "Lightbulb",
+      },
+      {
+        title: "SEL Pathways",
+        href: "/sel-pathways-management", 
+        icon: "Footprints",
+      },
+    ],
+  },
+  {
+    title: "Admin Tools",
+    href: "#",
+    icon: "Settings",
+    roles: [UserRole.admin],
+    submenu: [
+      {
+        title: "User Management",
+        href: "/admin/users",
+        icon: "UserCog",
+      },
+      {
+        title: "System Configuration",
+        href: "/admin/system",
+        icon: "SlidersHorizontal",
+      },
+      {
+        title: "Data Management",
+        href: "/admin/data",
+        icon: "Database",
+      },
+    ],
+  },
+  {
+    title: "Help & Support",
+    href: "/help",
+    icon: "HelpCircle",
+    roles: [UserRole.admin, UserRole.staff, UserRole.teacher, UserRole.counselor],
   },
 ];
-
-// Universal profile access routes for all users
-export const profileRoutes = [
-  {
-    name: "User Profiles",
-    href: "/profiles",
-    icon: Search,
-  },
-  {
-    name: "Shared Resources",
-    href: "/shared-resources",
-    icon: Share2,
-  }
-];
-
-export {
-  universalRoutes,
-  teacherAdminRoutes,
-  studentRoutes,
-  adminRoutes,
-  parentRoutes,
-};
-
-export const getRoutesByRole = (role: string) => {
-  let routes = [];
-  
-  switch (role) {
-    case UserRole.teacher:
-    case UserRole.staff:
-      routes = [...teacherAdminRoutes, ...wellLensRoutes];
-      break;
-    case UserRole.student:
-      routes = studentRoutes;
-      break;
-    case UserRole.admin:
-      routes = [...adminRoutes, ...wellLensRoutes];
-      break;
-    case UserRole.parent:
-      routes = parentRoutes;
-      break;
-    default:
-      routes = [];
-  }
-  
-  // Add universal profile routes to all roles
-  return [...routes, ...profileRoutes];
-};

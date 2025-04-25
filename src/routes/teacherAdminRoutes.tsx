@@ -10,6 +10,7 @@ import SELPathwayManagement from "@/pages/SELPathwayManagement";
 import EmotionAwareScheduling from "@/pages/EmotionAwareScheduling";
 import WellLensDashboard from "@/pages/WellLensDashboard";
 import PredictiveSupport from "@/pages/PredictiveSupport";
+import StudentSupportHeatmap from "@/pages/StudentSupportHeatmap";
 
 const teacherRoutes = [
   {
@@ -73,6 +74,14 @@ const teacherRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
         <PredictiveSupport />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/student-support-heatmap",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.counselor]}>
+        <StudentSupportHeatmap />
       </ProtectedRoute>
     ),
   },
