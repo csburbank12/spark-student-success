@@ -1,9 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  SidebarProvider,
-} from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
 import { SidebarRail } from '@/components/ui/sidebar';
 import Sidebar from './Sidebar';
@@ -11,6 +9,7 @@ import { Navbar } from './Navbar';
 import { Loader } from '@/components/ui/loader';
 import { useLocation, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { ErrorMonitoringService } from '@/services/ErrorMonitoringService';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -19,6 +18,18 @@ interface AppShellProps {
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const { isLoading, user } = useAuth();
   const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  
+  // Log page navigation for monitoring
+  React.useEffect(() => {
+    if (user && location.pathname) {
+      ErrorMonitoringService.logNavigation({
+        path: location.pathname,
+        userRole: user?.role || 'unauthenticated',
+        timestamp: new Date().toISOString()
+      }).catch(console.error);
+    }
+  }, [location.pathname, user]);
   
   // Determine if we're on a public page that doesn't need the full shell
   const isPublicPage = location.pathname === '/login' || 
@@ -45,13 +56,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   return (
     <ThemeProvider>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={!isSidebarOpen}>
         <div className="flex h-screen w-full overflow-hidden">
           <Sidebar />
           <SidebarRail />
           <SidebarInset enableScroll={true}>
             <div className="flex flex-1 flex-col h-full">
-              <Navbar />
+              <Navbar onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
               <main className="flex-1 bg-background p-4 md:p-6">
                 {children}
               </main>

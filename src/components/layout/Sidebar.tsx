@@ -6,26 +6,24 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar/components/sidebar-base";
-import SidebarNavLinks from "./SidebarNavLinks";
+import { RoleBasedNavigation } from "@/components/navigation/RoleBasedNavigation";
 import SidebarFooterActions from "./SidebarFooterActions";
 import { useAuth } from "@/contexts/AuthContext";
-import { getRoutesByRole } from "./sidebarRoutes";
 import { UserRole } from "@/types/roles";
 
 const Sidebar = () => {
   const { user } = useAuth();
   const userRole = user?.role as UserRole || "";
-  const routes = getRoutesByRole(userRole);
 
   return (
     <SidebarContainer>
       <SidebarHeader>
         <div className="flex h-14 items-center px-4">
-          {/* Logo removed */}
+          <span className="font-semibold text-lg">ThriveTrackED</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarNavLinks routes={routes} includeUniversalRoutes={true} />
+        <RoleBasedNavigation />
       </SidebarContent>
       <SidebarFooter>
         <SidebarFooterActions />

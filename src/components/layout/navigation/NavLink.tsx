@@ -1,23 +1,59 @@
 
 import React from "react";
-import { NavLink as RouterNavLink } from "react-router-dom";
+import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
 import { SidebarMenuButton } from "@/components/ui/sidebar/components/menu/menu-button";
 import { useSidebar } from "@/components/ui/sidebar/sidebar-context";
+import { Tooltip } from "@/components/ui/tooltip";
 
 interface NavLinkProps {
   to: string;
   name: string;
   icon: React.ElementType;
-  isActive: boolean;
+  isActive?: boolean;
+  badge?: number | string;
+  isDisabled?: boolean;
 }
 
 export const NavLink: React.FC<NavLinkProps> = ({ 
   to, 
   name, 
   icon: Icon, 
-  isActive 
+  isActive: isActiveProp,
+  badge,
+  isDisabled = false
 }) => {
   const { state } = useSidebar();
+  const location = useLocation();
+  
+  // Either use provided isActive or calculate based on route
+  const isActive = isActiveProp !== undefined 
+    ? isActiveProp 
+    : location.pathname === to || location.pathname.startsWith(`${to}/`);
+
+  const navLinkContent = (
+    <RouterNavLink 
+      to={to} 
+      className={({ isActive }) =>
+        `flex items-center gap-2 w-full ${
+          isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""
+        } ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`
+      }
+      onClick={(e) => {
+        if (isDisabled) {
+          e.preventDefault();
+        }
+      }}
+    >
+      <Icon className="h-5 w-5" />
+      <span>{name}</span>
+      
+      {badge !== undefined && (
+        <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-2 text-xs text-white">
+          {badge}
+        </span>
+      )}
+    </RouterNavLink>
+  );
 
   return (
     <SidebarMenuButton
@@ -25,15 +61,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
       isActive={isActive}
       tooltip={state === "collapsed" ? name : undefined}
     >
-      <RouterNavLink 
-        to={to} 
-        className={({ isActive }) =>
-          isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-        }
-      >
-        <Icon className="h-5 w-5" />
-        <span>{name}</span>
-      </RouterNavLink>
+      {navLinkContent}
     </SidebarMenuButton>
   );
 };

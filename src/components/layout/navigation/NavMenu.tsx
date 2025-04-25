@@ -1,6 +1,5 @@
 
 import React from "react";
-import { useLocation } from "react-router-dom";
 import { SidebarMenu } from "@/components/ui/sidebar/components/menu/menu";
 import { SidebarMenuItem } from "@/components/ui/sidebar/components/menu/menu";
 import { NavLink } from "./NavLink";
@@ -9,24 +8,30 @@ interface Route {
   name: string;
   href: string;
   icon: React.ElementType;
+  badge?: number | string;
+  isDisabled?: boolean;
 }
 
 interface NavMenuProps {
   routes: Route[];
+  className?: string;
 }
 
-export const NavMenu: React.FC<NavMenuProps> = ({ routes }) => {
-  const location = useLocation();
-
+export const NavMenu: React.FC<NavMenuProps> = ({ routes, className = "" }) => {
+  if (!routes || routes.length === 0) {
+    return null;
+  }
+  
   return (
-    <SidebarMenu>
+    <SidebarMenu className={className}>
       {routes.map((route) => (
-        <SidebarMenuItem key={route.href}>
+        <SidebarMenuItem key={`${route.name}-${route.href}`}>
           <NavLink
             to={route.href}
             name={route.name}
             icon={route.icon}
-            isActive={location.pathname === route.href}
+            badge={route.badge}
+            isDisabled={route.isDisabled}
           />
         </SidebarMenuItem>
       ))}

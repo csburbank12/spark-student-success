@@ -4,6 +4,7 @@ import { AppShell } from './layout/AppShell';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { ErrorLoggingService } from '@/services/ErrorLoggingService';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -33,6 +34,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       navigate('/dashboard');
     }
   }, [user, isLoading, location.pathname, navigate]);
+
+  // Log 404 errors for valid users
+  useEffect(() => {
+    const isKnownRoute = location.pathname === '/' || 
+                        location.pathname === '/login' || 
+                        location.pathname === '/dashboard' ||
+                        location.pathname === '/404';
+    
+    if (!isKnownRoute && user && location.pathname) {
+      ErrorLoggingService.logError({
+        action: 'navigation_error',
+        error_message: `User attempted to access non-existent route: ${location.pathname}`,
+        status_code: 404,
+        profile_type: user?.role || 'unknown'
+      }).catch(console.error);
+    }
+  }, [location.pathname, user]);
 
   return (
     <AppShell>
