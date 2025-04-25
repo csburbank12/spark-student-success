@@ -6,16 +6,17 @@ import { GraduationCap, HelpCircle, Home, ArrowLeft } from "lucide-react";
 import { useErrorLogging } from "@/hooks/useErrorLogging";
 import { useAuth } from "@/contexts/AuthContext";
 import { getFallbackDashboardByRole } from "@/utils/navigationUtils";
+import { UserRole } from "@/types/roles";
 
 const NotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { log404Error } = useErrorLogging();
   const { user } = useAuth();
-  const userRole = user?.role || '';
+  const userRole = user?.role ? user.role as UserRole : undefined;
   
   // Calculate appropriate dashboard route
-  const dashboardRoute = user ? getFallbackDashboardByRole(userRole) : '/login';
+  const dashboardRoute = user && userRole ? getFallbackDashboardByRole(userRole) : '/login';
   
   // Get referring page if available
   const referrer = location.state?.from || null;
