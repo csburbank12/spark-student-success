@@ -1,26 +1,19 @@
 
 import {
-  LayoutDashboard,
-  BarChartBig,
   GraduationCap,
   Target,
   Headphones,
   ClipboardCheck,
   BrainCircuit,
   Calendar,
-  User,
+  BarChart3
 } from "lucide-react";
 
 export const teacherAdminRoutes = [
   {
-    name: "Dashboard",
-    href: "/teacher-dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Enhanced Dashboard",
+    name: "Analytics",
     href: "/teacher-dashboard-enhanced",
-    icon: BarChartBig,
+    icon: BarChart3,
   },
   {
     name: "Students",
@@ -33,7 +26,7 @@ export const teacherAdminRoutes = [
     icon: Target,
   },
   {
-    name: "Staff Assist Mode",
+    name: "Staff Assist",
     href: "/staff-assist",
     icon: Headphones,
   },
@@ -48,13 +41,8 @@ export const teacherAdminRoutes = [
     icon: BrainCircuit,
   },
   {
-    name: "Emotion Scheduling",
+    name: "Scheduling",
     href: "/emotion-aware-scheduling",
     icon: Calendar,
-  },
-  {
-    name: "Profile",
-    href: "/profile",
-    icon: User,
   },
 ];

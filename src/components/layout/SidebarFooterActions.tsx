@@ -2,7 +2,7 @@
 import React from "react";
 import { useSidebar } from "@/components/ui/sidebar/sidebar-context";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Settings, HelpCircle } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar/components/menu";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -25,24 +25,6 @@ const SidebarFooterActions = () => {
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          tooltip={state === "collapsed" ? "Settings" : undefined}
-          onClick={() => navigate('/settings')}
-        >
-          <Settings className="h-4 w-4 mr-2" />
-          <span>Settings</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          tooltip={state === "collapsed" ? "Help" : undefined}
-          onClick={() => navigate('/help')}
-        >
-          <HelpCircle className="h-4 w-4 mr-2" />
-          <span>Help & Support</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
       <SidebarMenuItem>
         <SidebarMenuButton
           tooltip={state === "collapsed" ? "Logout" : undefined}

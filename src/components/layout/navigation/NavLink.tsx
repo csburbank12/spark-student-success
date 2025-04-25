@@ -3,7 +3,6 @@ import React from "react";
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
 import { SidebarMenuButton } from "@/components/ui/sidebar/components/menu/menu-button";
 import { useSidebar } from "@/components/ui/sidebar/sidebar-context";
-import { Tooltip } from "@/components/ui/tooltip";
 
 interface NavLinkProps {
   to: string;
@@ -25,21 +24,30 @@ export const NavLink: React.FC<NavLinkProps> = ({
   const { state } = useSidebar();
   const location = useLocation();
   
-  // Either use provided isActive or calculate based on route
-  // Enhanced matching to consider nested routes properly
+  // Enhanced matching to consider nested routes and exact matches
+  const isPathActive = (path: string, currentPath: string) => {
+    // Exact match
+    if (path === currentPath) return true;
+    
+    // Special case for root dashboard
+    if (path === '/dashboard' && currentPath === '/') return true;
+    
+    // Nested route match, but make sure it's actually a parent path
+    return path !== '/' && 
+           currentPath.startsWith(`${path}/`);
+  };
+  
+  // Use provided isActive prop or calculate based on location
   const isActive = isActiveProp !== undefined 
     ? isActiveProp 
-    : location.pathname === to || 
-      (to !== '/' && location.pathname.startsWith(`${to}/`));
+    : isPathActive(to, location.pathname);
 
   const navLinkContent = (
     <RouterNavLink 
       to={to} 
-      className={({ isActive }) =>
-        `flex items-center gap-2 w-full ${
-          isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""
-        } ${isActive ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`
-      }
+      className={`flex items-center gap-2 w-full ${
+        isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""
+      } ${isActive ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
       onClick={(e) => {
         if (isDisabled) {
           e.preventDefault();

@@ -1,5 +1,14 @@
 
-import { Users, BarChart3, School, Settings, Shield, Keyboard, ScanSearch, AlertCircle, Hammer } from "lucide-react";
+import { 
+  Users, 
+  BarChart3, 
+  School, 
+  Shield, 
+  Settings, 
+  Keyboard, 
+  ScanSearch, 
+  AlertCircle 
+} from "lucide-react";
 
 export const adminRoutes = [
   {
@@ -8,32 +17,32 @@ export const adminRoutes = [
     icon: Users,
   },
   {
-    name: "Data Analytics",
+    name: "Analytics",
     href: "/admin/data-analytics",
     icon: BarChart3,
   },
   {
-    name: "School Management",
+    name: "Schools",
     href: "/admin/school-management",
     icon: School,
   },
   {
-    name: "FERPA Compliance",
+    name: "Compliance",
     href: "/admin/ferpa-compliance",
     icon: Shield,
   },
   {
-    name: "System Settings",
+    name: "System",
     href: "/admin/system-settings",
     icon: Settings,
   },
   {
-    name: "LoopBot Logs",
+    name: "LoopBot",
     href: "/admin/loopbot-logs",
     icon: Keyboard,
   },
   {
-    name: "Platform Audit",
+    name: "Audit",
     href: "/admin/audit-dashboard",
     icon: ScanSearch,
   },
@@ -41,10 +50,5 @@ export const adminRoutes = [
     name: "Error Logs",
     href: "/admin/error-logs",
     icon: AlertCircle,
-  },
-  {
-    name: "Repair Toolkit",
-    href: "/admin",
-    icon: Hammer,
   },
 ];

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { UserRole } from "@/types/roles";
 import { NavMenu } from "@/components/layout/navigation/NavMenu";

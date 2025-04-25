@@ -9,11 +9,9 @@ import {
 import { RoleBasedNavigation } from "@/components/navigation/RoleBasedNavigation";
 import SidebarFooterActions from "./SidebarFooterActions";
 import { useAuth } from "@/contexts/AuthContext";
-import { UserRole } from "@/types/roles";
 
 const Sidebar = () => {
   const { user } = useAuth();
-  const userRole = user?.role as UserRole || "";
 
   return (
     <SidebarContainer>

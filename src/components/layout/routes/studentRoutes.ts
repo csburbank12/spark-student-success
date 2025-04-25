@@ -1,33 +1,25 @@
 
 import {
-  LayoutDashboard,
-  BarChartBig,
   Target,
   ClipboardCheck,
   Heart,
   FileText,
-  Users,
-  User,
+  Users
 } from "lucide-react";
 
 export const studentRoutes = [
-  {
-    name: "Dashboard",
-    href: "/student-dashboard",
-    icon: LayoutDashboard,
-  },
   {
     name: "SEL Pathways",
     href: "/sel-pathways",
     icon: Target,
   },
   {
-    name: "Check-In",
+    name: "Daily Check-In",
     href: "/check-in",
     icon: ClipboardCheck,
   },
   {
-    name: "Mental Health Toolkit",
+    name: "Wellness Tools",
     href: "/mental-health-toolkit",
     icon: Heart,
   },
@@ -45,10 +37,5 @@ export const studentRoutes = [
     name: "Trusted Adults",
     href: "/trusted-adults",
     icon: Users,
-  },
-  {
-    name: "Profile",
-    href: "/profile",
-    icon: User,
   },
 ];

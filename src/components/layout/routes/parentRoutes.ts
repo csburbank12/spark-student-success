@@ -1,22 +1,14 @@
 
 import {
-  LayoutDashboard,
   Activity,
   Heart,
   MessageSquare,
   BookOpen,
-  User,
-  Settings,
   Shield,
   FileText
 } from "lucide-react";
 
 export const parentRoutes = [
-  {
-    name: "Dashboard",
-    href: "/parent-dashboard",
-    icon: LayoutDashboard,
-  },
   {
     name: "Child Activity",
     href: "/child-activity",
@@ -36,11 +28,6 @@ export const parentRoutes = [
     name: "Resources",
     href: "/parent-resources",
     icon: BookOpen,
-  },
-  {
-    name: "Profile",
-    href: "/profile",
-    icon: User,
   },
   {
     name: "Privacy Settings",

@@ -1,5 +1,5 @@
 
-import { Home, HelpCircle, Settings, UserCircle, LogOut } from "lucide-react";
+import { Home, HelpCircle, Settings, User, FileText, Bell } from "lucide-react";
 
 export const universalRoutes = [
   {
@@ -10,12 +10,12 @@ export const universalRoutes = [
   {
     name: "Profile",
     href: "/profile",
-    icon: UserCircle, 
+    icon: User, 
   },
   {
-    name: "User Profiles",
-    href: "/profiles",
-    icon: UserCircle,
+    name: "Notifications",
+    href: "/notifications",
+    icon: Bell, 
   },
   {
     name: "Help & Support",
@@ -28,3 +28,4 @@ export const universalRoutes = [
     icon: Settings,
   },
 ];
+

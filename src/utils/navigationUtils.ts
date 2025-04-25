@@ -1,10 +1,26 @@
+
 import { UserRole } from '@/types/roles';
 
 /**
  * Returns the appropriate dashboard route based on user role
  */
 export const getFallbackDashboardByRole = (role: UserRole): string => {
-  return '/dashboard';
+  switch (role) {
+    case UserRole.admin:
+      return '/admin-dashboard';
+    case UserRole.teacher:
+      return '/teacher-dashboard';
+    case UserRole.parent:
+      return '/parent-dashboard';
+    case UserRole.student:
+      return '/student-dashboard';
+    case UserRole.staff:
+      return '/staff-dashboard';
+    case UserRole.counselor:
+      return '/counselor-dashboard';
+    default:
+      return '/dashboard';
+  }
 };
 
 /**
