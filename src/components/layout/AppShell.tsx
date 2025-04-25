@@ -1,21 +1,18 @@
 
-import React, { useState, useEffect, memo } from 'react';
+import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
 import { SidebarRail } from '@/components/ui/sidebar';
 import Sidebar from './Sidebar';
 import { Navbar } from './Navbar';
-import { useLocation, Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { isPublicPath } from '@/utils/navigationUtils';
-
-const MemoizedSidebar = memo(Sidebar);
 
 export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const { isLoading, user } = useAuth();
   const location = useLocation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   const isPublicPage = isPublicPath(location.pathname);
 
@@ -33,11 +30,11 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
     <ThemeProvider>
       <SidebarProvider defaultOpen={true}>
         <div className="flex h-screen w-full overflow-hidden bg-background">
-          <MemoizedSidebar />
+          <Sidebar />
           <SidebarRail />
           <SidebarInset enableScroll={true}>
             <div className="flex flex-1 flex-col h-full">
-              <Navbar onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+              <Navbar />
               <main className="flex-1 bg-background p-4 md:p-6 overflow-auto">
                 {children}
               </main>
