@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
@@ -20,14 +20,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
-  // Log page navigation for monitoring
-  React.useEffect(() => {
+  // Log page navigation for monitoring - avoid logging on every render
+  useEffect(() => {
     if (user && location.pathname) {
       try {
         ErrorLoggingService.logError({
           action: 'page_navigation',
           error_message: `User navigated to: ${location.pathname}`,
-          profile_type: user?.role as any || 'unauthenticated'
+          profile_type: user.role || 'unauthenticated'
         });
       } catch (error) {
         console.error('Failed to log navigation:', error);
@@ -38,14 +38,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   // Determine if we're on a public page that doesn't need the full shell
   const isPublicPage = location.pathname === '/login' || 
                       location.pathname === '/signup' ||
+                      location.pathname === '/404' ||
                       location.pathname.includes('/auth/');
 
+  // Return simple loader during initial auth check
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader size="lg" />
-      </div>
-    );
+    return null; // Return nothing during auth loading to prevent flicker
   }
   
   // Redirect to login if not authenticated and not on a public page
@@ -60,8 +58,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   return (
     <ThemeProvider>
-      <SidebarProvider defaultOpen={!isSidebarOpen}>
-        <div className="flex h-screen w-full overflow-hidden">
+      <SidebarProvider defaultOpen={true}>
+        <div className="flex h-screen w-full overflow-hidden bg-background">
           <Sidebar />
           <SidebarRail />
           <SidebarInset enableScroll={true}>

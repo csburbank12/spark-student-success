@@ -10,7 +10,6 @@ import { generalRoutes } from "./generalRoutes";
 import staffRoutes from "./staffRoutes";
 import { Loader } from "@/components/ui/loader";
 import DashboardManager from "./DashboardManager";
-import { Navigate } from "react-router-dom";
 import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
 import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
 import SystemMonitoringDashboard from "@/components/error-handling/SystemMonitoringDashboard";
@@ -27,7 +26,7 @@ const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
 // Create a suspense wrapper for lazy loaded components
 const SuspenseWrapper = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={
-    <div className="flex h-screen w-screen items-center justify-center">
+    <div className="flex h-screen w-screen items-center justify-center bg-background">
       <Loader size="lg" />
     </div>
   }>
@@ -56,7 +55,13 @@ const systemMonitoringRoute = {
 export const routes = [
   {
     path: "/",
-    element: <Navigate to="/login" replace />
+    element: (
+      <GlobalErrorBoundary component="Index" fallback={<FallbackErrorPage />}>
+        <SuspenseWrapper>
+          <Index />
+        </SuspenseWrapper>
+      </GlobalErrorBoundary>
+    ),
   },
   {
     path: "/login",
@@ -69,11 +74,11 @@ export const routes = [
     ),
   },
   {
-    path: "/home",
+    path: "/404",
     element: (
-      <GlobalErrorBoundary component="Index" fallback={<FallbackErrorPage />}>
+      <GlobalErrorBoundary component="NotFound" fallback={<FallbackErrorPage />}>
         <SuspenseWrapper>
-          <Index />
+          <NotFound />
         </SuspenseWrapper>
       </GlobalErrorBoundary>
     ),
@@ -103,24 +108,14 @@ export const routes = [
 ];
 
 // Add all the remaining routes
-const allRoutes = routes.concat(
+export const allRoutes = routes.concat(
   generalRoutes,
   adminRoutes,
   teacherAdminRoutes,
   studentRoutes,
   parentRoutes,
   staffRoutes,
-  onboardingRoutes,
-  [{
-    path: "*",
-    element: (
-      <GlobalErrorBoundary component="NotFound" fallback={<FallbackErrorPage />}>
-        <SuspenseWrapper>
-          <NotFound />
-        </SuspenseWrapper>
-      </GlobalErrorBoundary>
-    )
-  }]
+  onboardingRoutes
 );
 
 export default allRoutes;

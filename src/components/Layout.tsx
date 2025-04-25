@@ -20,41 +20,49 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Redirect to login if not authenticated
+  // Handle authentication redirects - only run once per location change
   useEffect(() => {
-    if (!isLoading && !user && location.pathname !== '/login') {
+    if (isLoading) return; // Skip if still loading auth state
+    
+    // Redirect to login if not authenticated
+    if (!user && location.pathname !== '/login' && location.pathname !== '/signup' && 
+        !location.pathname.includes('/auth/') && location.pathname !== '/404') {
       toast.error('Please log in to continue', {
-        id: 'auth-redirect'
+        id: 'auth-redirect' // Using ID prevents duplicate toasts
       });
-      navigate('/login');
+      navigate('/login', { replace: true });
+      return;
     }
 
     // Redirect from login if already authenticated
-    if (!isLoading && user && location.pathname === '/login') {
-      navigate('/dashboard');
+    if (user && location.pathname === '/login') {
+      navigate('/dashboard', { replace: true });
+      return;
     }
   }, [user, isLoading, location.pathname, navigate]);
 
-  // Log 404 errors for valid users
+  // Log 404 errors for valid users - only if on an unknown route
   useEffect(() => {
-    const isKnownRoute = location.pathname === '/' || 
-                        location.pathname === '/login' || 
-                        location.pathname === '/dashboard' ||
-                        location.pathname === '/404';
+    const isKnownRoute = ['/login', '/dashboard', '/404', '/'].includes(location.pathname);
     
-    if (!isKnownRoute && user && location.pathname) {
+    if (!isKnownRoute && user && !isLoading) {
       try {
         ErrorLoggingService.logError({
           action: 'navigation_error',
           error_message: `User attempted to access non-existent route: ${location.pathname}`,
           status_code: '404',
-          profile_type: user?.role as any || 'unknown'
+          profile_type: user.role || 'unknown'
         });
       } catch (error) {
         console.error('Error logging navigation error:', error);
       }
     }
-  }, [location.pathname, user]);
+  }, [location.pathname, user, isLoading]);
+
+  // Show transparent loading state while checking auth
+  if (isLoading) {
+    return null; // Return null to prevent flickering during auth check
+  }
 
   return (
     <AppShell>

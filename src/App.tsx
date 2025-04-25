@@ -10,7 +10,7 @@ import { ErrorMonitoringService } from "./services/ErrorMonitoringService";
 import { useErrorLogging } from "@/hooks/useErrorLogging";
 
 function App() {
-  const { isLoading, user } = useAuth();
+  const { isLoading } = useAuth();
   const location = useLocation();
   const { log404Error } = useErrorLogging();
   
@@ -28,14 +28,15 @@ function App() {
       (route.path.includes(':') && location.pathname.startsWith(route.path.split(':')[0]))
     );
     
-    if (!isKnownRoute && location.pathname !== "/") {
+    if (!isKnownRoute && location.pathname !== "/" && location.pathname !== "/login") {
       log404Error(location.pathname);
     }
   }, [location.pathname, log404Error]);
 
+  // Show minimal loading state during initial auth check
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-background">
         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
@@ -44,16 +45,6 @@ function App() {
   return (
     <GlobalErrorBoundary component="AppRoot">
       <Routes>
-        {/* Explicit home route with redirect to login if not authenticated */}
-        <Route 
-          path="/" 
-          element={
-            <GlobalErrorBoundary component="Route-home">
-              {user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
-            </GlobalErrorBoundary>
-          } 
-        />
-        
         {routes.map((route) => (
           <Route
             key={route.path}
@@ -66,8 +57,8 @@ function App() {
           />
         ))}
         
-        {/* Catch-all route for invalid paths */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Catch-all route for invalid paths - redirect to 404 page */}
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
       <Toaster />
       <SonnerToaster position="top-right" closeButton richColors />
