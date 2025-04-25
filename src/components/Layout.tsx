@@ -4,7 +4,9 @@ import { AppShell } from './layout/AppShell';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
+import { ErrorLoggingService } from '@/services/ErrorLoggingService';
+import { UserRole } from '@/types/roles';
+import { getFallbackDashboardByRole } from '@/utils/navigationUtils';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -28,7 +30,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     // Set auth check completed flag
     setAuthChecked(true);
     
-    const publicPaths = ['/login', '/signup', '/404'];
+    const publicPaths = ['/login', '/signup', '/404', '/privacy-policy', '/terms', '/help'];
     const isPublicPath = publicPaths.includes(location.pathname) || location.pathname.includes('/auth/');
     
     // Redirect to login if not authenticated and not on public path
@@ -45,35 +47,30 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     // Redirect from login if already authenticated
     if (user && location.pathname === '/login') {
-      navigate('/dashboard', { replace: true });
+      const dashboardRoute = getFallbackDashboardByRole(user.role as UserRole);
+      navigate(dashboardRoute, { replace: true });
       return;
     }
   }, [user, isLoading, location.pathname, navigate]);
 
-  // Log 404 errors for valid users - only if on an unknown route
+  // Log navigation for analytics
   useEffect(() => {
-    const knownRoutes = ['/login', '/dashboard', '/404', '/', '/privacy-policy', '/terms', '/help'];
-    const isKnownRoute = knownRoutes.includes(location.pathname) || 
-                       location.pathname.startsWith('/admin') ||
-                       location.pathname.startsWith('/student') ||
-                       location.pathname.startsWith('/teacher') ||
-                       location.pathname.startsWith('/parent') ||
-                       location.pathname.startsWith('/auth') ||
-                       location.pathname.startsWith('/profile');
-    
-    if (!isKnownRoute && user && !isLoading) {
-      try {
-        ErrorLoggingService.logError({
-          action: 'navigation_error',
-          error_message: `User attempted to access non-existent route: ${location.pathname}`,
-          status_code: '404',
-          profile_type: (user.role as ProfileType) || 'unknown'
-        });
-      } catch (error) {
-        console.error('Error logging navigation error:', error);
-      }
+    if (user && location.pathname) {
+      const logTimer = setTimeout(() => {
+        try {
+          ErrorLoggingService.logError({
+            action: 'page_navigation',
+            error_message: `User navigated to: ${location.pathname}`,
+            profile_type: (user.role as any) || 'unauthenticated'
+          });
+        } catch (error) {
+          console.error('Failed to log navigation:', error);
+        }
+      }, 100);
+      
+      return () => clearTimeout(logTimer);
     }
-  }, [location.pathname, user, isLoading]);
+  }, [location.pathname, user]);
 
   // Show loading state only during initial auth check
   if (!authChecked && isLoading) {
@@ -82,11 +79,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     ); 
-  }
-
-  // After auth check, handle special cases
-  if (!user && location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !== '/404' && !location.pathname.includes('/auth/')) {
-    return null; // Return null during redirects
   }
 
   return (

@@ -43,10 +43,10 @@ const NotFound = () => {
       <div className="text-center space-y-6 max-w-md">
         <GraduationCap className="h-24 w-24 text-primary mx-auto mb-6" />
         <h1 className="text-6xl font-heading font-bold">404</h1>
-        <h2 className="text-2xl font-heading">Oops! That page doesn't exist</h2>
+        <h2 className="text-2xl font-heading">Page not found</h2>
         <p className="text-muted-foreground mb-6">
-          But you're still on the right track. Let's get you back where you belong.
-          {user && <span className="block mt-2 font-medium">Redirecting you automatically in a few seconds...</span>}
+          The page you're looking for doesn't exist or has been moved.
+          {user && <span className="block mt-2 font-medium">Redirecting you to dashboard in a few seconds...</span>}
         </p>
         <div className="space-y-4">
           <Button 

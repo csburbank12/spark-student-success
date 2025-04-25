@@ -14,6 +14,8 @@ import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary
 import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
 import SystemMonitoringDashboard from "@/components/error-handling/SystemMonitoringDashboard";
 import ConsentSettings from "@/pages/ConsentSettings";
+import Terms from "@/pages/Terms";
+import Help from "@/pages/Help";
 
 // Dynamic imports for base pages
 const Login = lazy(() => import("@/pages/Login"));
@@ -62,15 +64,23 @@ const systemMonitoringRoute = {
   element: createProtectedRoute(SystemMonitoringDashboard, "SystemMonitoring")
 };
 
-// Explicit privacy routes
+// Explicit privacy and support routes
 const privacyRoutes = [
   {
     path: "/privacy-policy",
-    element: createProtectedRoute(PrivacyPolicy, "PrivacyPolicy")
+    element: createPublicRoute(PrivacyPolicy, "PrivacyPolicy")
   },
   {
     path: "/consent-settings",
     element: createProtectedRoute(ConsentSettings, "ConsentSettings")
+  },
+  {
+    path: "/terms",
+    element: createPublicRoute(Terms, "Terms")
+  },
+  {
+    path: "/help",
+    element: createPublicRoute(Help, "Help")
   }
 ];
 
@@ -115,14 +125,15 @@ export const routes = [
 ];
 
 // Add all the remaining routes
-export const allRoutes = routes.concat(
-  generalRoutes,
-  adminRoutes,
-  teacherAdminRoutes,
-  studentRoutes,
-  parentRoutes,
-  staffRoutes,
-  onboardingRoutes
-);
+export const allRoutes = [
+  ...routes,
+  ...generalRoutes,
+  ...adminRoutes,
+  ...teacherAdminRoutes,
+  ...studentRoutes,
+  ...parentRoutes,
+  ...staffRoutes,
+  ...onboardingRoutes
+];
 
 export default allRoutes;

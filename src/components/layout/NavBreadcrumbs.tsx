@@ -5,6 +5,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Home } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
+import { getFallbackDashboardByRole } from '@/utils/navigationUtils';
 
 interface NavBreadcrumbsProps {
   path: string;
@@ -20,24 +21,10 @@ export const NavBreadcrumbs: React.FC<NavBreadcrumbsProps> = ({ path }) => {
     return null;
   }
 
-  // Determine home link based on user role - memoize to prevent recalculation
+  // Determine home link based on user role
   const homeLink = useMemo(() => {
     if (!user) return "/login";
-    
-    switch (user.role as UserRole) {
-      case UserRole.admin:
-        return "/admin-dashboard";
-      case UserRole.teacher:
-        return "/teacher-dashboard";
-      case UserRole.student:
-        return "/student-dashboard";
-      case UserRole.parent:
-        return "/parent-dashboard";
-      case UserRole.staff:
-        return "/staff-dashboard";
-      default:
-        return "/dashboard";
-    }
+    return getFallbackDashboardByRole(user.role as UserRole);
   }, [user]);
 
   // Create breadcrumb items - memoize to prevent recalculation on every render
