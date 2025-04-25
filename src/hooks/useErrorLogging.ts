@@ -1,11 +1,10 @@
-
 import { useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
 import { ProfileType } from '@/services/ErrorLoggingService';
 
-export { ProfileType };
+export type { ProfileType };
 
 export const useErrorLogging = () => {
   const { user } = useAuth();
