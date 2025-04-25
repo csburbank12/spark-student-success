@@ -9,6 +9,7 @@ import { Navbar } from './Navbar';
 import { Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { isPublicPath } from '@/utils/navigationUtils';
+import { NavBreadcrumbs } from './NavBreadcrumbs';
 
 export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const { isLoading, user } = useAuth();
@@ -51,12 +52,15 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
           <SidebarInset enableScroll={true}>
             <div className="flex flex-1 flex-col h-full">
               <Navbar />
-              <main className="flex-1 bg-background p-6 md:p-8 overflow-auto">
+              <div className="px-4 md:px-6 py-2 border-b bg-card/50 backdrop-blur-sm">
+                <NavBreadcrumbs path={location.pathname} />
+              </div>
+              <main className="flex-1 bg-background/60 p-4 md:p-6 lg:p-8 overflow-auto backdrop-blur-sm">
                 <div className={`mx-auto max-w-7xl ${pageTransition ? "animate-fade-in" : ""}`}>
                   {children}
                 </div>
               </main>
-              <footer className="border-t py-4 px-6 bg-card">
+              <footer className="border-t py-4 px-6 bg-card/80 backdrop-blur-sm">
                 <div className="container flex flex-col md:flex-row justify-between items-center gap-2">
                   <div className="text-sm text-muted-foreground">
                     © {new Date().getFullYear()} Student Success Platform
