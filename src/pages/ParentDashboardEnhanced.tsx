@@ -1,48 +1,24 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import PageHeader from "@/components/layout/PageHeader";
 import ChildSelector from "./parent-dashboard-enhanced/ChildSelector";
 import WellnessSummaryCard from "./parent-dashboard-enhanced/WellnessSummaryCard";
 import ParentStatCardsRow from "./parent-dashboard-enhanced/ParentStatCardsRow";
 import DashboardTabs from "./parent-dashboard-enhanced/DashboardTabs";
 import ParentNav from "./parent-dashboard-enhanced/ParentNav";
-import { toast } from "sonner";
-import { mockParentDashboardData } from "@/data/mockParentDashboard";
-import { Child } from "@/types/parent-dashboard";
+import { getRiskColor } from "@/data/mockParentDashboard";
+import { useChildManagement } from "@/hooks/useChildManagement";
+import { RiskLevel } from "@/types/parent-dashboard";
 
 const ParentDashboardEnhanced = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const childParam = searchParams.get('child');
-  
-  const [selectedChild, setSelectedChild] = useState<string>(
-    childParam || (user?.children?.[0]?.id || mockParentDashboardData.children[0].id)
-  );
+  const { selectedChild, selectedChildData, handleChildChange, children } = useChildManagement();
   const [activeTab, setActiveTab] = useState<string>("overview");
-
-  useEffect(() => {
-    if (childParam !== selectedChild && selectedChild) {
-      navigate(`/parent-dashboard-enhanced?child=${selectedChild}`, { replace: true });
-    }
-  }, [selectedChild, childParam, navigate]);
-
-  const handleChildChange = (childId: string) => {
-    setSelectedChild(childId);
-    const selectedChild = mockParentDashboardData.children.find(child => child.id === childId);
-    if (selectedChild) {
-      toast.success(`Viewing ${selectedChild.name}'s information`);
-    }
-  };
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
   };
-
-  const selectedChildData = mockParentDashboardData.children.find(
-    child => child.id === selectedChild
-  ) || mockParentDashboardData.children[0];
 
   const getHomeStrategies = () => {
     if (selectedChildData.behaviorRiskLevel === "medium" || selectedChildData.behaviorRiskLevel === "high") {
@@ -73,10 +49,10 @@ const ParentDashboardEnhanced = () => {
       
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-medium">
-          {selectedChild ? mockParentDashboardData.children.find(child => child.id === selectedChild)?.name + "'s Dashboard" : "Child Dashboard"}
+          {selectedChild ? children.find(child => child.id === selectedChild)?.name + "'s Dashboard" : "Child Dashboard"}
         </h2>
         <ChildSelector 
-          childrenList={mockParentDashboardData.children} 
+          childrenList={children} 
           selectedChild={selectedChild} 
           onChange={handleChildChange} 
         />
@@ -95,11 +71,7 @@ const ParentDashboardEnhanced = () => {
             : selectedChildData.behaviorRiskLevel === "medium"
             ? "Your child is doing well in some areas but could use extra support in others."
             : "Your child is showing positive engagement and wellness at school.",
-          statusColor: selectedChildData.behaviorRiskLevel === "high"
-            ? "text-red-500"
-            : selectedChildData.behaviorRiskLevel === "medium"
-            ? "text-amber-500"
-            : "text-green-500"
+          statusColor: getRiskColor(selectedChildData.behaviorRiskLevel as RiskLevel)
         })}
         getTrendIcon={(trend) => {
           if (trend === "up") return <span className="text-green-500">↑</span>;
@@ -115,6 +87,7 @@ const ParentDashboardEnhanced = () => {
         onTabChange={handleTabChange}
         selectedChildData={selectedChildData}
         getHomeStrategies={getHomeStrategies}
+        getRiskColor={getRiskColor}
       />
     </div>
   );
