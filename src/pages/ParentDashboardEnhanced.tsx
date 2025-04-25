@@ -11,6 +11,9 @@ import WellnessTab from "./parent-dashboard-enhanced/WellnessTab";
 import AcademicsTab from "./parent-dashboard-enhanced/AcademicsTab";
 import ResourcesTab from "./parent-dashboard-enhanced/ResourcesTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const ParentDashboardEnhanced = () => {
   const { user } = useAuth();
