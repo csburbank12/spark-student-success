@@ -1,6 +1,10 @@
 
 import { lazy } from "react";
-import { createProtectedRoute } from "./index";
+import { Suspense } from "react";
+import { Loader } from "@/components/ui/loader";
+import Layout from "@/components/Layout";
+import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
+import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
 
 const Help = lazy(() => import("@/pages/Help"));
 const Settings = lazy(() => import("@/pages/Settings"));
@@ -10,33 +14,48 @@ const EmotionAwareScheduling = lazy(() => import("@/pages/EmotionAwareScheduling
 const Profiles = lazy(() => import("@/pages/Profiles"));
 const SharedResources = lazy(() => import("@/pages/SharedResources"));
 
+// Create a local wrapper that doesn't depend on index.tsx
+const wrapWithProtectedRoute = (Component: React.ComponentType, name: string) => (
+  <GlobalErrorBoundary component={name} fallback={<FallbackErrorPage />}>
+    <Suspense fallback={
+      <div className="flex h-screen w-screen items-center justify-center bg-background">
+        <Loader size="lg" />
+      </div>
+    }>
+      <Layout>
+        <Component />
+      </Layout>
+    </Suspense>
+  </GlobalErrorBoundary>
+);
+
 export const generalRoutes = [
   {
     path: "/help",
-    element: createProtectedRoute(Help, "Help")
+    element: wrapWithProtectedRoute(Help, "Help")
   },
   {
     path: "/settings",
-    element: createProtectedRoute(Settings, "Settings")
+    element: wrapWithProtectedRoute(Settings, "Settings")
   },
   {
     path: "/welllens",
-    element: createProtectedRoute(WellLensDashboard, "WellLens")
+    element: wrapWithProtectedRoute(WellLensDashboard, "WellLens")
   },
   {
     path: "/predictive-support",
-    element: createProtectedRoute(PredictiveSupport, "PredictiveSupport")
+    element: wrapWithProtectedRoute(PredictiveSupport, "PredictiveSupport")
   },
   {
     path: "/emotion-scheduling",
-    element: createProtectedRoute(EmotionAwareScheduling, "EmotionScheduling")
+    element: wrapWithProtectedRoute(EmotionAwareScheduling, "EmotionScheduling")
   },
   {
     path: "/profiles",
-    element: createProtectedRoute(Profiles, "Profiles")
+    element: wrapWithProtectedRoute(Profiles, "Profiles")
   },
   {
     path: "/shared-resources",
-    element: createProtectedRoute(SharedResources, "SharedResources")
+    element: wrapWithProtectedRoute(SharedResources, "SharedResources")
   }
 ];
