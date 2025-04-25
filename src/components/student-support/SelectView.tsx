@@ -45,7 +45,7 @@ export const SelectView: React.FC<SelectViewProps> = ({
         <SelectContent>
           <SelectItem value="class">Class View</SelectItem>
           <SelectItem value="grade">Grade View</SelectItem>
-          {(userRole === "admin" || userRole === "counselor") && (
+          {(userRole === UserRole.admin || userRole === UserRole.counselor) && (
             <SelectItem value="school">School View</SelectItem>
           )}
         </SelectContent>

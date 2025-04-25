@@ -4,5 +4,6 @@ export enum UserRole {
   staff = "staff",
   admin = "admin",
   parent = "parent",
-  teacher = "teacher"
+  teacher = "teacher",
+  counselor = "counselor"
 }

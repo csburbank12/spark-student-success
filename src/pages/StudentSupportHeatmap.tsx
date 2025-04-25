@@ -14,6 +14,25 @@ import { UserRole } from "@/types/roles";
 import { Search, Filter } from "lucide-react";
 import { toast } from "sonner";
 
+// Define the Student type for the heatmap
+type StudentStatus = "at_risk" | "concerning" | "stable";
+
+interface Student {
+  id: string;
+  name: string;
+  photoUrl: string | null;
+  grade: string;
+  class: string;
+  teacher: string;
+  status: StudentStatus;
+  confidenceScore: number;
+  moodTrend: string;
+  absences: number;
+  tardies: number;
+  behaviorReports: number;
+  currentInterventions: string[];
+}
+
 // We'll expand this with real data from Supabase
 const StudentSupportHeatmap = () => {
   const { user } = useAuth();
@@ -25,7 +44,7 @@ const StudentSupportHeatmap = () => {
   const [isRealTimeEnabled, setIsRealTimeEnabled] = useState(true);
   
   // Mock data - this would come from Supabase in a real implementation
-  const mockData = useMemo(() => {
+  const mockData = useMemo<Student[]>(() => {
     return [
       {
         id: "s1",

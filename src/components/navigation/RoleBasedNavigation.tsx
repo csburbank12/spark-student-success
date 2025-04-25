@@ -8,7 +8,7 @@ import { teacherAdminRoutes } from "@/components/layout/routes/teacherAdminRoute
 import { studentRoutes } from "@/components/layout/routes/studentRoutes";
 import { parentRoutes } from "@/components/layout/routes/parentRoutes";
 import { universalRoutes } from "@/components/layout/routes/universalRoutes";
-import { wellLensRoutes, profileRoutes } from "@/components/layout/sidebarRoutes";
+import { sidebarRoutes } from "@/components/layout/sidebarRoutes";
 
 export const RoleBasedNavigation: React.FC = () => {
   const { user } = useAuth();
@@ -18,10 +18,10 @@ export const RoleBasedNavigation: React.FC = () => {
   const getRoleSpecificRoutes = () => {
     switch (userRole) {
       case UserRole.admin:
-        return [...adminRoutes, ...wellLensRoutes];
+        return adminRoutes;
       case UserRole.teacher:
       case UserRole.staff:
-        return [...teacherAdminRoutes, ...wellLensRoutes];
+        return teacherAdminRoutes;
       case UserRole.student:
         return studentRoutes;
       case UserRole.parent:
@@ -32,6 +32,12 @@ export const RoleBasedNavigation: React.FC = () => {
   };
 
   const roleSpecificRoutes = getRoleSpecificRoutes();
+  
+  // Filter sidebar routes based on user role
+  const profileRoutes = sidebarRoutes.filter(route => 
+    route.roles.includes(userRole as UserRole)
+  );
+
   const allRoutes = [...roleSpecificRoutes, ...profileRoutes];
 
   return (
