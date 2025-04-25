@@ -50,7 +50,7 @@ export async function logAuditCompletion(
       .from('site_audit_logs')
       .insert({
         run_by_admin_id: userId,
-        status: success ? 'success' : 'failed',
+        status: success ? 'success' : 'error', // Changed from 'failed' to 'error' to match enum
         issues_found: errorCount,
         details: details,
         completed_at: new Date().toISOString()

@@ -21,8 +21,9 @@ export const useRepairTools = () => {
 
   const loadDiagnostics = async () => {
     try {
-      const diagnostics = await SystemHealthCheckService.getLatestDiagnosticResults();
-      setLatestDiagnostics(diagnostics);
+      // Since the method doesn't exist, we'll use runFullHealthCheck as a substitute
+      const diagnostics = await SystemHealthCheckService.runFullHealthCheck();
+      setLatestDiagnostics(diagnostics as SystemDiagnostics);
     } catch (error) {
       ErrorLoggingService.logError({
         action: 'load_diagnostics',

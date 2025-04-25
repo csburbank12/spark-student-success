@@ -1,8 +1,10 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { UserCheck, Sparkles, CheckCircle, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,11 +18,11 @@ import { UserRole } from '@/types/roles';
 import { useAuditPlatform } from '@/hooks/useAuditPlatform';
 
 const QATestUtility = () => {
-  const [isRunning, setIsRunning] = React.useState(false);
-  const [currentTest, setCurrentTest] = React.useState('');
-  const [progress, setProgress] = React.useState(0);
-  const [results, setResults] = React.useState<CategoryResult[]>([]);
-  const [overallStatus, setOverallStatus] = React.useState<'pending' | 'passed' | 'failed' | 'partial'>('pending');
+  const [isRunning, setIsRunning] = useState(false);
+  const [currentTest, setCurrentTest] = useState('');
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState<CategoryResult[]>([]);
+  const [overallStatus, setOverallStatus] = useState<'pending' | 'passed' | 'failed' | 'partial'>('pending');
   const navigate = useNavigate();
   const { user, setRole } = useAuth();
   const { runAudit, isAuditing } = useAuditPlatform();
@@ -178,7 +180,7 @@ const QATestUtility = () => {
         <CardHeader>
           <CardTitle className="flex justify-between">
             <span>Implementation Status</span>
-            <Badge variant="default" className="bg-green-500">Complete</Badge>
+            <TestStatusBadge status={overallStatus} />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -274,6 +276,14 @@ const QATestUtility = () => {
         </CardContent>
       </Card>
     </div>
+  );
+};
+
+const TestStatusBadge = ({ status }: { status: string }) => {
+  return (
+    <Badge variant={status === 'passed' ? 'success' : status === 'warning' ? 'warning' : 'destructive'}>
+      {status}
+    </Badge>
   );
 };
 

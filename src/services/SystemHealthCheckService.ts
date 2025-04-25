@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { ErrorLoggingService } from './ErrorLoggingService';
 import { toast } from 'sonner';
+import { executeSql } from '@/utils/supabaseUtils';
 
 interface HealthCheckResult {
   success: boolean;
@@ -119,9 +120,25 @@ export class SystemHealthCheckService {
     const quickCheck = await this.runQuickHealthCheck();
     const checks = [...quickCheck.checks];
     
-    // Check RLS policies
+    // Check RLS policies - Using direct SQL query instead of RPC
     try {
-      const { data: rlsData, error: rlsError } = await supabase.rpc('check_rls_enabled_all_tables');
+      const { data: rlsData, error: rlsError } = await executeSql(`
+        SELECT table_name, rls_enabled 
+        FROM (
+          SELECT 
+            tables.table_name,
+            CASE WHEN pg_class.relrowsecurity = true THEN true ELSE false END as rls_enabled
+          FROM 
+            information_schema.tables
+          JOIN 
+            pg_class ON tables.table_name = pg_class.relname
+          JOIN 
+            pg_namespace ON pg_class.relnamespace = pg_namespace.oid
+          WHERE 
+            tables.table_schema = 'public'
+            AND pg_namespace.nspname = 'public'
+        ) AS table_rls
+      `);
       
       if (rlsError) {
         checks.push({
@@ -131,7 +148,9 @@ export class SystemHealthCheckService {
           details: rlsError
         });
       } else {
-        const tablesWithoutRLS = Array.isArray(rlsData) ? rlsData.filter(table => !table.has_rls) : [];
+        const tablesWithoutRLS = Array.isArray(rlsData) 
+          ? rlsData.filter(table => !table.rls_enabled) 
+          : [];
         
         checks.push({
           name: 'row_level_security',
@@ -175,7 +194,7 @@ export class SystemHealthCheckService {
     // Check client performance
     try {
       const performanceMetrics = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      const loadTime = performanceMetrics.loadEventEnd - performanceMetrics.navigationStart;
+      const loadTime = performanceMetrics.loadEventEnd - performanceMetrics.startTime;
       
       checks.push({
         name: 'page_load_time',
@@ -183,7 +202,7 @@ export class SystemHealthCheckService {
         message: `Page load time: ${Math.round(loadTime)}ms`,
         details: {
           loadTime,
-          domContentLoaded: performanceMetrics.domContentLoadedEventEnd - performanceMetrics.navigationStart,
+          domContentLoaded: performanceMetrics.domContentLoadedEventEnd - performanceMetrics.startTime,
           firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime || 'N/A'
         }
       });
@@ -228,9 +247,25 @@ export class SystemHealthCheckService {
     
     const checks: HealthCheck[] = [];
     
-    // Check for tables without RLS
+    // Check for tables without RLS - Using direct SQL query
     try {
-      const { data: rlsData, error: rlsError } = await supabase.rpc('check_rls_enabled_all_tables');
+      const { data: rlsData, error: rlsError } = await executeSql(`
+        SELECT table_name, rls_enabled 
+        FROM (
+          SELECT 
+            tables.table_name,
+            CASE WHEN pg_class.relrowsecurity = true THEN true ELSE false END as rls_enabled
+          FROM 
+            information_schema.tables
+          JOIN 
+            pg_class ON tables.table_name = pg_class.relname
+          JOIN 
+            pg_namespace ON pg_class.relnamespace = pg_namespace.oid
+          WHERE 
+            tables.table_schema = 'public'
+            AND pg_namespace.nspname = 'public'
+        ) AS table_rls
+      `);
       
       if (rlsError) {
         checks.push({
@@ -240,7 +275,9 @@ export class SystemHealthCheckService {
           details: rlsError
         });
       } else {
-        const tablesWithoutRLS = Array.isArray(rlsData) ? rlsData.filter(table => !table.has_rls) : [];
+        const tablesWithoutRLS = Array.isArray(rlsData) 
+          ? rlsData.filter(table => !table.rls_enabled) 
+          : [];
         
         checks.push({
           name: 'rls_security',
@@ -381,23 +418,27 @@ export class SystemHealthCheckService {
       });
     }
     
-    // Check access control policies
+    // Check access control policies - Using direct SQL query instead of accessing a non-existent table
     try {
-      const { data: policies, error: policiesError } = await supabase
-        .from('access_control_policies')
-        .select('*')
-        .limit(1);
+      const { data: policiesData, error: policiesError } = await executeSql(`
+        SELECT 
+          schemaname, tablename, policyname
+        FROM 
+          pg_policies 
+        WHERE 
+          schemaname = 'public' 
+        LIMIT 10
+      `);
       
       checks.push({
         name: 'access_control_policies',
-        status: (policiesError || !policies || policies.length === 0) ? 'warning' : 'passed',
-        message: (policiesError || !policies || policies.length === 0)
+        status: (policiesError || !policiesData || policiesData.length === 0) ? 'warning' : 'passed',
+        message: (policiesError || !policiesData || policiesData.length === 0)
           ? 'Access control policies may not be properly configured' 
           : 'Access control policies are configured',
-        details: policiesError || { policyCount: policies?.length }
+        details: policiesError || { policyCount: policiesData?.length }
       });
     } catch (error) {
-      // This table might not exist, which is fine
       checks.push({
         name: 'access_control_policies',
         status: 'warning',
@@ -427,12 +468,11 @@ export class SystemHealthCheckService {
     
     const checks: HealthCheck[] = [];
     
-    // Check for role assignments
+    // Check for role assignments - Using simpler query without group
     try {
       const { data: roles, error: rolesError } = await supabase
         .from('user_roles')
-        .select('role, count(*)')
-        .group('role');
+        .select('role');
       
       if (rolesError) {
         checks.push({
@@ -442,11 +482,19 @@ export class SystemHealthCheckService {
           details: rolesError
         });
       } else {
+        // Count roles manually
+        const roleCounts = roles?.reduce((acc, { role }) => {
+          acc[role] = (acc[role] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+        
+        const roleTypes = Object.keys(roleCounts || {});
+        
         checks.push({
           name: 'role_assignments',
           status: 'passed',
-          message: `Found ${roles?.length || 0} role types in the system`,
-          details: roles
+          message: `Found ${roleTypes.length || 0} role types in the system`,
+          details: roleCounts
         });
       }
     } catch (error) {
@@ -458,13 +506,13 @@ export class SystemHealthCheckService {
       });
     }
     
-    // Check admin access
+    // Check admin access - Using SQL query to count admins
     try {
-      const { data: admins, error: adminsError } = await supabase
-        .from('user_roles')
-        .select('count(*)')
-        .eq('role', 'admin')
-        .single();
+      const { data, error: adminsError } = await executeSql(`
+        SELECT COUNT(*) as admin_count
+        FROM user_roles 
+        WHERE role = 'admin'
+      `);
       
       if (adminsError) {
         checks.push({
@@ -474,7 +522,7 @@ export class SystemHealthCheckService {
           details: adminsError
         });
       } else {
-        const adminCount = admins?.count || 0;
+        const adminCount = data && data[0] ? parseInt(data[0].admin_count) : 0;
         checks.push({
           name: 'admin_access',
           status: adminCount > 0 ? 'passed' : 'warning',
@@ -575,5 +623,10 @@ export class SystemHealthCheckService {
         });
       }
     }
+  }
+  
+  // Added for compatibility with useRepairTools.ts
+  static async getLatestDiagnosticResults(): Promise<any> {
+    return this.runFullHealthCheck();
   }
 }
