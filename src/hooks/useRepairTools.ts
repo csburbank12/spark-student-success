@@ -24,12 +24,12 @@ export const useRepairTools = () => {
       const healthCheckResults = await SystemHealthCheckService.runFullHealthCheck();
       // Convert health check results to SystemDiagnostics format
       const diagnostics: SystemDiagnostics = {
-        navigation: { status: 'operational', lastChecked: new Date() },
-        selModule: { status: 'operational', lastChecked: new Date() },
-        profileLayouts: { status: 'operational', lastChecked: new Date() },
-        database: { status: 'operational', lastChecked: new Date() },
-        wellLensAI: { status: 'operational', lastChecked: new Date() },
-        skywardSync: { status: 'operational', lastChecked: new Date() }
+        navigation: { status: 'passed', lastChecked: new Date().toISOString() },
+        selModule: { status: 'passed', lastChecked: new Date().toISOString() },
+        profileLayouts: { status: 'passed', lastChecked: new Date().toISOString() },
+        database: { status: 'passed', lastChecked: new Date().toISOString() },
+        wellLensAI: { status: 'passed', lastChecked: new Date().toISOString() },
+        skywardSync: { status: 'passed', lastChecked: new Date().toISOString() }
       };
       setLatestDiagnostics(diagnostics);
     } catch (error) {
