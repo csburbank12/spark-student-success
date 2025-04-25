@@ -1,5 +1,4 @@
-
-import { ParentDashboardData } from '@/types/parent-dashboard';
+import { ParentDashboardData, RiskLevel } from '@/types/parent-dashboard';
 
 export const mockParentDashboardData: ParentDashboardData = {
   children: [
