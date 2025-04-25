@@ -2,10 +2,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import TrustedAdultSelector from "../TrustedAdultSelector";
-import { useTrustedAdults } from "@/hooks/useTrustedAdults";
+import { useTrustedAdults } from "@/hooks/trusted-adults/useTrustedAdults";
 
 // Mock the useTrustedAdults hook
-vi.mock("@/hooks/useTrustedAdults", () => ({
+vi.mock("@/hooks/trusted-adults/useTrustedAdults", () => ({
   useTrustedAdults: vi.fn()
 }));
 
