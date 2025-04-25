@@ -6,6 +6,7 @@ import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService
 import { toast } from 'sonner';
 import { demoUsers } from '@/data/demoUsers';
 import { supabase } from '@/integrations/supabase/client';
+import { getFallbackDashboardByRole } from '@/utils/navigationUtils';
 
 export const useAuthProvider = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -22,7 +23,8 @@ export const useAuthProvider = () => {
         [UserRole.teacher]: 'b2c5f5d7-3273-4515-b3c4-587d9fd697b4',
         [UserRole.admin]: '9e8c7a6b-5d4e-4f3c-2b1a-0i9o8u7y6t5r',
         [UserRole.parent]: 'a1s2d3f4-g5h6-j7k8-l9z0-x1c2v3b4n5m6',
-        [UserRole.staff]: 'd4e5f6g7-h8i9-j0k1-l2m3-n4o5p6q7r8s9'
+        [UserRole.staff]: 'd4e5f6g7-h8i9-j0k1-l2m3-n4o5p6q7r8s9',
+        [UserRole.counselor]: 'c1o2u3n4-s5e6l-o7r8-r9o0-l1e2c3o4u5n6'
       }[user.role as UserRole] || '00000000-0000-0000-0000-000000000000';
       
       return { ...user, id: roleBasedId };
@@ -32,9 +34,12 @@ export const useAuthProvider = () => {
 
   // Initial auth check
   useEffect(() => {
-    try {
-      // Check for active Supabase session first
-      supabase.auth.getSession().then(({ data: { session } }) => {
+    const checkAuthStatus = async () => {
+      try {
+        setIsLoading(true);
+        // Check for active Supabase session first
+        const { data: { session } } = await supabase.auth.getSession();
+        
         if (session?.user) {
           // TODO: In a real app, we would fetch the user profile from Supabase here
           // For now, use the demo user approach
@@ -51,17 +56,39 @@ export const useAuthProvider = () => {
             setUser(ensureValidUUID(parsedUser));
           }
         }
+      } catch (error) {
+        console.error('Error reading auth session:', error);
+        ErrorLoggingService.logError({
+          action: 'auth_session_load',
+          error_message: `Failed to load user session: ${error instanceof Error ? error.message : String(error)}`,
+          profile_type: 'unknown'
+        });
+      } finally {
         setIsLoading(false);
-      });
-    } catch (error) {
-      console.error('Error reading auth session:', error);
-      ErrorLoggingService.logError({
-        action: 'auth_session_load',
-        error_message: `Failed to load user session: ${error instanceof Error ? error.message : String(error)}`,
-        profile_type: 'unknown'
-      });
-      setIsLoading(false);
-    }
+      }
+    };
+
+    checkAuthStatus();
+    
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Handle sign in - in a real app we'd fetch user profile
+          const storedUser = localStorage.getItem('sparkUser');
+          if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            setUser(ensureValidUUID(parsedUser));
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+        }
+      }
+    );
+    
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
   // Session refresh mechanism
@@ -163,6 +190,7 @@ export const useAuthProvider = () => {
   };
 
   const logout = async () => {
+    setIsLoading(true);
     try {
       // Attempt to sign out with Supabase first
       await supabase.auth.signOut();
@@ -178,6 +206,8 @@ export const useAuthProvider = () => {
         error_message: `Logout failed: ${error instanceof Error ? error.message : String(error)}`,
         profile_type: user?.role as ProfileType || 'unknown'
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   

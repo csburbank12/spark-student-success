@@ -10,13 +10,15 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Shield, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ErrorLoggingService } from "@/services/ErrorLoggingService";
+import { getFallbackDashboardByRole } from "@/utils/navigationUtils";
+import { UserRole } from "@/types/roles";
 
 const Login = () => {
-  const { login, user } = useAuth();
+  const { login, user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+  const redirectTo = searchParams.get("redirectTo");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,11 +28,12 @@ const Login = () => {
 
   // Redirect to dashboard if already logged in
   useEffect(() => {
-    if (user) {
-      const from = location.state?.from || redirectTo;
-      navigate(from);
+    if (!isLoading && user) {
+      const dashboardRoute = getFallbackDashboardByRole(user.role as UserRole);
+      const from = location.state?.from || redirectTo || dashboardRoute;
+      navigate(from, { replace: true });
     }
-  }, [user, navigate, location.state, redirectTo]);
+  }, [user, isLoading, navigate, location.state, redirectTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,9 +41,13 @@ const Login = () => {
     setErrorMessage("");
 
     try {
-      await login(email, password);
-      const from = location.state?.from || redirectTo;
-      navigate(from);
+      const loggedInUser = await login(email, password);
+      
+      if (loggedInUser) {
+        const dashboardRoute = getFallbackDashboardByRole(loggedInUser.role as UserRole);
+        const from = location.state?.from || redirectTo || dashboardRoute;
+        navigate(from, { replace: true });
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to login";
       console.error(errorMessage);

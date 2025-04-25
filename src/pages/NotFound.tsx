@@ -13,9 +13,9 @@ const NotFound = () => {
   const navigate = useNavigate();
   const { log404Error } = useErrorLogging();
   const { user } = useAuth();
-  const userRole = user?.role ? user.role as UserRole : undefined;
   
-  // Calculate appropriate dashboard route
+  // Calculate appropriate dashboard route - using type casting to fix TypeScript error
+  const userRole = user?.role ? (user.role as UserRole) : undefined;
   const dashboardRoute = user && userRole ? getFallbackDashboardByRole(userRole) : '/login';
   
   // Get referring page if available

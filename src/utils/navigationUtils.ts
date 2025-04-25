@@ -29,7 +29,13 @@ export const getFallbackDashboardByRole = (role: UserRole): string => {
 export const isPublicPath = (pathname: string): boolean => {
   const publicPaths = ['/login', '/signup', '/404', '/privacy-policy', '/terms', '/help'];
   
-  // Don't treat onboarding paths as public paths that skip authentication
   return publicPaths.includes(pathname) || 
          pathname.startsWith('/auth/');
+};
+
+/**
+ * Check if a path is an onboarding path
+ */
+export const isOnboardingPath = (pathname: string): boolean => {
+  return pathname.startsWith('/onboarding/');
 };

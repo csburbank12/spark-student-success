@@ -8,7 +8,7 @@ import { UserRole } from "@/types/roles";
 import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
 import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
 
-// Onboarding routes should be public routes not requiring authentication
+// Onboarding routes should be accessible with or without authentication
 const onboardingRoutes = [
   {
     path: "/onboarding/teacher",

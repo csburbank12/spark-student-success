@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
 import { ErrorMonitoringService } from "./services/ErrorMonitoringService";
 import { useErrorLogging } from "@/hooks/useErrorLogging";
-import { isPublicPath } from "./utils/navigationUtils";
+import { isPublicPath, isOnboardingPath } from "./utils/navigationUtils";
 
 // Optimized loader component
 const AppLoader = () => (
@@ -39,10 +39,10 @@ function App() {
     if (!isLoading && !user) {
       // Check if current path is public or an onboarding path
       const isCurrentPathPublic = isPublicPath(location.pathname);
-      const isOnboardingPath = location.pathname.includes('/onboarding/');
+      const currentIsOnboardingPath = isOnboardingPath(location.pathname);
       
       // Only redirect to login if not on a public path or onboarding path
-      if (!isCurrentPathPublic && !isOnboardingPath) {
+      if (!isCurrentPathPublic && !currentIsOnboardingPath) {
         navigate('/login', { replace: true, state: { from: location.pathname } });
       }
     }

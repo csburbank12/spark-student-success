@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { ErrorLoggingService } from '@/services/ErrorLoggingService';
 import { UserRole } from '@/types/roles';
-import { getFallbackDashboardByRole, isPublicPath } from '@/utils/navigationUtils';
+import { getFallbackDashboardByRole, isPublicPath, isOnboardingPath } from '@/utils/navigationUtils';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -30,19 +30,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     // Set auth check completed flag
     setAuthChecked(true);
     
-    const isOnboardingPath = location.pathname.includes('/onboarding/');
-    
     // Check if current path is public (doesn't require auth)
     const isCurrentPathPublic = isPublicPath(location.pathname);
-    
+    const currentIsOnboardingPath = isOnboardingPath(location.pathname);
+
     // Special handling for onboarding paths - require auth but don't auto-redirect away
-    if (isOnboardingPath && user) {
+    if (currentIsOnboardingPath && user) {
       // User is authenticated and on onboarding path - allow them to stay
       return;
     }
     
     // Immediate redirect to login if not authenticated and not on public path
-    if (!user && !isCurrentPathPublic && !isOnboardingPath) {
+    if (!user && !isCurrentPathPublic && !currentIsOnboardingPath) {
       navigate('/login', { replace: true, state: { from: location.pathname } });
       return;
     }

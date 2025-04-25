@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { getFallbackDashboardByRole } from '@/utils/navigationUtils';
+import { UserRole } from '@/types/roles';
 
 export interface PageHeaderProps {
   title: string;
@@ -17,19 +19,7 @@ const PageHeader = ({ title, description, showBackButton = true }: PageHeaderPro
   // Determine the correct dashboard route based on user role
   const getDashboardRoute = () => {
     if (!user?.role) return '/dashboard';
-    
-    switch (user.role) {
-      case 'teacher':
-        return '/teacher-dashboard-enhanced';
-      case 'student':
-        return '/student-dashboard-enhanced';
-      case 'admin':
-        return '/admin-dashboard-enhanced';
-      case 'parent':
-        return '/parent-dashboard-enhanced';
-      default:
-        return '/dashboard';
-    }
+    return getFallbackDashboardByRole(user.role as UserRole);
   };
 
   return (
