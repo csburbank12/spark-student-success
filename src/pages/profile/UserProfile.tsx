@@ -1,8 +1,8 @@
 
 import React from "react";
 import PageHeader from "@/components/layout/PageHeader";
-import { ProfileForm } from "@/components/profile/ProfileForm";
-import { NotificationPreferences } from "@/components/profile/NotificationPreferences";
+import ProfileForm from "@/components/profile/ProfileForm";
+import NotificationPreferences from "@/components/profile/NotificationPreferences";
 
 const UserProfile: React.FC = () => {
   return (
