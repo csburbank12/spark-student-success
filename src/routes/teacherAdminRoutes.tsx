@@ -1,6 +1,5 @@
 
 import React from "react";
-import { createProtectedRoute } from "./index";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
 import TeacherDashboard from "@/pages/TeacherDashboard"; 
@@ -13,6 +12,7 @@ import WellLensDashboard from "@/pages/WellLensDashboard";
 import PredictiveSupport from "@/pages/PredictiveSupport";
 import StudentSupportHeatmap from "@/pages/StudentSupportHeatmap";
 import TeacherProfilePage from "@/pages/profile/TeacherProfilePage";
+import { createProtectedRoute } from "./index";
 
 const teacherRoutes = [
   {
@@ -89,7 +89,11 @@ const teacherRoutes = [
   },
   {
     path: "/teacher/profile",
-    element: createProtectedRoute(TeacherProfilePage, "TeacherProfile"),
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
+        <TeacherProfilePage />
+      </ProtectedRoute>
+    ),
   },
 ];
 
