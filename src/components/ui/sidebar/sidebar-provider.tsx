@@ -85,7 +85,7 @@ export const SidebarProvider = React.forwardRef<HTMLDivElement, SidebarProviderP
       if (openMobile && isMobile) {
         setOpenMobile(false);
       }
-    }, [location?.pathname]);
+    }, [window.location.pathname]);
 
     const state: SidebarState = open ? "expanded" : "collapsed";
     const contextValue = React.useMemo(

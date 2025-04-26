@@ -19,63 +19,6 @@ const Settings = lazy(() => import("@/pages/Settings"));
 const Help = lazy(() => import("@/pages/Help"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 
-// Placeholder components until they're fully implemented
-const UserManagementPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">User Management</h2>
-    <p>User management interface with mock data would be implemented here.</p>
-  </div>
-);
-
-const SchoolManagementPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">School Management</h2>
-    <p>School management interface with mock data would be implemented here.</p>
-  </div>
-);
-
-const SystemConfigurationPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">System Configuration</h2>
-    <p>System configuration interface with settings would be implemented here.</p>
-  </div>
-);
-
-const DataAnalyticsPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Data Analytics</h2>
-    <p>Analytics dashboard with visualizations would be implemented here.</p>
-  </div>
-);
-
-const FERPACompliancePlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">FERPA Compliance</h2>
-    <p>FERPA compliance monitoring and reporting would be implemented here.</p>
-  </div>
-);
-
-const LoopbotLogsPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">LoopBot Logs</h2>
-    <p>AI assistant interaction logs would be displayed here.</p>
-  </div>
-);
-
-const AuditDashboardPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Audit Dashboard</h2>
-    <p>System audit and compliance tracking would be implemented here.</p>
-  </div>
-);
-
-const ErrorLogsPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Error Logs</h2>
-    <p>System error logs and monitoring would be implemented here.</p>
-  </div>
-);
-
 const adminRoutes = [
   {
     path: "/admin-dashboard",
@@ -92,7 +35,7 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <Layout>
-          <UserManagementPlaceholder />
+          <UserManagement />
         </Layout>
       </ProtectedRoute>
     ),
@@ -102,7 +45,7 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <Layout>
-          <DataAnalyticsPlaceholder />
+          <DataAnalytics />
         </Layout>
       </ProtectedRoute>
     ),
@@ -112,7 +55,7 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <Layout>
-          <SchoolManagementPlaceholder />
+          <SchoolManagement />
         </Layout>
       </ProtectedRoute>
     ),
@@ -122,7 +65,7 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <Layout>
-          <FERPACompliancePlaceholder />
+          <FERPACompliance />
         </Layout>
       </ProtectedRoute>
     ),
@@ -142,7 +85,7 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <Layout>
-          <LoopbotLogsPlaceholder />
+          <LoopbotLogs />
         </Layout>
       </ProtectedRoute>
     ),
@@ -152,7 +95,7 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <Layout>
-          <AuditDashboardPlaceholder />
+          <AuditDashboard />
         </Layout>
       </ProtectedRoute>
     ),
@@ -162,7 +105,7 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <Layout>
-          <ErrorLogsPlaceholder />
+          <ErrorLogs />
         </Layout>
       </ProtectedRoute>
     ),

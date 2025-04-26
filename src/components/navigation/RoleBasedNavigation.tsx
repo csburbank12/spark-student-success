@@ -31,8 +31,8 @@ export const RoleBasedNavigation: React.FC = () => {
       return;
     }
     
-    // Use direct navigation to ensure it works
-    window.location.href = route.href;
+    // Use navigate instead of direct window location change
+    navigate(route.href);
   };
   
   const getRoleSpecificRoutes = () => {

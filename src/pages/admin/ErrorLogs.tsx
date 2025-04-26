@@ -11,6 +11,8 @@ const ErrorLogs = () => {
         title="Error Logs" 
         description="System error monitoring and troubleshooting" 
         icon={<AlertCircle className="h-6 w-6 text-primary" />}
+        showBackButton
+        backUrl="/admin-dashboard"
       />
 
       <Card>

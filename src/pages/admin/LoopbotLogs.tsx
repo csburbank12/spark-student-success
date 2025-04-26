@@ -11,6 +11,8 @@ const LoopbotLogs = () => {
         title="LoopBot Logs" 
         description="AI assistant interaction tracking and monitoring" 
         icon={<Keyboard className="h-6 w-6 text-primary" />}
+        showBackButton
+        backUrl="/admin-dashboard"
       />
 
       <Card>

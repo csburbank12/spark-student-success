@@ -11,6 +11,8 @@ const DataAnalytics = () => {
         title="Data Analytics" 
         description="Insights and analytics for school performance" 
         icon={<BarChart3 className="h-6 w-6 text-primary" />}
+        showBackButton
+        backUrl="/admin-dashboard"
       />
 
       <Card>

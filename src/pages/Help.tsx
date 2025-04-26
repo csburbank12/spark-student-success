@@ -86,17 +86,17 @@ const Help = () => {
           <div>
             <h3 className="font-medium mb-2">How do I update my profile information?</h3>
             <p className="text-sm text-muted-foreground">
-              Go to Settings > Profile and edit your information. Don't forget to save your changes.
+              Go to Settings {'>'}  Profile and edit your information. Don&apos;t forget to save your changes.
             </p>
           </div>
           <div>
             <h3 className="font-medium mb-2">Can I change my password?</h3>
             <p className="text-sm text-muted-foreground">
-              Yes. Go to Settings > Security to update your password.
+              Yes. Go to Settings {'>'}  Security to update your password.
             </p>
           </div>
           <div>
-            <h3 className="font-medium mb-2">Who can see my child's wellness data?</h3>
+            <h3 className="font-medium mb-2">Who can see my child&apos;s wellness data?</h3>
             <p className="text-sm text-muted-foreground">
               Only authorized staff and yourself. All access is logged and compliant with FERPA regulations.
             </p>

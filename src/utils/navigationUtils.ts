@@ -9,7 +9,8 @@ export const isPublicPath = (path: string): boolean => {
     '/privacy-policy',
     '/terms',
     '/select-role',
-    '/404'
+    '/404',
+    '/help'  // Making help publicly accessible
   ];
   
   return publicPaths.includes(path) || path.startsWith('/auth/');
@@ -51,7 +52,10 @@ export const getBreadcrumbLabel = (segment: string): string => {
     'student-dashboard': 'Student Dashboard',
     'parent-dashboard': 'Parent Dashboard',
     'staff-dashboard': 'Staff Dashboard',
-    'counselor-dashboard': 'Counselor Dashboard'
+    'counselor-dashboard': 'Counselor Dashboard',
+    'error-logs': 'Error Logs',
+    'data-analytics': 'Data Analytics',
+    'loopbot-logs': 'LoopBot Logs'
   };
   
   if (specialCases[segment]) {
@@ -63,4 +67,24 @@ export const getBreadcrumbLabel = (segment: string): string => {
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+};
+
+// Check if the current user has access to a specific route based on their role
+export const hasAccessToRoute = (userRole: string, requiredRoles: string[]): boolean => {
+  if (!requiredRoles || requiredRoles.length === 0) {
+    return true; // No role restrictions
+  }
+  
+  return requiredRoles.includes(userRole);
+};
+
+// Check if route is in universalRoutes (available to all authenticated users)
+export const isUniversalRoute = (path: string): boolean => {
+  const universalPaths = ['/profile', '/settings', '/help', '/notifications'];
+  return universalPaths.includes(path) || universalPaths.some(p => path.startsWith(`${p}/`));
+};
+
+// Get proper redirect path for unauthorized access
+export const getUnauthorizedRedirectPath = (userRole: string): string => {
+  return getFallbackDashboardByRole(userRole);
 };
