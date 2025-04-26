@@ -26,7 +26,7 @@ export const LoginForm = ({
   handleSubmit
 }: LoginFormProps) => {
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email" className="text-sm font-medium">
@@ -38,7 +38,7 @@ export const LoginForm = ({
             placeholder="your.email@school.edu"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-11 transition-colors focus:ring-2"
+            className="h-11 transition-colors focus:ring-2 focus:ring-primary/20"
             required
           />
         </div>
@@ -52,7 +52,7 @@ export const LoginForm = ({
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="h-11 transition-colors focus:ring-2"
+            className="h-11 transition-colors focus:ring-2 focus:ring-primary/20"
             required
           />
         </div>
@@ -65,7 +65,7 @@ export const LoginForm = ({
 
       <Button
         type="submit"
-        className="w-full h-11 text-base font-medium transition-all bg-gradient-to-r from-primary to-primary-600 hover:brightness-110"
+        className="w-full h-11 text-base font-medium transition-all bg-gradient-to-r from-primary to-purple-600 hover:brightness-110"
         disabled={isSubmitting || !agreedToTerms}
       >
         {isSubmitting ? "Logging in..." : "Log in"}

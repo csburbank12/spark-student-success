@@ -89,22 +89,31 @@ const Login = () => {
 
   return (
     <div className="flex min-h-screen">
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-400 to-primary-700 p-12 items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
-        <div className="relative z-10 text-white max-w-2xl">
-          <h1 className="text-4xl font-bold mb-6">ThriveTrackED</h1>
-          <p className="text-lg opacity-90">
+      {/* Left Section - Branding */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-violet-500 to-purple-700 p-12 items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 animate-pulse" />
+        <div className="relative z-10 text-white max-w-2xl space-y-6">
+          <h1 className="text-4xl font-bold mb-6 animate-fade-in">
+            ThriveTrackED
+          </h1>
+          <p className="text-lg opacity-90 leading-relaxed animate-fade-in delay-100">
             Empowering education through emotional intelligence and data-driven insights.
+            Join our community of educators, students, and parents working together for
+            better educational outcomes.
           </p>
         </div>
       </div>
 
+      {/* Right Section - Login Form */}
       <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 md:p-12 bg-background">
         <div className="w-full max-w-md space-y-8">
           <LoginHeader />
           
           {errorMessage && (
-            <Alert variant="destructive" className="animate-fadeIn mb-4">
+            <Alert 
+              variant="destructive" 
+              className="animate-fade-in border-red-200 bg-red-50"
+            >
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Login Error</AlertTitle>
               <AlertDescription>{errorMessage}</AlertDescription>
@@ -112,8 +121,9 @@ const Login = () => {
           )}
 
           <div className={cn(
-            "bg-card border rounded-xl p-6 shadow-sm space-y-6",
-            "transition-all duration-200 hover:shadow-md"
+            "bg-card border rounded-xl p-8 shadow-sm space-y-6",
+            "transition-all duration-200 hover:shadow-md",
+            "animate-fade-in delay-200"
           )}>
             <LoginForm
               email={email}
@@ -127,7 +137,7 @@ const Login = () => {
             />
           </div>
 
-          <div className="mt-8 space-y-6">
+          <div className="mt-8 space-y-6 animate-fade-in delay-300">
             <DemoAccounts
               presetLogin={presetLogin}
               email={email}
@@ -140,14 +150,17 @@ const Login = () => {
 
             <ConfidentialityNotice />
             
-            <Alert className="bg-blue-50 border-blue-200 text-blue-900">
+            <Alert className="bg-blue-50 border-blue-200 text-blue-900 animate-fade-in delay-400">
               <Shield className="h-5 w-5" />
               <AlertTitle className="font-medium">FERPA Compliance</AlertTitle>
               <AlertDescription className="mt-2 text-sm">
                 This platform is FERPA compliant. All educational records are protected in accordance with
                 the Family Educational Rights and Privacy Act.
                 <div className="mt-2">
-                  <Link to="/privacy-policy" className="text-blue-600 hover:underline flex items-center gap-1">
+                  <Link 
+                    to="/privacy-policy" 
+                    className="text-blue-600 hover:underline flex items-center gap-1 transition-colors"
+                  >
                     View our Privacy Policy 
                     <ExternalLink size={14} />
                   </Link>
