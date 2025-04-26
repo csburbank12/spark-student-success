@@ -7,6 +7,7 @@ import { adminRoutes } from "@/components/layout/routes/adminRoutes";
 import { teacherAdminRoutes } from "@/components/layout/routes/teacherAdminRoutes";
 import { studentRoutes } from "@/components/layout/routes/studentRoutes";
 import { parentRoutes } from "@/components/layout/routes/parentRoutes";
+import { counselorRoutes } from "@/components/layout/routes/counselorRoutes";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -45,6 +46,8 @@ export const RoleBasedNavigation: React.FC = () => {
         return studentRoutes;
       case UserRole.parent:
         return parentRoutes;
+      case UserRole.counselor:
+        return counselorRoutes;
       default:
         return [];
     }
