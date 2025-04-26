@@ -42,7 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <ThemeProvider>
       <SidebarProvider defaultOpen={!isMobile}>
         <div className="flex h-screen w-full overflow-hidden bg-background/95">
-          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
+          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5 z-0" />
           <Sidebar />
           <SidebarRail />
           <SidebarInset>
