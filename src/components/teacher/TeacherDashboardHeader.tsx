@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Users, BellRing, BookOpen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { SidebarTrigger } from "@/components/ui/sidebar/components/sidebar-trigger";
 import SystemStatusIndicator from "@/components/error-handling/SystemStatusIndicator";
 
 interface TeacherDashboardHeaderProps {
@@ -17,12 +15,10 @@ export const TeacherDashboardHeader: React.FC<TeacherDashboardHeaderProps> = ({
 }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4">
-        {isMobile && <SidebarTrigger />}
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h2 className="text-3xl font-heading font-bold">

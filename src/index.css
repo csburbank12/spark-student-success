@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://rsms.me/inter/inter.css');
 
@@ -46,6 +45,12 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Z-index layers */
+    --z-backdrop: 10;
+    --z-sidebar: 30;
+    --z-header: 40;
+    --z-dropdown: 50;
   }
 
   .dark {
