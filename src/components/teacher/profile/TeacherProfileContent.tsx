@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Card,
@@ -34,7 +33,7 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
         name={user?.name || "Teacher"}
         email={user?.email || ""}
         role={user?.role || "teacher"}
-        avatarUrl={user?.avatar_url}
+        avatarUrl={user?.avatarUrl}
       />
       
       <Tabs defaultValue="overview" className="w-full">
