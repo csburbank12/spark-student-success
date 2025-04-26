@@ -4,13 +4,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
 import Layout from "@/components/layout/Layout";
 
-// Lazy load counselor pages
-const CounselorDashboard = lazy(() => import("@/pages/counselor/CounselorDashboard"));
-const StudentsAtRisk = lazy(() => import("@/pages/counselor/StudentsAtRisk"));
-const WellnessMonitoring = lazy(() => import("@/pages/counselor/WellnessMonitoring"));
-const CounselorCheckIns = lazy(() => import("@/pages/counselor/CounselorCheckIns"));
-const AppointmentCalendar = lazy(() => import("@/pages/counselor/AppointmentCalendar"));
-const CounselorResources = lazy(() => import("@/pages/counselor/CounselorResources"));
+// Lazy load common pages
 const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const Help = lazy(() => import("@/pages/Help"));

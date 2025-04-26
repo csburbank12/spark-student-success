@@ -4,18 +4,13 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
 import Layout from "@/components/layout/Layout";
 
-// Lazy load parent pages
-const ParentDashboard = lazy(() => import("@/pages/parent/ParentDashboard"));
-const MyChildren = lazy(() => import("@/pages/parent/MyChildren"));
-const ChildActivity = lazy(() => import("@/pages/parent/ChildActivity"));
-const ChildWellness = lazy(() => import("@/pages/parent/ChildWellness"));
-const Meetings = lazy(() => import("@/pages/parent/Meetings"));
-const ParentResources = lazy(() => import("@/pages/parent/ParentResources"));
-const PrivacySettings = lazy(() => import("@/pages/parent/PrivacySettings"));
+// Lazy load common pages
 const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const Help = lazy(() => import("@/pages/Help"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
+const ChildActivity = lazy(() => import("@/pages/parent/ChildActivity"));
+const ChildWellness = lazy(() => import("@/pages/parent/ChildWellness"));
 
 // Placeholder components until they're fully implemented
 const ParentDashboardPlaceholder = () => (
@@ -29,20 +24,6 @@ const MyChildrenPlaceholder = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">My Children</h2>
     <p>List of children and their information would be implemented here.</p>
-  </div>
-);
-
-const ChildActivityPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Child Activity</h2>
-    <p>Child activity tracking and monitoring would be implemented here.</p>
-  </div>
-);
-
-const ChildWellnessPlaceholder = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Child Wellness</h2>
-    <p>Child wellness monitoring and resources would be implemented here.</p>
   </div>
 );
 
@@ -93,7 +74,7 @@ const parentRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
         <Layout>
-          <ChildActivityPlaceholder />
+          <ChildActivity />
         </Layout>
       </ProtectedRoute>
     ),
@@ -103,7 +84,7 @@ const parentRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
         <Layout>
-          <ChildWellnessPlaceholder />
+          <ChildWellness />
         </Layout>
       </ProtectedRoute>
     ),

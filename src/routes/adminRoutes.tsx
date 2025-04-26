@@ -12,7 +12,7 @@ const SchoolManagement = lazy(() => import("@/pages/admin/SchoolManagement"));
 const SystemSettings = lazy(() => import("@/pages/admin/SystemSettings"));
 const DataAnalytics = lazy(() => import("@/pages/admin/DataAnalytics"));
 const FERPACompliance = lazy(() => import("@/pages/admin/FERPACompliance"));
-const LoopbotLogs = lazy(() => import("@/pages/admin/LoopbotLogs"));
+const LoopBotLogs = lazy(() => import("@/pages/admin/LoopBotLogs"));
 const AuditDashboard = lazy(() => import("@/pages/admin/AuditDashboard"));
 const ErrorLogs = lazy(() => import("@/pages/admin/ErrorLogs"));
 const Settings = lazy(() => import("@/pages/Settings"));

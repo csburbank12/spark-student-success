@@ -4,14 +4,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
 import Layout from "@/components/layout/Layout";
 
-// Lazy load student pages
-const StudentDashboard = lazy(() => import("@/pages/student/StudentDashboard"));
-const SELPathways = lazy(() => import("@/pages/student/SELPathways"));
-const DailyCheckIn = lazy(() => import("@/pages/student/DailyCheckIn"));
-const WellnessTools = lazy(() => import("@/pages/student/WellnessTools"));
-const DigitalJournal = lazy(() => import("@/pages/student/DigitalJournal"));
-const ResetRoom = lazy(() => import("@/pages/student/ResetRoom"));
-const TrustedAdults = lazy(() => import("@/pages/student/TrustedAdults"));
+// Lazy load common pages
 const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const Help = lazy(() => import("@/pages/Help"));
