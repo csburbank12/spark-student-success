@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
@@ -9,31 +8,29 @@ import { Toaster as SonnerToaster } from "sonner";
 import { ErrorMonitoringService } from "./services/ErrorMonitoringService";
 import { useErrorLogging } from "@/hooks/useErrorLogging";
 import { isPublicPath } from "./utils/navigationUtils";
+import { getFallbackDashboardByRole } from "@/utils/navigationUtils";
 
-// Optimized loader component
 const AppLoader = () => (
   <div className="flex h-screen items-center justify-center bg-background">
     <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
   </div>
 );
 
-// Lazy load NotFound component
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/Login"));
+const RoleSelector = lazy(() => import("./pages/RoleSelector"));
 
 function App() {
   const { isLoading, user } = useAuth();
   const location = useLocation();
   const { log404Error } = useErrorLogging();
   
-  // Initialize error monitoring on app load
   useEffect(() => {
     ErrorMonitoringService.initialize().catch(err => 
       console.error("Failed to initialize error monitoring:", err)
     );
   }, []);
 
-  // Log 404 errors
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (document.title.includes("404") || location.pathname === "/404") {
@@ -44,7 +41,6 @@ function App() {
     return () => clearTimeout(timeout);
   }, [location.pathname, log404Error]);
 
-  // Simplified loading state during initial auth check
   if (isLoading) {
     return <AppLoader />;
   }
@@ -52,7 +48,15 @@ function App() {
   return (
     <GlobalErrorBoundary component="AppRoot">
       <Routes>
-        {/* Use the allRoutes array which has consistent layout applied */}
+        <Route 
+          path="/select-role" 
+          element={
+            <Suspense fallback={<AppLoader />}>
+              <RoleSelector />
+            </Suspense>
+          } 
+        />
+        
         {allRoutes.map((route) => (
           <Route
             key={route.path}
@@ -61,7 +65,6 @@ function App() {
           />
         ))}
         
-        {/* Explicit route for login to ensure it always loads */}
         <Route 
           path="/login" 
           element={
@@ -71,19 +74,17 @@ function App() {
           } 
         />
         
-        {/* Route for root path - redirect to login if not authenticated */}
         <Route
           path="/"
           element={
             !isLoading && user ? (
-              <Navigate to="/dashboard" replace />
+              <Navigate to={getFallbackDashboardByRole(user.role)} replace />
             ) : (
               <Navigate to="/login" replace />
             )
           }
         />
         
-        {/* Catch-all route for invalid paths - redirect to 404 page */}
         <Route 
           path="*" 
           element={

@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { User } from 'lucide-react';
+import { User, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 
 const UserMenu = () => {
@@ -49,13 +49,15 @@ const UserMenu = () => {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to="/profile" className="cursor-pointer">
-            View Profile
-          </Link>
+          <Link to="/profile" className="cursor-pointer">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/settings" className="cursor-pointer">
-            Settings
+          <Link to="/settings" className="cursor-pointer">Settings</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/select-role" className="cursor-pointer">
+            <UserPlus className="mr-2 h-4 w-4" />
+            Switch Role
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
