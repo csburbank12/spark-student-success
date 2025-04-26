@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +17,7 @@ interface SELLessonsListProps {
   onAssign: (lesson: any) => void;
 }
 
+// Change to default export
 const SELLessonsList: React.FC<SELLessonsListProps> = ({ 
   lessons, 
   studentData, 

@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSELRecommendations } from "@/hooks/useSELRecommendations";
 import { SELRecommendationsGrid } from "@/components/sel-pathways/SELRecommendationsGrid";
-import { SELLessonsList } from "@/components/sel-pathways/SELLessonsList";
+import SELLessonsList from "@/components/sel-pathways/SELLessonsList";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
