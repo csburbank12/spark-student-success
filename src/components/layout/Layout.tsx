@@ -39,23 +39,25 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <ThemeProvider>
       <SidebarProvider defaultOpen={!isMobile}>
-        <div className="flex h-screen w-full overflow-hidden bg-background/95">
+        <div className="relative flex h-screen w-full overflow-hidden bg-background/95">
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
-          <Sidebar />
-          <SidebarRail />
-          <SidebarInset>
-            <div className="flex flex-1 flex-col h-full relative">
-              <RoleBasedHeader />
-              <div className="px-4 md:px-6 py-2 border-b bg-card/50 backdrop-blur-sm">
-                <NavBreadcrumbs path={location.pathname} />
-              </div>
-              <main className="flex-1 bg-background/60 p-4 md:p-6 lg:p-8 overflow-auto">
-                <div className="mx-auto max-w-7xl animate-fade-in">
-                  {children}
+          <div className="relative z-30 flex w-full">
+            <Sidebar />
+            <SidebarRail />
+            <SidebarInset>
+              <div className="flex h-full flex-col">
+                <RoleBasedHeader />
+                <div className="z-20 px-4 md:px-6 py-2 border-b bg-card/50 backdrop-blur-sm">
+                  <NavBreadcrumbs path={location.pathname} />
                 </div>
-              </main>
-            </div>
-          </SidebarInset>
+                <main className="relative flex-1 overflow-auto bg-background/60 p-4 md:p-6 lg:p-8">
+                  <div className="mx-auto max-w-7xl animate-fade-in">
+                    {children}
+                  </div>
+                </main>
+              </div>
+            </SidebarInset>
+          </div>
         </div>
       </SidebarProvider>
     </ThemeProvider>
