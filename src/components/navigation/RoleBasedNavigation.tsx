@@ -8,7 +8,6 @@ import { teacherAdminRoutes } from "@/components/layout/routes/teacherAdminRoute
 import { studentRoutes } from "@/components/layout/routes/studentRoutes";
 import { parentRoutes } from "@/components/layout/routes/parentRoutes";
 import { universalRoutes } from "@/components/layout/routes/universalRoutes";
-import { sidebarRoutes } from "@/components/layout/sidebarRoutes";
 
 interface Route {
   name: string;
@@ -39,27 +38,11 @@ export const RoleBasedNavigation: React.FC = () => {
   };
 
   const roleSpecificRoutes = getRoleSpecificRoutes();
-  
-  const profileRoutes = sidebarRoutes
-    .filter(route => route.roles.includes(userRole as UserRole))
-    .map(route => ({
-      name: route.title,
-      href: route.href,
-      icon: route.icon as unknown as React.ElementType,
-      badge: undefined,
-      isDisabled: false
-    }));
-
-  const allRoutes = [...roleSpecificRoutes, ...profileRoutes] as Route[];
+  const allRoutes = [...roleSpecificRoutes, ...universalRoutes] as Route[];
 
   return (
     <div className="space-y-6">
       <NavMenu routes={allRoutes} />
-      
-      <div className="px-3 py-2">
-        <div className="h-px bg-muted my-4" />
-        <NavMenu routes={universalRoutes} />
-      </div>
     </div>
   );
 };
