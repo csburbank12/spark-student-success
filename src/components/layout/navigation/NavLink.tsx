@@ -4,6 +4,7 @@ import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
 import { SidebarMenuButton } from "@/components/ui/sidebar/components/menu/menu-button";
 import { useSidebar } from "@/components/ui/sidebar/sidebar-context";
 import { isPathActive } from "@/utils/routeUtils";
+import { toast } from "sonner";
 
 interface NavLinkProps {
   to: string;
@@ -34,6 +35,10 @@ export const NavLink: React.FC<NavLinkProps> = ({
   const handleClick = (e: React.MouseEvent) => {
     if (isDisabled) {
       e.preventDefault();
+      toast.info(`${name} is coming soon!`, {
+        id: `disabled-${name}`,
+        duration: 2000
+      });
     }
     if (onClick) {
       onClick();
@@ -48,15 +53,16 @@ export const NavLink: React.FC<NavLinkProps> = ({
       aria-label={name}
       aria-current={isActive ? "page" : undefined}
       onClick={handleClick}
+      className={isDisabled ? "opacity-50" : ""}
     >
       <RouterNavLink 
-        to={to} 
+        to={isDisabled ? "#" : to} 
         className={`flex items-center gap-2 w-full transition-colors duration-200 ${
-          isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""
+          isDisabled ? "cursor-not-allowed" : ""
         } ${isActive ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
       >
-        <Icon className="h-5 w-5" aria-hidden="true" />
-        <span>{name}</span>
+        <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+        <span className="truncate">{name}</span>
         
         {badge !== undefined && (
           <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-2 text-xs text-white">

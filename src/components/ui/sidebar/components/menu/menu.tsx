@@ -8,7 +8,7 @@ export const SidebarMenu = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col gap-1 px-1 py-2", className)}
+    className={cn("flex flex-col gap-1 px-2 py-1", className)}
     {...props}
   />
 ));
@@ -21,7 +21,7 @@ export const SidebarMenuItem = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn("min-w-0", className)}
+      className={cn("min-w-0 group/menu-item", className)}
       {...props}
     />
   );

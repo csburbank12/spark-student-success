@@ -22,6 +22,7 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
           setOpenMobile(false);
         }
       };
+      
       document.addEventListener("keydown", handleEscape);
       return () => document.removeEventListener("keydown", handleEscape);
     }, [openMobile, setOpenMobile]);
@@ -30,9 +31,9 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
       <>
         <div
           data-state={open ? "open" : "closed"}
-          data-mobile={openMobile ? "true" : "false"}
+          data-mobile={isMobile ? "true" : "false"}
           className={cn(
-            "fixed left-0 top-0 z-20 h-screen w-sidebar-width bg-sidebar shadow-sm transition-transform duration-300 ease-in-out data-[state=closed]:w-sidebar-width-icon data-[mobile=true]:translate-x-0 data-[mobile=false]:-translate-x-full md:relative md:shadow-none md:data-[mobile=false]:translate-x-0",
+            "fixed left-0 top-0 z-40 h-screen w-[var(--sidebar-width)] bg-sidebar shadow-sm transition-all duration-300 ease-in-out data-[state=closed]:w-[var(--sidebar-width-icon)] data-[mobile=true]:translate-x-0 data-[mobile=false]:-translate-x-full md:relative md:shadow-none md:data-[mobile=false]:translate-x-0",
             className
           )}
           ref={ref}
@@ -44,7 +45,7 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
         </div>
         {isMobile && openMobile && (
           <div
-            className="fixed inset-0 z-10 bg-black/50"
+            className="fixed inset-0 z-30 bg-black/50"
             onClick={() => setOpenMobile(false)}
           />
         )}

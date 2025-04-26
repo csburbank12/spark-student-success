@@ -7,7 +7,12 @@ export const SidebarRail = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { open, toggleSidebar } = useSidebar();
+  const { open, toggleSidebar, isMobile } = useSidebar();
+
+  // Don't render on mobile
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <div

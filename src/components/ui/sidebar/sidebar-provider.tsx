@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
-const SIDEBAR_WIDTH_ICON = "3rem";
+const SIDEBAR_WIDTH_ICON = "3.5rem";
 
 export interface SidebarProviderProps extends React.ComponentProps<"div"> {
   defaultOpen?: boolean;
@@ -31,7 +31,17 @@ export const SidebarProvider = React.forwardRef<HTMLDivElement, SidebarProviderP
   ) => {
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
-    const [_open, _setOpen] = React.useState(defaultOpen);
+    const [_open, _setOpen] = React.useState(() => {
+      // Try to read from cookie on initial render
+      if (typeof document !== "undefined") {
+        const cookie = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith(SIDEBAR_COOKIE_NAME));
+        return cookie ? cookie.split("=")[1] === "true" : defaultOpen;
+      }
+      return defaultOpen;
+    });
+    
     const open = openProp ?? _open;
 
     const setOpen = React.useCallback(
@@ -42,7 +52,10 @@ export const SidebarProvider = React.forwardRef<HTMLDivElement, SidebarProviderP
         } else {
           _setOpen(openState);
         }
-        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+        
+        if (typeof document !== "undefined") {
+          document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+        }
       },
       [setOpenProp, open]
     );
@@ -60,9 +73,19 @@ export const SidebarProvider = React.forwardRef<HTMLDivElement, SidebarProviderP
           toggleSidebar();
         }
       };
-      window.addEventListener("keydown", handleKeyDown);
-      return () => window.removeEventListener("keydown", handleKeyDown);
+      
+      if (typeof window !== "undefined") {
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+      }
     }, [toggleSidebar]);
+
+    // Close mobile sidebar on route change
+    React.useEffect(() => {
+      if (openMobile && isMobile) {
+        setOpenMobile(false);
+      }
+    }, [location?.pathname]);
 
     const state: SidebarState = open ? "expanded" : "collapsed";
     const contextValue = React.useMemo(

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { UserRole } from "@/types/roles";
 import { NavMenu } from "@/components/layout/navigation/NavMenu";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,7 +8,7 @@ import { teacherAdminRoutes } from "@/components/layout/routes/teacherAdminRoute
 import { studentRoutes } from "@/components/layout/routes/studentRoutes";
 import { parentRoutes } from "@/components/layout/routes/parentRoutes";
 import { universalRoutes } from "@/components/layout/routes/universalRoutes";
-import { useRouter } from "@/components/ui/router";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface Route {
@@ -21,12 +21,15 @@ interface Route {
 
 export const RoleBasedNavigation: React.FC = () => {
   const { user } = useAuth();
-  const { navigate } = useRouter();
+  const navigate = useNavigate();
   const userRole = user?.role as UserRole || "";
   
   const handleNavigation = (route: Route) => {
     if (route.isDisabled) {
-      toast.info("This feature is coming soon!");
+      toast.info(`${route.name} is coming soon!`, {
+        id: `feature-${route.name}`,
+        duration: 3000
+      });
       return;
     }
     navigate(route.href);
@@ -52,8 +55,20 @@ export const RoleBasedNavigation: React.FC = () => {
   const allRoutes = [...roleSpecificRoutes, ...universalRoutes] as Route[];
 
   return (
-    <div className="space-y-6">
-      <NavMenu routes={allRoutes} onNavigate={handleNavigation} />
+    <div className="space-y-6 pt-2">
+      <div className="px-3 py-2">
+        <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+          Dashboard
+        </h2>
+        <NavMenu routes={roleSpecificRoutes} onNavigate={handleNavigation} />
+      </div>
+      
+      <div className="px-3 py-2">
+        <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+          General
+        </h2>
+        <NavMenu routes={universalRoutes} onNavigate={handleNavigation} />
+      </div>
     </div>
   );
 };

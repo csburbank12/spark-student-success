@@ -3,26 +3,31 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "../sidebar-context";
 
-export interface SidebarInsetProps extends React.HTMLAttributes<HTMLDivElement> {
+interface SidebarInsetProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
   enableScroll?: boolean;
 }
 
 export const SidebarInset = React.forwardRef<HTMLDivElement, SidebarInsetProps>(
-  ({ className, enableScroll = false, ...props }, ref) => {
-    const { open } = useSidebar();
+  ({ className, enableScroll = false, children, ...props }, ref) => {
+    const { open, openMobile, isMobile } = useSidebar();
 
     return (
       <div
         ref={ref}
         data-variant="inset"
         data-state={open ? "open" : "closed"}
+        data-mobile={openMobile ? "true" : "false"}
         className={cn(
-          "z-10 flex min-h-screen flex-1 flex-col transition-[margin,width] duration-300 data-[state=open]:ml-sidebar-width data-[state=closed]:ml-sidebar-width-icon",
-          enableScroll && "overflow-y-auto",
+          "relative z-10 flex h-screen flex-1 flex-col overflow-hidden transition-[margin] duration-300 ease-in-out",
+          "md:ml-[var(--sidebar-width-icon)] md:data-[state=open]:ml-[var(--sidebar-width)]",
+          enableScroll && "overflow-auto",
           className
         )}
         {...props}
-      />
+      >
+        {children}
+      </div>
     );
   }
 );

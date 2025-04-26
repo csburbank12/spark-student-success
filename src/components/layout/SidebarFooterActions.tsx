@@ -2,10 +2,11 @@
 import React from "react";
 import { useSidebar } from "@/components/ui/sidebar/sidebar-context";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut } from "lucide-react";
+import { LogOut, Settings, User } from "lucide-react";
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar/components/menu";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
 
 const SidebarFooterActions = () => {
   const { logout } = useAuth();
@@ -22,19 +23,48 @@ const SidebarFooterActions = () => {
       toast.error('Failed to log out. Please try again.');
     }
   };
+  
+  const handleProfile = () => {
+    navigate('/profile');
+  };
+  
+  const handleSettings = () => {
+    navigate('/settings');
+  };
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          tooltip={state === "collapsed" ? "Logout" : undefined}
-          onClick={handleLogout}
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          <span>Logout</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <div className="space-y-2 px-1 py-2">
+      <Separator className="my-1 opacity-20" />
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            tooltip={state === "collapsed" ? "Profile" : undefined}
+            onClick={handleProfile}
+          >
+            <User className="h-4 w-4 mr-2" />
+            <span>Profile</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            tooltip={state === "collapsed" ? "Settings" : undefined}
+            onClick={handleSettings}
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            <span>Settings</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            tooltip={state === "collapsed" ? "Logout" : undefined}
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            <span>Logout</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </div>
   );
 };
 

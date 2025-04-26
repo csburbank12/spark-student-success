@@ -10,6 +10,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { isPublicPath } from '@/utils/navigationUtils';
 import { NavBreadcrumbs } from './layout/NavBreadcrumbs';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isLoading, user } = useAuth();
   const location = useLocation();
+  const isMobile = useIsMobile();
   const isPublicPage = isPublicPath(location.pathname);
 
   // Use simplified layout for public pages
@@ -40,7 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <ThemeProvider>
-      <SidebarProvider defaultOpen={true}>
+      <SidebarProvider defaultOpen={!isMobile}>
         <div className="flex h-screen w-full overflow-hidden bg-background/95">
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
           <Sidebar />
