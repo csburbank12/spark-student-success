@@ -12,17 +12,21 @@ export const RoleBasedHeader = () => {
 
   if (user?.role === UserRole.teacher) {
     return (
-      <header className="sticky top-0" style={{ zIndex: 'var(--z-header)' }}>
+      <header className="sticky top-0 z-[40]">
         <div className="border-b bg-navbar px-4 md:px-6 py-4 backdrop-blur-sm">
-          {isMobile && <SidebarTrigger />}
-          <TeacherDashboardHeader />
+          <div className="flex items-center gap-4">
+            {isMobile && <SidebarTrigger />}
+            <div className="flex-1">
+              <TeacherDashboardHeader />
+            </div>
+          </div>
         </div>
       </header>
     );
   }
 
   return (
-    <header className="sticky top-0" style={{ zIndex: 'var(--z-header)' }}>
+    <header className="sticky top-0 z-[40]">
       <div className="flex h-14 items-center gap-4 border-b bg-navbar px-4 md:px-6 backdrop-blur-sm">
         {isMobile && <SidebarTrigger />}
         <div className="flex-1">

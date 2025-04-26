@@ -40,8 +40,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <ThemeProvider>
       <SidebarProvider defaultOpen={!isMobile}>
         <div className="flex h-screen w-full overflow-hidden bg-background/95">
-          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" style={{ zIndex: 'var(--z-backdrop)' }} />
-          <div className="relative flex w-full" style={{ zIndex: 'var(--z-sidebar)' }}>
+          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
+          <div className="relative flex w-full">
             <Sidebar />
             <SidebarRail />
             <SidebarInset>
