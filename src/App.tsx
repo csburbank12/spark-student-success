@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
@@ -9,6 +10,7 @@ import { ErrorMonitoringService } from "./services/ErrorMonitoringService";
 import { useErrorLogging } from "@/hooks/useErrorLogging";
 import { isPublicPath } from "./utils/navigationUtils";
 import { getFallbackDashboardByRole } from "@/utils/navigationUtils";
+import { UserRole } from "@/types/roles";
 
 const AppLoader = () => (
   <div className="flex h-screen items-center justify-center bg-background">
@@ -78,7 +80,7 @@ function App() {
           path="/"
           element={
             !isLoading && user ? (
-              <Navigate to={getFallbackDashboardByRole(user.role)} replace />
+              <Navigate to={getFallbackDashboardByRole(user.role as UserRole)} replace />
             ) : (
               <Navigate to="/login" replace />
             )
