@@ -1,18 +1,71 @@
 
-import React from "react";
+import React, { lazy } from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
 import Layout from "@/components/layout/Layout";
-import ParentDashboard from "@/pages/ParentDashboard";
-import ChildActivity from "@/pages/parent/ChildActivity";
-import ParentResources from "@/pages/parent-resources/ParentResources";
-import ParentChildrenManager from "@/pages/parent/ParentChildrenManager";
-import ParentMeetings from "@/pages/parent/ParentMeetings";
-import UserProfile from "@/pages/profile/UserProfile";
-import PrivacySettings from "@/pages/settings/PrivacySettings";
-import DataAccess from "@/pages/settings/DataAccess";
-import ChildWellness from "@/pages/parent/ChildWellness";
-import Messages from "@/pages/Messages";
+
+// Lazy load parent pages
+const ParentDashboard = lazy(() => import("@/pages/parent/ParentDashboard"));
+const MyChildren = lazy(() => import("@/pages/parent/MyChildren"));
+const ChildActivity = lazy(() => import("@/pages/parent/ChildActivity"));
+const ChildWellness = lazy(() => import("@/pages/parent/ChildWellness"));
+const Meetings = lazy(() => import("@/pages/parent/Meetings"));
+const ParentResources = lazy(() => import("@/pages/parent/ParentResources"));
+const PrivacySettings = lazy(() => import("@/pages/parent/PrivacySettings"));
+const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const Help = lazy(() => import("@/pages/Help"));
+const Notifications = lazy(() => import("@/pages/Notifications"));
+
+// Placeholder components until they're fully implemented
+const ParentDashboardPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Parent Dashboard</h2>
+    <p>Parent dashboard with key information would be implemented here.</p>
+  </div>
+);
+
+const MyChildrenPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">My Children</h2>
+    <p>List of children and their information would be implemented here.</p>
+  </div>
+);
+
+const ChildActivityPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Child Activity</h2>
+    <p>Child activity tracking and monitoring would be implemented here.</p>
+  </div>
+);
+
+const ChildWellnessPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Child Wellness</h2>
+    <p>Child wellness monitoring and resources would be implemented here.</p>
+  </div>
+);
+
+const MeetingsPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Meetings & Events</h2>
+    <p>School meetings and events calendar would be implemented here.</p>
+  </div>
+);
+
+const ParentResourcesPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Parent Resources</h2>
+    <p>Resources for parents would be listed here.</p>
+  </div>
+);
+
+const PrivacySettingsPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Privacy Settings</h2>
+    <p>Privacy and data sharing settings would be implemented here.</p>
+  </div>
+);
 
 const parentRoutes = [
   {
@@ -20,57 +73,7 @@ const parentRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
         <Layout>
-          <ParentDashboard />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/child-activity",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <Layout>
-          <ChildActivity />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/child-wellness",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <Layout>
-          <ChildWellness />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/messages",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <Layout>
-          <Messages />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/meetings",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <Layout>
-          <ParentMeetings />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/parent-resources",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <Layout>
-          <ParentResources />
+          <ParentDashboardPlaceholder />
         </Layout>
       </ProtectedRoute>
     ),
@@ -80,7 +83,47 @@ const parentRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
         <Layout>
-          <ParentChildrenManager />
+          <MyChildrenPlaceholder />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/child-activity",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <Layout>
+          <ChildActivityPlaceholder />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/child-wellness",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <Layout>
+          <ChildWellnessPlaceholder />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/meetings",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <Layout>
+          <MeetingsPlaceholder />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/parent-resources",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <Layout>
+          <ParentResourcesPlaceholder />
         </Layout>
       </ProtectedRoute>
     ),
@@ -90,17 +133,7 @@ const parentRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
         <Layout>
-          <PrivacySettings />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/data-access",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <Layout>
-          <DataAccess />
+          <PrivacySettingsPlaceholder />
         </Layout>
       </ProtectedRoute>
     ),
@@ -111,6 +144,36 @@ const parentRoutes = [
       <ProtectedRoute requiredRole={[UserRole.parent]}>
         <Layout>
           <UserProfile />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/settings",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <Layout>
+          <Settings />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/help",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <Layout>
+          <Help />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/notifications",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <Layout>
+          <Notifications />
         </Layout>
       </ProtectedRoute>
     ),

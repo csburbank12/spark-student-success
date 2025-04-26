@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/roles';
 import { toast } from 'sonner';
 import { ErrorLoggingService, ProfileType } from '@/services/ErrorLoggingService';
+import { getDashboardPathForRole } from '@/utils/routeUtils';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -43,12 +44,15 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     const hasRequiredRole = userRole && requiredRole.includes(userRole);
 
     if (!hasRequiredRole) {
-      // For demo purposes, let's allow access across roles but show a warning
-      // This helps users testing different role features
+      const userDashboard = getDashboardPathForRole(userRole);
+      
+      // For demo purposes, just show a warning toast but redirect to appropriate dashboard
       toast.warning(`You're accessing a page intended for ${requiredRole.join(', ')}. Some features may be limited.`, { 
         duration: 5000,
         id: 'role-warning'
       });
+      
+      return <Navigate to={userDashboard} state={{ from: location.pathname }} replace />;
     }
   }
 

@@ -1,51 +1,66 @@
 
-import { UserRole } from '@/types/roles';
+// Determine if a path is public (doesn't require authentication)
+export const isPublicPath = (path: string): boolean => {
+  const publicPaths = [
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/reset-password',
+    '/privacy-policy',
+    '/terms',
+    '/select-role',
+    '/404'
+  ];
+  
+  return publicPaths.includes(path) || path.startsWith('/auth/');
+};
 
-/**
- * Returns the appropriate dashboard route based on user role
- */
-export const getFallbackDashboardByRole = (role: UserRole): string => {
-  switch (role) {
-    case UserRole.admin:
-      return '/admin-dashboard';
-    case UserRole.teacher:
-      return '/teacher-dashboard';
-    case UserRole.parent:
+// Get the fallback dashboard path based on user role
+export const getFallbackDashboardByRole = (role: string): string => {
+  switch (role.toLowerCase()) {
+    case 'parent':
       return '/parent-dashboard';
-    case UserRole.student:
+    case 'teacher':
+      return '/teacher-dashboard';
+    case 'student':
       return '/student-dashboard';
-    case UserRole.staff:
+    case 'admin':
+      return '/admin-dashboard';
+    case 'staff':
       return '/staff-dashboard';
-    case UserRole.counselor:
+    case 'counselor':
       return '/counselor-dashboard';
     default:
       return '/dashboard';
   }
 };
 
-/**
- * Check if a path is considered a public path that doesn't require authentication
- */
-export const isPublicPath = (pathname: string): boolean => {
-  const publicPaths = ['/login', '/signup', '/404', '/privacy-policy', '/terms', '/help'];
+// Determine if a route is a dashboard
+export const isDashboardRoute = (path: string): boolean => {
+  return path.endsWith('-dashboard') || path === '/dashboard';
+};
+
+// Get breadcrumb label from path segment
+export const getBreadcrumbLabel = (segment: string): string => {
+  // Special case mappings
+  const specialCases: Record<string, string> = {
+    'sel': 'SEL',
+    'ferpa': 'FERPA',
+    'admin-dashboard': 'Admin Dashboard',
+    'teacher-dashboard': 'Teacher Dashboard',
+    'student-dashboard': 'Student Dashboard',
+    'parent-dashboard': 'Parent Dashboard',
+    'staff-dashboard': 'Staff Dashboard',
+    'counselor-dashboard': 'Counselor Dashboard'
+  };
   
-  return publicPaths.includes(pathname) || 
-         pathname.startsWith('/auth/');
+  if (specialCases[segment]) {
+    return specialCases[segment];
+  }
+  
+  // Handle regular formatting
+  return segment
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 };
-
-/**
- * Check if a path is an onboarding path
- */
-export const isOnboardingPath = (pathname: string): boolean => {
-  return pathname.startsWith('/onboarding/');
-};
-
-/**
- * Determine if an onboarding path should be accessible without authentication
- * We'll make onboarding paths require authentication by default
- */
-export const isPublicOnboardingPath = (pathname: string): boolean => {
-  // For now, no onboarding paths are considered public
-  // If specific onboarding paths should be public, list them here
-  return false;
-}

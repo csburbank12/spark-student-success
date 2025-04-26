@@ -1,265 +1,134 @@
 
-import React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import PageHeader from "@/components/layout/PageHeader";
 import { FERPAAuditLogs } from "@/components/admin/FERPAAuditLogs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ProtectedRoute } from "@/routes/ProtectedRoute";
-import { UserRole } from "@/types/roles";
-import { AlertCircle, CheckCircle, Clock, FileText, Shield } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Shield, FileText, CheckCircle2, Users2 } from "lucide-react";
 
 const FERPACompliance = () => {
+  const [activeTab, setActiveTab] = useState("audit-logs");
+
   return (
-    <ProtectedRoute requiredRole={[UserRole.admin]}>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-heading font-bold">FERPA Compliance Management</h2>
-          <div className="space-x-2">
-            <Button variant="outline" asChild>
-              <Link to="/privacy-policy">
-                <FileText className="mr-2 h-4 w-4" />
-                View Privacy Policy
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to="/admin/user-management">
-                <Shield className="mr-2 h-4 w-4" />
-                User Management
-              </Link>
-            </Button>
-          </div>
-        </div>
+    <div className="space-y-6">
+      <PageHeader 
+        title="FERPA Compliance Dashboard" 
+        description="Monitor and manage educational privacy compliance" 
+        icon={<Shield className="h-6 w-6 text-primary" />}
+      />
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid grid-cols-1 md:grid-cols-4">
+          <TabsTrigger value="audit-logs">Access Audit Logs</TabsTrigger>
+          <TabsTrigger value="policies">Compliance Policies</TabsTrigger>
+          <TabsTrigger value="consent">Consent Management</TabsTrigger>
+          <TabsTrigger value="training">Staff Training</TabsTrigger>
+        </TabsList>
         
-        {/* Compliance Status Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <TabsContent value="audit-logs" className="space-y-4">
+          <FERPAAuditLogs />
+        </TabsContent>
+        
+        <TabsContent value="policies" className="space-y-4">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center text-lg">
-                <Shield className="mr-2 h-5 w-5 text-green-600" />
-                Compliance Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <span className="font-medium text-green-600">FERPA Compliant</span>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                <CardTitle>FERPA Compliance Policies</CardTitle>
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Last compliance review: Apr 15, 2023
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center text-lg">
-                <AlertCircle className="mr-2 h-5 w-5 text-amber-600" />
-                Pending Requests
-              </CardTitle>
+              <CardDescription>Review and manage compliance documentation</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="font-medium">2 pending record access requests</div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Oldest request: 3 days ago (due in 42 days)
-              </p>
+              <div className="space-y-6">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      <h3 className="font-medium text-lg">Data Access Policy</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Last updated: April 15, 2024
+                    </p>
+                    <p className="mt-4 text-sm">
+                      Defines who can access student information and under what circumstances.
+                    </p>
+                  </div>
+                  
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      <h3 className="font-medium text-lg">Record Retention Policy</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Last updated: March 22, 2024
+                    </p>
+                    <p className="mt-4 text-sm">
+                      Guidelines for how long different types of records must be maintained.
+                    </p>
+                  </div>
+                  
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      <h3 className="font-medium text-lg">Parent/Student Rights</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Last updated: February 10, 2024
+                    </p>
+                    <p className="mt-4 text-sm">
+                      Documentation of rights to inspect, review, and amend educational records.
+                    </p>
+                  </div>
+                  
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      <h3 className="font-medium text-lg">Directory Information</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Last updated: January 5, 2024
+                    </p>
+                    <p className="mt-4 text-sm">
+                      Policy on what information can be released without explicit consent.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center text-lg">
-                <Clock className="mr-2 h-5 w-5 text-blue-600" />
-                Next Scheduled Review
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="font-medium">May 30, 2023</div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Scheduled quarterly compliance audit
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        </TabsContent>
         
-        <Tabs defaultValue="audit-logs">
-          <TabsList className="mb-4">
-            <TabsTrigger value="audit-logs">Access Audit Logs</TabsTrigger>
-            <TabsTrigger value="access-requests">Record Access Requests</TabsTrigger>
-            <TabsTrigger value="consent-management">Consent Management</TabsTrigger>
-            <TabsTrigger value="policy">Privacy Policy</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="audit-logs">
-            <FERPAAuditLogs />
-          </TabsContent>
-          
-          <TabsContent value="access-requests">
-            <Card>
-              <CardHeader>
-                <CardTitle>FERPA Record Access Requests</CardTitle>
-                <CardDescription>
-                  Manage and respond to student and parent requests for educational records
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-md border">
-                  <table className="w-full caption-bottom text-sm">
-                    <thead>
-                      <tr className="border-b bg-muted/50">
-                        <th className="h-10 px-4 text-left align-middle font-medium">Request Date</th>
-                        <th className="h-10 px-4 text-left align-middle font-medium">Requester</th>
-                        <th className="h-10 px-4 text-left align-middle font-medium">Request Type</th>
-                        <th className="h-10 px-4 text-left align-middle font-medium">Status</th>
-                        <th className="h-10 px-4 text-left align-middle font-medium">Due Date</th>
-                        <th className="h-10 px-4 text-right align-middle font-medium">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b transition-colors hover:bg-muted/50">
-                        <td className="p-4 align-middle">Apr 21, 2023</td>
-                        <td className="p-4 align-middle font-medium">Sarah Johnson (Parent)</td>
-                        <td className="p-4 align-middle">Access</td>
-                        <td className="p-4 align-middle">
-                          <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700">
-                            Pending
-                          </span>
-                        </td>
-                        <td className="p-4 align-middle">Jun 05, 2023</td>
-                        <td className="p-4 align-middle text-right">
-                          <Button size="sm">Process</Button>
-                        </td>
-                      </tr>
-                      <tr className="border-b transition-colors hover:bg-muted/50">
-                        <td className="p-4 align-middle">Apr 19, 2023</td>
-                        <td className="p-4 align-middle font-medium">Alex Johnson (Student)</td>
-                        <td className="p-4 align-middle">Amendment</td>
-                        <td className="p-4 align-middle">
-                          <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700">
-                            Pending
-                          </span>
-                        </td>
-                        <td className="p-4 align-middle">Jun 03, 2023</td>
-                        <td className="p-4 align-middle text-right">
-                          <Button size="sm">Process</Button>
-                        </td>
-                      </tr>
-                      <tr className="border-b transition-colors hover:bg-muted/50">
-                        <td className="p-4 align-middle">Mar 15, 2023</td>
-                        <td className="p-4 align-middle font-medium">Michael Davis (Parent)</td>
-                        <td className="p-4 align-middle">Access</td>
-                        <td className="p-4 align-middle">
-                          <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
-                            Completed
-                          </span>
-                        </td>
-                        <td className="p-4 align-middle">Apr 29, 2023</td>
-                        <td className="p-4 align-middle text-right">
-                          <Button size="sm" variant="outline">View Details</Button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="consent-management">
-            <Card>
-              <CardHeader>
-                <CardTitle>School-Wide Consent Management</CardTitle>
-                <CardDescription>
-                  Configure default consent settings and monitor consent statistics
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="border rounded-md p-4">
-                    <div className="text-2xl font-bold">98%</div>
-                    <p className="text-sm text-muted-foreground">Students with active consent</p>
-                  </div>
-                  <div className="border rounded-md p-4">
-                    <div className="text-2xl font-bold">5</div>
-                    <p className="text-sm text-muted-foreground">Consent withdrawals this month</p>
-                  </div>
-                  <div className="border rounded-md p-4">
-                    <div className="text-2xl font-bold">45%</div>
-                    <p className="text-sm text-muted-foreground">Optional consent participation</p>
-                  </div>
-                </div>
-                
-                <div className="border rounded-md p-4 space-y-2">
-                  <h3 className="font-medium">Annual Consent Review</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Last bulk consent refresh: August 15, 2022
-                  </p>
-                  <Button>Schedule Annual Consent Refresh</Button>
-                </div>
-                
-                <div className="mt-6 space-y-4">
-                  <h3 className="text-lg font-medium">Manage Consent Templates</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <Button variant="outline">View Standard Templates</Button>
-                    <Button variant="outline">Create Custom Template</Button>
-                    <Button variant="outline">Import Template</Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="policy">
-            <Card>
-              <CardHeader>
-                <CardTitle>Privacy Policy Management</CardTitle>
-                <CardDescription>
-                  Review and update the school's privacy policies
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-4 border rounded-md">
-                    <div>
-                      <h3 className="font-medium">Student Privacy Policy</h3>
-                      <p className="text-sm text-muted-foreground">Last updated: January 15, 2023</p>
-                    </div>
-                    <div className="space-x-2">
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to="/privacy-policy">View</Link>
-                      </Button>
-                      <Button variant="outline" size="sm">Edit</Button>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between items-center p-4 border rounded-md">
-                    <div>
-                      <h3 className="font-medium">Staff Data Handling Guidelines</h3>
-                      <p className="text-sm text-muted-foreground">Last updated: March 3, 2023</p>
-                    </div>
-                    <div className="space-x-2">
-                      <Button variant="outline" size="sm">View</Button>
-                      <Button variant="outline" size="sm">Edit</Button>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between items-center p-4 border rounded-md">
-                    <div>
-                      <h3 className="font-medium">Data Retention Schedule</h3>
-                      <p className="text-sm text-muted-foreground">Last updated: February 22, 2023</p>
-                    </div>
-                    <div className="space-x-2">
-                      <Button variant="outline" size="sm">View</Button>
-                      <Button variant="outline" size="sm">Edit</Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </ProtectedRoute>
+        <TabsContent value="consent" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                <CardTitle>Consent Management</CardTitle>
+              </div>
+              <CardDescription>Manage parental consents and authorizations</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4">Coming soon: Tools to manage and track parental consent for student data access.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="training" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Users2 className="h-5 w-5 text-primary" />
+                <CardTitle>Staff FERPA Training</CardTitle>
+              </div>
+              <CardDescription>Track and manage staff compliance training</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4">Coming soon: Staff training modules and completion tracking.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

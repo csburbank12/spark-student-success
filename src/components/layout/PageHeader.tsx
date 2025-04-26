@@ -1,45 +1,60 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { getFallbackDashboardByRole } from '@/utils/navigationUtils';
-import { UserRole } from '@/types/roles';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
-export interface PageHeaderProps {
+interface PageHeaderProps {
   title: string;
   description?: string;
+  icon?: React.ReactNode;
   showBackButton?: boolean;
+  actions?: React.ReactNode;
+  backUrl?: string;
 }
 
-const PageHeader = ({ title, description, showBackButton = true }: PageHeaderProps) => {
-  const { user } = useAuth();
-  
-  // Determine the correct dashboard route based on user role
-  const getDashboardRoute = () => {
-    if (!user?.role) return '/dashboard';
-    return getFallbackDashboardByRole(user.role as UserRole);
+const PageHeader: React.FC<PageHeaderProps> = ({
+  title,
+  description,
+  icon,
+  showBackButton = false,
+  actions,
+  backUrl,
+}) => {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (backUrl) {
+      navigate(backUrl);
+    } else {
+      navigate(-1);
+    }
   };
 
   return (
-    <div className="flex flex-col space-y-2 mb-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          {showBackButton && (
-            <Link to={getDashboardRoute()}>
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
-              </Button>
-            </Link>
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-4 mb-4 border-b">
+      <div className="flex items-start gap-2">
+        {showBackButton && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 mr-2"
+            onClick={handleBack}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )}
+        
+        <div>
+          {icon && <div className="mb-2">{icon}</div>}
+          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+          {description && (
+            <p className="text-muted-foreground mt-1">{description}</p>
           )}
-          <h2 className="text-3xl font-heading font-bold">{title}</h2>
         </div>
       </div>
-      {description && (
-        <p className="text-muted-foreground">{description}</p>
-      )}
+      
+      {actions && <div className="mt-4 md:mt-0 flex gap-2">{actions}</div>}
     </div>
   );
 };

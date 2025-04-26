@@ -1,36 +1,79 @@
-import React from "react";
+
+import React, { lazy } from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
-import TeacherDashboard from "@/pages/TeacherDashboard"; 
-import TeacherDashboardEnhanced from "@/pages/TeacherDashboardEnhanced";
-import StudentManagement from "@/pages/StudentManagement";
-import BehaviorPrediction from "@/pages/BehaviorPrediction";
-import SELPathwayManagement from "@/pages/SELPathwayManagement";
-import EmotionAwareScheduling from "@/pages/EmotionAwareScheduling";
-import WellLensDashboard from "@/pages/WellLensDashboard";
-import PredictiveSupport from "@/pages/PredictiveSupport";
-import StudentSupportHeatmap from "@/pages/StudentSupportHeatmap";
-import TeacherProfilePage from "@/pages/profile/TeacherProfilePage";
 import Layout from "@/components/layout/Layout";
-import CheckInScheduler from "@/pages/check-in/CheckInScheduler";
 
-const teacherRoutes = [
+// Lazy load teacher pages
+const TeacherDashboard = lazy(() => import("@/pages/teacher/TeacherDashboard"));
+const Students = lazy(() => import("@/pages/teacher/Students"));
+const SELPathwayManagement = lazy(() => import("@/pages/teacher/SELPathwayManagement"));
+const TeacherCheckIn = lazy(() => import("@/pages/teacher/TeacherCheckIn"));
+const PredictiveSupport = lazy(() => import("@/pages/teacher/PredictiveSupport"));
+const EmotionAwareScheduling = lazy(() => import("@/pages/teacher/EmotionAwareScheduling"));
+const WellLens = lazy(() => import("@/pages/teacher/WellLens"));
+const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const Help = lazy(() => import("@/pages/Help"));
+const Notifications = lazy(() => import("@/pages/Notifications"));
+
+// Placeholder components until they're fully implemented
+const TeacherDashboardPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Teacher Dashboard</h2>
+    <p>Teacher dashboard with key information would be implemented here.</p>
+  </div>
+);
+
+const StudentsPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Students</h2>
+    <p>Student management interface would be implemented here.</p>
+  </div>
+);
+
+const SELPathwayManagementPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">SEL Activities</h2>
+    <p>Social emotional learning pathway management tools would be implemented here.</p>
+  </div>
+);
+
+const TeacherCheckInPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Check-In</h2>
+    <p>Student check-in monitoring tools would be implemented here.</p>
+  </div>
+);
+
+const PredictiveSupportPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Predictive Support</h2>
+    <p>AI-powered predictive support tools would be implemented here.</p>
+  </div>
+);
+
+const EmotionAwareSchedulingPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Emotion-Aware Scheduling</h2>
+    <p>Emotion-aware class scheduling tools would be implemented here.</p>
+  </div>
+);
+
+const WellLensPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Well-Being Dashboard</h2>
+    <p>Class-wide well-being monitoring dashboard would be implemented here.</p>
+  </div>
+);
+
+const teacherAdminRoutes = [
   {
     path: "/teacher-dashboard",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
         <Layout>
-          <TeacherDashboard />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/teacher-dashboard-enhanced",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <Layout>
-          <TeacherDashboardEnhanced />
+          <TeacherDashboardPlaceholder />
         </Layout>
       </ProtectedRoute>
     ),
@@ -38,19 +81,9 @@ const teacherRoutes = [
   {
     path: "/students",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
         <Layout>
-          <StudentManagement />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/behavior-prediction",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <Layout>
-          <BehaviorPrediction />
+          <StudentsPlaceholder />
         </Layout>
       </ProtectedRoute>
     ),
@@ -58,59 +91,9 @@ const teacherRoutes = [
   {
     path: "/sel-pathway-management",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
         <Layout>
-          <SELPathwayManagement />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/emotion-aware-scheduling",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <Layout>
-          <EmotionAwareScheduling />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/well-lens",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <Layout>
-          <WellLensDashboard />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/predictive-support",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <Layout>
-          <PredictiveSupport />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/student-support-heatmap",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.counselor]}>
-        <Layout>
-          <StudentSupportHeatmap />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/profile",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <Layout>
-          <TeacherProfilePage />
+          <SELPathwayManagementPlaceholder />
         </Layout>
       </ProtectedRoute>
     ),
@@ -118,13 +101,83 @@ const teacherRoutes = [
   {
     path: "/check-in",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
         <Layout>
-          <CheckInScheduler />
+          <TeacherCheckInPlaceholder />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/predictive-support",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
+        <Layout>
+          <PredictiveSupportPlaceholder />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/emotion-aware-scheduling",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
+        <Layout>
+          <EmotionAwareSchedulingPlaceholder />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/well-lens",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
+        <Layout>
+          <WellLensPlaceholder />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
+        <Layout>
+          <UserProfile />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/settings",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
+        <Layout>
+          <Settings />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/help",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
+        <Layout>
+          <Help />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/notifications",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.staff]}>
+        <Layout>
+          <Notifications />
         </Layout>
       </ProtectedRoute>
     ),
   },
 ];
 
-export default teacherRoutes;
+export default teacherAdminRoutes;
