@@ -5,7 +5,8 @@ import {
   MessageSquare,
   BookOpen,
   Shield,
-  FileText
+  FileText,
+  User
 } from "lucide-react";
 
 export const parentRoutes = [
@@ -38,5 +39,10 @@ export const parentRoutes = [
     name: "Data Access",
     href: "/data-access",
     icon: FileText,
+  },
+  {
+    name: "My Profile",
+    href: "/profile",
+    icon: User,
   }
 ];

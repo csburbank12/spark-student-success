@@ -114,6 +114,12 @@ export const sidebarRoutes: SidebarRoute[] = [
     title: "Help & Support",
     href: "/help",
     icon: "HelpCircle",
-    roles: [UserRole.admin, UserRole.staff, UserRole.teacher, UserRole.counselor],
+    roles: [UserRole.admin, UserRole.staff, UserRole.teacher, UserRole.counselor, UserRole.student, UserRole.parent],
+  },
+  {
+    title: "My Profile",
+    href: "/profile",
+    icon: "UserCircle",
+    roles: [UserRole.admin, UserRole.staff, UserRole.teacher, UserRole.counselor, UserRole.student, UserRole.parent],
   },
 ];

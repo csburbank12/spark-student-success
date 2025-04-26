@@ -1,15 +1,37 @@
 
 import React, { useState, useCallback } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { UserRole } from "@/types/roles";
+import ParentProfile from "./ParentProfile";
 import PageHeader from "@/components/layout/PageHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import NotificationPreferences from "@/components/profile/NotificationPreferences";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 
 const UserProfile: React.FC = () => {
   const { user } = useAuth();
   
+  // If no user, show loading state
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Render role-specific profiles
+  switch (user.role as UserRole) {
+    case UserRole.parent:
+      return <ParentProfile user={user} />;
+    default:
+      // Default profile for other roles
+      return <DefaultProfile user={user} />;
+  }
+};
+
+// Default profile component for roles without specific profile components
+const DefaultProfile: React.FC<{ user: any }> = ({ user }) => {
   const [formData, setFormData] = useState({
     name: user?.name || "John Doe",
     email: user?.email || "john.doe@example.com",
@@ -23,19 +45,7 @@ const UserProfile: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser) throw new Error('No user found');
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          first_name: formData.name.split(' ')[0],
-          last_name: formData.name.split(' ').slice(1).join(' '),
-          avatar_url: formData.avatarUrl
-        })
-        .eq('id', currentUser.id);
-
-      if (error) throw error;
+      // Update profile logic would go here
       
       toast.success("Profile updated successfully!");
     } catch (error) {

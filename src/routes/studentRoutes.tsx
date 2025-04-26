@@ -1,6 +1,5 @@
-
 import React, { lazy } from "react";
-import Layout from "@/components/Layout";
+import Layout from "@/components/layout/Layout";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
 

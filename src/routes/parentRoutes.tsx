@@ -1,3 +1,4 @@
+
 import React from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
@@ -7,13 +8,17 @@ import ChildActivity from "@/pages/parent/ChildActivity";
 import ChildWellness from "@/pages/parent/ChildWellness";
 import ParentResources from "@/pages/parent-resources/ParentResources";
 import ParentChildrenManager from "@/pages/parent/ParentChildrenManager";
+import UserProfile from "@/pages/profile/UserProfile";
+import Layout from "@/components/layout/Layout";
 
 const parentRoutes = [
   {
     path: "/parent-dashboard",
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <ParentDashboard />
+        <Layout>
+          <ParentDashboard />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -21,7 +26,9 @@ const parentRoutes = [
     path: "/parent-dashboard-enhanced",
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <ParentDashboard />
+        <Layout>
+          <ParentDashboard />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -29,7 +36,9 @@ const parentRoutes = [
     path: "/child-activity",
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <ChildActivity />
+        <Layout>
+          <ChildActivity />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -37,7 +46,9 @@ const parentRoutes = [
     path: "/child-wellness",
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <ChildWellness />
+        <Layout>
+          <ChildWellness />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -45,7 +56,9 @@ const parentRoutes = [
     path: "/messages",
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <ParentMessages />
+        <Layout>
+          <ParentMessages />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -53,7 +66,9 @@ const parentRoutes = [
     path: "/parent-resources",
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <ParentResources />
+        <Layout>
+          <ParentResources />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -61,7 +76,19 @@ const parentRoutes = [
     path: "/my-children",
     element: (
       <ProtectedRoute requiredRole={[UserRole.parent]}>
-        <ParentChildrenManager />
+        <Layout>
+          <ParentChildrenManager />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <Layout>
+          <UserProfile />
+        </Layout>
       </ProtectedRoute>
     ),
   },
