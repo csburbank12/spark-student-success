@@ -15,12 +15,23 @@ interface Route {
 interface NavMenuProps {
   routes: Route[];
   className?: string;
+  onNavigate?: (route: Route) => void;
 }
 
-export const NavMenu: React.FC<NavMenuProps> = ({ routes, className = "" }) => {
+export const NavMenu: React.FC<NavMenuProps> = ({ 
+  routes, 
+  className = "",
+  onNavigate 
+}) => {
   if (!routes || routes.length === 0) {
     return null;
   }
+  
+  const handleClick = (route: Route) => {
+    if (onNavigate) {
+      onNavigate(route);
+    }
+  };
   
   return (
     <SidebarMenu className={className}>
@@ -32,6 +43,7 @@ export const NavMenu: React.FC<NavMenuProps> = ({ routes, className = "" }) => {
             icon={route.icon}
             badge={route.badge}
             isDisabled={route.isDisabled}
+            onClick={() => handleClick(route)}
           />
         </SidebarMenuItem>
       ))}

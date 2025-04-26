@@ -12,6 +12,7 @@ interface NavLinkProps {
   isActive?: boolean;
   badge?: number | string;
   isDisabled?: boolean;
+  onClick?: () => void;
 }
 
 export const NavLink: React.FC<NavLinkProps> = ({ 
@@ -20,7 +21,8 @@ export const NavLink: React.FC<NavLinkProps> = ({
   icon: Icon, 
   isActive: isActiveProp,
   badge,
-  isDisabled = false
+  isDisabled = false,
+  onClick
 }) => {
   const { state } = useSidebar();
   const location = useLocation();
@@ -29,6 +31,15 @@ export const NavLink: React.FC<NavLinkProps> = ({
     ? isActiveProp 
     : isPathActive(to, location.pathname);
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (isDisabled) {
+      e.preventDefault();
+    }
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
     <SidebarMenuButton
       asChild
@@ -36,17 +47,13 @@ export const NavLink: React.FC<NavLinkProps> = ({
       tooltip={state === "collapsed" ? name : undefined}
       aria-label={name}
       aria-current={isActive ? "page" : undefined}
+      onClick={handleClick}
     >
       <RouterNavLink 
         to={to} 
         className={`flex items-center gap-2 w-full transition-colors duration-200 ${
           isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""
         } ${isActive ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
-        onClick={(e) => {
-          if (isDisabled) {
-            e.preventDefault();
-          }
-        }}
       >
         <Icon className="h-5 w-5" aria-hidden="true" />
         <span>{name}</span>

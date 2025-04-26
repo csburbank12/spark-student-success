@@ -8,6 +8,8 @@ import { teacherAdminRoutes } from "@/components/layout/routes/teacherAdminRoute
 import { studentRoutes } from "@/components/layout/routes/studentRoutes";
 import { parentRoutes } from "@/components/layout/routes/parentRoutes";
 import { universalRoutes } from "@/components/layout/routes/universalRoutes";
+import { useRouter } from "@/components/ui/router";
+import { toast } from "sonner";
 
 interface Route {
   name: string;
@@ -19,7 +21,16 @@ interface Route {
 
 export const RoleBasedNavigation: React.FC = () => {
   const { user } = useAuth();
+  const { navigate } = useRouter();
   const userRole = user?.role as UserRole || "";
+  
+  const handleNavigation = (route: Route) => {
+    if (route.isDisabled) {
+      toast.info("This feature is coming soon!");
+      return;
+    }
+    navigate(route.href);
+  };
   
   const getRoleSpecificRoutes = () => {
     switch (userRole) {
@@ -42,7 +53,7 @@ export const RoleBasedNavigation: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <NavMenu routes={allRoutes} />
+      <NavMenu routes={allRoutes} onNavigate={handleNavigation} />
     </div>
   );
 };
