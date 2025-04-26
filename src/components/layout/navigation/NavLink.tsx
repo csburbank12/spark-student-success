@@ -3,6 +3,7 @@ import React from "react";
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
 import { SidebarMenuButton } from "@/components/ui/sidebar/components/menu/menu-button";
 import { useSidebar } from "@/components/ui/sidebar/sidebar-context";
+import { isPathActive } from "@/utils/routeUtils";
 
 interface NavLinkProps {
   to: string;
@@ -23,13 +24,6 @@ export const NavLink: React.FC<NavLinkProps> = ({
 }) => {
   const { state } = useSidebar();
   const location = useLocation();
-  
-  const isPathActive = (path: string, currentPath: string) => {
-    if (path === currentPath) return true;
-    if (path === '/student-dashboard' && currentPath === '/') return true;
-    // Handle nested routes
-    return path !== '/' && currentPath.startsWith(`${path}/`);
-  };
   
   const isActive = isActiveProp !== undefined 
     ? isActiveProp 

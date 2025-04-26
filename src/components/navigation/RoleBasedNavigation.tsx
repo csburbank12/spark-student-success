@@ -10,7 +10,6 @@ import { parentRoutes } from "@/components/layout/routes/parentRoutes";
 import { universalRoutes } from "@/components/layout/routes/universalRoutes";
 import { sidebarRoutes } from "@/components/layout/sidebarRoutes";
 
-// Define a type for Route to match what NavMenu expects
 interface Route {
   name: string;
   href: string;
@@ -23,7 +22,6 @@ export const RoleBasedNavigation: React.FC = () => {
   const { user } = useAuth();
   const userRole = user?.role as UserRole || "";
   
-  // Determine which routes to show based on user role
   const getRoleSpecificRoutes = () => {
     switch (userRole) {
       case UserRole.admin:
@@ -42,7 +40,6 @@ export const RoleBasedNavigation: React.FC = () => {
 
   const roleSpecificRoutes = getRoleSpecificRoutes();
   
-  // Filter sidebar routes based on user role and map to the Route format
   const profileRoutes = sidebarRoutes
     .filter(route => route.roles.includes(userRole as UserRole))
     .map(route => ({
@@ -59,7 +56,6 @@ export const RoleBasedNavigation: React.FC = () => {
     <div className="space-y-6">
       <NavMenu routes={allRoutes} />
       
-      {/* Universal routes section (divider + universal links) */}
       <div className="px-3 py-2">
         <div className="h-px bg-muted my-4" />
         <NavMenu routes={universalRoutes} />

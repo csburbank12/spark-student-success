@@ -7,12 +7,11 @@ import { DashboardSelector } from "@/components/dashboard/DashboardSelector";
 import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
 import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
 import { ErrorMonitoringService } from "@/services/ErrorMonitoringService";
-import Layout from "@/components/Layout";
+import Layout from "@/components/layout/Layout";
 
 const DashboardManager = () => {
   const { user } = useAuth();
   
-  // Initialize error monitoring on component mount
   React.useEffect(() => {
     ErrorMonitoringService.initialize().catch(err => 
       console.error("Failed to initialize error monitoring:", err)
@@ -23,7 +22,6 @@ const DashboardManager = () => {
     return <Navigate to="/login" />;
   }
 
-  // User is authenticated, show appropriate dashboard
   return (
     <Layout>
       <GlobalErrorBoundary 
