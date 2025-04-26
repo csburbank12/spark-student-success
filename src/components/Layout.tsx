@@ -45,7 +45,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
           <Sidebar />
           <SidebarRail />
-          <SidebarInset enableScroll={true}>
+          <SidebarInset>
             <div className="flex flex-1 flex-col h-full relative z-10">
               <RoleBasedHeader />
               <div className="px-4 md:px-6 py-2 border-b bg-card/50 backdrop-blur-sm">
