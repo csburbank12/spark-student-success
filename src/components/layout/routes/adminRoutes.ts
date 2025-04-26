@@ -7,10 +7,18 @@ import {
   Settings, 
   Keyboard, 
   ScanSearch, 
-  AlertCircle 
+  AlertCircle,
+  User,
+  HelpCircle,
+  LayoutDashboard
 } from "lucide-react";
 
 export const adminRoutes = [
+  {
+    name: "Dashboard",
+    href: "/admin-dashboard",
+    icon: LayoutDashboard,
+  },
   {
     name: "User Management",
     href: "/admin/user-management",
@@ -51,4 +59,14 @@ export const adminRoutes = [
     href: "/admin/error-logs",
     icon: AlertCircle,
   },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: User,
+  },
+  {
+    name: "Help & Support",
+    href: "/help",
+    icon: HelpCircle,
+  }
 ];

@@ -1,3 +1,4 @@
+
 import React, { lazy } from "react";
 import Layout from "@/components/layout/Layout";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -13,6 +14,8 @@ const ResetRoom = lazy(() => import("@/pages/ResetRoom"));
 const TrustedAdults = lazy(() => import("@/pages/TrustedAdults"));
 const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
 const StudentOnboarding = lazy(() => import("@/pages/onboarding/StudentOnboarding"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const Help = lazy(() => import("@/pages/Help"));
 
 const studentRoutes = [
   {
@@ -91,6 +94,26 @@ const studentRoutes = [
       <ProtectedRoute requiredRole={[UserRole.student]}>
         <Layout>
           <UserProfile />
+        </Layout>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/settings",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
+        <Layout>
+          <Settings />
+        </Layout>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/help",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.student]}>
+        <Layout>
+          <Help />
         </Layout>
       </ProtectedRoute>
     )

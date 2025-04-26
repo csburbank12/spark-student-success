@@ -8,6 +8,8 @@ export const isPathActive = (path: string, currentPath: string) => {
   if (path === '/admin-dashboard' && currentPath === '/') return true;
   // Profile paths should match exactly for each role
   if (path === '/profile' && currentPath === '/profile') return true;
+  if (path === '/settings' && currentPath === '/settings') return true;
+  if (path === '/help' && currentPath === '/help') return true;
   // Handle nested routes
   return path !== '/' && currentPath.startsWith(`${path}/`);
 };

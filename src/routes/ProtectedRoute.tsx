@@ -43,18 +43,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     const hasRequiredRole = userRole && requiredRole.includes(userRole);
 
     if (!hasRequiredRole) {
-      ErrorLoggingService.logError({
-        action: 'role_access_denied',
-        error_message: `User with role ${userRole} attempted to access ${location.pathname} which requires roles: ${requiredRole.join(', ')}`,
-        profile_type: userRole.toLowerCase() as ProfileType
-      });
-      
-      toast.error('You do not have permission to access this page', {
-        id: 'role-redirect'
-      });
-      
-      // Instead of blocking access completely, show a warning but allow access
-      toast.warning(`You're accessing a page intended for ${requiredRole.join(', ')} as a ${userRole}.`, { 
+      // For demo purposes, let's allow access across roles but show a warning
+      // This helps users testing different role features
+      toast.warning(`You're accessing a page intended for ${requiredRole.join(', ')}. Some features may be limited.`, { 
         duration: 5000,
         id: 'role-warning'
       });

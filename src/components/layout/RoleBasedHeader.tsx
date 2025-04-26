@@ -12,7 +12,23 @@ export const RoleBasedHeader = () => {
 
   const getHeaderTitle = () => {
     if (!user?.role) return 'Dashboard';
-    return `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} Dashboard`;
+    
+    switch(user.role) {
+      case UserRole.student:
+        return 'Student Dashboard';
+      case UserRole.teacher:
+        return 'Teacher Dashboard';
+      case UserRole.admin:
+        return 'Admin Dashboard';
+      case UserRole.parent:
+        return 'Parent Dashboard';
+      case UserRole.staff:
+        return 'Staff Dashboard';
+      case UserRole.counselor:
+        return 'Counselor Dashboard';
+      default:
+        return 'Dashboard';
+    }
   };
 
   return (

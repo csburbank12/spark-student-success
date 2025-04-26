@@ -9,6 +9,7 @@ import {
   User,
   Settings,
   HelpCircle,
+  Armchair,
 } from "lucide-react";
 
 export const studentRoutes = [
@@ -36,6 +37,11 @@ export const studentRoutes = [
     name: "Digital Journal",
     href: "/digital-journal",
     icon: FileText,
+  },
+  {
+    name: "Reset Room",
+    href: "/reset-room",
+    icon: Armchair,
   },
   {
     name: "Trusted Adults",
