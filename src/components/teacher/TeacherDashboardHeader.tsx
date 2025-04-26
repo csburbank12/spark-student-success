@@ -5,6 +5,8 @@ import { Calendar, Users, BellRing, BookOpen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
 import { useNavigate } from "react-router-dom";
+import { SidebarTrigger } from "@/components/ui/sidebar/components/sidebar-trigger";
+import { useIsMobile } from "@/hooks/use-mobile";
 import SystemStatusIndicator from "@/components/error-handling/SystemStatusIndicator";
 
 interface TeacherDashboardHeaderProps {
@@ -16,19 +18,23 @@ export const TeacherDashboardHeader: React.FC<TeacherDashboardHeaderProps> = ({
 }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div>
-        <div className="flex items-center gap-2">
-          <h2 className="text-3xl font-heading font-bold">
-            Welcome, {user?.name?.split(" ")[0] || "Teacher"}!
-          </h2>
-          <SystemStatusIndicator />
+    <div className="sticky top-0 z-30 border-b bg-navbar px-4 md:px-6 py-4 backdrop-blur-sm">
+      <div className="flex items-center gap-4 mb-4">
+        {isMobile && <SidebarTrigger />}
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl font-heading font-bold">
+              Welcome, {user?.name?.split(" ")[0] || "Teacher"}!
+            </h2>
+            <SystemStatusIndicator />
+          </div>
+          <p className="text-muted-foreground">
+            Your dashboard shows classroom insights and student wellbeing data
+          </p>
         </div>
-        <p className="text-muted-foreground">
-          Your dashboard shows classroom insights and student wellbeing data
-        </p>
       </div>
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" onClick={() => navigate("/students")}>

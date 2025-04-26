@@ -3,7 +3,6 @@ import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { SidebarTrigger } from "@/components/ui/sidebar/components/sidebar-trigger";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { TeacherHeader } from "@/components/teacher/TeacherHeader";
 import { TeacherDashboardHeader } from "@/components/teacher/TeacherDashboardHeader";
 import { UserRole } from "@/types/roles";
 
@@ -11,13 +10,9 @@ export const RoleBasedHeader = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
 
+  // Use TeacherDashboardHeader for all teacher routes
   if (user?.role === UserRole.teacher) {
-    // Use TeacherDashboardHeader only on the dashboard page
-    if (window.location.pathname === "/teacher-dashboard") {
-      return <TeacherDashboardHeader />;
-    }
-    // Use TeacherHeader for all other teacher pages
-    return <TeacherHeader />;
+    return <TeacherDashboardHeader />;
   }
 
   // Default header for other roles
