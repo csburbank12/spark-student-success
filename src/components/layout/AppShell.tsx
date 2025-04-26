@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
@@ -14,23 +14,14 @@ import { NavBreadcrumbs } from './NavBreadcrumbs';
 export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const { isLoading, user } = useAuth();
   const location = useLocation();
-  const [pageTransition, setPageTransition] = useState(false);
-  
   const isPublicPage = isPublicPath(location.pathname);
-
-  // Add page transition effect
-  useEffect(() => {
-    setPageTransition(true);
-    const timer = setTimeout(() => setPageTransition(false), 300);
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
 
   // Use simplified layout for public pages
   if (isPublicPage) {
     return (
       <ThemeProvider>
         <div className="min-h-screen w-full bg-background">
-          <div className={pageTransition ? "animate-fade-in" : ""}>
+          <div className="animate-fade-in">
             {children}
           </div>
         </div>
@@ -46,17 +37,18 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
   return (
     <ThemeProvider>
       <SidebarProvider defaultOpen={true}>
-        <div className="flex h-screen w-full overflow-hidden bg-background">
+        <div className="flex h-screen w-full overflow-hidden bg-background/95">
+          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
           <Sidebar />
           <SidebarRail />
           <SidebarInset enableScroll={true}>
-            <div className="flex flex-1 flex-col h-full">
+            <div className="flex flex-1 flex-col h-full relative z-10">
               <Navbar />
               <div className="px-4 md:px-6 py-2 border-b bg-card/50 backdrop-blur-sm">
                 <NavBreadcrumbs path={location.pathname} />
               </div>
               <main className="flex-1 bg-background/60 p-4 md:p-6 lg:p-8 overflow-auto backdrop-blur-sm">
-                <div className={`mx-auto max-w-7xl ${pageTransition ? "animate-fade-in" : ""}`}>
+                <div className="mx-auto max-w-7xl animate-fade-in">
                   {children}
                 </div>
               </main>
