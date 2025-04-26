@@ -1,42 +1,31 @@
 
-import React from "react";
+import React, { lazy } from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
-import StaffDashboard from "@/pages/staff/StaffDashboard";
-import StaffProfile from "@/pages/profile/StaffProfile";
-import StaffAssistMode from "@/pages/StaffAssistMode";
-import StaffSupportTools from "@/pages/staff/StaffSupportTools";
+import Layout from "@/components/layout/Layout";
+
+// Lazy load staff pages
+const StaffDashboard = lazy(() => import("@/pages/StaffDashboard"));
+const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
 
 const staffRoutes = [
   {
     path: "/staff-dashboard",
     element: (
       <ProtectedRoute requiredRole={[UserRole.staff]}>
-        <StaffDashboard />
+        <Layout>
+          <StaffDashboard />
+        </Layout>
       </ProtectedRoute>
     ),
   },
   {
-    path: "/staff-profile",
+    path: "/profile",
     element: (
       <ProtectedRoute requiredRole={[UserRole.staff]}>
-        <StaffProfile user={{id: "", name: "", email: "", role: UserRole.staff}} />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/staff-assist",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.staff, UserRole.teacher, UserRole.admin]}>
-        <StaffAssistMode />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/support-tools",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.staff]}>
-        <StaffSupportTools />
+        <Layout>
+          <UserProfile />
+        </Layout>
       </ProtectedRoute>
     ),
   },

@@ -1,59 +1,56 @@
-import React from "react";
+
+import React, { lazy } from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
-import AdminDashboard from "@/pages/AdminDashboard";
-import UserManagement from "@/pages/admin/UserManagement";
-import DataAnalytics from "@/pages/admin/DataAnalytics";
-import SchoolManagement from "@/pages/admin/SchoolManagement";
-import SchoolProfilePage from "@/pages/admin/SchoolProfilePage";
-import AddSchoolPage from "@/pages/admin/AddSchoolPage";
-import EditSchoolPage from "@/pages/admin/EditSchoolPage";
-import SchoolImportPage from "@/pages/admin/SchoolImportPage";
-import SchoolOnboarding from "@/pages/admin/SchoolOnboarding";
-import FERPACompliance from "@/pages/admin/FERPACompliance";
-import SystemSettings from "@/pages/admin/SystemSettings";
-import LoopBotLogs from "@/pages/admin/LoopBotLogs";
-import AuditDashboard from "@/pages/admin/AuditDashboard";
-import ErrorLogsDashboard from "@/pages/admin/ErrorLogsDashboard";
+import Layout from "@/components/layout/Layout";
+
+// Lazy load admin pages
+const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
+const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
+const UserManagement = lazy(() => import("@/pages/admin/UserManagement"));
+const SchoolManagement = lazy(() => import("@/pages/admin/SchoolManagement"));
+const SystemConfiguration = lazy(() => import("@/pages/admin/SystemConfiguration"));
+
+// Placeholder components until they're fully implemented
+const UserManagementPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">User Management</h2>
+    <p>User management interface with mock data would be implemented here.</p>
+  </div>
+);
+
+const SchoolManagementPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">School Management</h2>
+    <p>School management interface with mock data would be implemented here.</p>
+  </div>
+);
+
+const SystemConfigurationPlaceholder = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">System Configuration</h2>
+    <p>System configuration interface with settings would be implemented here.</p>
+  </div>
+);
 
 const adminRoutes = [
-  {
-    path: "/admin",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <AdminDashboard />
-      </ProtectedRoute>
-    ),
-  },
   {
     path: "/admin-dashboard",
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <AdminDashboard />
+        <Layout>
+          <AdminDashboard />
+        </Layout>
       </ProtectedRoute>
     ),
   },
   {
-    path: "/admin/user-management",
+    path: "/admin/users",
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <UserManagement />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/data-analytics",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <DataAnalytics />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/school-management",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <SchoolManagement />
+        <Layout>
+          <UserManagementPlaceholder />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -61,87 +58,29 @@ const adminRoutes = [
     path: "/admin/schools",
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <SchoolManagement />
+        <Layout>
+          <SchoolManagementPlaceholder />
+        </Layout>
       </ProtectedRoute>
     ),
   },
   {
-    path: "/admin/schools/new",
+    path: "/admin/system",
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <AddSchoolPage />
+        <Layout>
+          <SystemConfigurationPlaceholder />
+        </Layout>
       </ProtectedRoute>
     ),
   },
   {
-    path: "/admin/schools/import",
+    path: "/profile",
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <SchoolImportPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/schools/:id",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <SchoolProfilePage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/schools/:id/edit",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <EditSchoolPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/ferpa-compliance",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <FERPACompliance />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/system-settings",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <SystemSettings />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/loopbot-logs",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <LoopBotLogs />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/audit-dashboard",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <AuditDashboard />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/error-logs",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <ErrorLogsDashboard />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/school-onboarding",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <SchoolOnboarding />
+        <Layout>
+          <UserProfile />
+        </Layout>
       </ProtectedRoute>
     ),
   },

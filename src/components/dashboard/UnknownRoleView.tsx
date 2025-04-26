@@ -12,7 +12,7 @@ export const UnknownRoleView: React.FC = () => {
   
   return (
     <div className="space-y-6 max-w-2xl mx-auto py-8">
-      <Alert variant="warning">
+      <Alert>
         <AlertTriangle className="h-5 w-5" />
         <AlertTitle>Role Not Recognized</AlertTitle>
         <AlertDescription>

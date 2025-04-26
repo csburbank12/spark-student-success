@@ -6,10 +6,22 @@ import {
   BookOpen,
   Shield,
   FileText,
-  User
+  User,
+  Users,
+  Calendar,
 } from "lucide-react";
 
 export const parentRoutes = [
+  {
+    name: "Dashboard",
+    href: "/parent-dashboard",
+    icon: Activity,
+  },
+  {
+    name: "My Children",
+    href: "/my-children",
+    icon: Users,
+  },
   {
     name: "Child Activity",
     href: "/child-activity",
@@ -24,6 +36,11 @@ export const parentRoutes = [
     name: "Messages",
     href: "/messages",
     icon: MessageSquare,
+  },
+  {
+    name: "Meetings & Events",
+    href: "/meetings",
+    icon: Calendar,
   },
   {
     name: "Resources",

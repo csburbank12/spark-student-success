@@ -8,6 +8,7 @@ import ChildActivity from "@/pages/parent/ChildActivity";
 import ChildWellness from "@/pages/parent/ChildWellness";
 import ParentResources from "@/pages/parent-resources/ParentResources";
 import ParentChildrenManager from "@/pages/parent/ParentChildrenManager";
+import ParentMeetings from "@/pages/parent/ParentMeetings";
 import UserProfile from "@/pages/profile/UserProfile";
 import Layout from "@/components/layout/Layout";
 
@@ -58,6 +59,16 @@ const parentRoutes = [
       <ProtectedRoute requiredRole={[UserRole.parent]}>
         <Layout>
           <ParentMessages />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/meetings",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.parent]}>
+        <Layout>
+          <ParentMeetings />
         </Layout>
       </ProtectedRoute>
     ),
