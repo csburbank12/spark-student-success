@@ -89,30 +89,46 @@ const Login = () => {
 
   return (
     <div className="flex min-h-screen">
-      {/* Left Section - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-violet-500 to-purple-700 p-12 items-center justify-center relative overflow-hidden">
+      {/* Left Section - Branding & Welcome Message */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-violet-500 via-purple-600 to-primary p-12 items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 animate-pulse" />
-        <div className="relative z-10 text-white max-w-2xl space-y-6">
-          <h1 className="text-4xl font-bold mb-6 animate-fade-in">
-            ThriveTrackED
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-violet-500/20" />
+        
+        <div className="relative z-10 text-white max-w-2xl space-y-8 animate-fadeIn">
+          <h1 className="text-5xl font-bold mb-8 tracking-tight">
+            Welcome to ThriveTrackED
           </h1>
-          <p className="text-lg opacity-90 leading-relaxed animate-fade-in delay-100">
+          <p className="text-xl opacity-90 leading-relaxed">
             Empowering education through emotional intelligence and data-driven insights.
             Join our community of educators, students, and parents working together for
             better educational outcomes.
           </p>
+          <div className="flex flex-col space-y-4 pt-4">
+            <div className="flex items-center space-x-3">
+              <div className="bg-white/20 p-2 rounded-full">
+                <Shield className="h-6 w-6" />
+              </div>
+              <span className="text-lg">FERPA Compliant</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="bg-white/20 p-2 rounded-full">
+                <Users2 className="h-6 w-6" />
+              </div>
+              <span className="text-lg">Trusted by Schools Nationwide</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Right Section - Login Form */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 md:p-12 bg-background">
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 md:p-12 bg-gradient-to-b from-background to-background/95">
         <div className="w-full max-w-md space-y-8">
           <LoginHeader />
           
           {errorMessage && (
             <Alert 
               variant="destructive" 
-              className="animate-fade-in border-red-200 bg-red-50"
+              className="animate-fadeIn border-red-200 bg-red-50"
             >
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Login Error</AlertTitle>
@@ -123,7 +139,7 @@ const Login = () => {
           <div className={cn(
             "bg-card border rounded-xl p-8 shadow-sm space-y-6",
             "transition-all duration-200 hover:shadow-md",
-            "animate-fade-in delay-200"
+            "animate-fadeIn"
           )}>
             <LoginForm
               email={email}
@@ -137,7 +153,7 @@ const Login = () => {
             />
           </div>
 
-          <div className="mt-8 space-y-6 animate-fade-in delay-300">
+          <div className="mt-8 space-y-6 animate-fadeIn">
             <DemoAccounts
               presetLogin={presetLogin}
               email={email}
@@ -150,7 +166,7 @@ const Login = () => {
 
             <ConfidentialityNotice />
             
-            <Alert className="bg-blue-50 border-blue-200 text-blue-900 animate-fade-in delay-400">
+            <Alert className="bg-blue-50 border-blue-200 text-blue-900 animate-fadeIn">
               <Shield className="h-5 w-5" />
               <AlertTitle className="font-medium">FERPA Compliance</AlertTitle>
               <AlertDescription className="mt-2 text-sm">

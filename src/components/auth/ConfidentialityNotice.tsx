@@ -1,17 +1,19 @@
 
-import { Lock } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Lock } from 'lucide-react';
 
-export const ConfidentialityNotice = () => {
+export const ConfidentialityNotice: React.FC = () => {
   return (
-    <Alert className="bg-emerald-50 border-emerald-200 text-emerald-900">
-      <Lock className="h-5 w-5" />
-      <AlertDescription className="mt-2 text-sm">
-        <strong className="block mb-2">Confidential Platform Access</strong>
-        This website contains proprietary educational data, tools, and intellectual property belonging to ThriveTrackED. 
-        By logging in, you agree not to disclose, distribute, or misuse any information accessed within. 
-        Unauthorized use or sharing is strictly prohibited and may result in legal or administrative action.
-      </AlertDescription>
-    </Alert>
+    <Card className="bg-muted/50 border-dashed">
+      <CardContent className="p-4 flex items-center space-x-3">
+        <div className="bg-primary/10 p-2 rounded-full">
+          <Lock className="h-4 w-4 text-primary" />
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Your login information is confidential and protected. Never share your password with others.
+        </p>
+      </CardContent>
+    </Card>
   );
 };
