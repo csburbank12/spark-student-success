@@ -11,7 +11,11 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { isPublicPath } from '@/utils/navigationUtils';
 import { NavBreadcrumbs } from './NavBreadcrumbs';
 
-export const AppShell = ({ children }: { children: React.ReactNode }) => {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isLoading, user } = useAuth();
   const location = useLocation();
   const isPublicPage = isPublicPath(location.pathname);
@@ -52,18 +56,6 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
                   {children}
                 </div>
               </main>
-              <footer className="border-t py-4 px-6 bg-card/80 backdrop-blur-sm">
-                <div className="container flex flex-col md:flex-row justify-between items-center gap-2">
-                  <div className="text-sm text-muted-foreground">
-                    © {new Date().getFullYear()} Student Success Platform
-                  </div>
-                  <div className="flex gap-4 text-sm">
-                    <a href="/help" className="text-muted-foreground hover:text-foreground menu-item-hover">Help</a>
-                    <a href="/privacy-policy" className="text-muted-foreground hover:text-foreground menu-item-hover">Privacy</a>
-                    <a href="/terms" className="text-muted-foreground hover:text-foreground menu-item-hover">Terms</a>
-                  </div>
-                </div>
-              </footer>
             </div>
           </SidebarInset>
         </div>
@@ -71,3 +63,5 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
     </ThemeProvider>
   );
 };
+
+export default Layout;

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
 import { SidebarMenuButton } from "@/components/ui/sidebar/components/menu/menu-button";
@@ -24,13 +25,8 @@ export const NavLink: React.FC<NavLinkProps> = ({
   const location = useLocation();
   
   const isPathActive = (path: string, currentPath: string) => {
-    // Exact match
     if (path === currentPath) return true;
-    
-    // Special case for root and student dashboard
-    if (path === '/student-dashboard' && (currentPath === '/' || currentPath === '/student-dashboard')) return true;
-    
-    // Nested route match
+    if (path === '/student-dashboard' && currentPath === '/') return true;
     return path !== '/' && currentPath.startsWith(`${path}/`);
   };
   
@@ -38,36 +34,32 @@ export const NavLink: React.FC<NavLinkProps> = ({
     ? isActiveProp 
     : isPathActive(to, location.pathname);
 
-  const navLinkContent = (
-    <RouterNavLink 
-      to={to} 
-      className={`flex items-center gap-2 w-full ${
-        isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""
-      } ${isActive ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
-      onClick={(e) => {
-        if (isDisabled) {
-          e.preventDefault();
-        }
-      }}
-    >
-      <Icon className="h-5 w-5" />
-      <span>{name}</span>
-      
-      {badge !== undefined && (
-        <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-2 text-xs text-white">
-          {badge}
-        </span>
-      )}
-    </RouterNavLink>
-  );
-
   return (
     <SidebarMenuButton
       asChild
       isActive={isActive}
       tooltip={state === "collapsed" ? name : undefined}
     >
-      {navLinkContent}
+      <RouterNavLink 
+        to={to} 
+        className={`flex items-center gap-2 w-full ${
+          isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""
+        } ${isActive ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
+        onClick={(e) => {
+          if (isDisabled) {
+            e.preventDefault();
+          }
+        }}
+      >
+        <Icon className="h-5 w-5" />
+        <span>{name}</span>
+        
+        {badge !== undefined && (
+          <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-2 text-xs text-white">
+            {badge}
+          </span>
+        )}
+      </RouterNavLink>
     </SidebarMenuButton>
   );
 };
