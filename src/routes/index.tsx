@@ -23,7 +23,6 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const QADashboard = lazy(() => import("@/pages/QADashboard"));
 const WellLensDashboard = lazy(() => import("@/pages/WellLensDashboard"));
 const Profiles = lazy(() => import("@/pages/Profiles"));
-const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
 const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
 
 // Create a suspense wrapper for lazy loaded components
@@ -83,7 +82,7 @@ const privacyRoutes = [
   }
 ];
 
-// Update the routes constant to use regular dashboard components
+// Update the routes array to remove the /profile route
 export const routes = [
   {
     path: "/",
@@ -112,10 +111,6 @@ export const routes = [
   {
     path: "/profiles",
     element: createProtectedRoute(Profiles, "Profiles")
-  },
-  {
-    path: "/profile",
-    element: createProtectedRoute(UserProfile, "UserProfile")
   },
   systemMonitoringRoute,
   ...privacyRoutes

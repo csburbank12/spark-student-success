@@ -86,7 +86,7 @@ const teacherRoutes = [
     ),
   },
   {
-    path: "/profile",
+    path: "/teacher/profile",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
         <TeacherProfilePage />

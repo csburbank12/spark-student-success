@@ -2,6 +2,7 @@
 import React, { useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
+import { Navigate } from "react-router-dom";
 import ParentProfile from "./ParentProfile";
 import TeacherProfilePage from "./TeacherProfilePage";
 import PageHeader from "@/components/layout/PageHeader";
@@ -20,14 +21,13 @@ const UserProfile: React.FC = () => {
     );
   }
 
-  // Render role-specific profiles
+  // Role-based routing
   switch (user.role as UserRole) {
+    case UserRole.teacher:
+      return <Navigate to="/teacher/profile" replace />;
     case UserRole.parent:
       return <ParentProfile user={user} />;
-    case UserRole.teacher:
-      return <TeacherProfilePage />;
     default:
-      // Default profile for other roles
       return <DefaultProfile user={user} />;
   }
 };
