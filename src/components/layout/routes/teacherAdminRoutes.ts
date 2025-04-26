@@ -21,7 +21,7 @@ export const teacherAdminRoutes = [
     icon: GraduationCap,
   },
   {
-    name: "SEL Pathways",
+    name: "SEL Activities",
     href: "/sel-pathway-management",
     icon: Target,
   },
