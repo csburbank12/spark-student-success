@@ -4,11 +4,12 @@ import {
   Users,
   Activity,
   Heart,
-  MessageSquare,
   Calendar,
   BookOpen,
   Shield,
-  FileText,
+  User,
+  Settings,
+  HelpCircle,
 } from "lucide-react";
 
 export const parentRoutes = [
@@ -33,11 +34,6 @@ export const parentRoutes = [
     icon: Heart,
   },
   {
-    name: "Messages",
-    href: "/messages",
-    icon: MessageSquare,
-  },
-  {
     name: "Meetings & Events",
     href: "/meetings",
     icon: Calendar,
@@ -53,8 +49,18 @@ export const parentRoutes = [
     icon: Shield,
   },
   {
-    name: "Data Access",
-    href: "/data-access",
-    icon: FileText,
+    name: "Profile",
+    href: "/profile",
+    icon: User,
+  },
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: Settings,
+  },
+  {
+    name: "Help & Support",
+    href: "/help",
+    icon: HelpCircle,
   }
 ];

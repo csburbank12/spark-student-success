@@ -5,7 +5,10 @@ import {
   ClipboardCheck,
   Heart,
   FileText,
-  Users
+  Users,
+  User,
+  Settings,
+  HelpCircle,
 } from "lucide-react";
 
 export const studentRoutes = [
@@ -35,13 +38,23 @@ export const studentRoutes = [
     icon: FileText,
   },
   {
-    name: "Reset Room",
-    href: "/reset-room",
-    icon: Heart,
-  },
-  {
     name: "Trusted Adults",
     href: "/trusted-adults",
     icon: Users,
   },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: User,
+  },
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: Settings,
+  },
+  {
+    name: "Help & Support",
+    href: "/help",
+    icon: HelpCircle,
+  }
 ];

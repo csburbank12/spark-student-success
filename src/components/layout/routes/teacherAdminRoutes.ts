@@ -1,19 +1,22 @@
 
 import {
+  LayoutDashboard,
   GraduationCap,
   Target,
-  Headphones,
   ClipboardCheck,
   BrainCircuit,
   Calendar,
-  BarChart3
+  Activity,
+  User,
+  Settings,
+  HelpCircle,
 } from "lucide-react";
 
 export const teacherAdminRoutes = [
   {
     name: "Dashboard",
     href: "/teacher-dashboard",
-    icon: BarChart3,
+    icon: LayoutDashboard,
   },
   {
     name: "Students",
@@ -24,11 +27,6 @@ export const teacherAdminRoutes = [
     name: "SEL Activities",
     href: "/sel-pathway-management",
     icon: Target,
-  },
-  {
-    name: "Staff Assist",
-    href: "/staff-assist",
-    icon: Headphones,
   },
   {
     name: "Check-In",
@@ -45,4 +43,24 @@ export const teacherAdminRoutes = [
     href: "/emotion-aware-scheduling",
     icon: Calendar,
   },
+  {
+    name: "Well-Being Dashboard",
+    href: "/well-lens",
+    icon: Activity,
+  },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: User,
+  },
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: Settings,
+  },
+  {
+    name: "Help & Support",
+    href: "/help",
+    icon: HelpCircle,
+  }
 ];
