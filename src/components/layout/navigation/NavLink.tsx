@@ -27,6 +27,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
   const isPathActive = (path: string, currentPath: string) => {
     if (path === currentPath) return true;
     if (path === '/student-dashboard' && currentPath === '/') return true;
+    // Handle nested routes
     return path !== '/' && currentPath.startsWith(`${path}/`);
   };
   
@@ -39,10 +40,12 @@ export const NavLink: React.FC<NavLinkProps> = ({
       asChild
       isActive={isActive}
       tooltip={state === "collapsed" ? name : undefined}
+      aria-label={name}
+      aria-current={isActive ? "page" : undefined}
     >
       <RouterNavLink 
         to={to} 
-        className={`flex items-center gap-2 w-full ${
+        className={`flex items-center gap-2 w-full transition-colors duration-200 ${
           isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""
         } ${isActive ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
         onClick={(e) => {
@@ -51,7 +54,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
           }
         }}
       >
-        <Icon className="h-5 w-5" />
+        <Icon className="h-5 w-5" aria-hidden="true" />
         <span>{name}</span>
         
         {badge !== undefined && (
