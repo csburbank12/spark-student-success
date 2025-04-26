@@ -5,7 +5,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
 import { SidebarRail } from '@/components/ui/sidebar';
 import Sidebar from './layout/Sidebar';
-import { TeacherHeader } from './teacher/TeacherHeader';
+import { RoleBasedHeader } from './layout/RoleBasedHeader';
 import { Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { isPublicPath } from '@/utils/navigationUtils';
@@ -47,7 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SidebarRail />
           <SidebarInset enableScroll={true}>
             <div className="flex flex-1 flex-col h-full relative z-10">
-              <TeacherHeader />
+              <RoleBasedHeader />
               <div className="px-4 md:px-6 py-2 border-b bg-card/50 backdrop-blur-sm">
                 <NavBreadcrumbs path={location.pathname} />
               </div>

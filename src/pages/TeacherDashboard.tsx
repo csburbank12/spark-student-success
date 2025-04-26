@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { TeacherStatsGrid } from "@/components/teacher/TeacherStatsGrid";
 import { StudentSearchSection } from "@/components/teacher/StudentSearchSection";
@@ -111,7 +112,6 @@ const TeacherDashboard = () => {
   return (
     <div className="space-y-6">
       <TeacherStatsGrid />
-
       <div className="grid gap-6 md:grid-cols-3">
         <div className="md:col-span-2 space-y-4">
           <StudentSearchSection onChange={(e) => setSearchQuery(e.target.value)} />
