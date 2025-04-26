@@ -12,14 +12,16 @@ import WellLensDashboard from "@/pages/WellLensDashboard";
 import PredictiveSupport from "@/pages/PredictiveSupport";
 import StudentSupportHeatmap from "@/pages/StudentSupportHeatmap";
 import TeacherProfilePage from "@/pages/profile/TeacherProfilePage";
-import { createProtectedRoute } from "./index";
+import Layout from "@/components/layout/Layout";
 
 const teacherRoutes = [
   {
     path: "/teacher-dashboard",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <TeacherDashboard />
+        <Layout>
+          <TeacherDashboard />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -27,7 +29,9 @@ const teacherRoutes = [
     path: "/teacher-dashboard-enhanced",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <TeacherDashboardEnhanced />
+        <Layout>
+          <TeacherDashboardEnhanced />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -35,7 +39,9 @@ const teacherRoutes = [
     path: "/students",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <StudentManagement />
+        <Layout>
+          <StudentManagement />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -43,7 +49,9 @@ const teacherRoutes = [
     path: "/behavior-prediction",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <BehaviorPrediction />
+        <Layout>
+          <BehaviorPrediction />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -51,7 +59,9 @@ const teacherRoutes = [
     path: "/sel-pathway-management",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <SELPathwayManagement />
+        <Layout>
+          <SELPathwayManagement />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -59,7 +69,9 @@ const teacherRoutes = [
     path: "/emotion-aware-scheduling",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <EmotionAwareScheduling />
+        <Layout>
+          <EmotionAwareScheduling />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -67,7 +79,9 @@ const teacherRoutes = [
     path: "/well-lens",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <WellLensDashboard />
+        <Layout>
+          <WellLensDashboard />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -75,7 +89,9 @@ const teacherRoutes = [
     path: "/predictive-support",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <PredictiveSupport />
+        <Layout>
+          <PredictiveSupport />
+        </Layout>
       </ProtectedRoute>
     ),
   },
@@ -83,15 +99,19 @@ const teacherRoutes = [
     path: "/student-support-heatmap",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin, UserRole.counselor]}>
-        <StudentSupportHeatmap />
+        <Layout>
+          <StudentSupportHeatmap />
+        </Layout>
       </ProtectedRoute>
     ),
   },
   {
-    path: "/teacher/profile",
+    path: "/profile",
     element: (
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <TeacherProfilePage />
+        <Layout>
+          <TeacherProfilePage />
+        </Layout>
       </ProtectedRoute>
     ),
   },

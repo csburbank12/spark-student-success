@@ -1,10 +1,9 @@
-
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
 import { Navigate } from "react-router-dom";
 import ParentProfile from "./ParentProfile";
-import TeacherProfilePage from "./TeacherProfilePage";
+import TeacherProfile from "./TeacherProfile";
 import PageHeader from "@/components/layout/PageHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import NotificationPreferences from "@/components/profile/NotificationPreferences";
@@ -21,10 +20,10 @@ const UserProfile: React.FC = () => {
     );
   }
 
-  // Role-based routing
+  // All roles now use the /profile route
   switch (user.role as UserRole) {
     case UserRole.teacher:
-      return <Navigate to="/teacher/profile" replace />;
+      return <TeacherProfile user={user} />;
     case UserRole.parent:
       return <ParentProfile user={user} />;
     default:

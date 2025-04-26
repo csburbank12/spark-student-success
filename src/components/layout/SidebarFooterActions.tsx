@@ -25,6 +25,7 @@ const SidebarFooterActions = () => {
   };
   
   const handleProfile = () => {
+    // All roles now use the /profile route
     navigate('/profile');
   };
   
