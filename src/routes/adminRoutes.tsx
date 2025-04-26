@@ -9,7 +9,7 @@ const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
 const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
 const UserManagement = lazy(() => import("@/pages/admin/UserManagement"));
 const SchoolManagement = lazy(() => import("@/pages/admin/SchoolManagement"));
-const SystemConfiguration = lazy(() => import("@/pages/admin/SystemConfiguration"));
+const SystemSettings = lazy(() => import("@/pages/admin/SystemSettings"));
 
 // Placeholder components until they're fully implemented
 const UserManagementPlaceholder = () => (
@@ -69,7 +69,17 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <Layout>
-          <SystemConfigurationPlaceholder />
+          <SystemSettings />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/system-settings",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.admin]}>
+        <Layout>
+          <SystemSettings />
         </Layout>
       </ProtectedRoute>
     ),
