@@ -2,8 +2,10 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar as CalendarIcon, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 const demoTimeSlots = [
   { time: "9:00 AM", available: true },
@@ -15,8 +17,11 @@ const demoTimeSlots = [
 ];
 
 const CheckInScheduler = () => {
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
+
   const handleSchedule = (time: string) => {
-    toast.success(`Check-in scheduled for ${time}`);
+    const dateStr = selectedDate ? selectedDate.toLocaleDateString() : '';
+    toast.success(`Check-in scheduled for ${dateStr} at ${time}`);
   };
 
   return (
@@ -31,10 +36,12 @@ const CheckInScheduler = () => {
             <CardTitle>Select Date</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="border rounded-lg p-4 text-center">
-              <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">Calendar component will be implemented here</p>
-            </div>
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              className={cn("rounded-md border w-full", "pointer-events-auto")}
+            />
           </CardContent>
         </Card>
 

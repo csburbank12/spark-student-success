@@ -7,6 +7,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -32,10 +33,7 @@ export const TeacherHeaderActions = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-80">
-          <div className="p-2">
-            <h4 className="font-medium mb-1">Recent Alerts</h4>
-            <p className="text-sm text-muted-foreground">You have 3 unread alerts</p>
-          </div>
+          <DropdownMenuLabel>Recent Alerts</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/students")}>
             <div className="flex flex-col gap-1">
@@ -47,6 +45,12 @@ export const TeacherHeaderActions = () => {
             <div className="flex flex-col gap-1">
               <p className="font-medium">New SEL Activity Available</p>
               <p className="text-sm text-muted-foreground">Mindfulness exercise ready for review</p>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/sel-pathway-management")}>
+            <div className="flex flex-col gap-1">
+              <p className="font-medium">SEL Pathway Update</p>
+              <p className="text-sm text-muted-foreground">New content available for Grade 9</p>
             </div>
           </DropdownMenuItem>
         </DropdownMenuContent>

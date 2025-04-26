@@ -12,7 +12,7 @@ import PredictiveSupport from "@/pages/PredictiveSupport";
 import StudentSupportHeatmap from "@/pages/StudentSupportHeatmap";
 import TeacherProfilePage from "@/pages/profile/TeacherProfilePage";
 import Layout from "@/components/layout/Layout";
-import CheckInScheduler from "@/pages/CheckInScheduler";
+import CheckInScheduler from "@/pages/check-in/CheckInScheduler";
 
 const teacherRoutes = [
   {
