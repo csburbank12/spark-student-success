@@ -24,17 +24,16 @@ export const NavLink: React.FC<NavLinkProps> = ({
   const { state } = useSidebar();
   const location = useLocation();
   
-  // Enhanced matching to consider nested routes and exact matches
+  // Enhanced matching to consider nested routes and dashboard
   const isPathActive = (path: string, currentPath: string) => {
     // Exact match
     if (path === currentPath) return true;
     
-    // Special case for root dashboard
-    if (path === '/dashboard' && currentPath === '/') return true;
+    // Special case for root and dashboard
+    if (path === '/student-dashboard' && (currentPath === '/' || currentPath === '/student-dashboard')) return true;
     
-    // Nested route match, but make sure it's actually a parent path
-    return path !== '/' && 
-           currentPath.startsWith(`${path}/`);
+    // Nested route match
+    return path !== '/' && currentPath.startsWith(`${path}/`);
   };
   
   // Use provided isActive prop or calculate based on location
@@ -75,3 +74,4 @@ export const NavLink: React.FC<NavLinkProps> = ({
     </SidebarMenuButton>
   );
 };
+

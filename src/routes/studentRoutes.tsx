@@ -1,5 +1,5 @@
+
 import React, { lazy } from "react";
-import { Routes, Route } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
@@ -117,3 +117,4 @@ const studentRoutes = [
 ];
 
 export default studentRoutes;
+

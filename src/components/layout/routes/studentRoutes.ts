@@ -1,5 +1,6 @@
 
 import {
+  LayoutDashboard,
   Target,
   ClipboardCheck,
   Heart,
@@ -8,6 +9,11 @@ import {
 } from "lucide-react";
 
 export const studentRoutes = [
+  {
+    name: "Dashboard",
+    href: "/student-dashboard",
+    icon: LayoutDashboard,
+  },
   {
     name: "SEL Pathways",
     href: "/sel-pathways",
@@ -39,3 +45,4 @@ export const studentRoutes = [
     icon: Users,
   },
 ];
+
