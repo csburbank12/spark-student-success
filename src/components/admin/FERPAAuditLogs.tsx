@@ -110,12 +110,12 @@ interface FERPAAuditLogsProps {
 
 export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [recordType, setRecordType] = useState<string>("");
-  const [accessType, setAccessType] = useState<string>("");
+  const [recordType, setRecordType] = useState<string>("all"); // Changed from empty string to "all"
+  const [accessType, setAccessType] = useState<string>("all"); // Changed from empty string to "all"
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
-  const [userRole, setUserRole] = useState<string>("");
-  const [status, setStatus] = useState<string>("");
+  const [userRole, setUserRole] = useState<string>("all"); // Changed from empty string to "all"
+  const [status, setStatus] = useState<string>("all"); // Changed from empty string to "all"
 
   // Filter logic
   const filteredLogs = mockLogs.filter(log => {
@@ -124,10 +124,10 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
       log.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.student_name.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesRecordType = recordType === "" || log.record_type === recordType;
-    const matchesAccessType = accessType === "" || log.access_type === accessType;
-    const matchesUserRole = userRole === "" || log.user_role === userRole;
-    const matchesStatus = status === "" || 
+    const matchesRecordType = recordType === "all" || log.record_type === recordType;
+    const matchesAccessType = accessType === "all" || log.access_type === accessType;
+    const matchesUserRole = userRole === "all" || log.user_role === userRole;
+    const matchesStatus = status === "all" || 
       (status === "success" && log.successful) ||
       (status === "failure" && !log.successful);
     
@@ -154,12 +154,12 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
 
   const resetFilters = () => {
     setSearchQuery("");
-    setRecordType("");
-    setAccessType("");
+    setRecordType("all");
+    setAccessType("all");
     setDateFrom("");
     setDateTo("");
-    setUserRole("");
-    setStatus("");
+    setUserRole("all");
+    setStatus("all");
   };
 
   // Format date for display
@@ -207,7 +207,7 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
                         <SelectValue placeholder="All roles" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All roles</SelectItem>
+                        <SelectItem value="all">All roles</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
                         <SelectItem value="teacher">Teacher</SelectItem>
                         <SelectItem value="staff">Staff</SelectItem>
@@ -222,7 +222,7 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
                         <SelectValue placeholder="All statuses" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All statuses</SelectItem>
+                        <SelectItem value="all">All statuses</SelectItem>
                         <SelectItem value="success">Success</SelectItem>
                         <SelectItem value="failure">Failure</SelectItem>
                       </SelectContent>
@@ -263,7 +263,7 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
                   <SelectValue placeholder="All records" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All records</SelectItem>
+                  <SelectItem value="all">All records</SelectItem>
                   <SelectItem value="student_record">Student Records</SelectItem>
                   <SelectItem value="mood_data">Mood Data</SelectItem>
                   <SelectItem value="intervention">Interventions</SelectItem>
@@ -280,7 +280,7 @@ export function FERPAAuditLogs({ className }: FERPAAuditLogsProps) {
                   <SelectValue placeholder="All access types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All access types</SelectItem>
+                  <SelectItem value="all">All access types</SelectItem>
                   <SelectItem value="view">View</SelectItem>
                   <SelectItem value="edit">Edit</SelectItem>
                   <SelectItem value="delete">Delete</SelectItem>

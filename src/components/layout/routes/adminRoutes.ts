@@ -46,7 +46,7 @@ export const adminRoutes = [
   },
   {
     name: "LoopBot",
-    href: "/admin/loopbot-logs",
+    href: "/admin/loopbot-logs", 
     icon: Keyboard,
   },
   {
