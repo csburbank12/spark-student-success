@@ -7,7 +7,7 @@ import { DashboardSelector } from "@/components/dashboard/DashboardSelector";
 import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
 import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
 import { ErrorMonitoringService } from "@/services/ErrorMonitoringService";
-import { AppShell } from "@/components/layout/AppShell";
+import Layout from "@/components/Layout";
 
 const DashboardManager = () => {
   const { user } = useAuth();
@@ -25,14 +25,14 @@ const DashboardManager = () => {
 
   // User is authenticated, show appropriate dashboard
   return (
-    <AppShell>
+    <Layout>
       <GlobalErrorBoundary 
         component="DashboardSelector" 
         fallback={<FallbackErrorPage />}
       >
         <DashboardSelector userRole={user.role as UserRole} />
       </GlobalErrorBoundary>
-    </AppShell>
+    </Layout>
   );
 };
 
