@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,12 +7,13 @@ import { LoginHeader } from "@/components/auth/LoginHeader";
 import { ConfidentialityNotice } from "@/components/auth/ConfidentialityNotice";
 import { DemoAccounts } from "@/components/auth/DemoAccounts";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Shield, ExternalLink } from "lucide-react";
+import { Shield, ExternalLink, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ErrorLoggingService } from "@/services/ErrorLoggingService";
 import { getFallbackDashboardByRole } from "@/utils/navigationUtils";
 import { UserRole } from "@/types/roles";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const Login = () => {
   const { login, user, isLoading } = useAuth();
@@ -34,6 +36,11 @@ const Login = () => {
     }
   }, [user, isLoading, navigate, location.state, redirectTo]);
 
+  useEffect(() => {
+    // Clear any existing errors on component mount
+    setErrorMessage("");
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -45,6 +52,7 @@ const Login = () => {
       if (loggedInUser) {
         const dashboardRoute = getFallbackDashboardByRole(loggedInUser.role as UserRole);
         const from = location.state?.from || redirectTo || dashboardRoute;
+        toast.success("Login successful! Redirecting you to the dashboard.");
         navigate(from, { replace: true });
       }
     } catch (error) {
@@ -75,6 +83,7 @@ const Login = () => {
     if (demoEmails[role]) {
       setEmail(demoEmails[role]);
       setPassword("password");
+      setAgreedToTerms(true); // Auto-agree to terms for demo accounts
     }
   };
 
@@ -95,7 +104,8 @@ const Login = () => {
           <LoginHeader />
           
           {errorMessage && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert variant="destructive" className="animate-fadeIn mb-4">
+              <AlertCircle className="h-4 w-4" />
               <AlertTitle>Login Error</AlertTitle>
               <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>

@@ -48,14 +48,16 @@ export const getBreadcrumbLabel = (segment: string): string => {
     'sel': 'SEL',
     'ferpa': 'FERPA',
     'admin-dashboard': 'Admin Dashboard',
-    'teacher-dashboard': 'Teacher Dashboard',
+    'teacher-dashboard': 'Teacher Dashboard', 
     'student-dashboard': 'Student Dashboard',
     'parent-dashboard': 'Parent Dashboard',
     'staff-dashboard': 'Staff Dashboard',
     'counselor-dashboard': 'Counselor Dashboard',
     'error-logs': 'Error Logs',
     'data-analytics': 'Data Analytics',
-    'loopbot-logs': 'LoopBot Logs'
+    'loopbot-logs': 'LoopBot Logs',
+    'admin': 'Admin',
+    'home': 'Home'
   };
   
   if (specialCases[segment]) {
@@ -69,22 +71,20 @@ export const getBreadcrumbLabel = (segment: string): string => {
     .join(' ');
 };
 
-// Check if the current user has access to a specific route based on their role
-export const hasAccessToRoute = (userRole: string, requiredRoles: string[]): boolean => {
-  if (!requiredRoles || requiredRoles.length === 0) {
-    return true; // No role restrictions
+// Get route name from path
+export const getRouteNameFromPath = (path: string): string => {
+  const segments = path.split('/').filter(Boolean);
+  if (segments.length === 0) return 'Home';
+  
+  const lastSegment = segments[segments.length - 1];
+  return getBreadcrumbLabel(lastSegment);
+};
+
+// Determine if the current path is active
+export const isActivePath = (currentPath: string, routePath: string): boolean => {
+  if (routePath === '/') {
+    return currentPath === '/';
   }
   
-  return requiredRoles.includes(userRole);
-};
-
-// Check if route is in universalRoutes (available to all authenticated users)
-export const isUniversalRoute = (path: string): boolean => {
-  const universalPaths = ['/profile', '/settings', '/help', '/notifications'];
-  return universalPaths.includes(path) || universalPaths.some(p => path.startsWith(`${p}/`));
-};
-
-// Get proper redirect path for unauthorized access
-export const getUnauthorizedRedirectPath = (userRole: string): string => {
-  return getFallbackDashboardByRole(userRole);
+  return currentPath.startsWith(routePath);
 };

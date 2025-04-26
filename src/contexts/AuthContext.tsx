@@ -7,14 +7,13 @@ import { UserRole } from '@/types/roles';
 import { supabase } from '@/integrations/supabase/client';
 import { ErrorLoggingService } from '@/services/ErrorLoggingService';
 import { useToast } from '@/components/ui/use-toast';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const auth = useAuthProvider();
   const { toast } = useToast();
-  const location = useLocation();
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -48,13 +47,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [auth.user, navigate]);
   
-  // Don't expose setRole in the main context anymore - users must log out to switch roles
-  const authContextValue = {
-    ...auth
-  };
-  
   return (
-    <AuthContext.Provider value={authContextValue}>
+    <AuthContext.Provider value={auth}>
       {children}
     </AuthContext.Provider>
   );
