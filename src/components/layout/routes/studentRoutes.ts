@@ -45,4 +45,3 @@ export const studentRoutes = [
     icon: Users,
   },
 ];
-

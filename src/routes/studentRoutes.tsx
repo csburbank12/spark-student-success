@@ -1,6 +1,5 @@
-
 import React, { lazy } from "react";
-import Layout from "@/components/Layout";
+import LayoutWrapper from "@/components/Layout"; // Changed to use LayoutWrapper
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
 
@@ -20,29 +19,20 @@ const studentRoutes = [
     path: "/student-dashboard",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <Layout>
+        <LayoutWrapper>
           <StudentDashboard />
-        </Layout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
-  {
-    path: "/student-dashboard-enhanced",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.student]}>
-        <Layout>
-          <StudentDashboard />
-        </Layout>
-      </ProtectedRoute>
-    )
-  },
+  // Remove duplicate dashboard route
   {
     path: "/sel-pathways",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <Layout>
+        <LayoutWrapper>
           <SELPathways />
-        </Layout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -50,9 +40,9 @@ const studentRoutes = [
     path: "/check-in",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <Layout>
+        <LayoutWrapper>
           <CheckIn />
-        </Layout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -60,9 +50,9 @@ const studentRoutes = [
     path: "/mental-health-toolkit",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <Layout>
+        <LayoutWrapper>
           <MentalHealthToolkit />
-        </Layout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -70,9 +60,9 @@ const studentRoutes = [
     path: "/digital-journal",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <Layout>
+        <LayoutWrapper>
           <DigitalJournal />
-        </Layout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -80,9 +70,9 @@ const studentRoutes = [
     path: "/reset-room",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <Layout>
+        <LayoutWrapper>
           <ResetRoom />
-        </Layout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -90,9 +80,9 @@ const studentRoutes = [
     path: "/trusted-adults",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <Layout>
+        <LayoutWrapper>
           <TrustedAdults />
-        </Layout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -100,9 +90,9 @@ const studentRoutes = [
     path: "/profile",
     element: (
       <ProtectedRoute requiredRole={[UserRole.student]}>
-        <Layout>
+        <LayoutWrapper>
           <UserProfile />
-        </Layout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -117,4 +107,3 @@ const studentRoutes = [
 ];
 
 export default studentRoutes;
-
