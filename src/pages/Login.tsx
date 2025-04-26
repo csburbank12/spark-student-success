@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +7,7 @@ import { ConfidentialityNotice } from "@/components/auth/ConfidentialityNotice";
 import { DemoAccounts } from "@/components/auth/DemoAccounts";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Shield, ExternalLink, AlertCircle } from "lucide-react";
+import { Users2 } from "@/components/auth/Users2"; // Import the Users2 component
 import { Link } from "react-router-dom";
 import { ErrorLoggingService } from "@/services/ErrorLoggingService";
 import { getFallbackDashboardByRole } from "@/utils/navigationUtils";
