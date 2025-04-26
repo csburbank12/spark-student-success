@@ -11,8 +11,8 @@ import {
 
 export const teacherAdminRoutes = [
   {
-    name: "Analytics",
-    href: "/teacher-dashboard-enhanced",
+    name: "Dashboard",
+    href: "/teacher-dashboard",
     icon: BarChart3,
   },
   {

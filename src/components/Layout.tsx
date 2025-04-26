@@ -5,7 +5,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
 import { SidebarRail } from '@/components/ui/sidebar';
 import Sidebar from './layout/Sidebar';
-import { Navbar } from './layout/Navbar';
+import { TeacherHeader } from './teacher/TeacherHeader';
 import { Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { isPublicPath } from '@/utils/navigationUtils';
@@ -22,7 +22,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isMobile = useIsMobile();
   const isPublicPage = isPublicPath(location.pathname);
 
-  // Use simplified layout for public pages
   if (isPublicPage) {
     return (
       <ThemeProvider>
@@ -35,7 +34,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     );
   }
   
-  // Handle auth redirection
   if (!isLoading && !user) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
@@ -49,7 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SidebarRail />
           <SidebarInset enableScroll={true}>
             <div className="flex flex-1 flex-col h-full relative z-10">
-              <Navbar />
+              <TeacherHeader />
               <div className="px-4 md:px-6 py-2 border-b bg-card/50 backdrop-blur-sm">
                 <NavBreadcrumbs path={location.pathname} />
               </div>

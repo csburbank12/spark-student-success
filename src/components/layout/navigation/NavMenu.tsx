@@ -3,6 +3,7 @@ import React from "react";
 import { SidebarMenu } from "@/components/ui/sidebar/components/menu/menu";
 import { SidebarMenuItem } from "@/components/ui/sidebar/components/menu/menu";
 import { NavLink } from "./NavLink";
+import { useLocation } from "react-router-dom";
 
 interface Route {
   name: string;
@@ -23,6 +24,8 @@ export const NavMenu: React.FC<NavMenuProps> = ({
   className = "",
   onNavigate 
 }) => {
+  const location = useLocation();
+  
   if (!routes || routes.length === 0) {
     return null;
   }
@@ -43,6 +46,7 @@ export const NavMenu: React.FC<NavMenuProps> = ({
             icon={route.icon}
             badge={route.badge}
             isDisabled={route.isDisabled}
+            isActive={location.pathname === route.href}
             onClick={() => handleClick(route)}
           />
         </SidebarMenuItem>

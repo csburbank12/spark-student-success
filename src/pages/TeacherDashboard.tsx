@@ -1,9 +1,4 @@
-
 import React, { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "lucide-react";
-import { AlertDropdown } from "@/components/teacher/AlertDropdown";
 import { TeacherStatsGrid } from "@/components/teacher/TeacherStatsGrid";
 import { StudentSearchSection } from "@/components/teacher/StudentSearchSection";
 import { StudentsGrid } from "@/components/teacher/StudentsGrid";
@@ -103,7 +98,6 @@ const resources = [
 ];
 
 const TeacherDashboard = () => {
-  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
 
   const students = studentsData.filter((student) =>
@@ -112,22 +106,10 @@ const TeacherDashboard = () => {
 
   const handleStudentClick = (student: any) => {
     // In a real app, this would navigate to student details or open a modal
-    // toast.info(`Viewing details for ${student.name}`);
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-heading font-bold">Teacher Dashboard</h2>
-        <div className="flex items-center gap-2">
-          <AlertDropdown />
-          <Button>
-            <Calendar className="h-4 w-4 mr-2" />
-            Schedule Check-in
-          </Button>
-        </div>
-      </div>
-
       <TeacherStatsGrid />
 
       <div className="grid gap-6 md:grid-cols-3">
