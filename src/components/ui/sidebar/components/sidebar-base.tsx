@@ -32,12 +32,14 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
         <div
           data-state={open ? "open" : "closed"}
           data-mobile={isMobile ? "true" : "false"}
+          data-open-mobile={openMobile ? "true" : "false"}
           className={cn(
             "fixed left-0 top-0 h-screen w-[var(--sidebar-width)] bg-sidebar shadow-sm z-30",
-            "transition-[width] duration-300 ease-in-out",
+            "transition-[width,transform] duration-300 ease-in-out",
             "data-[state=closed]:w-[var(--sidebar-width-icon)]",
-            "data-[mobile=true]:translate-x-0",
-            "data-[mobile=false]:-translate-x-full md:relative md:shadow-none md:data-[mobile=false]:translate-x-0",
+            "data-[mobile=true][data-open-mobile=true]:translate-x-0",
+            "data-[mobile=true][data-open-mobile=false]:-translate-x-full",
+            "data-[mobile=false]:translate-x-0",
             className
           )}
           ref={ref}
@@ -49,7 +51,7 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
         </div>
         {isMobile && openMobile && (
           <div
-            className="fixed inset-0 bg-black/50 z-10"
+            className="fixed inset-0 bg-black/50 z-20"
             onClick={() => setOpenMobile(false)}
           />
         )}

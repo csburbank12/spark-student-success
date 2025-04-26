@@ -2,7 +2,6 @@
 import {
   User,
   Settings,
-  LogOut,
   HelpCircle,
   Bell,
 } from "lucide-react";

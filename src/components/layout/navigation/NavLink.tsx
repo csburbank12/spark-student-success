@@ -1,9 +1,10 @@
 
 import React from "react";
-import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
+import { NavLink as RouterNavLink } from "react-router-dom";
 import { SidebarMenuButton } from "@/components/ui/sidebar/components/menu/menu-button";
 import { useSidebar } from "@/components/ui/sidebar/sidebar-context";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface NavLinkProps {
   to: string;
@@ -25,17 +26,14 @@ export const NavLink: React.FC<NavLinkProps> = ({
   onClick
 }) => {
   const { state } = useSidebar();
-  const location = useLocation();
   
-  const isActive = isActiveProp !== undefined 
-    ? isActiveProp 
-    : location.pathname === to;
-
   const handleClick = (e: React.MouseEvent) => {
     if (isDisabled) {
       e.preventDefault();
+      toast.info(`${name} is coming soon!`);
       return;
     }
+    
     if (onClick) {
       onClick();
     }
@@ -44,9 +42,10 @@ export const NavLink: React.FC<NavLinkProps> = ({
   return (
     <SidebarMenuButton
       asChild
-      isActive={isActive}
+      isActive={isActiveProp}
+      tooltip={state === "collapsed" ? name : undefined}
       className={cn(
-        "w-full",
+        "w-full transition-colors duration-200",
         isDisabled && "opacity-50 cursor-not-allowed"
       )}
     >
@@ -54,8 +53,10 @@ export const NavLink: React.FC<NavLinkProps> = ({
         to={isDisabled ? "#" : to}
         onClick={handleClick}
         className={({ isActive }) => cn(
-          "flex items-center gap-2 w-full transition-colors duration-200",
-          isActive ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"
+          "flex items-center gap-2 w-full rounded-md px-3 py-2",
+          isActive || isActiveProp ? 
+            "bg-sidebar-accent/50 text-sidebar-accent-foreground font-medium" : 
+            "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         )}
       >
         <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />

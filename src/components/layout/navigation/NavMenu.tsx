@@ -33,7 +33,7 @@ export const NavMenu: React.FC<NavMenuProps> = ({
   return (
     <SidebarMenu className={className}>
       {routes.map((route) => (
-        <SidebarMenuItem key={route.href}>
+        <SidebarMenuItem key={route.href} className="z-20">
           <NavLink
             to={route.href}
             name={route.name}
@@ -41,7 +41,7 @@ export const NavMenu: React.FC<NavMenuProps> = ({
             badge={route.badge}
             isDisabled={route.isDisabled}
             isActive={location.pathname === route.href}
-            onClick={() => onNavigate?.(route)}
+            onClick={() => onNavigate && onNavigate(route)}
           />
         </SidebarMenuItem>
       ))}

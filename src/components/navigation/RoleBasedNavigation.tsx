@@ -8,6 +8,7 @@ import { teacherAdminRoutes } from "@/components/layout/routes/teacherAdminRoute
 import { studentRoutes } from "@/components/layout/routes/studentRoutes";
 import { parentRoutes } from "@/components/layout/routes/parentRoutes";
 import { counselorRoutes } from "@/components/layout/routes/counselorRoutes";
+import { universalRoutes } from "@/components/layout/routes/universalRoutes";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -29,7 +30,9 @@ export const RoleBasedNavigation: React.FC = () => {
       toast.info(`${route.name} is coming soon!`);
       return;
     }
-    navigate(route.href);
+    
+    // Use direct navigation to ensure it works
+    window.location.href = route.href;
   };
   
   const getRoleSpecificRoutes = () => {
@@ -53,12 +56,19 @@ export const RoleBasedNavigation: React.FC = () => {
   const roleSpecificRoutes = getRoleSpecificRoutes();
 
   return (
-    <div className="space-y-6 pt-2">
+    <div className="space-y-6 pt-2 relative z-10">
       <div className="px-3 py-2">
         <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
           Navigation
         </h2>
-        <NavMenu routes={roleSpecificRoutes} onNavigate={handleNavigation} />
+        <NavMenu routes={roleSpecificRoutes} onNavigate={handleNavigation} className="relative z-20" />
+      </div>
+      
+      <div className="px-3 py-2 border-t border-border/30 pt-6">
+        <h2 className="mb-2 px-4 text-sm font-medium tracking-tight text-muted-foreground">
+          Account
+        </h2>
+        <NavMenu routes={universalRoutes} onNavigate={handleNavigation} className="relative z-20" />
       </div>
     </div>
   );
