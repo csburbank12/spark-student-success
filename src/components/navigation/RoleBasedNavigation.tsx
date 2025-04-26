@@ -26,10 +26,7 @@ export const RoleBasedNavigation: React.FC = () => {
   
   const handleNavigation = (route: Route) => {
     if (route.isDisabled) {
-      toast.info(`${route.name} is coming soon!`, {
-        id: `feature-${route.name}`,
-        duration: 3000
-      });
+      toast.info(`${route.name} is coming soon!`);
       return;
     }
     navigate(route.href);
