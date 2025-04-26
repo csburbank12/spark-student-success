@@ -4,18 +4,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import TeacherProfileContent from "@/components/teacher/profile/TeacherProfileContent";
 import PageHeader from "@/components/layout/PageHeader";
 import Layout from "@/components/Layout";
+import { useProfileAccess } from "@/hooks/useProfileAccess";
+import { UserRole } from "@/types/roles";
 
 const TeacherProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useProfileAccess([UserRole.teacher, UserRole.admin]);
 
   if (!user) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center h-full">
-          <p>Please log in to view your profile</p>
-        </div>
-      </Layout>
-    );
+    return null;
   }
 
   return (

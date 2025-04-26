@@ -1,8 +1,9 @@
 
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
 import ParentProfile from "./ParentProfile";
+import TeacherProfilePage from "./TeacherProfilePage";
 import PageHeader from "@/components/layout/PageHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import NotificationPreferences from "@/components/profile/NotificationPreferences";
@@ -11,7 +12,6 @@ import { toast } from "sonner";
 const UserProfile: React.FC = () => {
   const { user } = useAuth();
   
-  // If no user, show loading state
   if (!user) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -24,6 +24,8 @@ const UserProfile: React.FC = () => {
   switch (user.role as UserRole) {
     case UserRole.parent:
       return <ParentProfile user={user} />;
+    case UserRole.teacher:
+      return <TeacherProfilePage />;
     default:
       // Default profile for other roles
       return <DefaultProfile user={user} />;
