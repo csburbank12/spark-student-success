@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
@@ -13,6 +12,7 @@ import PredictiveSupport from "@/pages/PredictiveSupport";
 import StudentSupportHeatmap from "@/pages/StudentSupportHeatmap";
 import TeacherProfilePage from "@/pages/profile/TeacherProfilePage";
 import Layout from "@/components/layout/Layout";
+import CheckInScheduler from "@/pages/CheckInScheduler";
 
 const teacherRoutes = [
   {
@@ -111,6 +111,16 @@ const teacherRoutes = [
       <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
         <Layout>
           <TeacherProfilePage />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/check-in",
+    element: (
+      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
+        <Layout>
+          <CheckInScheduler />
         </Layout>
       </ProtectedRoute>
     ),

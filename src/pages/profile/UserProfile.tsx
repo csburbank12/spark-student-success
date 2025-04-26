@@ -1,7 +1,7 @@
-import React from "react";
+
+import React, { useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/roles";
-import { Navigate } from "react-router-dom";
 import ParentProfile from "./ParentProfile";
 import TeacherProfile from "./TeacherProfile";
 import PageHeader from "@/components/layout/PageHeader";
@@ -31,7 +31,6 @@ const UserProfile: React.FC = () => {
   }
 };
 
-// Default profile component for roles without specific profile components
 const DefaultProfile: React.FC<{ user: any }> = ({ user }) => {
   const [formData, setFormData] = useState({
     name: user?.name || "John Doe",
@@ -47,7 +46,7 @@ const DefaultProfile: React.FC<{ user: any }> = ({ user }) => {
     
     try {
       // Update profile logic would go here
-      
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       toast.success("Profile updated successfully!");
     } catch (error) {
       toast.error("Failed to update profile. Please try again.");
