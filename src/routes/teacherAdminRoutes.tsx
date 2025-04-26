@@ -11,6 +11,7 @@ import WellLensDashboard from "@/pages/WellLensDashboard";
 import PredictiveSupport from "@/pages/PredictiveSupport";
 import StudentSupportHeatmap from "@/pages/StudentSupportHeatmap";
 import TeacherProfilePage from "@/pages/profile/TeacherProfilePage";
+import { createProtectedRoute } from "./index";
 
 const teacherRoutes = [
   {
@@ -87,11 +88,7 @@ const teacherRoutes = [
   },
   {
     path: "/teacher/profile",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.teacher, UserRole.admin]}>
-        <TeacherProfilePage />
-      </ProtectedRoute>
-    ),
+    element: createProtectedRoute(TeacherProfilePage, "TeacherProfile"),
   },
 ];
 
