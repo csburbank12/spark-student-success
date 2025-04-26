@@ -1,4 +1,3 @@
-
 import React, { lazy } from "react";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { UserRole } from "@/types/roles";
@@ -85,7 +84,7 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={[UserRole.admin]}>
         <Layout>
-          <LoopbotLogs />
+          <LoopBotLogs />
         </Layout>
       </ProtectedRoute>
     ),
