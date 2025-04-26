@@ -8,15 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useTeacherClasses, TeacherClass } from "@/hooks/useTeacherClasses";
 
-interface ClassItemProps {
-  title: string;
-  students: number;
-  room: string;
-  time: string;
-}
-
-const ClassItem: React.FC<ClassItemProps> = ({ title, students, room, time }) => (
+const ClassItem: React.FC<TeacherClass> = ({ title, students, room, time }) => (
   <div className="border rounded-lg overflow-hidden">
     <div className="bg-muted p-3 font-medium">{title}</div>
     <div className="p-3 space-y-3">
@@ -34,6 +28,12 @@ const ClassItem: React.FC<ClassItemProps> = ({ title, students, room, time }) =>
 );
 
 const TeacherClassesCard = () => {
+  const { classes, isLoading } = useTeacherClasses();
+
+  if (isLoading) {
+    return <div>Loading classes...</div>;
+  }
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -42,18 +42,9 @@ const TeacherClassesCard = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-4">
-          <ClassItem
-            title="Period 1: Social Studies"
-            students={28}
-            room="Room 203"
-            time="8:30-9:20am"
-          />
-          <ClassItem
-            title="Period 3: Homeroom"
-            students={24}
-            room="Room 203"
-            time="10:15-11:00am"
-          />
+          {classes?.map((classItem, index) => (
+            <ClassItem key={index} {...classItem} />
+          ))}
         </div>
       </CardContent>
     </Card>

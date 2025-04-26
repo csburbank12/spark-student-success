@@ -10,15 +10,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
+import { useTeacherSchedule, ScheduleItem } from "@/hooks/useTeacherSchedule";
 
-interface ScheduleItemProps {
-  title: string;
-  time: string;
-  location: string;
-  details?: string;
-}
-
-const ScheduleItem: React.FC<ScheduleItemProps> = ({ title, time, location, details }) => (
+const ScheduleItem: React.FC<ScheduleItem> = ({ title, time, location, details }) => (
   <div className="border rounded-lg p-3">
     <div className="flex items-center justify-between mb-1">
       <div className="font-medium">{title}</div>
@@ -29,6 +23,12 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({ title, time, location, deta
 );
 
 const TeacherScheduleCard = () => {
+  const { schedule, isLoading } = useTeacherSchedule();
+
+  if (isLoading) {
+    return <div>Loading schedule...</div>;
+  }
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -37,17 +37,9 @@ const TeacherScheduleCard = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          <ScheduleItem
-            title="Period 1: Social Studies"
-            time="8:30 - 9:20"
-            location="Room 203"
-            details="28 students"
-          />
-          <ScheduleItem
-            title="Faculty Meeting"
-            time="12:30 - 1:30"
-            location="Conference Room"
-          />
+          {schedule?.map((item) => (
+            <ScheduleItem key={item.id} {...item} />
+          ))}
           <Button className="w-full" variant="outline">
             <Calendar className="mr-2 h-4 w-4" />
             View Full Calendar

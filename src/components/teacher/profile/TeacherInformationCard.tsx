@@ -7,20 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useTeacherInfo } from "@/hooks/useTeacherInfo";
 
-interface TeacherInfoProps {
-  position?: string;
-  department?: string;
-  school?: string;
-  employeeId?: string;
-}
+const TeacherInformationCard = () => {
+  const { teacherInfo, isLoading } = useTeacherInfo();
 
-const TeacherInformationCard: React.FC<TeacherInfoProps> = ({
-  position = "Lead Teacher",
-  department = "Social Studies",
-  school = "Westfield High",
-  employeeId = "T-5391"
-}) => {
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -32,19 +27,19 @@ const TeacherInformationCard: React.FC<TeacherInfoProps> = ({
           <div className="grid grid-cols-2 gap-x-4 gap-y-2">
             <div className="space-y-1">
               <div className="text-sm text-muted-foreground">Position</div>
-              <div className="font-medium">{position}</div>
+              <div className="font-medium">{teacherInfo?.position}</div>
             </div>
             <div className="space-y-1">
               <div className="text-sm text-muted-foreground">Department</div>
-              <div className="font-medium">{department}</div>
+              <div className="font-medium">{teacherInfo?.department}</div>
             </div>
             <div className="space-y-1">
               <div className="text-sm text-muted-foreground">School</div>
-              <div className="font-medium">{school}</div>
+              <div className="font-medium">{teacherInfo?.school}</div>
             </div>
             <div className="space-y-1">
               <div className="text-sm text-muted-foreground">Employee ID</div>
-              <div className="font-medium">{employeeId}</div>
+              <div className="font-medium">{teacherInfo?.employeeId}</div>
             </div>
           </div>
         </div>
