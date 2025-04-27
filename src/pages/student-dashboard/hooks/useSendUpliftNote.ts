@@ -1,74 +1,66 @@
 
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import type { KindnessNote } from "./usePeerUpliftNotes";
-import type { UserOpt } from "./usePeerUpliftUsers";
+import { toast } from "sonner";
 
-export function useSendUpliftNote(
+type SendNoteParams = {
+  recipient: string;
+  message: string;
+  anonymous: boolean;
+  resetFields: () => void;
+};
+
+export const useSendUpliftNote = (
   userId: string | undefined,
-  users: UserOpt[],
-  setNotes: React.Dispatch<React.SetStateAction<KindnessNote[]>>
-) {
-  const { toast } = useToast();
+  users: any[],
+  setNotes: React.Dispatch<React.SetStateAction<any[]>>
+) => {
   const [submitting, setSubmitting] = useState(false);
 
-  const sendNote = async (
-    {
-      recipient,
-      message,
-      anonymous,
-      resetFields
-    }: {
-      recipient: string;
-      message: string;
-      anonymous: boolean;
-      resetFields: () => void;
-    }
-  ) => {
-    if (!recipient || !message.trim()) {
-      toast({ title: "Please fill in recipient and message." });
+  const sendNote = async ({
+    recipient,
+    message,
+    anonymous,
+    resetFields
+  }: SendNoteParams) => {
+    if (!message.trim()) {
+      toast.error("Please enter a message");
       return;
     }
-    if (recipient === "anon") {
-      toast({ title: "You must choose a real recipient." });
+
+    if (!recipient) {
+      toast.error("Please select a recipient");
       return;
     }
+
     setSubmitting(true);
-    const newNote = {
-      sender_id: anonymous ? null : userId,
-      recipient_id: recipient,
-      message: message.trim(),
-      anonymous,
-      signed: !anonymous,
-      sent_at: new Date().toISOString()
-    };
-    const { data, error } = await supabase
-      .from("kindness_notes")
-      .insert([newNote])
-      .select("*")
-      .single();
-    if (error) {
-      toast({ title: "Failed to send uplift.", description: error.message, variant: "destructive" });
-    } else {
-      setNotes((prev) => [
-        {
-          ...data,
-          sender: anonymous
-            ? { id: "anon", name: "Anonymous", role: "anonymous" }
-            : users.find((u) => u.id === data.sender_id) || null,
-          recipient: users.find((u) => u.id === data.recipient_id) || null
-        },
-        ...prev
-      ]);
+
+    try {
+      // In a real implementation, this would send a note to Supabase
+      // For now, simulate an API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const newNote = {
+        id: Math.random().toString(36).substring(2, 9),
+        sender_id: anonymous ? null : userId,
+        sender_name: anonymous ? "Anonymous" : "You",
+        recipient_id: recipient,
+        recipient_name: users.find(u => u.id === recipient)?.name || "Unknown",
+        message,
+        anonymous,
+        sent_at: new Date().toISOString()
+      };
+
+      setNotes(prevNotes => [newNote, ...prevNotes]);
       resetFields();
-      toast({
-        title: "Uplift sent!",
-        description: "Your kindness note has been sent."
-      });
+      toast.success("Your message has been sent!");
+    } catch (error) {
+      console.error("Error sending uplift note:", error);
+      toast.error("Failed to send your message. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   };
 
   return { sendNote, submitting };
-}
+};

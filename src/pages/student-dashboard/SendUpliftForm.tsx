@@ -1,24 +1,25 @@
 
 import React from "react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
-
-interface UserOpt {
-  id: string;
-  name: string;
-  role: string;
-}
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface SendUpliftFormProps {
-  users: UserOpt[];
+  users: any[];
   recipient: string;
-  setRecipient: (id: string) => void;
+  setRecipient: (value: string) => void;
   message: string;
-  setMessage: (msg: string) => void;
+  setMessage: (value: string) => void;
   anonymous: boolean;
-  setAnonymous: (anon: boolean | ((prev: boolean) => boolean)) => void;
+  setAnonymous: (value: boolean) => void;
   loading: boolean;
   submitting: boolean;
   onSend: () => void;
@@ -36,81 +37,73 @@ const SendUpliftForm: React.FC<SendUpliftFormProps> = ({
   loading,
   submitting,
   onSend,
-  userId,
+  userId
 }) => {
   return (
-    <>
-      <div className="flex flex-col md:flex-row gap-2">
-        <Input
-          placeholder="Recipient (type to search)"
-          list="uplift-recipients"
-          value={
-            recipient
-              ? users.find((u) => u.id === recipient)?.name || ""
-              : ""
-          }
-          onChange={(e) => {
-            const name = e.target.value;
-            const found = users.find((u) => u.name === name);
-            if (found) setRecipient(found.id);
-            else setRecipient("");
-          }}
-          className="md:w-56"
-          disabled={loading}
-          autoComplete="off"
-        />
-        <datalist id="uplift-recipients">
-          {users.map((u) =>
-            u.id !== "anon" ? (
-              <option key={u.id} value={u.name} />
-            ) : null
-          )}
-        </datalist>
-        <Textarea
-          placeholder="Write your message of encouragement or gratitude..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="flex-auto"
-          disabled={loading}
-          maxLength={280}
-        />
+    <div className="space-y-4 bg-card border rounded-lg p-4">
+      <h3 className="text-lg font-medium">Send a Kind Note</h3>
+      
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="recipient">To</Label>
+          <Select
+            value={recipient}
+            onValueChange={setRecipient}
+            disabled={loading || submitting}
+          >
+            <SelectTrigger id="recipient" className="w-full">
+              <SelectValue placeholder="Select recipient" />
+            </SelectTrigger>
+            <SelectContent>
+              {users.map(user => (
+                <SelectItem key={user.id} value={user.id}>
+                  {user.name} ({user.role})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div>
+          <Label htmlFor="message">Message</Label>
+          <Textarea
+            id="message"
+            placeholder="Write your kind note here..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="min-h-[120px]"
+            disabled={loading || submitting}
+          />
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={anonymous}
+              onCheckedChange={setAnonymous}
+              disabled={loading || submitting}
+              id="anonymous"
+            />
+            <Label htmlFor="anonymous">Send anonymously</Label>
+          </div>
+          
+          <Button 
+            onClick={onSend}
+            disabled={!message.trim() || !recipient || loading || submitting}
+            className="ml-auto"
+          >
+            {submitting ? (
+              <>
+                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
+                Sending...
+              </>
+            ) : (
+              "Send Note"
+            )}
+          </Button>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <input
-          id="uplift-anonymous"
-          type="checkbox"
-          checked={anonymous}
-          onChange={() => setAnonymous((v: boolean) => !v)}
-          className="form-checkbox h-4 w-4"
-          disabled={loading}
-        />
-        <label
-          htmlFor="uplift-anonymous"
-          className="text-sm text-muted-foreground"
-        >
-          Send anonymously
-        </label>
-        <Button
-          onClick={onSend}
-          className="ml-auto flex gap-1 items-center"
-          size="sm"
-          disabled={
-            loading ||
-            submitting ||
-            !recipient ||
-            !message.trim() ||
-            (recipient === userId && anonymous)
-          }
-          title={
-            recipient === userId && anonymous
-              ? "You can't send a fully anonymous note to yourself."
-              : "Send Uplift"
-          }
-        >
-          <Send size={16} /> Send Uplift
-        </Button>
-      </div>
-    </>
+    </div>
   );
 };
 

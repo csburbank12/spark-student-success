@@ -1,70 +1,59 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Bell, Calendar, Users } from "lucide-react";
+import { PlusCircle, Calendar, Bell } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 export const TeacherHeaderActions = () => {
-  const navigate = useNavigate();
-  
-  const handleScheduleCheckIn = () => {
-    navigate("/check-in");
-    toast.info("Opening check-in scheduler...");
-  };
-
   return (
     <div className="flex items-center gap-2">
+      <Button variant="outline" size="sm" asChild>
+        <Link to="/calendar">
+          <Calendar className="h-4 w-4 mr-1" />
+          <span>Calendar</span>
+        </Link>
+      </Button>
+      
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="relative">
+          <Button variant="outline" size="sm">
             <Bell className="h-4 w-4 mr-1" />
-            Alerts
-            <Badge className="ml-1 bg-amber-500">3</Badge>
+            <span>Notifications</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-80">
-          <DropdownMenuLabel>Recent Alerts</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/students")}>
-            <div className="flex flex-col gap-1">
-              <p className="font-medium">Student Check-in Required</p>
-              <p className="text-sm text-muted-foreground">Alex hasn't checked in for 2 days</p>
-            </div>
+        <DropdownMenuContent align="end" className="w-[300px]">
+          <div className="p-2 font-medium">Notifications</div>
+          <div className="p-4 text-center text-sm text-muted-foreground">
+            No new notifications
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button size="sm">
+            <PlusCircle className="h-4 w-4 mr-1" />
+            <span>Add New</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <Link to="/assign-sel">Assign SEL Activity</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">
-            <div className="flex flex-col gap-1">
-              <p className="font-medium">New SEL Activity Available</p>
-              <p className="text-sm text-muted-foreground">Mindfulness exercise ready for review</p>
-            </div>
+          <DropdownMenuItem asChild>
+            <Link to="/schedule-meeting">Schedule Meeting</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/sel-pathway-management")}>
-            <div className="flex flex-col gap-1">
-              <p className="font-medium">SEL Pathway Update</p>
-              <p className="text-sm text-muted-foreground">New content available for Grade 9</p>
-            </div>
+          <DropdownMenuItem asChild>
+            <Link to="/create-report">Create Student Report</Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <Button variant="outline" size="sm" onClick={() => navigate("/students")}>
-        <Users className="h-4 w-4 mr-1" />
-        Students
-      </Button>
-
-      <Button size="sm" onClick={handleScheduleCheckIn}>
-        <Calendar className="h-4 w-4 mr-1" />
-        Schedule Check-in
-      </Button>
     </div>
   );
 };

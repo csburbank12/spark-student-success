@@ -1,49 +1,49 @@
 
 import { useState, useEffect } from "react";
+import { User } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
-export interface UserOpt {
+type PeerUpliftUser = {
   id: string;
   name: string;
   role: string;
-}
+};
 
-export function usePeerUpliftUsers(loggedInUser: { id?: string; role?: string } | null) {
-  const [users, setUsers] = useState<UserOpt[]>([]);
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+export const usePeerUpliftUsers = (currentUser: User | null) => {
+  const [users, setUsers] = useState<PeerUpliftUser[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchUsers() {
+    const fetchUsers = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("users")
-        .select("id, full_name, role")
-        .order("full_name", { ascending: true });
+      try {
+        // In a real implementation, this would fetch users from Supabase
+        // For now, use demo data
+        const demoUsers = [
+          { id: "1", name: "Alex Johnson", role: "Student" },
+          { id: "2", name: "Jamie Smith", role: "Student" },
+          { id: "3", name: "Casey Williams", role: "Teacher" },
+          { id: "4", name: "Morgan Lee", role: "Student" },
+          { id: "5", name: "Taylor Wilson", role: "Student" }
+        ];
 
-      if (error) {
-        toast({ title: "Could not load users for recipient list.", variant: "destructive" });
-        setUsers([
-          { id: "anon", name: "Anonymous", role: "anonymous" },
-          { id: loggedInUser?.id || "self", name: "Myself", role: loggedInUser?.role ?? "Student" }
-        ]);
-      } else {
-        const formatted = (data || []).map((u: any) => ({
-          id: u.id,
-          name: u.full_name,
-          role: u.role
-        }));
-        setUsers([
-          { id: "anon", name: "Anonymous", role: "anonymous" },
-          { id: loggedInUser?.id || "self", name: "Myself", role: loggedInUser?.role ?? "Student" },
-          ...formatted.filter(u => u.id !== loggedInUser?.id)
-        ]);
+        // Remove current user from list
+        const filteredUsers = demoUsers.filter(
+          user => user.id !== currentUser?.id
+        );
+        
+        setUsers(filteredUsers);
+      } catch (error) {
+        console.error("Error fetching peer uplift users:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
+    };
+
+    if (currentUser) {
+      fetchUsers();
     }
-    fetchUsers();
-  }, [loggedInUser?.id, loggedInUser?.role, toast]);
+  }, [currentUser]);
 
   return { users, loading };
-}
+};

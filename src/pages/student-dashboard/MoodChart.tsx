@@ -1,78 +1,79 @@
 
 import React from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useMoodTrends } from "@/hooks/useMoodCheckIns";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  Legend
+} from "recharts";
 
-const MoodChart = () => {
-  const { user } = useAuth();
-  const { data: moodTrends = [] } = useMoodTrends(user?.id, 7);
+const moodData = [
+  { day: "Mon", mood: 80, energy: 65 },
+  { day: "Tue", mood: 70, energy: 60 },
+  { day: "Wed", mood: 85, energy: 75 },
+  { day: "Thu", mood: 75, energy: 80 },
+  { day: "Fri", mood: 90, energy: 85 },
+  { day: "Sat", mood: 85, energy: 70 },
+  { day: "Sun", mood: 80, energy: 75 }
+];
 
-  const moodData = moodTrends.length
-    ? moodTrends.map((d: any) => ({
-        name: d.date?.slice(5),
-        value: ["happy", "good", "okay", "sad", "stressed"].indexOf(d.mood_type) + 1 || 3,
-      }))
-    : [
-        { name: "Mon", value: 3 },
-        { name: "Tue", value: 4 },
-        { name: "Wed", value: 2 },
-        { name: "Thu", value: 5 },
-        { name: "Fri", value: 4 },
-        { name: "Sat", value: 3 },
-        { name: "Sun", value: 4 },
-      ];
-
+const MoodChart: React.FC = () => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">Your Mood Tracker</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={moodData}>
-              <XAxis 
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12 }}
-              />
-              <YAxis
-                domain={[1, 5]}
-                ticks={[1, 2, 3, 4, 5]}
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12 }}
-                width={30}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  borderColor: "hsl(var(--border))",
-                  borderRadius: "var(--radius)",
-                  fontSize: "12px"
-                }}
-                formatter={(value) => {
-                  const moods = ["Very Low", "Low", "Neutral", "Good", "Great"];
-                  return [moods[Number(value) - 1]];
-                }}
-                labelFormatter={(label) => `Day: ${label}`}
-              />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="hsl(var(--primary))"
-                strokeWidth={2}
-                dot={{ r: 4, strokeWidth: 2 }}
-                activeDot={{ r: 6, strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="w-full h-[300px] p-4">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart
+          data={moodData}
+          margin={{ top: 5, right: 30, left: 5, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+          <XAxis 
+            dataKey="day" 
+            axisLine={false}
+            tickLine={false}
+            className="text-xs"
+          />
+          <YAxis 
+            domain={[0, 100]} 
+            axisLine={false}
+            tickLine={false}
+            className="text-xs"
+            tickFormatter={(value) => `${value}%`}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "var(--background)",
+              borderColor: "var(--border)",
+              borderRadius: "var(--radius)",
+              fontSize: "0.875rem",
+            }}
+            formatter={(value: number) => [`${value}%`, ""]}
+          />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="mood"
+            name="Mood"
+            stroke="var(--primary)"
+            strokeWidth={2}
+            dot={{ r: 3 }}
+            activeDot={{ r: 5 }}
+          />
+          <Line
+            type="monotone"
+            dataKey="energy"
+            name="Energy"
+            stroke="#FF8C00"
+            strokeWidth={2}
+            dot={{ r: 3 }}
+            activeDot={{ r: 5 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 

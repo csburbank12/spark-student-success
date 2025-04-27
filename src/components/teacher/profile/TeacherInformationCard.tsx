@@ -1,46 +1,44 @@
 
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useTeacherInfo } from "@/hooks/useTeacherInfo";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Mail, Phone, MapPin, GraduationCap } from "lucide-react";
 
-const TeacherInformationCard = () => {
-  const { teacherInfo, isLoading } = useTeacherInfo();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
+const TeacherInformationCard: React.FC = () => {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg">Teacher Information</CardTitle>
-        <CardDescription>Your professional details</CardDescription>
+        <CardTitle className="text-lg">Personal Information</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Position</div>
-              <div className="font-medium">{teacherInfo?.position}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Department</div>
-              <div className="font-medium">{teacherInfo?.department}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">School</div>
-              <div className="font-medium">{teacherInfo?.school}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Employee ID</div>
-              <div className="font-medium">{teacherInfo?.employeeId}</div>
-            </div>
+      <CardContent className="space-y-3">
+        <div className="flex items-start gap-3">
+          <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">Email</p>
+            <p className="text-sm text-muted-foreground">nguyen@school.edu</p>
+          </div>
+        </div>
+        
+        <div className="flex items-start gap-3">
+          <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">Phone</p>
+            <p className="text-sm text-muted-foreground">(555) 123-4567</p>
+          </div>
+        </div>
+        
+        <div className="flex items-start gap-3">
+          <GraduationCap className="h-5 w-5 text-muted-foreground mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">Department</p>
+            <p className="text-sm text-muted-foreground">Mathematics</p>
+          </div>
+        </div>
+        
+        <div className="flex items-start gap-3">
+          <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">Office</p>
+            <p className="text-sm text-muted-foreground">Room 203, Building B</p>
           </div>
         </div>
       </CardContent>
