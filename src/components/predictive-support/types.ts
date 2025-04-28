@@ -1,14 +1,12 @@
 
-export type AlertSeverity = 'stable' | 'at_risk' | 'critical';
-
 export interface TrendAlert {
   id: string;
   studentId: string;
-  severity: AlertSeverity;
+  severity: 'critical' | 'high' | 'medium' | 'low';
   primaryTrigger: string;
-  secondaryTriggers?: Record<string, any>;
-  details?: Record<string, any>;
-  recommendedAction?: string;
+  secondaryTriggers?: string[];
+  details: string;
+  recommendedAction: string;
   createdAt: string;
   updatedAt: string;
   resolved: boolean;
@@ -30,16 +28,9 @@ export interface SchoolWellnessScore {
   createdAt: string;
 }
 
-export interface TimeSlot {
-  day: string;
-  timeRange: string;
-  confidence: number;
-  reason?: string;
-}
-
-export interface MoodPattern {
-  pattern: string;
-  description: string;
-  confidence: number;
-  trend: 'improving' | 'stable' | 'declining';
+export interface MoodTrend {
+  date: string;
+  score: number;
+  primaryMood: string;
+  notes?: string;
 }

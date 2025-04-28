@@ -144,8 +144,14 @@ const WellLensDashboard: React.FC = () => {
                 <div key={alert.id} className="mb-4 last:mb-0">
                   <StudentMoodAnalysis 
                     studentId={alert.studentId}
+                    data={{
+                      average: 5,
+                      trend: "declining" as const,
+                      history: [7, 6, 5, 4, 3],
+                      labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+                    }}
                     alerts={[alert]}
-                    moodTrends={[]} // You'll need to fetch this data
+                    moodTrends={[]}
                   />
                 </div>
               ))}

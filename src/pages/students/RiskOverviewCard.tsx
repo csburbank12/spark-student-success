@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { InfoCircle } from "lucide-react";
+import { Info, Users } from "lucide-react"; // Changed InfoCircle to Info
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface RiskOverviewCardProps {
@@ -59,7 +59,7 @@ const RiskOverviewCard: React.FC<RiskOverviewCardProps> = ({
                 <span className="text-sm font-medium">Risk Score</span>
                 <Popover>
                   <PopoverTrigger>
-                    <InfoCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                   </PopoverTrigger>
                   <PopoverContent className="w-80">
                     <p className="text-sm">

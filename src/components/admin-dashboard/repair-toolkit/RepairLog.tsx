@@ -25,15 +25,24 @@ export const RepairLog: React.FC<RepairLogProps> = ({ logs = [] }) => {
     );
   }
 
+  // Convert admin.RepairLogEntry to the format expected by this component
+  const formattedLogs = logs.map(log => ({
+    id: log.id,
+    timestamp: log.timestamp instanceof Date ? log.timestamp.toISOString() : log.timestamp,
+    action: log.action,
+    status: log.success ? 'success' : 'error',
+    user: log.adminName || undefined,
+    details: log.details
+  }));
+
   return (
     <ScrollArea className="h-[400px] pr-4">
       <div className="space-y-4">
-        {logs.map((log) => (
+        {formattedLogs.map((log) => (
           <div key={log.id} className="border rounded-md p-4 bg-card/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Badge 
-                  // Update to use the supported variants
                   variant={log.status === "success" ? "success" : "destructive"}
                 >
                   {log.status}

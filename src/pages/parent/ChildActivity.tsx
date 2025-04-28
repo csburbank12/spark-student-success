@@ -1,9 +1,9 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActivitiesList from "./components/ActivitiesList";
 import AssignmentsList from "./components/AssignmentsList";
 import EventsList from "./components/EventsList";
+import { Assignment } from "@/types/parent";
 
 const activities = [
   {
@@ -74,30 +74,36 @@ const activities = [
   }
 ];
 
-const assignments = [
+const assignments: Assignment[] = [
   {
     id: 101,
     title: "Math Homework - Algebra Basics",
+    dueDate: "Tomorrow, 8:00 AM",
     due_date: "Tomorrow, 8:00 AM",
     status: "Not Started",
     subject: "Mathematics",
-    priority: "High"
+    priority: "High",
+    type: "Homework"
   },
   {
     id: 102,
     title: "Book Report - 'The Giver'",
+    dueDate: "Apr 25, 3:00 PM",
     due_date: "Apr 25, 3:00 PM",
     status: "In Progress",
     subject: "English",
-    priority: "Medium"
+    priority: "Medium",
+    type: "Project"
   },
   {
     id: 103,
     title: "Science Lab Report",
+    dueDate: "Apr 28, 11:59 PM",
     due_date: "Apr 28, 11:59 PM",
     status: "In Progress",
     subject: "Science",
-    priority: "Medium"
+    priority: "Medium",
+    type: "Report"
   }
 ];
 

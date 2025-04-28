@@ -12,11 +12,15 @@ import { ImportSummary } from "@/types/roles";
 interface StepFinishProps {
   importSummary: ImportSummary;
   onReset: () => void;
+  onFinish?: () => void;
+  onViewStudents?: () => void;
 }
 
 export const StepFinish: React.FC<StepFinishProps> = ({
   importSummary,
   onReset,
+  onFinish,
+  onViewStudents,
 }) => {
   const { width, height } = useWindowSize();
   const [showConfetti, setShowConfetti] = useState(true);
@@ -37,6 +41,22 @@ export const StepFinish: React.FC<StepFinishProps> = ({
     }, 5000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleFinish = () => {
+    if (onFinish) {
+      onFinish();
+    } else {
+      navigate("/admin-dashboard");
+    }
+  };
+
+  const handleViewStudents = () => {
+    if (onViewStudents) {
+      onViewStudents();
+    } else {
+      navigate("/students");
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -139,10 +159,10 @@ export const StepFinish: React.FC<StepFinishProps> = ({
           Import More Data
         </Button>
         <div className="space-x-2">
-          <Button variant="outline" onClick={() => navigate("/students")}>
+          <Button variant="outline" onClick={handleViewStudents}>
             View Students
           </Button>
-          <Button onClick={() => navigate("/admin-dashboard")}>
+          <Button onClick={handleFinish}>
             <Home className="mr-1 h-4 w-4" />
             Go to Dashboard
           </Button>

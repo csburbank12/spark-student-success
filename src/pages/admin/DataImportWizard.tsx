@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -65,7 +64,6 @@ const DataImportWizard: React.FC = () => {
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(prevStep => prevStep + 1);
-      // Scroll to top when moving to next step
       window.scrollTo(0, 0);
     }
   };
@@ -73,7 +71,6 @@ const DataImportWizard: React.FC = () => {
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(prevStep => prevStep - 1);
-      // Scroll to top when moving to previous step
       window.scrollTo(0, 0);
     }
   };
@@ -98,13 +95,10 @@ const DataImportWizard: React.FC = () => {
     setIsProcessing(true);
     
     try {
-      // In a real app, this would make an API call to import the data
-      // For now, we'll simulate the process with a timeout
       await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // Simulate successful import with some fake errors
       const totalRecords = previewData.length;
-      const failedImports = Math.floor(Math.random() * 5); // Random number of failures between 0-4
+      const failedImports = Math.floor(Math.random() * 5);
       const successfulImports = totalRecords - failedImports;
       
       const errors = Array.from({ length: failedImports }).map((_, index) => ({
@@ -120,7 +114,7 @@ const DataImportWizard: React.FC = () => {
         errors
       });
       
-      handleNext(); // Move to finish step
+      handleNext();
       toast.success(`Successfully imported ${successfulImports} records`);
     } catch (error: any) {
       toast.error(`Import failed: ${error.message}`);
@@ -183,6 +177,7 @@ const DataImportWizard: React.FC = () => {
         return (
           <StepFinish
             importSummary={importSummary}
+            onReset={() => setCurrentStep(0)}
             onFinish={handleFinish}
             onViewStudents={() => navigate("/admin/students")}
           />
@@ -192,14 +187,12 @@ const DataImportWizard: React.FC = () => {
     }
   };
 
-  // Calculate progress based on current step
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-5xl">
       <h1 className="text-3xl font-bold mb-8">Student Data Import Wizard</h1>
       
-      {/* Progress bar */}
       <div className="mb-8">
         <Progress value={progress} className="h-2" />
         <div className="flex justify-between mt-2">

@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { BarChart } from "@/components/charts/BarChart";
 
-interface StudentMoodAnalysisProps {
+export interface StudentMoodAnalysisProps {
   studentId: string;
   studentName?: string;
   data: {
@@ -15,6 +15,8 @@ interface StudentMoodAnalysisProps {
     history: number[];
     labels: string[];
   };
+  alerts?: any[]; // Add for WellLensDashboard compatibility
+  moodTrends?: any[]; // Add for WellLensDashboard compatibility
 }
 
 const StudentMoodAnalysis: React.FC<StudentMoodAnalysisProps> = ({
