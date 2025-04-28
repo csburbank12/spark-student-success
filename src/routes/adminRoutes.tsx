@@ -1,155 +1,183 @@
 
-import React, { lazy } from "react";
-import { ProtectedRoute } from "./ProtectedRoute";
-import { UserRole } from "@/types/roles";
-import Layout from "@/components/layout/Layout";
-
-// Lazy load admin pages
-const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
-const UserProfile = lazy(() => import("@/pages/profile/UserProfile"));
-const UserManagement = lazy(() => import("@/pages/admin/UserManagement"));
-const SchoolManagement = lazy(() => import("@/pages/admin/SchoolManagement"));
-const SystemSettings = lazy(() => import("@/pages/admin/SystemSettings"));
-const DataAnalytics = lazy(() => import("@/pages/admin/DataAnalytics"));
-const FERPACompliance = lazy(() => import("@/pages/admin/FERPACompliance"));
-const LoopBotLogs = lazy(() => import("@/pages/admin/LoopBotLogs"));
-const AuditDashboard = lazy(() => import("@/pages/admin/AuditDashboard"));
-const ErrorLogs = lazy(() => import("@/pages/admin/ErrorLogs"));
-const Settings = lazy(() => import("@/pages/Settings"));
-const Help = lazy(() => import("@/pages/Help"));
-const Notifications = lazy(() => import("@/pages/Notifications"));
+import React from "react";
+import { Route } from "react-router-dom";
+import AdminDashboard from "@/pages/AdminDashboard";
+import SchoolManagement from "@/pages/admin/SchoolManagement";
+import SchoolImportPage from "@/pages/admin/SchoolImportPage";
+import UserManagement from "@/pages/admin/UserManagement";
+import DataAnalytics from "@/pages/admin/DataAnalytics";
+import SystemSettings from "@/pages/admin/SystemSettings";
+import ErrorLogs from "@/pages/admin/ErrorLogs";
+import SchoolOnboarding from "@/pages/admin/SchoolOnboarding";
+import DataImportWizard from "@/pages/admin/DataImportWizard";
+import AddSchoolPage from "@/pages/admin/AddSchoolPage";
+import EditSchoolPage from "@/pages/admin/EditSchoolPage";
+import SchoolProfilePage from "@/pages/admin/SchoolProfilePage";
+import GlobalErrorBoundary from "@/components/error-handling/GlobalErrorBoundary";
+import FallbackErrorPage from "@/components/error-handling/FallbackErrorPage";
+import Layout from "@/components/Layout";
 
 const adminRoutes = [
   {
-    path: "/admin-dashboard",
+    path: "/admin/dashboard",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
+      <GlobalErrorBoundary 
+        component="AdminDashboard"
+        fallback={<FallbackErrorPage />}
+      >
         <Layout>
           <AdminDashboard />
         </Layout>
-      </ProtectedRoute>
+      </GlobalErrorBoundary>
     ),
   },
   {
-    path: "/admin/user-management",
+    path: "/admin/schools",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <Layout>
-          <UserManagement />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/data-analytics",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <Layout>
-          <DataAnalytics />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/school-management",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
+      <GlobalErrorBoundary 
+        component="SchoolManagement"
+        fallback={<FallbackErrorPage />}
+      >
         <Layout>
           <SchoolManagement />
         </Layout>
-      </ProtectedRoute>
+      </GlobalErrorBoundary>
     ),
   },
   {
-    path: "/admin/ferpa-compliance",
+    path: "/admin/schools/import",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
+      <GlobalErrorBoundary 
+        component="SchoolImportPage"
+        fallback={<FallbackErrorPage />}
+      >
         <Layout>
-          <FERPACompliance />
+          <SchoolImportPage />
         </Layout>
-      </ProtectedRoute>
+      </GlobalErrorBoundary>
     ),
   },
   {
-    path: "/admin/system-settings",
+    path: "/admin/schools/add",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
+      <GlobalErrorBoundary 
+        component="AddSchoolPage"
+        fallback={<FallbackErrorPage />}
+      >
+        <Layout>
+          <AddSchoolPage />
+        </Layout>
+      </GlobalErrorBoundary>
+    ),
+  },
+  {
+    path: "/admin/schools/edit/:id",
+    element: (
+      <GlobalErrorBoundary 
+        component="EditSchoolPage"
+        fallback={<FallbackErrorPage />}
+      >
+        <Layout>
+          <EditSchoolPage />
+        </Layout>
+      </GlobalErrorBoundary>
+    ),
+  },
+  {
+    path: "/admin/schools/:id",
+    element: (
+      <GlobalErrorBoundary 
+        component="SchoolProfilePage"
+        fallback={<FallbackErrorPage />}
+      >
+        <Layout>
+          <SchoolProfilePage />
+        </Layout>
+      </GlobalErrorBoundary>
+    ),
+  },
+  {
+    path: "/admin/users",
+    element: (
+      <GlobalErrorBoundary 
+        component="UserManagement"
+        fallback={<FallbackErrorPage />}
+      >
+        <Layout>
+          <UserManagement />
+        </Layout>
+      </GlobalErrorBoundary>
+    ),
+  },
+  {
+    path: "/admin/analytics",
+    element: (
+      <GlobalErrorBoundary 
+        component="DataAnalytics"
+        fallback={<FallbackErrorPage />}
+      >
+        <Layout>
+          <DataAnalytics />
+        </Layout>
+      </GlobalErrorBoundary>
+    ),
+  },
+  {
+    path: "/admin/settings",
+    element: (
+      <GlobalErrorBoundary 
+        component="SystemSettings"
+        fallback={<FallbackErrorPage />}
+      >
         <Layout>
           <SystemSettings />
         </Layout>
-      </ProtectedRoute>
+      </GlobalErrorBoundary>
     ),
   },
   {
-    path: "/admin/loopbot-logs",
+    path: "/admin/logs",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <Layout>
-          <LoopBotLogs />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/audit-dashboard",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <Layout>
-          <AuditDashboard />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/error-logs",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
+      <GlobalErrorBoundary 
+        component="ErrorLogs"
+        fallback={<FallbackErrorPage />}
+      >
         <Layout>
           <ErrorLogs />
         </Layout>
-      </ProtectedRoute>
+      </GlobalErrorBoundary>
     ),
   },
   {
-    path: "/profile",
+    path: "/admin/school-onboarding",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
+      <GlobalErrorBoundary 
+        component="SchoolOnboarding"
+        fallback={<FallbackErrorPage />}
+      >
         <Layout>
-          <UserProfile />
+          <SchoolOnboarding />
         </Layout>
-      </ProtectedRoute>
+      </GlobalErrorBoundary>
     ),
   },
   {
-    path: "/settings",
+    path: "/admin/data-import",
     element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
+      <GlobalErrorBoundary 
+        component="DataImportWizard"
+        fallback={<FallbackErrorPage />}
+      >
         <Layout>
-          <Settings />
+          <DataImportWizard />
         </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/help",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <Layout>
-          <Help />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/notifications",
-    element: (
-      <ProtectedRoute requiredRole={[UserRole.admin]}>
-        <Layout>
-          <Notifications />
-        </Layout>
-      </ProtectedRoute>
+      </GlobalErrorBoundary>
     ),
   },
 ];
 
-export default adminRoutes;
+const adminRoutesComponent = adminRoutes.map((route) => (
+  <Route key={route.path} path={route.path} element={route.element} />
+));
+
+export default adminRoutesComponent;

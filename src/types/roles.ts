@@ -16,3 +16,35 @@ export interface SelLesson {
   duration: number;
   difficulty: string;
 }
+
+export interface OnboardingStep {
+  title: string;
+  description: string;
+  complete: boolean;
+}
+
+export type EducationSystem = 'skyward' | 'powerschool' | 'infinite_campus' | 'aeries' | 'csv';
+
+export interface ConnectionConfig {
+  type: 'api' | 'oauth' | 'csv' | 'sftp';
+  details: Record<string, any>;
+}
+
+export interface MappedField {
+  sourceField: string;
+  targetField: string;
+  required: boolean;
+  valid: boolean;
+  errorMessage?: string;
+}
+
+export interface ImportSummary {
+  totalRecords: number;
+  successfulImports: number;
+  failedImports: number;
+  errors: Array<{
+    row: number;
+    error: string;
+    data?: Record<string, any>;
+  }>;
+}
