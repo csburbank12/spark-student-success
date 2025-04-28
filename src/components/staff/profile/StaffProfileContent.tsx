@@ -9,25 +9,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
-import { Shield, Key, Settings, Users, School, BellRing } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { School, BookOpen, Calendar, Users } from "lucide-react";
 
-interface AdminProfileProps {
+interface StaffProfileProps {
   user: User;
 }
 
-const AdminProfileContent: React.FC<AdminProfileProps> = ({ user }) => {
+const StaffProfileContent: React.FC<StaffProfileProps> = ({ user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    name: user.name || "Alex Rodriguez",
-    email: user.email || "rodriguez@district.edu",
-    title: "District Technology Administrator",
-    phone: "(555) 987-6543",
-    location: "District Office",
-    bio: "Responsible for overseeing educational technology implementation and security across all district schools.",
-    accessLevel: "Super Admin",
-    joinedDate: "January 15, 2022",
-    department: "Information Technology"
+    name: user.name || "Chen Li",
+    email: user.email || "chen@school.edu",
+    department: "Student Support Services",
+    position: "School Counselor Assistant",
+    phone: "(555) 123-4567",
+    officeLocation: "Room 110",
+    officeHours: "Mon-Fri: 8:00AM - 3:30PM",
+    bio: "Supporting students and staff with administrative and counseling assistance.",
+    specialties: "Student records management, event coordination, peer mediation"
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -52,7 +51,7 @@ const AdminProfileContent: React.FC<AdminProfileProps> = ({ user }) => {
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden">
-        <div className="bg-gradient-to-r from-purple-500 to-indigo-600 h-32"></div>
+        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-32"></div>
         <CardContent className="-mt-16 relative">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div className="flex items-end">
@@ -61,11 +60,8 @@ const AdminProfileContent: React.FC<AdminProfileProps> = ({ user }) => {
                 <AvatarFallback className="text-xl bg-indigo-100 text-indigo-800">{initials}</AvatarFallback>
               </Avatar>
               <div className="ml-4 mb-2">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-bold">{profileData.name}</h2>
-                  <Badge variant="default" className="bg-purple-600">Admin</Badge>
-                </div>
-                <p className="text-muted-foreground">{profileData.title}</p>
+                <h2 className="text-2xl font-bold">{profileData.name}</h2>
+                <p className="text-muted-foreground">{profileData.position}</p>
               </div>
             </div>
             <div className="space-x-2">
@@ -85,8 +81,8 @@ const AdminProfileContent: React.FC<AdminProfileProps> = ({ user }) => {
       <Tabs defaultValue="overview">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="permissions">Permissions</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
+          <TabsTrigger value="schedule">Schedule</TabsTrigger>
+          <TabsTrigger value="professional">Professional</TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-4">
@@ -110,12 +106,12 @@ const AdminProfileContent: React.FC<AdminProfileProps> = ({ user }) => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="title">Title</Label>
-                      <Input id="title" name="title" value={profileData.title} onChange={handleChange} />
-                    </div>
-                    <div className="space-y-2">
                       <Label htmlFor="department">Department</Label>
                       <Input id="department" name="department" value={profileData.department} onChange={handleChange} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="position">Position</Label>
+                      <Input id="position" name="position" value={profileData.position} onChange={handleChange} />
                     </div>
                   </div>
                   
@@ -125,8 +121,8 @@ const AdminProfileContent: React.FC<AdminProfileProps> = ({ user }) => {
                       <Input id="phone" name="phone" value={profileData.phone} onChange={handleChange} />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
-                      <Input id="location" name="location" value={profileData.location} onChange={handleChange} />
+                      <Label htmlFor="officeLocation">Office Location</Label>
+                      <Input id="officeLocation" name="officeLocation" value={profileData.officeLocation} onChange={handleChange} />
                     </div>
                   </div>
 
@@ -153,16 +149,16 @@ const AdminProfileContent: React.FC<AdminProfileProps> = ({ user }) => {
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">Title</p>
-                      <p>{profileData.title}</p>
-                    </div>
-                    <div className="space-y-1">
                       <p className="text-sm font-medium text-muted-foreground">Department</p>
                       <p>{profileData.department}</p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">Location</p>
-                      <p>{profileData.location}</p>
+                      <p className="text-sm font-medium text-muted-foreground">Position</p>
+                      <p>{profileData.position}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">Office Location</p>
+                      <p>{profileData.officeLocation}</p>
                     </div>
                   </div>
                   <div className="md:col-span-2 space-y-1">
@@ -176,36 +172,36 @@ const AdminProfileContent: React.FC<AdminProfileProps> = ({ user }) => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Admin Details</CardTitle>
+              <CardTitle>Key Information</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-start p-4 rounded-lg border">
-                  <Shield className="h-8 w-8 text-purple-500 mr-3" />
-                  <div>
-                    <h4 className="font-medium">Access Level</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.accessLevel}</p>
-                  </div>
-                </div>
-                <div className="flex items-start p-4 rounded-lg border">
-                  <Key className="h-8 w-8 text-amber-500 mr-3" />
-                  <div>
-                    <h4 className="font-medium">Security Clearance</h4>
-                    <p className="text-sm text-muted-foreground">Level 3 (Highest)</p>
-                  </div>
-                </div>
-                <div className="flex items-start p-4 rounded-lg border">
                   <School className="h-8 w-8 text-blue-500 mr-3" />
                   <div>
-                    <h4 className="font-medium">Schools Managed</h4>
-                    <p className="text-sm text-muted-foreground">All District Schools (5)</p>
+                    <h4 className="font-medium">Department</h4>
+                    <p className="text-sm text-muted-foreground">{profileData.department}</p>
                   </div>
                 </div>
                 <div className="flex items-start p-4 rounded-lg border">
-                  <Users className="h-8 w-8 text-green-500 mr-3" />
+                  <Calendar className="h-8 w-8 text-green-500 mr-3" />
                   <div>
-                    <h4 className="font-medium">Joined Date</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.joinedDate}</p>
+                    <h4 className="font-medium">Office Hours</h4>
+                    <p className="text-sm text-muted-foreground">{profileData.officeHours}</p>
+                  </div>
+                </div>
+                <div className="flex items-start p-4 rounded-lg border">
+                  <BookOpen className="h-8 w-8 text-amber-500 mr-3" />
+                  <div>
+                    <h4 className="font-medium">Specialties</h4>
+                    <p className="text-sm text-muted-foreground">{profileData.specialties}</p>
+                  </div>
+                </div>
+                <div className="flex items-start p-4 rounded-lg border">
+                  <Users className="h-8 w-8 text-purple-500 mr-3" />
+                  <div>
+                    <h4 className="font-medium">Staff ID</h4>
+                    <p className="text-sm text-muted-foreground">STF-{Math.floor(10000 + Math.random() * 90000)}</p>
                   </div>
                 </div>
               </div>
@@ -213,95 +209,74 @@ const AdminProfileContent: React.FC<AdminProfileProps> = ({ user }) => {
           </Card>
         </TabsContent>
         
-        <TabsContent value="permissions">
+        <TabsContent value="schedule">
           <Card>
             <CardHeader>
-              <CardTitle>System Permissions</CardTitle>
+              <CardTitle>Weekly Schedule</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-muted rounded-md">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-muted-foreground" />
-                    <span>User Management</span>
+              <div className="space-y-6">
+                {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+                  <div key={day} className="border-b pb-4 last:border-0">
+                    <h3 className="font-medium mb-2">{day}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <div className="text-sm">
+                        <span className="inline-block w-20 font-medium">8:00 AM</span>
+                        <span className="text-muted-foreground">Office Hours</span>
+                      </div>
+                      <div className="text-sm">
+                        <span className="inline-block w-20 font-medium">9:30 AM</span>
+                        <span className="text-muted-foreground">Student Support</span>
+                      </div>
+                      <div className="text-sm">
+                        <span className="inline-block w-20 font-medium">11:00 AM</span>
+                        <span className="text-muted-foreground">Staff Meeting</span>
+                      </div>
+                      <div className="text-sm">
+                        <span className="inline-block w-20 font-medium">1:00 PM</span>
+                        <span className="text-muted-foreground">Group Sessions</span>
+                      </div>
+                    </div>
                   </div>
-                  <Badge className="bg-green-600">Full Access</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-muted rounded-md">
-                  <div className="flex items-center gap-2">
-                    <School className="h-5 w-5 text-muted-foreground" />
-                    <span>School Management</span>
-                  </div>
-                  <Badge className="bg-green-600">Full Access</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-muted rounded-md">
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-5 w-5 text-muted-foreground" />
-                    <span>System Configuration</span>
-                  </div>
-                  <Badge className="bg-green-600">Full Access</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-muted rounded-md">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-muted-foreground" />
-                    <span>Data Compliance</span>
-                  </div>
-                  <Badge className="bg-green-600">Full Access</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-muted rounded-md">
-                  <div className="flex items-center gap-2">
-                    <BellRing className="h-5 w-5 text-muted-foreground" />
-                    <span>Notifications</span>
-                  </div>
-                  <Badge className="bg-green-600">Full Access</Badge>
-                </div>
+                ))}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="activity">
+        <TabsContent value="professional">
           <Card>
             <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
+              <CardTitle>Professional Development</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {[
-                  {
-                    action: "Updated system settings",
-                    timestamp: "Today, 10:23 AM",
-                    details: "Changed notification settings for all users"
-                  },
-                  {
-                    action: "Added new school",
-                    timestamp: "Yesterday, 2:45 PM",
-                    details: "Added Westside Elementary School to the system"
-                  },
-                  {
-                    action: "Modified user permissions",
-                    timestamp: "Apr 26, 2025, 11:30 AM",
-                    details: "Updated permissions for teacher accounts"
-                  },
-                  {
-                    action: "System backup",
-                    timestamp: "Apr 25, 2025, 9:00 AM",
-                    details: "Performed scheduled system data backup"
-                  },
-                  {
-                    action: "Security audit",
-                    timestamp: "Apr 24, 2025, 3:15 PM",
-                    details: "Completed quarterly security compliance audit"
-                  }
-                ].map((item, index) => (
-                  <div key={index} className="border-b last:border-0 pb-3 last:pb-0">
-                    <div className="flex justify-between mb-1">
-                      <p className="font-medium">{item.action}</p>
-                      <p className="text-xs text-muted-foreground">{item.timestamp}</p>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{item.details}</p>
-                  </div>
-                ))}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-medium mb-2">Certifications</h3>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>Student Support Services Certification</li>
+                    <li>Crisis Response Training</li>
+                    <li>Peer Mediation Facilitator</li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Training</h3>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>SEL Implementation (2023)</li>
+                    <li>Trauma-Informed Practices (2022)</li>
+                    <li>Student Record Management (2021)</li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Professional Goals</h3>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>Complete School Counseling Assistant Certificate</li>
+                    <li>Implement new student check-in system</li>
+                    <li>Organize career day for upper grades</li>
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -311,4 +286,4 @@ const AdminProfileContent: React.FC<AdminProfileProps> = ({ user }) => {
   );
 };
 
-export default AdminProfileContent;
+export default StaffProfileContent;

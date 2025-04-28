@@ -7,6 +7,7 @@ import TeacherProfile from "./TeacherProfile";
 import ParentProfile from "./ParentProfile";
 import CounselorProfile from "./CounselorProfile";
 import AdminProfile from "./AdminProfile";
+import StaffProfile from "./StaffProfile";
 import DefaultProfile from "./DefaultProfile";
 import { Loader } from "@/components/ui/loader";
 
@@ -33,6 +34,8 @@ const UserProfile: React.FC = () => {
       return <CounselorProfile user={user} />;
     case UserRole.student:
       return <StudentProfile user={user} />;
+    case UserRole.staff:
+      return <StaffProfile user={user} />;
     default:
       return <DefaultProfile user={user} />;
   }

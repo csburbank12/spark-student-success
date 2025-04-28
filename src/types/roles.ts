@@ -7,3 +7,12 @@ export enum UserRole {
   staff = "staff",
   counselor = "counselor"
 }
+
+export interface SelLesson {
+  id: string | number;
+  title: string;
+  description: string;
+  pathway?: string;
+  duration: number;
+  difficulty: string;
+}
