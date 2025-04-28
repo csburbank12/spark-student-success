@@ -5,25 +5,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import NotificationPreferences from "@/components/profile/NotificationPreferences";
-import TeacherScheduleCard from "./TeacherScheduleCard";
-import TeacherClassesCard from "./TeacherClassesCard";
-import TeacherCertificationsCard from "./TeacherCertificationsCard";
+import ParentChildrenCard from "./ParentChildrenCard";
+import ParentMeetingsCard from "./ParentMeetingsCard";
+import ParentPreferencesCard from "./ParentPreferencesCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, CalendarDays, GraduationCap, Bell, Settings } from "lucide-react";
+import { Users, Calendar, Settings, Bell, Shield } from "lucide-react";
 import { toast } from "sonner";
 
-interface TeacherProfileContentProps {
+interface ParentProfileContentProps {
   user: User;
 }
 
-const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) => {
+const ParentProfileContent: React.FC<ParentProfileContentProps> = ({ user }) => {
   const [formData, setFormData] = React.useState({
-    name: user?.name || "Ethan Nguyen",
-    email: user?.email || "nguyen@school.edu",
+    name: user?.name || "Sarah Thompson",
+    email: user?.email || "sarah@family.com",
     avatarUrl: user?.avatarUrl || "",
-    phone: "555-123-4567",
-    department: user?.department || "Special Education",
-    yearsExperience: user?.yearsExperience || 8
+    phone: "555-987-6543",
+    address: "1234 Family Lane, Parentville, PA 12345",
   });
   
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -46,12 +45,11 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
   
   const handleCancel = () => {
     setFormData({
-      name: user?.name || "Ethan Nguyen",
-      email: user?.email || "nguyen@school.edu",
+      name: user?.name || "Sarah Thompson",
+      email: user?.email || "sarah@family.com",
       avatarUrl: user?.avatarUrl || "",
-      phone: "555-123-4567",
-      department: user?.department || "Special Education",
-      yearsExperience: user?.yearsExperience || 8
+      phone: "555-987-6543",
+      address: "1234 Family Lane, Parentville, PA 12345",
     });
     toast.info("Changes cancelled");
   };
@@ -63,24 +61,24 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
           <ProfileHeader
             name={formData.name}
             email={formData.email}
-            role="teacher"
+            role="parent"
             avatarUrl={formData.avatarUrl}
           />
         </div>
         
-        <Tabs defaultValue="schedule">
+        <Tabs defaultValue="children">
           <TabsList>
-            <TabsTrigger value="schedule">
-              <CalendarDays className="h-4 w-4 mr-2" />
-              Schedule
+            <TabsTrigger value="children">
+              <Users className="h-4 w-4 mr-2" />
+              My Children
             </TabsTrigger>
-            <TabsTrigger value="classes">
-              <GraduationCap className="h-4 w-4 mr-2" />
-              Classes
+            <TabsTrigger value="meetings">
+              <Calendar className="h-4 w-4 mr-2" />
+              Meetings & Events
             </TabsTrigger>
-            <TabsTrigger value="certifications">
-              <BookOpen className="h-4 w-4 mr-2" />
-              Certifications
+            <TabsTrigger value="preferences">
+              <Shield className="h-4 w-4 mr-2" />
+              Privacy Settings
             </TabsTrigger>
             <TabsTrigger value="profile">
               <Settings className="h-4 w-4 mr-2" />
@@ -92,16 +90,16 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="schedule" className="space-y-6">
-            <TeacherScheduleCard />
+          <TabsContent value="children" className="space-y-6">
+            <ParentChildrenCard />
           </TabsContent>
           
-          <TabsContent value="classes" className="space-y-6">
-            <TeacherClassesCard />
+          <TabsContent value="meetings" className="space-y-6">
+            <ParentMeetingsCard />
           </TabsContent>
           
-          <TabsContent value="certifications" className="space-y-6">
-            <TeacherCertificationsCard />
+          <TabsContent value="preferences" className="space-y-6">
+            <ParentPreferencesCard />
           </TabsContent>
           
           <TabsContent value="profile">
@@ -116,7 +114,7 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
               />
             </div>
           </TabsContent>
-
+          
           <TabsContent value="notifications">
             <div className="bg-card p-6 rounded-lg shadow-sm border">
               <h3 className="text-lg font-medium mb-4">Notification Settings</h3>
@@ -129,4 +127,4 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
   );
 };
 
-export default TeacherProfileContent;
+export default ParentProfileContent;

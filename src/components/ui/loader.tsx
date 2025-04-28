@@ -3,26 +3,20 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 interface LoaderProps {
+  size?: "sm" | "default" | "lg";
   className?: string;
-  size?: "sm" | "md" | "lg";
 }
 
-export const Loader = ({ className, size = "md" }: LoaderProps) => {
-  const sizeClasses = {
-    sm: "h-4 w-4 border-2",
-    md: "h-6 w-6 border-2",
-    lg: "h-10 w-10 border-3",
-  };
-
+export const Loader: React.FC<LoaderProps> = ({ size = "default", className }) => {
   return (
-    <div className="flex justify-center items-center">
-      <div
-        className={cn(
-          "animate-spin rounded-full border-t-transparent border-primary",
-          sizeClasses[size],
-          className
-        )}
-      />
-    </div>
+    <div
+      className={cn(
+        "animate-spin rounded-full border-2 border-primary/30 border-t-primary",
+        size === "sm" && "h-4 w-4",
+        size === "default" && "h-8 w-8",
+        size === "lg" && "h-12 w-12",
+        className
+      )}
+    />
   );
 };

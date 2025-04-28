@@ -5,25 +5,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileForm from "@/components/profile/ProfileForm";
 import NotificationPreferences from "@/components/profile/NotificationPreferences";
-import TeacherScheduleCard from "./TeacherScheduleCard";
-import TeacherClassesCard from "./TeacherClassesCard";
-import TeacherCertificationsCard from "./TeacherCertificationsCard";
+import AdminDashboardCard from "./AdminDashboardCard";
+import AdminSecurityCard from "./AdminSecurityCard";
+import AdminSystemSettingsCard from "./AdminSystemSettingsCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, CalendarDays, GraduationCap, Bell, Settings } from "lucide-react";
+import { LayoutDashboard, Shield, Settings, Bell, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 
-interface TeacherProfileContentProps {
+interface AdminProfileContentProps {
   user: User;
 }
 
-const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) => {
+const AdminProfileContent: React.FC<AdminProfileContentProps> = ({ user }) => {
   const [formData, setFormData] = React.useState({
-    name: user?.name || "Ethan Nguyen",
-    email: user?.email || "nguyen@school.edu",
+    name: user?.name || "Dr. Maria Rodriguez",
+    email: user?.email || "rodriguez@district.edu",
     avatarUrl: user?.avatarUrl || "",
-    phone: "555-123-4567",
-    department: user?.department || "Special Education",
-    yearsExperience: user?.yearsExperience || 8
+    phone: "555-789-0123",
+    position: user?.position || "Principal",
+    adminLevel: user?.adminLevel || "District",
   });
   
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -46,12 +46,12 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
   
   const handleCancel = () => {
     setFormData({
-      name: user?.name || "Ethan Nguyen",
-      email: user?.email || "nguyen@school.edu",
+      name: user?.name || "Dr. Maria Rodriguez",
+      email: user?.email || "rodriguez@district.edu",
       avatarUrl: user?.avatarUrl || "",
-      phone: "555-123-4567",
-      department: user?.department || "Special Education",
-      yearsExperience: user?.yearsExperience || 8
+      phone: "555-789-0123",
+      position: user?.position || "Principal",
+      adminLevel: user?.adminLevel || "District",
     });
     toast.info("Changes cancelled");
   };
@@ -63,27 +63,27 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
           <ProfileHeader
             name={formData.name}
             email={formData.email}
-            role="teacher"
+            role="admin"
             avatarUrl={formData.avatarUrl}
           />
         </div>
         
-        <Tabs defaultValue="schedule">
+        <Tabs defaultValue="dashboard">
           <TabsList>
-            <TabsTrigger value="schedule">
-              <CalendarDays className="h-4 w-4 mr-2" />
-              Schedule
+            <TabsTrigger value="dashboard">
+              <LayoutDashboard className="h-4 w-4 mr-2" />
+              Admin Dashboard
             </TabsTrigger>
-            <TabsTrigger value="classes">
-              <GraduationCap className="h-4 w-4 mr-2" />
-              Classes
+            <TabsTrigger value="security">
+              <Shield className="h-4 w-4 mr-2" />
+              Security & Compliance
             </TabsTrigger>
-            <TabsTrigger value="certifications">
-              <BookOpen className="h-4 w-4 mr-2" />
-              Certifications
+            <TabsTrigger value="system">
+              <Settings className="h-4 w-4 mr-2" />
+              System Settings
             </TabsTrigger>
             <TabsTrigger value="profile">
-              <Settings className="h-4 w-4 mr-2" />
+              <UserIcon className="h-4 w-4 mr-2" />
               Profile Settings
             </TabsTrigger>
             <TabsTrigger value="notifications">
@@ -92,16 +92,16 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="schedule" className="space-y-6">
-            <TeacherScheduleCard />
+          <TabsContent value="dashboard" className="space-y-6">
+            <AdminDashboardCard />
           </TabsContent>
           
-          <TabsContent value="classes" className="space-y-6">
-            <TeacherClassesCard />
+          <TabsContent value="security" className="space-y-6">
+            <AdminSecurityCard />
           </TabsContent>
           
-          <TabsContent value="certifications" className="space-y-6">
-            <TeacherCertificationsCard />
+          <TabsContent value="system" className="space-y-6">
+            <AdminSystemSettingsCard />
           </TabsContent>
           
           <TabsContent value="profile">
@@ -116,7 +116,7 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
               />
             </div>
           </TabsContent>
-
+          
           <TabsContent value="notifications">
             <div className="bg-card p-6 rounded-lg shadow-sm border">
               <h3 className="text-lg font-medium mb-4">Notification Settings</h3>
@@ -129,4 +129,4 @@ const TeacherProfileContent: React.FC<TeacherProfileContentProps> = ({ user }) =
   );
 };
 
-export default TeacherProfileContent;
+export default AdminProfileContent;
