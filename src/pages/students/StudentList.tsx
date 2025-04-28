@@ -1,117 +1,247 @@
 
-import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import React, { useState } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, MessageCircle, Calendar, BarChart } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { 
+  Search, 
+  Filter, 
+  ArrowUp, 
+  ArrowDown,
+  User,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface Student {
-  id: string;
-  full_name: string;
-  email: string;
-  grade_level?: string;
-  role: string;
-}
+// Mock data
+const students = [
+  {
+    id: "1",
+    name: "Alex Johnson",
+    grade: "9",
+    riskLevel: "high",
+    lastCheckIn: "2023-04-10T09:45:00",
+    status: "needs_attention"
+  },
+  {
+    id: "2",
+    name: "Emma Martinez",
+    grade: "10",
+    riskLevel: "low",
+    lastCheckIn: "2023-04-10T08:30:00",
+    status: "on_track"
+  },
+  {
+    id: "3",
+    name: "Tyler Smith",
+    grade: "9",
+    riskLevel: "medium",
+    lastCheckIn: "2023-04-09T14:20:00",
+    status: "review"
+  },
+  {
+    id: "4",
+    name: "Olivia Davis",
+    grade: "11",
+    riskLevel: "low",
+    lastCheckIn: "2023-04-10T10:15:00",
+    status: "on_track"
+  },
+  {
+    id: "5",
+    name: "Ethan Brown",
+    grade: "9",
+    riskLevel: "high",
+    lastCheckIn: "2023-04-08T11:50:00",
+    status: "needs_attention"
+  }
+];
 
-interface StudentListProps {
-  students: Student[];
-}
+const StudentList = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortField, setSortField] = useState("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-const StudentList: React.FC<StudentListProps> = ({ students }) => {
-  // In a real application, these would be derived from actual data
-  const getRiskLevel = (student: Student) => {
-    const score = Math.random();
-    if (score > 0.8) return "high";
-    if (score > 0.6) return "medium";
-    return "low";
+  // Filter students based on search query
+  const filteredStudents = students.filter(student =>
+    student.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Sort students based on sort field and direction
+  const sortedStudents = [...filteredStudents].sort((a, b) => {
+    if (a[sortField] < b[sortField]) return sortDirection === "asc" ? -1 : 1;
+    if (a[sortField] > b[sortField]) return sortDirection === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  // Helper to handle sort toggle
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
   };
-  
-  const getLastCheckIn = (student: Student) => {
-    const days = Math.floor(Math.random() * 10);
-    return days === 0 ? "Today" : `${days} days ago`;
+
+  // Helper to format date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  };
+
+  // Helper to get status badge
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "needs_attention":
+        return <Badge variant="destructive">Needs Attention</Badge>;
+      case "review":
+        return <Badge variant="secondary">Review</Badge>; // Changed from "warning" to "secondary"
+      case "on_track":
+        return <Badge variant="success">On Track</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
+    }
   };
 
   return (
-    <div className="grid gap-4">
-      {students.length === 0 ? (
-        <div className="text-center p-8 text-muted-foreground">
-          No students found matching your criteria.
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row justify-between gap-4">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search students..."
+            className="pl-8 w-full sm:w-[300px]"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
-      ) : (
-        students.map((student) => {
-          const riskLevel = getRiskLevel(student);
-          const lastCheckIn = getLastCheckIn(student);
-          
-          return (
-            <Card key={student.id} className="hover:bg-accent/5">
-              <CardContent className="p-4">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-sm font-medium text-primary">
-                        {student.full_name.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="font-medium">{student.full_name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {student.grade_level || "Grade not set"} • {student.email}
-                      </div>
-                    </div>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Filter className="mr-2 h-4 w-4" />
+                Filter
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>All Students</DropdownMenuItem>
+              <DropdownMenuItem>High Risk Only</DropdownMenuItem>
+              <DropdownMenuItem>9th Grade</DropdownMenuItem>
+              <DropdownMenuItem>10th Grade</DropdownMenuItem>
+              <DropdownMenuItem>11th Grade</DropdownMenuItem>
+              <DropdownMenuItem>12th Grade</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button size="sm">
+            <User className="mr-2 h-4 w-4" />
+            Add Student
+          </Button>
+        </div>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Students</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead onClick={() => handleSort("name")} className="cursor-pointer">
+                  <div className="flex items-center">
+                    Name
+                    {sortField === "name" && (
+                      sortDirection === "asc" ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                    )}
                   </div>
-                  
-                  <div className="flex items-center flex-wrap gap-2 ml-0 md:ml-auto">
-                    <div className="flex items-center mr-4">
-                      <Badge variant={
-                        riskLevel === "high" ? "destructive" : 
-                        riskLevel === "medium" ? "warning" :
-                        "outline"
-                      }>
-                        {riskLevel === "high" ? "High Risk" : 
-                         riskLevel === "medium" ? "Medium Risk" : 
-                         "Low Risk"}
-                      </Badge>
-                    </div>
-                    
-                    <div className="text-xs text-muted-foreground flex items-center gap-1 mr-4">
-                      <Calendar className="h-3 w-3" />
-                      Last check-in: {lastCheckIn}
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <Button size="sm" variant="outline">
-                        <BarChart className="h-4 w-4 mr-1" /> View Data
-                      </Button>
-                      
-                      <Button size="sm" variant="outline">
-                        <MessageCircle className="h-4 w-4 mr-1" /> Message
-                      </Button>
-                      
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="sm" variant="outline">Actions</Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>View Profile</DropdownMenuItem>
-                          <DropdownMenuItem>Create Support Plan</DropdownMenuItem>
-                          <DropdownMenuItem>Schedule Meeting</DropdownMenuItem>
-                          <DropdownMenuItem>Add to Group</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                </TableHead>
+                <TableHead onClick={() => handleSort("grade")} className="cursor-pointer">
+                  <div className="flex items-center">
+                    Grade
+                    {sortField === "grade" && (
+                      sortDirection === "asc" ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                    )}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })
-      )}
+                </TableHead>
+                <TableHead onClick={() => handleSort("riskLevel")} className="cursor-pointer">
+                  <div className="flex items-center">
+                    Risk Level
+                    {sortField === "riskLevel" && (
+                      sortDirection === "asc" ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                    )}
+                  </div>
+                </TableHead>
+                <TableHead onClick={() => handleSort("lastCheckIn")} className="cursor-pointer">
+                  <div className="flex items-center">
+                    Last Check-In
+                    {sortField === "lastCheckIn" && (
+                      sortDirection === "asc" ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                    )}
+                  </div>
+                </TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sortedStudents.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    No students found matching your search criteria
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sortedStudents.map((student) => (
+                  <TableRow key={student.id}>
+                    <TableCell className="font-medium">{student.name}</TableCell>
+                    <TableCell>{student.grade}</TableCell>
+                    <TableCell>
+                      {student.riskLevel === "high" ? (
+                        <div className="flex items-center">
+                          <AlertCircle className="mr-1 h-4 w-4 text-red-500" />
+                          <span>High</span>
+                        </div>
+                      ) : student.riskLevel === "medium" ? (
+                        <div className="flex items-center">
+                          <AlertCircle className="mr-1 h-4 w-4 text-amber-500" />
+                          <span>Medium</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center">
+                          <CheckCircle className="mr-1 h-4 w-4 text-green-500" />
+                          <span>Low</span>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>{formatDate(student.lastCheckIn)}</TableCell>
+                    <TableCell>{getStatusBadge(student.status)}</TableCell>
+                    <TableCell>
+                      <Button size="sm" variant="outline">
+                        View Profile
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 };

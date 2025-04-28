@@ -17,6 +17,9 @@ export interface SelLesson {
   difficulty: string;
 }
 
+// Added SELLesson as an alias to SelLesson to fix type compatibility
+export type SELLesson = SelLesson;
+
 export interface OnboardingStep {
   title: string;
   description: string;

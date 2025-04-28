@@ -1,50 +1,60 @@
 
-import React from 'react';
-import { RepairLogEntry } from '@/types/admin';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle } from 'lucide-react';
+import React from "react";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface RepairLogEntry {
+  id: string;
+  timestamp: string;
+  action: string;
+  status: 'success' | 'error' | 'in_progress';
+  user?: string;
+  details?: string;
+}
 
 interface RepairLogProps {
   logs: RepairLogEntry[];
 }
 
-export const RepairLog: React.FC<RepairLogProps> = ({ logs }) => {
-  if (logs.length === 0) {
+export const RepairLog: React.FC<RepairLogProps> = ({ logs = [] }) => {
+  if (!logs.length) {
     return (
-      <div className="text-center py-10 text-muted-foreground">
-        No repair logs available. Repair actions will be recorded here.
+      <div className="py-12 text-center text-muted-foreground">
+        No repair logs found
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {logs.map((log) => (
-        <div key={log.id} className="border rounded-md p-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center">
-              {log.success ? (
-                <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-              ) : (
-                <XCircle className="h-4 w-4 text-red-500 mr-2" />
-              )}
-              <span className="font-medium">{log.action}</span>
+    <ScrollArea className="h-[400px] pr-4">
+      <div className="space-y-4">
+        {logs.map((log) => (
+          <div key={log.id} className="border rounded-md p-4 bg-card/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Badge 
+                  // Update to use the supported variants
+                  variant={log.status === "success" ? "success" : "destructive"}
+                >
+                  {log.status}
+                </Badge>
+                <span className="font-medium">{log.action}</span>
+              </div>
+              <span className="text-sm text-muted-foreground">{log.timestamp}</span>
             </div>
-            <Badge variant={log.success ? "success" : "destructive"}>
-              {log.success ? "Successful" : "Failed"}
-            </Badge>
+            {log.details && (
+              <p className="mt-2 text-sm text-muted-foreground">{log.details}</p>
+            )}
+            {log.user && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                By: {log.user}
+              </p>
+            )}
           </div>
-          <div className="text-sm text-muted-foreground mb-1">
-            {log.details}
-          </div>
-          <div className="flex justify-between text-xs text-muted-foreground mt-2">
-            <span>Performed by: {log.adminName}</span>
-            <time dateTime={log.timestamp.toISOString()}>
-              {log.timestamp.toLocaleString()}
-            </time>
-          </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </ScrollArea>
   );
 };
+
+export default RepairLog;

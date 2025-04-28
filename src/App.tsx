@@ -59,13 +59,19 @@ function App() {
           } 
         />
         
-        {allRoutes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={route.element}
-          />
-        ))}
+        {allRoutes.map((route) => {
+          // Type guard to check if route has path and element
+          if ('path' in route && 'element' in route) {
+            return (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={route.element}
+              />
+            );
+          }
+          return null;
+        })}
         
         <Route 
           path="/login" 
