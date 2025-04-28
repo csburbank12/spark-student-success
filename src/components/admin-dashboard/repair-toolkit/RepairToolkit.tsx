@@ -11,6 +11,16 @@ import { RepairLog } from "./RepairLog";
 import { useRepairTools } from "@/hooks/useRepairTools";
 import { ErrorLoggingService } from "@/services/ErrorLoggingService";
 
+// Define the expected RepairLogEntry type compatible with our component
+interface ComponentRepairLogEntry {
+  id: string;
+  timestamp: string;
+  action: string;
+  status: 'success' | 'error' | 'in_progress';
+  user?: string;
+  details?: string;
+}
+
 const RepairToolkit = () => {
   const [activeTab, setActiveTab] = useState<string>('tools');
   const { 
@@ -26,6 +36,16 @@ const RepairToolkit = () => {
     repairAll,
     latestDiagnostics
   } = useRepairTools();
+
+  // Convert API RepairLogEntry to ComponentRepairLogEntry
+  const formattedRepairLogs: ComponentRepairLogEntry[] = (repairLogs || []).map(log => ({
+    id: log.id,
+    timestamp: typeof log.timestamp === 'string' ? log.timestamp : log.timestamp.toISOString(),
+    action: log.action,
+    status: log.success ? 'success' : 'error',
+    user: log.adminName,
+    details: log.details
+  }));
 
   const handleRepair = async (repairFunction: () => Promise<void>, actionName: string) => {
     try {
@@ -145,7 +165,7 @@ const RepairToolkit = () => {
               <CardDescription>History of all repair actions taken by administrators</CardDescription>
             </CardHeader>
             <CardContent>
-              <RepairLog logs={repairLogs} />
+              <RepairLog logs={formattedRepairLogs} />
             </CardContent>
           </Card>
         </TabsContent>

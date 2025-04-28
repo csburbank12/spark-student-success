@@ -34,3 +34,9 @@ export interface MoodTrend {
   primaryMood: string;
   notes?: string;
 }
+
+export interface MoodPattern {
+  pattern: string;
+  impact: string;
+  recommendation: string;
+}

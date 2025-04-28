@@ -1,108 +1,85 @@
 
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Info, Users } from "lucide-react"; // Changed InfoCircle to Info
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, Info } from "lucide-react";
 
 interface RiskOverviewCardProps {
-  riskScore: number;
-  changeDirection: "up" | "down" | "stable";
-  changePercentage: number;
-  riskFactors: string[];
-  riskCategory: "high" | "medium" | "low";
+  studentCount: number;
+  highRiskCount: number;
+  mediumRiskCount: number;
+  lowRiskCount: number;
+  onViewDetails: () => void;
 }
 
-const RiskOverviewCard: React.FC<RiskOverviewCardProps> = ({
-  riskScore,
-  changeDirection,
-  changePercentage,
-  riskFactors,
-  riskCategory,
+export const RiskOverviewCard: React.FC<RiskOverviewCardProps> = ({
+  studentCount,
+  highRiskCount,
+  mediumRiskCount,
+  lowRiskCount,
+  onViewDetails,
 }) => {
-  const getRiskColor = () => {
-    switch (riskCategory) {
-      case "high":
-        return "bg-red-100 text-red-800";
-      case "medium":
-        return "bg-amber-100 text-amber-800";
-      case "low":
-        return "bg-green-100 text-green-800";
-    }
-  };
-  
-  const getRiskBadge = () => {
-    switch (riskCategory) {
-      case "high":
-        return <Badge variant="destructive">High Risk</Badge>;
-      case "medium":
-        return <Badge variant="secondary">Medium Risk</Badge>; // Changed from "warning" to "secondary"
-      case "low":
-        return <Badge variant="success">Low Risk</Badge>;
-    }
-  };
+  const totalRisk = highRiskCount + mediumRiskCount + lowRiskCount;
+  const riskPercentage = studentCount > 0 
+    ? Math.round((totalRisk / studentCount) * 100)
+    : 0;
 
   return (
-    <Card className="overflow-hidden border-t-4 border-t-red-500">
-      <CardHeader className="bg-muted/30">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Risk Overview</CardTitle>
-          {getRiskBadge()}
-        </div>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-md font-medium">Risk Overview</CardTitle>
+        <Button variant="ghost" size="sm" onClick={onViewDetails}>
+          View All
+        </Button>
       </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-6">
-          <div>
-            <div className="flex justify-between">
-              <div className="flex items-center gap-1">
-                <span className="text-sm font-medium">Risk Score</span>
-                <Popover>
-                  <PopoverTrigger>
-                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80">
-                    <p className="text-sm">
-                      Risk scores range from 0 (lowest risk) to 100 (highest risk) based on
-                      multiple signals including academic performance, attendance, behavior,
-                      and emotional well-being patterns.
-                    </p>
-                  </PopoverContent>
-                </Popover>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground text-sm">Students Requiring Support:</span>
+            <Badge variant={totalRisk > 0 ? "destructive" : "outline"}>
+              {totalRisk} / {studentCount}
+            </Badge>
+          </div>
+          
+          <div className="flex justify-between">
+            <div className="flex items-center px-2 py-1 rounded-md bg-red-50">
+              <AlertTriangle className="h-4 w-4 text-red-600 mr-1" />
+              <div>
+                <span className="text-xs text-muted-foreground">High Risk</span>
+                <p className="text-base font-medium">{highRiskCount}</p>
               </div>
-              <div className="text-sm font-bold">{riskScore}/100</div>
             </div>
-            <Progress 
-              className="h-2 mt-2" 
-              value={riskScore} 
-            />
-          </div>
-          
-          <div>
-            <h4 className="text-sm font-medium mb-2">Risk Factors</h4>
-            <div className="flex flex-wrap gap-2">
-              {riskFactors.map((factor, index) => (
-                <div 
-                  key={index} 
-                  className="px-2 py-1 rounded-md text-xs bg-background border"
-                >
-                  {factor}
-                </div>
-              ))}
+            
+            <div className="flex items-center px-2 py-1 rounded-md bg-amber-50">
+              <AlertTriangle className="h-4 w-4 text-amber-600 mr-1" />
+              <div>
+                <span className="text-xs text-muted-foreground">Medium Risk</span>
+                <p className="text-base font-medium">{mediumRiskCount}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center px-2 py-1 rounded-md bg-blue-50">
+              <Info className="h-4 w-4 text-blue-600 mr-1" />
+              <div>
+                <span className="text-xs text-muted-foreground">Low Risk</span>
+                <p className="text-base font-medium">{lowRiskCount}</p>
+              </div>
             </div>
           </div>
           
-          <div className="flex items-center justify-between pt-2 border-t">
-            <span className="text-sm text-muted-foreground">Risk Trend</span>
-            <div className="flex items-center">
-              {changeDirection === "up" ? (
-                <span className="text-red-600 text-sm">↑ {changePercentage}%</span>
-              ) : changeDirection === "down" ? (
-                <span className="text-green-600 text-sm">↓ {changePercentage}%</span>
-              ) : (
-                <span className="text-amber-600 text-sm">→ {changePercentage}%</span>
-              )}
-              <span className="text-xs text-muted-foreground ml-1">vs last month</span>
+          <div className="mt-4">
+            <span className="text-xs text-muted-foreground">Overall Risk Level</span>
+            <div className="flex items-center space-x-2 mt-1">
+              <div className="h-2 flex-1 bg-muted rounded-full overflow-hidden">
+                <div
+                  className={`h-full ${
+                    riskPercentage > 25 ? "bg-red-500" : "bg-green-500"
+                  }`}
+                  style={{ width: `${riskPercentage}%` }}
+                />
+              </div>
+              <span className="text-sm font-medium">{riskPercentage}%</span>
             </div>
           </div>
         </div>
@@ -110,5 +87,3 @@ const RiskOverviewCard: React.FC<RiskOverviewCardProps> = ({
     </Card>
   );
 };
-
-export default RiskOverviewCard;

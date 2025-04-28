@@ -1,67 +1,70 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MoodPattern } from '@/components/predictive-support/types';
 
-// Define the TimeSlot interface locally to avoid conflicts
-export interface TimeSlot {
-  day: string;
-  timeRange: string;
-  confidence: number;
-  reason: string;
+interface EmotionSchedulerState {
+  optimalTimes: { day: string; timeSlots: string[] }[];
+  moodPatterns: MoodPattern[];
+  isLoading: boolean;
 }
 
-export interface EmotionAnalysis {
-  optimalTimes: TimeSlot[];
-  patterns: MoodPattern[];
-  recommendations: string[];
-}
+export function useEmotionScheduler(studentId: string) {
+  const [state, setState] = useState<EmotionSchedulerState>({
+    optimalTimes: [],
+    moodPatterns: [],
+    isLoading: true
+  });
 
-export const useEmotionScheduler = (studentId?: string) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  
-  // Mock emotion analysis data with correct types
-  const emotionAnalysis: EmotionAnalysis = {
-    optimalTimes: [
-      { 
-        day: 'Monday', 
-        timeRange: '9:00 AM - 10:30 AM',
-        confidence: 85,
-        reason: 'Higher engagement in morning sessions'
-      },
-      { 
-        day: 'Wednesday', 
-        timeRange: '10:30 AM - 12:00 PM',
-        confidence: 78,
-        reason: 'Consistent positive mood patterns'
-      },
-      { 
-        day: 'Friday', 
-        timeRange: '8:30 AM - 10:00 AM',
-        confidence: 92,
-        reason: 'Best academic performance window'
+  useEffect(() => {
+    const fetchEmotionData = async () => {
+      try {
+        // In a real application, this would fetch from an API
+        // For demo purposes, we're using mock data
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        setState({
+          optimalTimes: [
+            { day: 'Monday', timeSlots: ['9:00 AM', '2:00 PM'] },
+            { day: 'Tuesday', timeSlots: ['10:30 AM', '3:15 PM'] },
+            { day: 'Wednesday', timeSlots: ['8:15 AM', '1:45 PM'] },
+            { day: 'Thursday', timeSlots: ['11:00 AM', '3:30 PM'] },
+            { day: 'Friday', timeSlots: ['9:45 AM', '2:30 PM'] },
+          ],
+          moodPatterns: [
+            { 
+              pattern: 'Morning Anxiety', 
+              impact: 'Difficulty focusing in early classes',
+              recommendation: 'Schedule challenging material after 10:00 AM'
+            },
+            { 
+              pattern: 'Post-Lunch Energy Dip', 
+              impact: 'Reduced engagement in afternoon sessions',
+              recommendation: 'Interactive activities between 1:00-2:30 PM'
+            },
+            { 
+              pattern: 'Friday Excitement', 
+              impact: 'Restlessness and distraction',
+              recommendation: 'Creative projects and group work on Fridays'
+            },
+          ],
+          isLoading: false
+        });
+      } catch (error) {
+        console.error('Error fetching emotion scheduling data:', error);
+        setState(prev => ({ ...prev, isLoading: false }));
       }
-    ],
-    patterns: [
-      { 
-        pattern: 'Morning Peak',
-        description: 'Higher engagement in early morning sessions',
-        confidence: 87,
-        trend: 'improving'
-      },
-      { 
-        pattern: 'Mid-week Dip',
-        description: 'Lower emotional wellness scores on Tuesdays',
-        confidence: 75,
-        trend: 'stable'
-      }
-    ],
-    recommendations: [
-      'Schedule important lessons during morning peak times',
-      'Consider mindfulness activities on Tuesdays',
-      'Plan collaborative work for Fridays when social engagement is highest'
-    ]
-  };
-  
-  return { emotionAnalysis, isLoading, error, isError: !!error };
-};
+    };
+
+    if (studentId) {
+      fetchEmotionData();
+    }
+    
+    return () => {
+      // Any cleanup if needed
+    };
+  }, [studentId]);
+
+  return state;
+}
