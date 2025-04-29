@@ -99,14 +99,14 @@ const EmotionSchedulingUI: React.FC = () => {
 
         <TabsContent value="optimal-times" className="space-y-4">
           <OptimalTimesCard
-            optimalTimes={emotionAnalysis.optimalTimes}
+            optimalTimes={emotionAnalysis?.optimalTimes}
             isLoading={isLoading}
           />
         </TabsContent>
 
         <TabsContent value="mood-patterns" className="space-y-4">
           <MoodPatternsCard
-            moodPatterns={emotionAnalysis.patterns}
+            moodPatterns={emotionAnalysis?.patterns}
             isLoading={isLoading}
           />
         </TabsContent>
@@ -117,13 +117,13 @@ const EmotionSchedulingUI: React.FC = () => {
               <CardTitle>Suggested Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {emotionAnalysis.recommendations.map((recommendation, index) => (
+              {emotionAnalysis?.recommendations?.map((recommendation, index) => (
                 <div key={index} className="p-3 border rounded bg-background">
                   <p className="font-medium">{recommendation}</p>
                 </div>
               ))}
               
-              {emotionAnalysis.optimalTimes && emotionAnalysis.optimalTimes.length > 0 && (
+              {emotionAnalysis?.optimalTimes && emotionAnalysis.optimalTimes.length > 0 && (
                 <div className="mt-6 p-4 bg-green-50 dark:bg-green-950 rounded-md">
                   <p className="font-medium text-green-800 dark:text-green-300">Pro Tip</p>
                   <p className="text-green-700 dark:text-green-400 text-sm mt-1">

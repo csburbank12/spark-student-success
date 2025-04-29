@@ -5,7 +5,7 @@ import { Clock, AlertTriangle, Users } from "lucide-react";
 import OptimalTimesCard from "@/components/emotion-scheduling/OptimalTimesCard";
 import MoodPatternsCard from "@/components/emotion-scheduling/MoodPatternsCard";
 import { Button } from "@/components/ui/button";
-import { useEmotionScheduler, TimeSlot } from "@/hooks/useEmotionScheduler";
+import { useEmotionScheduler } from "@/hooks/useEmotionScheduler";
 
 interface EmotionAwareTeacherDashboardProps {
   studentId: string;
@@ -35,7 +35,7 @@ const EmotionAwareTeacherDashboard: React.FC<EmotionAwareTeacherDashboardProps> 
           <CardDescription>Based on student's emotional patterns</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {emotionAnalysis?.recommendations.map((recommendation, index) => (
+          {emotionAnalysis?.recommendations?.map((recommendation, index) => (
             <div key={index} className="p-3 border rounded bg-green-50/40 dark:bg-green-950/20">
               <div className="flex justify-between items-start">
                 <div className="flex flex-col">

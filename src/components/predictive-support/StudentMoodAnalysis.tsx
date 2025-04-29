@@ -8,12 +8,19 @@ import BarChart from "@/components/charts/BarChart";
 
 export interface StudentMoodAnalysisProps {
   studentId: string;
+  data?: {
+    average: number;
+    trend: "improving" | "stable" | "declining";
+    history: number[];
+    labels: string[];
+  };
   moodTrends: MoodTrend[];
   alerts?: TrendAlert[];
 }
 
 export const StudentMoodAnalysis: React.FC<StudentMoodAnalysisProps> = ({ 
   studentId,
+  data,
   moodTrends = [],
   alerts = []
 }) => {
@@ -31,24 +38,33 @@ export const StudentMoodAnalysis: React.FC<StudentMoodAnalysisProps> = ({
     ],
   };
 
-  // Transform mood trends into chart data
-  const chartData = moodTrends.length > 0
-    ? {
-        labels: moodTrends.map(trend => {
-          const date = new Date(trend.date);
-          return date.toLocaleDateString(undefined, { weekday: 'short' });
-        }),
-        datasets: [
-          {
-            label: "Mood Score",
-            data: moodTrends.map(trend => trend.score),
-            backgroundColor: "rgba(99, 102, 241, 0.5)",
-            borderColor: "rgb(99, 102, 241)",
-            borderWidth: 1,
-          },
-        ],
-      }
-    : defaultData;
+  // Use provided data if available, otherwise transform mood trends into chart data
+  const chartData = data ? {
+    labels: data.labels,
+    datasets: [
+      {
+        label: "Mood Score",
+        data: data.history,
+        backgroundColor: "rgba(99, 102, 241, 0.5)",
+        borderColor: "rgb(99, 102, 241)",
+        borderWidth: 1,
+      },
+    ],
+  } : moodTrends.length > 0 ? {
+    labels: moodTrends.map(trend => {
+      const date = new Date(trend.date);
+      return date.toLocaleDateString(undefined, { weekday: 'short' });
+    }),
+    datasets: [
+      {
+        label: "Mood Score",
+        data: moodTrends.map(trend => trend.score),
+        backgroundColor: "rgba(99, 102, 241, 0.5)",
+        borderColor: "rgb(99, 102, 241)",
+        borderWidth: 1,
+      },
+    ],
+  } : defaultData;
 
   return (
     <Card>
@@ -56,7 +72,7 @@ export const StudentMoodAnalysis: React.FC<StudentMoodAnalysisProps> = ({
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold">Mood Analysis</CardTitle>
           {alerts && alerts.length > 0 && (
-            <Badge variant="warning" className="flex items-center gap-1">
+            <Badge variant="destructive" className="flex items-center gap-1">
               <AlertTriangle className="h-3 w-3" />
               <span>{alerts.length} Alert{alerts.length !== 1 ? 's' : ''}</span>
             </Badge>
@@ -88,6 +104,17 @@ export const StudentMoodAnalysis: React.FC<StudentMoodAnalysisProps> = ({
                     )
                     .filter((mood, idx, arr) => idx === 0 || mood !== arr[idx - 1])[0] || 'N/A'}
                 </span>
+              </div>
+            </>
+          ) : data ? (
+            <>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Average Mood:</span>
+                <span className="font-medium">{data.average.toFixed(1)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Trend:</span>
+                <span className="font-medium capitalize">{data.trend}</span>
               </div>
             </>
           ) : (

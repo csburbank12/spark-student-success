@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import StudentMoodAnalysis from '../predictive-support/StudentMoodAnalysis';
+import { StudentMoodAnalysis } from '../predictive-support/StudentMoodAnalysis';
 import RiskLevelChart from '../predictive-support/RiskLevelChart';
 import { TrendAlert, SchoolWellnessScore } from '../predictive-support/types';
 import { Badge } from "@/components/ui/badge";

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActivitiesList from "./components/ActivitiesList";
@@ -74,9 +75,10 @@ const activities = [
   }
 ];
 
+// Convert numeric IDs to strings for compatibility
 const assignments: Assignment[] = [
   {
-    id: 101,
+    id: "101",
     title: "Math Homework - Algebra Basics",
     dueDate: "Tomorrow, 8:00 AM",
     due_date: "Tomorrow, 8:00 AM",
@@ -86,7 +88,7 @@ const assignments: Assignment[] = [
     type: "Homework"
   },
   {
-    id: 102,
+    id: "102",
     title: "Book Report - 'The Giver'",
     dueDate: "Apr 25, 3:00 PM",
     due_date: "Apr 25, 3:00 PM",
@@ -96,7 +98,7 @@ const assignments: Assignment[] = [
     type: "Project"
   },
   {
-    id: 103,
+    id: "103",
     title: "Science Lab Report",
     dueDate: "Apr 28, 11:59 PM",
     due_date: "Apr 28, 11:59 PM",
