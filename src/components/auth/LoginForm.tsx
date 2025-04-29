@@ -6,6 +6,7 @@ import { TermsAgreement } from "./TermsAgreement";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { ForgotPasswordDialog } from "./ForgotPasswordDialog";
 
 interface LoginFormProps {
   email: string;
@@ -29,6 +30,7 @@ export const LoginForm = ({
   handleSubmit
 }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -55,9 +57,18 @@ export const LoginForm = ({
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="password" className="text-sm font-medium">
-            Password
-          </Label>
+          <div className="flex justify-between items-center">
+            <Label htmlFor="password" className="text-sm font-medium">
+              Password
+            </Label>
+            <button 
+              type="button"
+              className="text-xs text-primary hover:text-primary/80 hover:underline transition-colors"
+              onClick={() => setForgotPasswordOpen(true)}
+            >
+              Forgot password?
+            </button>
+          </div>
           <div className="relative">
             <Input
               id="password"
@@ -104,6 +115,11 @@ export const LoginForm = ({
           </>
         ) : "Log in"}
       </Button>
+
+      <ForgotPasswordDialog 
+        open={forgotPasswordOpen} 
+        onOpenChange={setForgotPasswordOpen} 
+      />
     </form>
   );
 };

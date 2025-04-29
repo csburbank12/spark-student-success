@@ -1,3 +1,4 @@
+
 import { lazy, Suspense, ReactNode } from "react";
 import Layout from "@/components/Layout";
 import adminRoutes from "./adminRoutes";
@@ -18,6 +19,7 @@ import Help from "@/pages/Help";
 
 // Dynamic imports for base pages
 const Login = lazy(() => import("@/pages/Login"));
+const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const Index = lazy(() => import("@/pages/Index"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const QADashboard = lazy(() => import("@/pages/QADashboard"));
@@ -82,7 +84,7 @@ const privacyRoutes = [
   }
 ];
 
-// Update the routes array to remove the /profile route
+// Update the routes array to include the reset-password route
 export const routes = [
   {
     path: "/",
@@ -91,6 +93,10 @@ export const routes = [
   {
     path: "/login",
     element: createPublicRoute(Login, "Login"),
+  },
+  {
+    path: "/reset-password",
+    element: createPublicRoute(ResetPassword, "ResetPassword"),
   },
   {
     path: "/404",
