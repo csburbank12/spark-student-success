@@ -1,147 +1,49 @@
-
 import React from 'react';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription, 
-  CardContent 
-} from "@/components/ui/card";
-import { 
-  useEmotionScheduler, 
-  TimeSlot, 
-  MoodPattern 
-} from '@/hooks/useEmotionScheduler';
-import { Clock, Brain, Calendar } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { useEmotionScheduler } from '@/hooks/useEmotionScheduler';
 
-interface EmotionSchedulingUIProps {
+export interface EmotionSchedulingUIProps {
   studentId: string;
 }
 
-export const EmotionSchedulingUI: React.FC<EmotionSchedulingUIProps> = ({ studentId }) => {
-  const { emotionAnalysis, isLoading, error } = useEmotionScheduler(studentId);
+const EmotionSchedulingUI: React.FC<EmotionSchedulingUIProps> = ({ studentId }) => {
+  const { data, isLoading, error } = useEmotionScheduler(studentId);
 
   if (isLoading) {
-    return <div className="flex justify-center p-8">Loading emotion analysis...</div>;
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   if (error) {
-    return <div className="text-red-500 p-8">Error loading emotion analysis: {error.message}</div>;
-  }
-
-  if (!emotionAnalysis) {
-    return <div className="text-muted-foreground p-8">No emotion analysis data available</div>;
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          Failed to load emotion scheduling data. Please try again.
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Emotion-Aware Scheduling</h2>
-      
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-blue-600" />
-              Optimal Learning Times
-            </CardTitle>
-            <CardDescription>
-              Recommended times for instruction based on emotional patterns
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {emotionAnalysis.optimalTimes.map((slot, index) => (
-                <div 
-                  key={index} 
-                  className={cn(
-                    "p-3 border rounded",
-                    "bg-blue-50/40 dark:bg-blue-950/20"
-                  )}
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">{slot.day}</p>
-                      <p className="text-sm text-muted-foreground">{slot.timeRange}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-blue-600 font-medium">
-                        {Math.round(slot.confidence * 100)}% confident
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {slot.reason}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-purple-600" />
-              Mood Patterns
-            </CardTitle>
-            <CardDescription>
-              Recurring emotional states throughout the week
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {emotionAnalysis.patterns.map((pattern, index) => (
-                <div 
-                  key={index} 
-                  className={cn(
-                    "p-3 border rounded",
-                    "bg-purple-50/40 dark:bg-purple-950/20"
-                  )}
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">{pattern.day} - {pattern.mood}</p>
-                      <p className="text-sm text-muted-foreground">{pattern.description}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm">
-                        <span className={cn(
-                          "inline-flex items-center",
-                          pattern.trend === "increasing" && "text-green-600",
-                          pattern.trend === "decreasing" && "text-red-600",
-                          pattern.trend === "stable" && "text-amber-600"
-                        )}>
-                          {pattern.trend.charAt(0).toUpperCase() + pattern.trend.slice(1)}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-green-600" />
-            Recommendations
-          </CardTitle>
-          <CardDescription>
-            Suggested actions based on emotional intelligence
-          </CardDescription>
+          <CardTitle>Emotion-Aware Scheduling</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2 list-disc pl-5">
-            {emotionAnalysis.recommendations.map((recommendation, index) => (
-              <li key={index} className="text-muted-foreground">
-                {recommendation}
-              </li>
-            ))}
-          </ul>
+          <p>This is where the emotion scheduling UI would go.</p>
+          {/* Add additional UI components for emotion scheduling */}
         </CardContent>
       </Card>
     </div>

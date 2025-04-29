@@ -14,7 +14,7 @@ interface EmotionAwareTeacherDashboardProps {
 const EmotionAwareTeacherDashboard: React.FC<EmotionAwareTeacherDashboardProps> = ({
   studentId,
 }) => {
-  const { emotionAnalysis, isLoading } = useEmotionScheduler(studentId);
+  const { emotionAnalysis, isLoading, error } = useEmotionScheduler(studentId);
 
   return (
     <div className="space-y-6">

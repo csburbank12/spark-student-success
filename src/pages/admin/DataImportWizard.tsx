@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
-import { StepFinish } from './StepFinish';
-import { Step1 } from './Step1';
-import { Step2 } from './Step2';
-import { Step3 } from './Step3';
-import { Step4 } from './Step4';
+import StepFinish from '@/components/onboarding/data-import/StepFinish';
+import { Step1 } from '@/components/onboarding/data-import/Step1';
+import { Step2 } from '@/components/onboarding/data-import/Step2';
+import { Step3 } from '@/components/onboarding/data-import/Step3';
+import { Step4 } from '@/components/onboarding/data-import/Step4';
 
 const DataImportWizard = () => {
   const [currentStep, setCurrentStep] = useState(1);

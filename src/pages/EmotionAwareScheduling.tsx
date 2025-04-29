@@ -9,6 +9,7 @@ import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 
 const EmotionAwareScheduling: React.FC = () => {
   const { reset } = useQueryErrorResetBoundary();
+  const [selectedStudent, setSelectedStudent] = useState("student-123"); // Default student ID
 
   return (
     <ErrorBoundary
@@ -22,7 +23,7 @@ const EmotionAwareScheduling: React.FC = () => {
           </CardContent>
         </Card>
       }>
-        <EmotionSchedulingUI />
+        <EmotionSchedulingUI studentId={selectedStudent} />
       </Suspense>
     </ErrorBoundary>
   );

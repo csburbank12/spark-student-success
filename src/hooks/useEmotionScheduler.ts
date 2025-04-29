@@ -1,92 +1,82 @@
 
-// Define the types needed for the emotion scheduler
-export interface TimeSlot {
-  day: string;
-  timeRange: string;
-  confidence: number;
-  reason: string;
-}
+import { useState, useEffect } from 'react';
 
-export interface MoodPattern {
-  day: string;
-  mood: string;
-  description: string;
-  confidence: number;
-  trend: 'increasing' | 'decreasing' | 'stable';
-}
-
-export interface EmotionAnalysis {
-  optimalTimes: TimeSlot[];
-  patterns: MoodPattern[];
-  recommendations: string[];
+export interface EmotionAnalysisData {
+  optimalTimes?: {
+    morning?: boolean;
+    midday?: boolean;
+    afternoon?: boolean;
+  };
+  patterns?: Array<{
+    day: string;
+    pattern: string;
+    score: number;
+  }>;
+  recommendations?: string[];
 }
 
 export interface EmotionSchedulerState {
-  emotionAnalysis: EmotionAnalysis | null;
+  emotionAnalysis: EmotionAnalysisData | null;
   isLoading: boolean;
   error: Error | null;
 }
 
-// Hook to provide emotion scheduling functionality
 export const useEmotionScheduler = (studentId: string) => {
-  // Mock data for demonstration
-  const mockEmotionAnalysis: EmotionAnalysis = {
-    optimalTimes: [
-      { 
-        day: 'Monday', 
-        timeRange: '9:00 AM - 11:00 AM', 
-        confidence: 0.85,
-        reason: 'Higher engagement in morning activities'
-      },
-      { 
-        day: 'Wednesday', 
-        timeRange: '1:00 PM - 3:00 PM', 
-        confidence: 0.75,
-        reason: 'Positive patterns after lunch break'
-      },
-      { 
-        day: 'Friday', 
-        timeRange: '10:00 AM - 12:00 PM', 
-        confidence: 0.8,
-        reason: 'End of week motivation spike'
-      }
-    ],
-    patterns: [
-      {
-        day: 'Monday',
-        mood: 'Focused',
-        description: 'Beginning of week concentration',
-        confidence: 0.8,
-        trend: 'increasing'
-      },
-      {
-        day: 'Wednesday',
-        mood: 'Mixed',
-        description: 'Midweek energy fluctuation',
-        confidence: 0.7,
-        trend: 'stable'
-      },
-      {
-        day: 'Friday',
-        mood: 'Energetic',
-        description: 'End of week enthusiasm',
-        confidence: 0.9,
-        trend: 'increasing'
-      }
-    ],
-    recommendations: [
-      'Schedule challenging content on Monday mornings',
-      'Use interactive activities on Wednesday afternoons',
-      'Plan group work for Friday sessions',
-      'Consider short breaks between consecutive activities'
-    ]
-  };
-
-  return {
-    emotionAnalysis: mockEmotionAnalysis,
-    isLoading: false,
+  const [data, setData] = useState<EmotionSchedulerState>({
+    emotionAnalysis: null,
+    isLoading: true,
     error: null
-  };
+  });
+
+  useEffect(() => {
+    // Mock fetch data
+    const fetchData = async () => {
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock data
+        const mockData: EmotionAnalysisData = {
+          optimalTimes: {
+            morning: true,
+            midday: false,
+            afternoon: true
+          },
+          patterns: [
+            { day: 'Monday', pattern: 'High energy in morning', score: 8 },
+            { day: 'Tuesday', pattern: 'Concentration dips after lunch', score: 6 },
+            { day: 'Wednesday', pattern: 'Consistent engagement', score: 7 },
+            { day: 'Thursday', pattern: 'Fatigue in afternoon', score: 5 },
+            { day: 'Friday', pattern: 'Variable throughout day', score: 6 }
+          ],
+          recommendations: [
+            'Schedule complex tasks in the morning',
+            'Include movement breaks after lunch',
+            'Consider group activities in the afternoon',
+            'Provide emotional check-ins on Thursdays'
+          ]
+        };
+        
+        setData({
+          emotionAnalysis: mockData,
+          isLoading: false,
+          error: null
+        });
+      } catch (error) {
+        setData({
+          emotionAnalysis: null,
+          isLoading: false,
+          error: error instanceof Error ? error : new Error('Unknown error occurred')
+        });
+      }
+    };
+
+    if (studentId) {
+      fetchData();
+    }
+  }, [studentId]);
+
+  return data;
 };
 
 export default useEmotionScheduler;
