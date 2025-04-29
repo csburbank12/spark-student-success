@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActivitiesList from "./components/ActivitiesList";
 import AssignmentsList from "./components/AssignmentsList";
 import EventsList from "./components/EventsList";
-import { Assignment } from "@/types/parent";
+import { Assignment } from "@/types/assignment";
 
 const activities = [
   {
@@ -133,8 +132,16 @@ const events = [
 ];
 
 const ChildActivity = () => {
+  // Convert the assignment data to match the expected Assignment type
+  const typedAssignments: Assignment[] = assignments.map(assignment => ({
+    ...assignment,
+    id: String(assignment.id), // Convert number id to string
+    dueDate: assignment.due_date,
+    type: assignment.subject // Use subject as type if no type field exists
+  }));
+
   return (
-    <div className="space-y-6">
+    <div>
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-heading font-bold">Child Activity</h2>
       </div>
@@ -148,7 +155,7 @@ const ChildActivity = () => {
           <ActivitiesList activities={activities} />
         </TabsContent>
         <TabsContent value="assignments" className="mt-4">
-          <AssignmentsList assignments={assignments} />
+          <AssignmentsList assignments={typedAssignments} />
         </TabsContent>
         <TabsContent value="events" className="mt-4">
           <EventsList events={events} />

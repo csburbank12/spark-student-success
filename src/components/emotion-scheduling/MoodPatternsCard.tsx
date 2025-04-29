@@ -1,91 +1,96 @@
 
 import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { TrendingUp, TrendingDown } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
-
-interface MoodPattern {
-  pattern: string;
-  description: string;
-  confidence: number;
-  trend: 'improving' | 'declining' | 'stable';
-}
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription, 
+  CardContent 
+} from "@/components/ui/card";
+import { MoodPattern } from "@/hooks/useEmotionScheduler";
+import { Brain } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface MoodPatternsCardProps {
-  moodPatterns?: MoodPattern[];
+  moodPatterns: MoodPattern[] | undefined;
   isLoading: boolean;
 }
 
-const MoodPatternsCard: React.FC<MoodPatternsCardProps> = ({
-  moodPatterns = [],
-  isLoading
-}) => {
+const MoodPatternsCard: React.FC<MoodPatternsCardProps> = ({ moodPatterns, isLoading }) => {
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle><Skeleton className="h-6 w-40" /></CardTitle>
-          <CardDescription><Skeleton className="h-4 w-56" /></CardDescription>
+          <CardTitle>Mood Patterns</CardTitle>
+          <CardDescription>Loading...</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
+        <CardContent>
+          <div className="space-y-4 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 bg-gray-200 dark:bg-gray-800 rounded"></div>
+            ))}
+          </div>
         </CardContent>
       </Card>
     );
   }
-  
-  const getTrendIcon = (trend: string) => {
-    if (trend === 'improving') {
-      return <TrendingUp className="h-4 w-4 text-green-500" />;
-    } else if (trend === 'declining') {
-      return <TrendingDown className="h-4 w-4 text-red-500" />;
-    }
-    return null;
-  };
+
+  if (!moodPatterns || moodPatterns.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Mood Patterns</CardTitle>
+          <CardDescription>No data available</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">No mood patterns have been identified yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Mood Patterns & Triggers</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="h-5 w-5 text-purple-600" />
+          Mood Patterns
+        </CardTitle>
         <CardDescription>
-          Detected emotional patterns and potential triggers
+          Recurring emotional states throughout the week
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {moodPatterns && moodPatterns.length > 0 ? (
-          moodPatterns.map((pattern, index) => (
-            <div key={index} className="p-3 border rounded">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium">{pattern.pattern}</h4>
-                <div className="flex items-center text-sm">
-                  {getTrendIcon(pattern.trend)}
-                  <span className="ml-1">
-                    {pattern.trend.charAt(0).toUpperCase() + pattern.trend.slice(1)}
-                  </span>
+      <CardContent>
+        <div className="space-y-4">
+          {moodPatterns.map((pattern, index) => (
+            <div 
+              key={index} 
+              className={cn(
+                "p-3 border rounded",
+                "bg-purple-50/40 dark:bg-purple-950/20"
+              )}
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-medium">{pattern.day} - {pattern.mood}</p>
+                  <p className="text-sm text-muted-foreground">{pattern.description}</p>
                 </div>
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">{pattern.description}</p>
-              <div className="mt-2">
-                <div className="flex justify-between text-xs mb-1">
-                  <span>Pattern confidence</span>
-                  <span>{pattern.confidence}%</span>
+                <div className="text-right">
+                  <p className="text-sm">
+                    <span className={cn(
+                      "inline-flex items-center",
+                      pattern.trend === "increasing" && "text-green-600",
+                      pattern.trend === "decreasing" && "text-red-600",
+                      pattern.trend === "stable" && "text-amber-600"
+                    )}>
+                      {pattern.trend.charAt(0).toUpperCase() + pattern.trend.slice(1)}
+                    </span>
+                  </p>
                 </div>
-                <Progress value={pattern.confidence} className="h-1" />
               </div>
             </div>
-          ))
-        ) : (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <p className="text-muted-foreground">
-              Not enough data to identify significant mood patterns yet.
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Continue collecting mood check-ins to improve pattern detection.
-            </p>
-          </div>
-        )}
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

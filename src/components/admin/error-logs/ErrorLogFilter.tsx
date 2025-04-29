@@ -1,191 +1,140 @@
 
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/date-picker";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar, Check, ChevronDown, Filter } from 'lucide-react';
-import { Badge } from "@/components/ui/badge";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Button } from "@/components/ui/button";
+import { Search, Filter, X } from "lucide-react";
 
-export const ErrorLogFilter = () => {
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  
-  const handleAddFilter = (filter: string) => {
-    if (!activeFilters.includes(filter)) {
-      setActiveFilters([...activeFilters, filter]);
-    }
+interface ErrorLogFilterProps {
+  onFilterChange: (filters: ErrorLogFilters) => void;
+  filters: ErrorLogFilters;
+}
+
+export interface ErrorLogFilters {
+  searchTerm: string;
+  profileType: string;
+  fromDate: Date | null;
+  toDate: Date | null;
+  status: string;
+}
+
+const ErrorLogFilter: React.FC<ErrorLogFilterProps> = ({ onFilterChange, filters }) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onFilterChange({ ...filters, searchTerm: e.target.value });
   };
-  
-  const handleRemoveFilter = (filter: string) => {
-    setActiveFilters(activeFilters.filter(f => f !== filter));
+
+  const handleProfileTypeChange = (value: string) => {
+    onFilterChange({ ...filters, profileType: value });
   };
-  
+
+  const handleStatusChange = (value: string) => {
+    onFilterChange({ ...filters, status: value });
+  };
+
+  const handleFromDateChange = (date: Date | null) => {
+    onFilterChange({ ...filters, fromDate: date });
+  };
+
+  const handleToDateChange = (date: Date | null) => {
+    onFilterChange({ ...filters, toDate: date });
+  };
+
   const handleClearFilters = () => {
-    setActiveFilters([]);
-    setStartDate(null);
-    setEndDate(null);
+    onFilterChange({
+      searchTerm: '',
+      profileType: 'all',
+      fromDate: null,
+      toDate: null,
+      status: 'all'
+    });
   };
 
   return (
-    <div className="space-y-4 mb-6">
-      <div className="flex flex-wrap gap-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center">
-              <Filter className="h-4 w-4 mr-1" />
-              Add Filter
-              <ChevronDown className="h-4 w-4 ml-1" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-60">
-            <div className="space-y-2">
-              <div className="font-medium text-sm">Filter by</div>
-              <div className="grid gap-1">
-                <Button 
-                  variant="ghost" 
-                  className="justify-start"
-                  onClick={() => handleAddFilter('status')}
-                >
-                  Status
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="justify-start"
-                  onClick={() => handleAddFilter('profile')} 
-                >
-                  Profile Type
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="justify-start"
-                  onClick={() => handleAddFilter('action')}
-                >
-                  Action
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="justify-start"
-                  onClick={() => handleAddFilter('date')}
-                >
-                  Date Range
-                </Button>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Filter className="h-5 w-5" />
+          Filter Error Logs
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by error message or action..."
+            className="pl-8"
+            value={filters.searchTerm}
+            onChange={handleSearchChange}
+          />
+        </div>
 
-        {activeFilters.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="profileType">Profile Type</Label>
+            <Select 
+              value={filters.profileType} 
+              onValueChange={handleProfileTypeChange}
+            >
+              <SelectTrigger id="profileType">
+                <SelectValue placeholder="All Profile Types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Profile Types</SelectItem>
+                <SelectItem value="student">Student</SelectItem>
+                <SelectItem value="teacher">Teacher</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="parent">Parent</SelectItem>
+                <SelectItem value="counselor">Counselor</SelectItem>
+                <SelectItem value="staff">Staff</SelectItem>
+                <SelectItem value="unauthenticated">Unauthenticated</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="status">Status</Label>
+            <Select 
+              value={filters.status} 
+              onValueChange={handleStatusChange}
+            >
+              <SelectTrigger id="status">
+                <SelectValue placeholder="All Statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="resolved">Resolved</SelectItem>
+                <SelectItem value="unresolved">Unresolved</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>From Date</Label>
+            <DatePicker date={filters.fromDate} setDate={handleFromDateChange} />
+          </div>
+
+          <div className="space-y-2">
+            <Label>To Date</Label>
+            <DatePicker date={filters.toDate} setDate={handleToDateChange} />
+          </div>
+        </div>
+
+        <div className="flex justify-end">
           <Button 
             variant="outline" 
-            size="sm" 
+            size="sm"
             onClick={handleClearFilters}
+            className="flex items-center gap-2"
           >
+            <X className="h-4 w-4" />
             Clear Filters
           </Button>
-        )}
-      </div>
-
-      {activeFilters.length > 0 && (
-        <div className="flex flex-wrap gap-2 items-center">
-          {activeFilters.includes('status') && (
-            <div className="flex items-center gap-1">
-              <Badge variant="outline" className="px-2">
-                Status
-                <button 
-                  className="ml-1 hover:text-destructive" 
-                  onClick={() => handleRemoveFilter('status')}
-                >
-                  &times;
-                </button>
-              </Badge>
-              <Select defaultValue="all">
-                <SelectTrigger className="w-[120px] h-8">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="resolved">Resolved</SelectItem>
-                  <SelectItem value="unresolved">Unresolved</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {activeFilters.includes('profile') && (
-            <div className="flex items-center gap-1">
-              <Badge variant="outline" className="px-2">
-                Profile Type
-                <button 
-                  className="ml-1 hover:text-destructive" 
-                  onClick={() => handleRemoveFilter('profile')}
-                >
-                  &times;
-                </button>
-              </Badge>
-              <Select defaultValue="all">
-                <SelectTrigger className="w-[120px] h-8">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="teacher">Teacher</SelectItem>
-                  <SelectItem value="student">Student</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="parent">Parent</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {activeFilters.includes('action') && (
-            <div className="flex items-center gap-1">
-              <Badge variant="outline" className="px-2">
-                Action
-                <button 
-                  className="ml-1 hover:text-destructive" 
-                  onClick={() => handleRemoveFilter('action')}
-                >
-                  &times;
-                </button>
-              </Badge>
-              <Select defaultValue="all">
-                <SelectTrigger className="w-[150px] h-8">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="page_load">Page Load</SelectItem>
-                  <SelectItem value="submission">Submission</SelectItem>
-                  <SelectItem value="data_export">Data Export</SelectItem>
-                  <SelectItem value="profile">Profile Update</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {activeFilters.includes('date') && (
-            <div className="flex items-center gap-1">
-              <Badge variant="outline" className="px-2">
-                Date Range
-                <button 
-                  className="ml-1 hover:text-destructive" 
-                  onClick={() => handleRemoveFilter('date')}
-                >
-                  &times;
-                </button>
-              </Badge>
-              <div className="flex items-center gap-1">
-                <DatePicker date={startDate} setDate={setStartDate} />
-                <span>to</span>
-                <DatePicker date={endDate} setDate={setEndDate} />
-              </div>
-            </div>
-          )}
         </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -1,146 +1,150 @@
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AlertTriangle } from "lucide-react";
-import { MoodTrend, TrendAlert } from "./types";
-import BarChart from "@/components/charts/BarChart";
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { AlertCircle, TrendingUp, Calendar } from 'lucide-react';
+import BarChart from '@/components/charts/BarChart';
+
+export interface MoodTrend {
+  date: string;
+  mood: number;
+  energy: number;
+}
 
 export interface StudentMoodAnalysisProps {
   studentId: string;
-  data?: {
-    average: number;
-    trend: "improving" | "stable" | "declining";
-    history: number[];
-    labels: string[];
-  };
   moodTrends: MoodTrend[];
-  alerts?: TrendAlert[];
 }
 
 export const StudentMoodAnalysis: React.FC<StudentMoodAnalysisProps> = ({ 
-  studentId,
-  data,
-  moodTrends = [],
-  alerts = []
+  studentId, 
+  moodTrends 
 }) => {
-  // Default chart data in case of empty mood trends
-  const defaultData = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+  // Generate chart data
+  const chartData = {
+    labels: moodTrends.map(trend => trend.date),
     datasets: [
       {
-        label: "Mood Score",
-        data: [3, 4, 2, 5, 3],
-        backgroundColor: "rgba(99, 102, 241, 0.5)",
-        borderColor: "rgb(99, 102, 241)",
+        label: 'Mood Score',
+        data: moodTrends.map(trend => trend.mood),
+        backgroundColor: 'rgba(124, 58, 237, 0.5)',
+        borderColor: 'rgba(124, 58, 237, 1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Energy Level',
+        data: moodTrends.map(trend => trend.energy),
+        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+        borderColor: 'rgba(59, 130, 246, 1)',
         borderWidth: 1,
       },
     ],
   };
 
-  // Use provided data if available, otherwise transform mood trends into chart data
-  const chartData = data ? {
-    labels: data.labels,
-    datasets: [
-      {
-        label: "Mood Score",
-        data: data.history,
-        backgroundColor: "rgba(99, 102, 241, 0.5)",
-        borderColor: "rgb(99, 102, 241)",
-        borderWidth: 1,
-      },
-    ],
-  } : moodTrends.length > 0 ? {
-    labels: moodTrends.map(trend => {
-      const date = new Date(trend.date);
-      return date.toLocaleDateString(undefined, { weekday: 'short' });
-    }),
-    datasets: [
-      {
-        label: "Mood Score",
-        data: moodTrends.map(trend => trend.score),
-        backgroundColor: "rgba(99, 102, 241, 0.5)",
-        borderColor: "rgb(99, 102, 241)",
-        borderWidth: 1,
-      },
-    ],
-  } : defaultData;
+  // Calculate average scores
+  const averageMood = moodTrends.length > 0 
+    ? Math.round(moodTrends.reduce((acc, curr) => acc + curr.mood, 0) / moodTrends.length * 10) / 10
+    : 0;
+  
+  const averageEnergy = moodTrends.length > 0 
+    ? Math.round(moodTrends.reduce((acc, curr) => acc + curr.energy, 0) / moodTrends.length * 10) / 10
+    : 0;
+
+  // Calculate trends (simple - just comparing last two points)
+  const moodTrend = moodTrends.length >= 2 
+    ? (moodTrends[moodTrends.length - 1].mood > moodTrends[moodTrends.length - 2].mood) ? 'up' : 'down'
+    : 'stable';
+
+  const energyTrend = moodTrends.length >= 2 
+    ? (moodTrends[moodTrends.length - 1].energy > moodTrends[moodTrends.length - 2].energy) ? 'up' : 'down'
+    : 'stable';
 
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold">Mood Analysis</CardTitle>
-          {alerts && alerts.length > 0 && (
-            <Badge variant="destructive" className="flex items-center gap-1">
-              <AlertTriangle className="h-3 w-3" />
-              <span>{alerts.length} Alert{alerts.length !== 1 ? 's' : ''}</span>
+      <CardHeader>
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-2 md:space-y-0">
+          <div>
+            <CardTitle>Mood Analysis</CardTitle>
+            <CardDescription>Student emotional wellness tracking</CardDescription>
+          </div>
+          <div className="flex gap-2">
+            <Badge variant="outline" className="bg-primary/10 text-primary">
+              <Calendar className="h-3.5 w-3.5 mr-1" />
+              Last {moodTrends.length} days
             </Badge>
-          )}
+            <Badge variant={averageMood > 6 ? "success" : "destructive"}>
+              Avg: {averageMood}/10
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[200px]">
-          <BarChart data={chartData} height="100%" />
-        </div>
-        
-        <div className="mt-4 space-y-2">
-          {moodTrends.length > 0 ? (
-            <>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Average Mood:</span>
-                <span className="font-medium">
-                  {(moodTrends.reduce((sum, trend) => sum + trend.score, 0) / moodTrends.length).toFixed(1)}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Most Common:</span>
-                <span className="font-medium">
-                  {moodTrends
-                    .map(trend => trend.primaryMood)
-                    .sort((a, b) => 
-                      moodTrends.filter(t => t.primaryMood === b).length - 
-                      moodTrends.filter(t => t.primaryMood === a).length
-                    )
-                    .filter((mood, idx, arr) => idx === 0 || mood !== arr[idx - 1])[0] || 'N/A'}
-                </span>
-              </div>
-            </>
-          ) : data ? (
-            <>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Average Mood:</span>
-                <span className="font-medium">{data.average.toFixed(1)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Trend:</span>
-                <span className="font-medium capitalize">{data.trend}</span>
-              </div>
-            </>
-          ) : (
-            <p className="text-center text-sm text-muted-foreground">No mood data available</p>
-          )}
+        <Tabs defaultValue="chart">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="chart">Chart View</TabsTrigger>
+            <TabsTrigger value="summary">Summary</TabsTrigger>
+          </TabsList>
           
-          {alerts && alerts.length > 0 && (
-            <div className="pt-2 mt-2 border-t">
-              <p className="text-sm font-medium">Recent Alerts:</p>
-              <ul className="mt-1 space-y-1">
-                {alerts.slice(0, 2).map((alert) => (
-                  <li key={alert.id} className="text-xs text-muted-foreground">
-                    <span className="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1"></span>
-                    {alert.primaryTrigger}
-                  </li>
-                ))}
-                {alerts.length > 2 && (
-                  <li className="text-xs text-muted-foreground font-medium">
-                    +{alerts.length - 2} more alerts
-                  </li>
-                )}
-              </ul>
+          <TabsContent value="chart" className="pt-4">
+            <div className="h-[300px]">
+              {moodTrends.length > 0 ? (
+                <BarChart data={chartData} height={300} />
+              ) : (
+                <div className="flex h-full items-center justify-center text-muted-foreground">
+                  No mood data available
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </TabsContent>
+          
+          <TabsContent value="summary" className="pt-4">
+            <div className="space-y-4">
+              <div className="bg-card border rounded-md p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">Average Mood</p>
+                    <p className="text-2xl font-bold">{averageMood}/10</p>
+                  </div>
+                  <div>
+                    <Badge variant={moodTrend === 'up' ? 'success' : (moodTrend === 'down' ? 'destructive' : 'outline')}>
+                      <TrendingUp className="h-3.5 w-3.5 mr-1" />
+                      {moodTrend === 'up' ? 'Improving' : (moodTrend === 'down' ? 'Declining' : 'Stable')}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-card border rounded-md p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">Energy Level</p>
+                    <p className="text-2xl font-bold">{averageEnergy}/10</p>
+                  </div>
+                  <div>
+                    <Badge variant={energyTrend === 'up' ? 'success' : (energyTrend === 'down' ? 'destructive' : 'outline')}>
+                      <TrendingUp className="h-3.5 w-3.5 mr-1" />
+                      {energyTrend === 'up' ? 'Improving' : (energyTrend === 'down' ? 'Declining' : 'Stable')}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              
+              {averageMood < 5 && (
+                <div className="bg-destructive/10 border-destructive/20 border rounded-md p-4">
+                  <div className="flex items-center gap-2 text-destructive">
+                    <AlertCircle className="h-5 w-5" />
+                    <p className="font-medium">Potential concern detected</p>
+                  </div>
+                  <p className="mt-2 text-sm">This student's mood patterns show potential signs of distress. Consider scheduling a check-in.</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );
 };
+
+export default StudentMoodAnalysis;

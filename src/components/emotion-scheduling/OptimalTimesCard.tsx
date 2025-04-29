@@ -1,37 +1,49 @@
 
 import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Clock, AlertTriangle } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-
-interface TimeSlot {
-  day: string;
-  timeRange: string;
-  confidence: number;
-  reason: string;
-}
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription, 
+  CardContent 
+} from "@/components/ui/card";
+import { TimeSlot } from "@/hooks/useEmotionScheduler";
+import { Clock } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface OptimalTimesCardProps {
-  optimalTimes?: TimeSlot[];
-  stressPeriods?: TimeSlot[];
+  optimalTimes: TimeSlot[] | undefined;
   isLoading: boolean;
 }
 
-const OptimalTimesCard: React.FC<OptimalTimesCardProps> = ({
-  optimalTimes = [],
-  stressPeriods = [],
-  isLoading
-}) => {
+const OptimalTimesCard: React.FC<OptimalTimesCardProps> = ({ optimalTimes, isLoading }) => {
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle><Skeleton className="h-6 w-48" /></CardTitle>
-          <CardDescription><Skeleton className="h-4 w-60" /></CardDescription>
+          <CardTitle>Optimal Learning Times</CardTitle>
+          <CardDescription>Loading...</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
+        <CardContent>
+          <div className="space-y-4 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 bg-gray-200 dark:bg-gray-800 rounded"></div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!optimalTimes || optimalTimes.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Optimal Learning Times</CardTitle>
+          <CardDescription>No data available</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">No optimal times have been identified yet.</p>
         </CardContent>
       </Card>
     );
@@ -40,62 +52,40 @@ const OptimalTimesCard: React.FC<OptimalTimesCardProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Optimal Engagement Times</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Clock className="h-5 w-5 text-blue-600" />
+          Optimal Learning Times
+        </CardTitle>
         <CardDescription>
-          Based on mood analysis and emotional patterns
+          Recommended times for instruction based on emotional patterns
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <h3 className="flex items-center text-sm font-medium">
-            <Clock className="mr-2 h-4 w-4 text-green-500" />
-            Best Times for Check-ins
-          </h3>
-          <div className="mt-2 space-y-2">
-            {optimalTimes && optimalTimes.length > 0 ? (
-              optimalTimes.map((slot, index) => (
-                <div key={index} className="p-3 border rounded bg-green-50/40 dark:bg-green-950/20">
-                  <div className="flex justify-between">
-                    <div className="font-medium">{slot.day}, {slot.timeRange}</div>
-                    <div className="text-sm font-medium text-green-600">{slot.confidence}% confidence</div>
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground">{slot.reason}</p>
+      <CardContent>
+        <div className="space-y-4">
+          {optimalTimes.map((slot, index) => (
+            <div 
+              key={index} 
+              className={cn(
+                "p-3 border rounded",
+                "bg-blue-50/40 dark:bg-blue-950/20"
+              )}
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-medium">{slot.day}</p>
+                  <p className="text-sm text-muted-foreground">{slot.timeRange}</p>
                 </div>
-              ))
-            ) : (
-              <div className="p-3 border rounded">
-                <p className="text-sm text-muted-foreground">
-                  Not enough data to determine optimal times yet.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-        
-        <div>
-          <h3 className="flex items-center text-sm font-medium">
-            <AlertTriangle className="mr-2 h-4 w-4 text-amber-500" />
-            Potential Stress Periods
-          </h3>
-          <div className="mt-2 space-y-2">
-            {stressPeriods && stressPeriods.length > 0 ? (
-              stressPeriods.map((slot, index) => (
-                <div key={index} className="p-3 border rounded bg-amber-50/40 dark:bg-amber-950/20">
-                  <div className="flex justify-between">
-                    <div className="font-medium">{slot.day}, {slot.timeRange}</div>
-                    <div className="text-sm font-medium text-amber-600">{slot.confidence}% confidence</div>
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground">{slot.reason}</p>
+                <div className="text-right">
+                  <p className="text-sm text-blue-600 font-medium">
+                    {Math.round(slot.confidence * 100)}% confident
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {slot.reason}
+                  </p>
                 </div>
-              ))
-            ) : (
-              <div className="p-3 border rounded">
-                <p className="text-sm text-muted-foreground">
-                  No significant stress periods detected.
-                </p>
               </div>
-            )}
-          </div>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

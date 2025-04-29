@@ -1,4 +1,3 @@
-
 export enum UserRole {
   student = "student",
   teacher = "teacher",
@@ -19,12 +18,21 @@ export interface SelLesson {
 
 // Update SELLesson to match SelLesson for type compatibility
 export type SELLesson = {
-  id: string | number;
+  id: string;
   title: string;
-  description: string;
-  pathway?: string;
+  description?: string;
+  competencyArea?: string;
+  recommendedMoods?: string[];
+  contentUrl?: string;
+  activityType?: string;
+  estimatedDuration?: number;
   duration: number;
-  difficulty: string;
+  evidenceBase?: string;
+  gradeRange?: string[];
+  culturalFocus?: string;
+  createdBy?: string;
+  ageRange?: string;
+  caselCompetency?: string;
 };
 
 export interface OnboardingStep {

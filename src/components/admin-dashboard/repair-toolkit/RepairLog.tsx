@@ -28,7 +28,7 @@ export const RepairLog: React.FC<RepairLogProps> = ({ logs = [] }) => {
   // Format logs from admin.RepairLogEntry to the format expected by this component
   const formattedLogs = logs.map(log => ({
     id: log.id,
-    timestamp: typeof log.timestamp === 'string' ? log.timestamp : new Date(log.timestamp).toISOString(),
+    timestamp: typeof log.timestamp === 'string' ? log.timestamp : new Date(log.timestamp as any).toISOString(),
     action: log.action,
     status: log.status || 'error',
     user: log.user,
