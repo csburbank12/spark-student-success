@@ -75,8 +75,8 @@ const activities = [
   }
 ];
 
-// Convert numeric IDs to strings for compatibility
-const assignments = [
+// Define assignments with the correct status type
+const assignments: Assignment[] = [
   {
     id: "101",
     title: "Math Homework - Algebra Basics",
@@ -130,17 +130,6 @@ const events = [
 ];
 
 const ChildActivity = () => {
-  // Convert the assignment data to match the expected Assignment type
-  const typedAssignments: Assignment[] = assignments.map(assignment => ({
-    id: String(assignment.id),
-    title: assignment.title,
-    dueDate: assignment.dueDate,
-    status: assignment.status,
-    subject: assignment.subject,
-    priority: assignment.priority,
-    type: assignment.type
-  }));
-
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -156,7 +145,7 @@ const ChildActivity = () => {
           <ActivitiesList activities={activities} />
         </TabsContent>
         <TabsContent value="assignments" className="mt-4">
-          <AssignmentsList assignments={typedAssignments} />
+          <AssignmentsList assignments={assignments} />
         </TabsContent>
         <TabsContent value="events" className="mt-4">
           <EventsList events={events} />

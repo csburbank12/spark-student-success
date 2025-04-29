@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useEmotionScheduler } from '@/hooks/useEmotionScheduler';
+import OptimalTimesCard from './OptimalTimesCard';
+import MoodPatternsCard from './MoodPatternsCard';
 
 export interface EmotionSchedulingUIProps {
   studentId: string;
@@ -43,8 +45,20 @@ const EmotionSchedulingUI: React.FC<EmotionSchedulingUIProps> = ({ studentId }) 
           <CardTitle>Emotion-Aware Scheduling</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>This is where the emotion scheduling UI would go.</p>
-          {/* Add additional UI components for emotion scheduling */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <OptimalTimesCard optimalTimes={emotionAnalysis?.optimalTimes} isLoading={isLoading} />
+            <MoodPatternsCard moodPatterns={emotionAnalysis?.patterns} isLoading={isLoading} />
+          </div>
+          {emotionAnalysis?.recommendations && (
+            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <h3 className="text-lg font-medium mb-2">Recommendations</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                {emotionAnalysis.recommendations.map((rec, index) => (
+                  <li key={index} className="text-sm">{rec}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
