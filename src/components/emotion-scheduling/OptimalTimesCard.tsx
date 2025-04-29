@@ -7,9 +7,9 @@ import {
   CardDescription, 
   CardContent 
 } from "@/components/ui/card";
-import { TimeSlot } from "@/hooks/useEmotionScheduler";
 import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TimeSlot } from "@/hooks/useEmotionScheduler";
 
 interface OptimalTimesCardProps {
   optimalTimes: TimeSlot[] | undefined;

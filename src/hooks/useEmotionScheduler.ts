@@ -1,17 +1,23 @@
 
 import { useState, useEffect } from 'react';
 
+export interface TimeSlot {
+  day: string;
+  timeRange: string;
+  confidence: number;
+  reason: string;
+}
+
+export interface MoodPattern {
+  day: string;
+  mood: string;
+  description: string;
+  trend: 'increasing' | 'decreasing' | 'stable';
+}
+
 export interface EmotionAnalysisData {
-  optimalTimes?: {
-    morning?: boolean;
-    midday?: boolean;
-    afternoon?: boolean;
-  };
-  patterns?: Array<{
-    day: string;
-    pattern: string;
-    score: number;
-  }>;
+  optimalTimes?: TimeSlot[];
+  patterns?: MoodPattern[];
   recommendations?: string[];
 }
 
@@ -22,7 +28,7 @@ export interface EmotionSchedulerState {
 }
 
 export const useEmotionScheduler = (studentId: string) => {
-  const [data, setData] = useState<EmotionSchedulerState>({
+  const [state, setState] = useState<EmotionSchedulerState>({
     emotionAnalysis: null,
     isLoading: true,
     error: null
@@ -37,17 +43,32 @@ export const useEmotionScheduler = (studentId: string) => {
         
         // Mock data
         const mockData: EmotionAnalysisData = {
-          optimalTimes: {
-            morning: true,
-            midday: false,
-            afternoon: true
-          },
+          optimalTimes: [
+            { 
+              day: 'Monday', 
+              timeRange: '9:00 AM - 11:00 AM',
+              confidence: 0.85,
+              reason: 'High energy and focus observed'
+            },
+            { 
+              day: 'Wednesday', 
+              timeRange: '1:00 PM - 3:00 PM',
+              confidence: 0.75,
+              reason: 'Consistent emotional stability'
+            },
+            { 
+              day: 'Friday', 
+              timeRange: '10:00 AM - 12:00 PM',
+              confidence: 0.80,
+              reason: 'Positive mood trends'
+            },
+          ],
           patterns: [
-            { day: 'Monday', pattern: 'High energy in morning', score: 8 },
-            { day: 'Tuesday', pattern: 'Concentration dips after lunch', score: 6 },
-            { day: 'Wednesday', pattern: 'Consistent engagement', score: 7 },
-            { day: 'Thursday', pattern: 'Fatigue in afternoon', score: 5 },
-            { day: 'Friday', pattern: 'Variable throughout day', score: 6 }
+            { day: 'Monday', mood: 'High energy in morning', description: 'Consistently engaged', trend: 'stable' },
+            { day: 'Tuesday', mood: 'Concentration dips after lunch', description: 'May need extra support', trend: 'decreasing' },
+            { day: 'Wednesday', mood: 'Consistent engagement', description: 'Good for challenging work', trend: 'stable' },
+            { day: 'Thursday', mood: 'Fatigue in afternoon', description: 'Consider lighter activities', trend: 'decreasing' },
+            { day: 'Friday', mood: 'Variable throughout day', description: 'Morning better than afternoon', trend: 'increasing' }
           ],
           recommendations: [
             'Schedule complex tasks in the morning',
@@ -57,13 +78,13 @@ export const useEmotionScheduler = (studentId: string) => {
           ]
         };
         
-        setData({
+        setState({
           emotionAnalysis: mockData,
           isLoading: false,
           error: null
         });
       } catch (error) {
-        setData({
+        setState({
           emotionAnalysis: null,
           isLoading: false,
           error: error instanceof Error ? error : new Error('Unknown error occurred')
@@ -76,7 +97,7 @@ export const useEmotionScheduler = (studentId: string) => {
     }
   }, [studentId]);
 
-  return data;
+  return state;
 };
 
 export default useEmotionScheduler;

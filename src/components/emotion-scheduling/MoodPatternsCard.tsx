@@ -7,9 +7,9 @@ import {
   CardDescription, 
   CardContent 
 } from "@/components/ui/card";
-import { MoodPattern } from "@/hooks/useEmotionScheduler";
 import { Brain } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MoodPattern } from "@/hooks/useEmotionScheduler";
 
 interface MoodPatternsCardProps {
   moodPatterns: MoodPattern[] | undefined;

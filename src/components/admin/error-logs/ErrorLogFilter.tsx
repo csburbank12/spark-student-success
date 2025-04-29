@@ -1,140 +1,92 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DatePicker } from "@/components/ui/date-picker";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, X } from "lucide-react";
+import { Check, ChevronDown, Filter } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command";
 
-interface ErrorLogFilterProps {
-  onFilterChange: (filters: ErrorLogFilters) => void;
-  filters: ErrorLogFilters;
-}
-
-export interface ErrorLogFilters {
-  searchTerm: string;
-  profileType: string;
-  fromDate: Date | null;
-  toDate: Date | null;
-  status: string;
-}
-
-const ErrorLogFilter: React.FC<ErrorLogFilterProps> = ({ onFilterChange, filters }) => {
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onFilterChange({ ...filters, searchTerm: e.target.value });
-  };
-
-  const handleProfileTypeChange = (value: string) => {
-    onFilterChange({ ...filters, profileType: value });
-  };
-
-  const handleStatusChange = (value: string) => {
-    onFilterChange({ ...filters, status: value });
-  };
-
-  const handleFromDateChange = (date: Date | null) => {
-    onFilterChange({ ...filters, fromDate: date });
-  };
-
-  const handleToDateChange = (date: Date | null) => {
-    onFilterChange({ ...filters, toDate: date });
-  };
-
-  const handleClearFilters = () => {
-    onFilterChange({
-      searchTerm: '',
-      profileType: 'all',
-      fromDate: null,
-      toDate: null,
-      status: 'all'
-    });
-  };
-
+export const ErrorLogFilter = () => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Filter className="h-5 w-5" />
-          Filter Error Logs
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by error message or action..."
-            className="pl-8"
-            value={filters.searchTerm}
-            onChange={handleSearchChange}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="profileType">Profile Type</Label>
-            <Select 
-              value={filters.profileType} 
-              onValueChange={handleProfileTypeChange}
-            >
-              <SelectTrigger id="profileType">
-                <SelectValue placeholder="All Profile Types" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Profile Types</SelectItem>
-                <SelectItem value="student">Student</SelectItem>
-                <SelectItem value="teacher">Teacher</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="parent">Parent</SelectItem>
-                <SelectItem value="counselor">Counselor</SelectItem>
-                <SelectItem value="staff">Staff</SelectItem>
-                <SelectItem value="unauthenticated">Unauthenticated</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Select 
-              value={filters.status} 
-              onValueChange={handleStatusChange}
-            >
-              <SelectTrigger id="status">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="resolved">Resolved</SelectItem>
-                <SelectItem value="unresolved">Unresolved</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>From Date</Label>
-            <DatePicker date={filters.fromDate} setDate={handleFromDateChange} />
-          </div>
-
-          <div className="space-y-2">
-            <Label>To Date</Label>
-            <DatePicker date={filters.toDate} setDate={handleToDateChange} />
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={handleClearFilters}
-            className="flex items-center gap-2"
-          >
-            <X className="h-4 w-4" />
-            Clear Filters
+    <div className="flex items-center gap-2 mb-4">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" size="sm" className="h-8 gap-1">
+            <Filter className="h-3.5 w-3.5" />
+            <span>Filter</span>
+            <ChevronDown className="h-3.5 w-3.5" />
           </Button>
-        </div>
-      </CardContent>
-    </Card>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0" align="start">
+          <Command>
+            <CommandList>
+              <CommandGroup heading="Profile Type">
+                <CommandItem className="flex items-center gap-2">
+                  <Check className="h-4 w-4 opacity-0" />
+                  <span>All Users</span>
+                </CommandItem>
+                <CommandItem className="flex items-center gap-2">
+                  <Check className="h-4 w-4" />
+                  <span>Teacher</span>
+                </CommandItem>
+                <CommandItem className="flex items-center gap-2">
+                  <Check className="h-4 w-4 opacity-0" />
+                  <span>Student</span>
+                </CommandItem>
+                <CommandItem className="flex items-center gap-2">
+                  <Check className="h-4 w-4 opacity-0" />
+                  <span>Admin</span>
+                </CommandItem>
+              </CommandGroup>
+              <CommandSeparator />
+              <CommandGroup heading="Status Code">
+                <CommandItem className="flex items-center gap-2">
+                  <Check className="h-4 w-4 opacity-0" />
+                  <span>400 - Bad Request</span>
+                </CommandItem>
+                <CommandItem className="flex items-center gap-2">
+                  <Check className="h-4 w-4" />
+                  <span>403 - Forbidden</span>
+                </CommandItem>
+                <CommandItem className="flex items-center gap-2">
+                  <Check className="h-4 w-4 opacity-0" />
+                  <span>404 - Not Found</span>
+                </CommandItem>
+                <CommandItem className="flex items-center gap-2">
+                  <Check className="h-4 w-4 opacity-0" />
+                  <span>500 - Server Error</span>
+                </CommandItem>
+              </CommandGroup>
+            </CommandList>
+            <CommandSeparator />
+            <div className="p-2">
+              <Button size="sm" className="w-full">Apply Filters</Button>
+            </div>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      
+      <Separator orientation="vertical" className="h-8" />
+      
+      <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
+        Clear filters
+      </Button>
+      
+      <span className="text-xs text-muted-foreground ml-2">
+        Showing 3 results
+      </span>
+    </div>
   );
 };
 

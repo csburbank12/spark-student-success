@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActivitiesList from "./components/ActivitiesList";
@@ -75,13 +76,12 @@ const activities = [
 ];
 
 // Convert numeric IDs to strings for compatibility
-const assignments: Assignment[] = [
+const assignments = [
   {
     id: "101",
     title: "Math Homework - Algebra Basics",
     dueDate: "Tomorrow, 8:00 AM",
-    due_date: "Tomorrow, 8:00 AM",
-    status: "Not Started",
+    status: "not-started",
     subject: "Mathematics",
     priority: "High",
     type: "Homework"
@@ -90,8 +90,7 @@ const assignments: Assignment[] = [
     id: "102",
     title: "Book Report - 'The Giver'",
     dueDate: "Apr 25, 3:00 PM",
-    due_date: "Apr 25, 3:00 PM",
-    status: "In Progress",
+    status: "in-progress",
     subject: "English",
     priority: "Medium",
     type: "Project"
@@ -100,8 +99,7 @@ const assignments: Assignment[] = [
     id: "103",
     title: "Science Lab Report",
     dueDate: "Apr 28, 11:59 PM",
-    due_date: "Apr 28, 11:59 PM",
-    status: "In Progress",
+    status: "in-progress",
     subject: "Science",
     priority: "Medium",
     type: "Report"
@@ -134,10 +132,13 @@ const events = [
 const ChildActivity = () => {
   // Convert the assignment data to match the expected Assignment type
   const typedAssignments: Assignment[] = assignments.map(assignment => ({
-    ...assignment,
-    id: String(assignment.id), // Convert number id to string
-    dueDate: assignment.due_date,
-    type: assignment.subject // Use subject as type if no type field exists
+    id: String(assignment.id),
+    title: assignment.title,
+    dueDate: assignment.dueDate,
+    status: assignment.status,
+    subject: assignment.subject,
+    priority: assignment.priority,
+    type: assignment.type
   }));
 
   return (

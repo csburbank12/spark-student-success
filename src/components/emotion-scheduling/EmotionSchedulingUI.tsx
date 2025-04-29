@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -9,7 +10,7 @@ export interface EmotionSchedulingUIProps {
 }
 
 const EmotionSchedulingUI: React.FC<EmotionSchedulingUIProps> = ({ studentId }) => {
-  const { data, isLoading, error } = useEmotionScheduler(studentId);
+  const { emotionAnalysis, isLoading, error } = useEmotionScheduler(studentId);
 
   if (isLoading) {
     return (
